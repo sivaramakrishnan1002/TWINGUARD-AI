@@ -20,6 +20,6 @@ Source: official Geofabrik Southern Zone snapshot, downloaded 2026-10-08. The PB
 | emergency facilities | 64 | emergency-tagged features |
 | social facilities | 10 | social-facility-tagged features |
 
-The parser considered 519,628 intersecting ways and read 89,682,822 total PBF objects. These are OpenStreetMap mapped objects, not a completeness estimate. Counts can overlap between tag groups and exclude relation geometries. Broad substring searches for Adyar, Cooum, Kosasthalaiyar, and Buckingham Canal produced false positives from POI/road names; therefore exact named-watercourse presence remains unverified and should be checked against waterway geometries/names specifically.
+The parser considered 519,628 intersecting ways and read 89,682,822 total PBF objects. These are OpenStreetMap mapped objects, not a completeness estimate. Counts can overlap between tag groups and exclude relation geometries. Broad substring searches for Adyar, Cooum, Kosasthalaiyar, and Buckingham Canal produced false positives from POI/road names. Exact waterway/water-feature name-field matching, clipped lengths, way IDs, and named-subset endpoint connectivity are now documented in `OSM_WATERWAYS.md`; these do not establish ground completeness.
 
 The regional PBF is licensed under ODbL 1.0. See the official [Geofabrik India download page](https://download.geofabrik.de/asia/india.html). Retain attribution and comply with ODbL when distributing derived databases.

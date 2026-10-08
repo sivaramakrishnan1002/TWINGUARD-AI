@@ -62,7 +62,7 @@ Choose and document a fallback before producing labels:
 - **Tools:** pyosmium/osmium for PBF filtering and tag extraction; OSMnx/NetworkX or GeoPandas/Shapely for graph construction and spatial checks. Keep an untouched source snapshot and comply with ODbL attribution/share-alike obligations.
 - **Planned outputs:** study-area road graph with stable source OSM identifiers, road class, direction/access/bridge/tunnel attributes where present, and separate linked infrastructure/hydrology layers. Derived extracts are planned outputs only and have not been created.
 - **CRS/grid:** retain source WGS84 geometries; project analytical copies to EPSG:32644. A raster grid is not the road graph's native representation; if road features are rasterized for a model, document the 10 m alignment and preserve vector source features.
-- **Validation checks:** graph connectivity and dangling-edge review; duplicate/invalid geometry checks; clip/buffer edge handling; tag completeness and counts against `OSM_COUNTS.md`; spot-check named watercourses by exact waterway geometry/name (current broad substring counts were noisy); confirm snapshot date and ODbL attribution. OSM absence is not proof a feature is absent on the ground.
+- **Validation checks:** graph connectivity and dangling-edge review; duplicate/invalid geometry checks; clip/buffer edge handling; tag completeness and counts against `OSM_COUNTS.md`; review exact named-waterway findings and connectivity limitations in `OSM_WATERWAYS.md` (ground completeness remains uncertain); confirm snapshot date and ODbL attribution. OSM absence is not proof a feature is absent on the ground.
 
 ### 6. WorldPop population exposure
 

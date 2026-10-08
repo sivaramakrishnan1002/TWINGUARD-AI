@@ -1,21 +1,26 @@
-# Project status
+# Project status — Phase 2 close-out
 
 ## Done
 
-- The current source collection is inventoried and quality-reviewed. Download logs, checksums, known gaps, and storage totals are documented.
-- The 2015 UNOSAT archive was inspected. November flood coverage within the provisional CMA boundary was calculated read-only and documented.
-- Official NRSC/NDEM 2023 PDF map equivalents and a Geofabrik OSM snapshot were acquired and verified. The OSM snapshot was parsed for a read-only feature inventory.
-- Phase 3 risks and planned data workstreams are documented. Git ignore rules, project layout, and a one-service database Compose file are prepared.
+- Phase 2 source inventory and checksum audit: 30 comparable logged SHA-256 records matched the on-disk files; 12 log entries did not have a comparable hash. No mismatch was found. Existing raw files remain untouched.
+- The CMA boundary, 2015 UNOSAT archive, 2021 NRSC PDF, 2023 official NDEM PDFs, WorldPop raster, weather data, DEM, land cover, OSM regional extract, and CWC advisory are inventoried. The WorldPop file opens as a raster; its model estimate and nodata limits are documented.
+- OSM regional feature counts, exact named-waterway matches and the named-subset connectivity check, and the catalogue-only Sentinel scene shortlist are documented. Sentinel image products were not downloaded.
+- Usage terms and attribution checks are summarized in the data quality report. Phase 2 close-out and Phase 3 readiness are in `PHASE2_CLOSURE.md`.
+- Git project setup and the PostgreSQL/PostGIS Compose definition exist. No containers were started.
 
 ## Manual or unavailable
 
-- December 2015 peak inundation layers have not been obtained. Bhuvan lists products, but no direct public GIS download was identified.
-- The collected 2021 and 2023 flood maps are PDFs and need careful manual digitising before use as spatial labels. The 2023 maps are preliminary; the optional 18 December sheet covers Tuticorin.
-- WorldPop transfer failed and its partial file was removed. CAG report download timed out. Historical reservoir release/level time series remain unavailable. Licences are unconfirmed for some datasets.
-- Confirm whether the older pre-2022 CMA boundary is suitable for the final study area. Review exact named-watercourse presence in OSM; current broad name matching was inconclusive.
+- No December 2015 peak flood vector layers were obtained; NRSC should be contacted. The collected UNOSAT layers are dated 1 Sep, 14 Oct, 12 Nov, and 24 Nov and miss the 1–8 Dec peak.
+- The 2021 and 2023 flood references are PDF maps and need manual digitising. NRSC products carry “For official use” legends; redistribution terms need confirmation.
+- No public Chennai-basin historical reservoir series for the requested windows was verified. The TN historical portal requires login/OTP; no login was attempted. A ready RTI/email draft is in `MANUAL_TODO.md`; correct PIO address is unverified.
+- The CAG official PDF retry failed with a TLS connection close; retain the URL for manual retrieval.
+- Sentinel catalogue rows and full product sizes are documented, but the raw folder remained read-only. User must create the requested year folders and download products manually; no Phase 3 processing has started.
+- WorldPop totals need comparison with census figures and boundary vintages.
 
 ## Next
 
-1. Resolve the study boundary, event windows, flood-label strategy, and common analysis grid using `PHASE3_PLAN.md`.
-2. Complete authorized manual source requests/acquisitions or document the accepted scope limits.
-3. Only after explicit approval, begin Phase 3 feature preparation and validation. Phase 3 has not started; no containers have been started.
+1. Request December 2015 flood layers from NRSC.
+2. Download the selected Sentinel-1 products manually after resolving the raw-folder write constraint.
+3. Request historical reservoir records from the verified record-holding authority.
+4. Compare WorldPop totals with census estimates.
+5. Only after explicit approval, begin Phase 3 preparation and validation.

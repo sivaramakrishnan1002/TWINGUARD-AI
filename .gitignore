@@ -1,0 +1,24 @@
+# Raw and generated geospatial data
+/data/raw/
+/data/processed/
+/data/features/
+*.tif
+*.tiff
+*.pbf
+*.zip
+
+# Local environments and secrets
+/.venv/
+.env
+!.env.example
+
+# Common generated dependencies and caches
+__pycache__/
+*.py[cod]
+node_modules/
+
+# Editor and operating-system noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

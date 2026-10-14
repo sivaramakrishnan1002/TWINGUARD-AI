@@ -1,6 +1,6 @@
-# Manual TODO — Phase 2
+# Manual TODO — remaining manual verification
 
-Complete remaining items before Phase 3. Preserve raw files. For every later acquisition, record the exact URL, date/time, byte size, SHA-256, licence, and verification in its log and manifest.
+Complete the items below before treating the study data as final. Preserve raw files. For every later acquisition, record the exact URL, date/time, byte size, SHA-256, licence, and verification in its log and manifest. Phase 3 processing is now underway; see the Phase 3 follow-up section near the end.
 
 ## 2015 December flood layers (highest priority)
 1. Open the official Bhuvan disaster flood viewer: https://bhuvan-app1.nrsc.gov.in/disaster/usrtasks/flood/flood.php?uname=empty
@@ -97,3 +97,18 @@ Public CWC/NWDP pages expose general reservoir datasets and bulletins, but the r
 ## CAG 2017 report
 
 Official URL retried once with 180-second timeout and normal SSL on 2026-10-08. The request failed with an SSL connection closed error; keep the official URL above for manual retrieval. No mirror was used.
+# Phase 3 follow-up checks — 2026-10-14
+
+- Confirm the final study boundary (older CMA vs expanded jurisdiction) before locking any final model features.
+- Inspect the GLO-30 coastal negative elevations, DSM artifacts, pits/flats, and flow paths in QGIS; decide and document a hydrologic conditioning method before using flow accumulation/TWI as model predictors.
+- Verify the current published reservoir capacities against historical capacities for the 2004–2020 periods. The present capacity percentages are contextual only.
+- Verify Kaggle rainfall column units/source metadata; do not compare its rainfall field directly until units are established.
+- Compare WorldPop totals with census figures for Chennai district and the CMA; WorldPop is an alpha constrained model estimate and should be used for relative exposure until explained.
+- Recheck NASA POWER `PRECTOTCORR` units and metadata from the official product documentation before reporting the ERA5 comparison as physical bias.
+- Obtain/confirm authoritative peak/event windows for Sentinel comparison. Two 16 Nov 2021 ZIPs are now downloaded and verified, and a 6 Dec 2015 ZIP is available within the 1–8 Dec event window; all Sentinel products remain unprocessed. Confirm ASF/Copernicus terms before any redistribution.
+- Decide whether to digitize the 2021/2023 NRSC/NDEM PDFs or narrow validation to observed dates/places. For the Dec 1–8 2015 peak, continue searching only official channels for observed GIS layers; do not use the November vectors as a December substitute.
+- Review OpenCity metadata and keep incident points separate from modeled return-period/hazard polygons.
+- Verify any Sentinel-1 preprocessing environment and ASF redistribution terms before starting a separately approved Sentinel task.
+- Install or otherwise approve a Parquet engine if downstream workflows require Parquet. Current reproducible weather and reservoir outputs are CSV because `pyarrow`/`fastparquet` are absent.
+- Audit OSM extraction completeness, directed connectivity and largest-component shares; review nearest-road snapping distances and named waterways. OSM absence is not proof of real-world absence; comply with ODbL attribution/share-alike obligations.
+

@@ -1,0 +1,207 @@
+{
+  "expected_grid": {
+    "width": 1370,
+    "height": 1760,
+    "crs": "EPSG:32644",
+    "transform": [
+      30.0,
+      0.0,
+      390000.0,
+      0.0,
+      -30.0,
+      1471620.0
+    ]
+  },
+  "rasters_checked": 18,
+  "raster_records": [
+    {
+      "path": "data/features/landcover/worldcover_2021_area_fractions_30m.tif",
+      "bytes": 18144418,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 1.0
+    },
+    {
+      "path": "data/features/landcover/worldcover_2021_class.tif",
+      "bytes": 501907,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 10.0,
+      "max_band1": 90.0
+    },
+    {
+      "path": "data/features/population/worldpop_2021_sum_resampled_30m.tif",
+      "bytes": 6020953,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 1542050,
+      "nodata_band1": 869150,
+      "min_band1": 0.0,
+      "max_band1": 14.059175491333008
+    },
+    {
+      "path": "data/features/terrain/aspect_deg.tif",
+      "bytes": 9025625,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 359.999755859375
+    },
+    {
+      "path": "data/features/terrain/curvature_laplacian_per_m.tif",
+      "bytes": 9518657,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": -0.025346903130412102,
+      "max_band1": 0.03894955292344093
+    },
+    {
+      "path": "data/features/terrain/elevation_m.tif",
+      "bytes": 8753351,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": -64.5087661743164,
+      "max_band1": 168.7034149169922
+    },
+    {
+      "path": "data/features/terrain/flow_accumulation_cells_d8.tif",
+      "bytes": 2230538,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 1.0,
+      "max_band1": 708.0
+    },
+    {
+      "path": "data/features/terrain/flow_direction_d8.tif",
+      "bytes": 979493,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 8.0
+    },
+    {
+      "path": "data/features/terrain/slope_deg.tif",
+      "bytes": 9153477,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 53.194969177246094
+    },
+    {
+      "path": "data/features/terrain/twi_d8_proxy.tif",
+      "bytes": 8823281,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 3.470855236053467,
+      "max_band1": 16.28434181213379
+    },
+    {
+      "path": "data/processed/exposure/facility_500m_union_mask.tif",
+      "bytes": 57323,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 1.0
+    },
+    {
+      "path": "data/processed/exposure/road_network_100m_buffer_mask.tif",
+      "bytes": 106207,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 1.0
+    },
+    {
+      "path": "data/processed/grid/cma_mask.tif",
+      "bytes": 19803,
+      "grid_aligned": true,
+      "layout": "COG",
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 1.0
+    },
+    {
+      "path": "data/processed/labels_inspection/2015-09-01_EXPLORATORY_NOT_FINAL.tif",
+      "bytes": 24452,
+      "grid_aligned": true,
+      "layout": null,
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 2.0
+    },
+    {
+      "path": "data/processed/labels_inspection/2015-10-14_EXPLORATORY_NOT_FINAL.tif",
+      "bytes": 20926,
+      "grid_aligned": true,
+      "layout": null,
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 2.0
+    },
+    {
+      "path": "data/processed/labels_inspection/2015-11-12_EXPLORATORY_NOT_FINAL.tif",
+      "bytes": 42311,
+      "grid_aligned": true,
+      "layout": null,
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 1.0
+    },
+    {
+      "path": "data/processed/labels_inspection/2015-11-24_EXPLORATORY_NOT_FINAL.tif",
+      "bytes": 38322,
+      "grid_aligned": true,
+      "layout": null,
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 1.0
+    },
+    {
+      "path": "data/processed/labels_inspection/november_flood_minus_sep_oct_reference_TEST_ONLY.tif",
+      "bytes": 49930,
+      "grid_aligned": true,
+      "layout": null,
+      "valid_values_band1": 2411200,
+      "nodata_band1": 0,
+      "min_band1": 0.0,
+      "max_band1": 1.0
+    }
+  ],
+  "warnings": [
+    "not stored as a cloud optimized GeoTIFF: data/processed/labels_inspection/2015-09-01_EXPLORATORY_NOT_FINAL.tif (layout=None); valid tiled GeoTIFF retained without overwrite",
+    "not stored as a cloud optimized GeoTIFF: data/processed/labels_inspection/2015-10-14_EXPLORATORY_NOT_FINAL.tif (layout=None); valid tiled GeoTIFF retained without overwrite",
+    "not stored as a cloud optimized GeoTIFF: data/processed/labels_inspection/2015-11-12_EXPLORATORY_NOT_FINAL.tif (layout=None); valid tiled GeoTIFF retained without overwrite",
+    "not stored as a cloud optimized GeoTIFF: data/processed/labels_inspection/2015-11-24_EXPLORATORY_NOT_FINAL.tif (layout=None); valid tiled GeoTIFF retained without overwrite",
+    "not stored as a cloud optimized GeoTIFF: data/processed/labels_inspection/november_flood_minus_sep_oct_reference_TEST_ONLY.tif (layout=None); valid tiled GeoTIFF retained without overwrite"
+  ],
+  "errors": [],
+  "passed": true
+}

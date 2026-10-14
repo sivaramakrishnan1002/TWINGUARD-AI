@@ -1,24 +1,24 @@
-# Project status — Phase 2 close-out
+# TwinGuard AI — project status
+
+**Updated 14 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Part B (Phase 3 feature preparation) is complete. No model was trained and no Phase 4 work was started.
 
 ## Done
 
-- Project setup, PostgreSQL/PostGIS Compose definition, and Phase 2 source inventory are documented. No container was started.
-- Current raw inventory: 55 data files and 18 metadata logs. A read-only audit found all 55 data files match a logged size and SHA-256; no mismatches and no current file without a comparable hash. Failed download attempts in logs are historical records, not present files.
-- Boundary, UNOSAT archive, NRSC/NDEM PDFs, weather products, four Copernicus DEM tiles, WorldCover, OSM extract, WorldPop, reservoir sources, OpenCity flood resources, Global Flood Database event 4309, and CAG executive summary are inventoried. Caveats are recorded in `DATA_QUALITY_REPORT.md`.
-- Ten manually acquired ASF Sentinel-1A GRD-HD ZIPs (2015, 2021, 2023) pass ZIP integrity checks. SAFE metadata, hashes, acquisition names, orbits, coverage and post-peak catalogue options are in `SENTINEL_VERIFICATION.md`. The raw directory spelling `senitnel1` is intentionally unchanged.
-- Git project setup and PostgreSQL/PostGIS Compose definition exist. No containers were started.
+- Project setup and PostgreSQL/PostGIS Compose files are present. Containers were not started.
+- The raw-data folder has 58 data files and 18 download logs. A read-only size and SHA-256 audit matched all 58 files with zero mismatches. Raw files were not edited.
+- There are 13 verified ASF Sentinel-1 ZIPs. All passed ZIP checks and metadata/name matching. This includes a 6 Dec 2015 scene within the flood window and two 16 Nov 2021 post-peak scenes. Sentinel files remain raw and unprocessed.
+- Phase 3 created a shared 30 m EPSG:32644 grid, terrain and land-cover features, WorldPop aggregation, rainfall and reservoir tables, OSM road/facility/building/waterway layers, and exploratory flood-label inspection layers.
+- Raster validation checked 18 outputs. All are aligned to the common grid and have valid values. Five old exploratory label rasters are tiled GeoTIFFs rather than COGs; they were preserved and are listed as warnings.
+- WorldPop and OSM proximity summaries are model estimates and map-buffer summaries. They are not census headcounts, road accessibility, or evacuation demand.
 
-## Manual or unavailable
+## Manual decisions and limitations
 
-- The 2015 UNOSAT vector layers are dated 1 Sep, 14 Oct, 12 Nov and 24 Nov; they miss the 1–8 Dec peak. Global Flood Database event 4309 is a coarse 250 m cross-check and ends 4 Dec.
-- The 2021 and 2023 official flood references are PDFs requiring manual digitising. OpenCity return-period layers are modelled, not observed.
-- No public historic Chennai-basin reservoir release series was verified. The Kaggle/OpenCity datasets describe storage; Kaggle rainfall units are undocumented. The CAG executive summary gives some Chembarambakkam release figures for 1–2 Dec 2015, not a complete time series.
-- WorldPop R2025A is alpha, constrained, and its roughly 6.2 million CMA sum is a model estimate; NoData is not zero. Census comparison remains to be done.
-- Sentinel data licence terms for the ASF downloads remain to be confirmed. All downloaded scenes are before provisional flood peaks. The saved catalogue offers a 16 Nov 2021 two-slice post-peak pair, but no post-peak candidate for 2015 or 2023.
-- Some historical raw logs preserve failures with zero bytes and no applicable hash. No corresponding present files were found.
+- Confirm whether the older CMA or expanded CMA is the final study boundary.
+- The collected UNOSAT vectors are dated 1 Sep, 14 Oct, 12 Nov, and 24 Nov 2015; they do not provide a vector label for the 1–8 Dec peak. The 6 Dec Sentinel scene is unprocessed. The 2021 and 2023 flood maps are PDFs and still need manual digitising.
+- Inspect the DSM elevation artifacts and choose hydrologic conditioning before interpreting flow accumulation or TWI. Review OSM graph connectivity before routing.
+- Check WorldPop totals against census data, verify weather units, and confirm historical reservoir capacities. Storage changes are not reservoir releases; the available CAG summary gives only limited Chembarambakkam release findings.
+- Confirm Sentinel reuse terms and required attribution before redistribution. Do not treat the illustrative reservoir screen as a validated warning model.
 
 ## Next
 
-1. Confirm applicable ASF licence/terms and decide whether to obtain the optional 16 Nov 2021 Sentinel pair.
-2. Continue manual work on December 2015 flood references, digitising the 2021/2023 PDF maps, reservoir records, and the WorldPop/census comparison.
-3. Review `PHASE2_CLOSURE.md` readiness risks. Phase 3 remains unstarted; wait for explicit approval before any processing.
+Use `MANUAL_TODO.md` to resolve the study-boundary, label, data-quality, OSM-routing, and licence decisions. Review `PHASE3_LOG.md`, `PHASE3_VALIDATION.json`, and `DATA_QUALITY_REPORT.md` before deciding on any later modelling work.

@@ -27,7 +27,9 @@ The user supplied `data/raw/population/ind_pop_2021_CN_100m_R2025A_v1.tif`. It o
 The Geofabrik Southern Zone PBF is downloaded and inventoried. See `docs/OSM_COUNTS.md` and `docs/OSM_WATERWAYS.md` for counts, exact requested-name results, clipped lengths, and connectivity limits.
 
 ## Sentinel products
-The public catalogue-only query and complete Sentinel-1 GRD IW list, dates, sizes, footprint percentages, recommended pairings, and event timing gaps are recorded in `docs/SENTINEL_PLAN.md` and `docs/SENTINEL_SHORTLIST.csv`. The raw folder remains read-only in this close-out; no scene ZIPs or raw shortlist CSV were added. Follow the acquisition procedure below only after resolving the raw-folder write restriction.
+Ten ASF Sentinel-1 GRD-HD ZIPs were manually acquired and verified read-only on 2026-10-14. Keep their original names in `data/raw/satellite/senitnel1/2015`, `2021`, and `2023`; do not rename the existing misspelled folder or extract the archives. The ASF-specific licence and terms still need confirmation. Verification results and hashes are in `docs/SENTINEL_VERIFICATION.md` and the folder's `DOWNLOAD_LOG.txt`.
+
+The saved catalogue contains a post-peak 16 Nov 2021 option (two slices) but no post-peak 2015 or 2023 option. Decide whether to acquire that optional pair after checking its timing and storage cost. No Sentinel processing has been done; use the future processing plan only after Phase 3 approval.
 
 ## Reservoir measurements
 The TN Agriculture Reporting System requires officer login and OTP; obtain authorized access directly. Public search found the already-held CWC Chembarambakkam/Poondi advisory but no public historical time-series download. Check CWC's public reservoir bulletins and India-WRIS public pages; do not authenticate or submit forms here. Export current level/storage/inflow/outflow only if clearly public for Chembarambakkam, Poondi, Puzhal/Red Hills, Cholavaram and other basin reservoirs. Historical event windows remain missing.
@@ -38,7 +40,7 @@ Subject: Request for Chennai-basin reservoir measurements and release records
 
 Please provide machine-readable daily records for Chembarambakkam, Poondi, Puzhal (Red Hills), and Cholavaram reservoirs for 1 Nov–15 Dec 2015, 1–20 Nov 2021, and 25 Nov–15 Dec 2023. Include date/time and time zone, storage/level, inflow, outflow/release in cusecs, gate openings, units, station IDs, and release/operation logs. CSV or XLSX is preferred. Please identify unavailable periods and the responsible record-holding office.
 
-The CWC advisory is saved under data/raw/reservoirs. The official CAG 2017 report link remains in this manual list. One 180-second retry failed because the SSL connection was forcibly closed; see `ISSUES.md`. Retrieve manually if needed, subject to the raw-folder write restriction.
+The CWC advisory is saved under data/raw/reservoirs. The CAG executive summary was downloaded on 2026-10-13 to data/raw/reservoirs/reference_docs/; it opens as a 7-page PDF. It reports Chembarambakkam discharge of 20,960–29,000 cusecs and 29,000 cusecs for 21 hours on 1–2 Dec 2015. This is not a full release time series and gives no comparable releases for the other reservoirs. The full report remains uncollected. The earlier TLS failure applied to a previous direct-link attempt; the summary was subsequently obtained through the official CAG report listing.
 
 ## Login/request rainfall sources
 - ERA5 CDS: register at https://cds.climate.copernicus.eu/ and request hourly event/baseline fields clipped to the buffered bbox.
@@ -87,13 +89,6 @@ Thank you,
 [Name]
 [Institution / project]
 [Contact]
-
-## Sentinel-1 manual download and verification
-
-1. Open the public Copernicus Data Space Browser: https://dataspace.copernicus.eu/ and search the full product IDs in `docs/SENTINEL_PLAN.md`. Use the date, Sentinel-1A, IW GRD, descending orbit, relative orbit 92, and VV/VH listed there. Download all listed adjacent slices for the recommended acquisitions; matching acquisition slices combine for CMA footprint coverage.
-2. Confirm the downloaded product name and acquisition start/end timestamps exactly match the shortlist. Keep the original `.zip` filename unchanged.
-3. The project rule for this close-out keeps `data/raw` read-only, so the requested `data/raw/satellite/sentinel1/2015`, `2021`, and `2023` folders and raw shortlist CSV were not created. Resolve that restriction before creating those folders/placing the unchanged ZIPs. Do not extract the raw archives.
-4. Once the folder exists, run from `D:\TIWNGUARD`: `.\.venv\Scripts\python.exe tools\verify_sentinel.py --folder data\raw\satellite\sentinel1 --shortlist docs\SENTINEL_SHORTLIST.csv`. The tool tests ZIP integrity and SAFE contents, name, size tolerance, and SHA-256, then appends results to `data/raw/satellite/sentinel1/DOWNLOAD_LOG.txt`. Do not run it against raw files until raw write authorization is resolved; it appends a log when ZIPs are present. Empty-folder behavior was tested in a temporary directory and prints “No .zip files found” without creating a log.
 
 ## Reservoir public-source re-check (2026-10-08)
 

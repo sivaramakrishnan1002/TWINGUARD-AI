@@ -1,17 +1,26 @@
 # Phase 2 storage estimate
 
-The last verified inventory contains 44 files under `data/raw` (27 non-log files, 17 logs), 1,644,105,109 bytes total. This figure reflects the existing inventory before this close-out and excludes all documentation/scripts created under `docs` and `tools`. No Sentinel scenes, reservoir time series, or CAG report were downloaded. `data/processed` and `data/features` remain empty. No raw file was changed in this close-out.
+## Current raw-data inventory (2026-10-14)
 
-| Dataset | Current size | Pending estimate |
-|---|---:|---|
-| Boundary + 2015/2021 flood data | 68,595,202 bytes | No December 2015 peak product obtained |
-| Official 2023 NDEM PDFs | 18,494,659 bytes | None for current PDF set |
-| Weather | 4,421,217 bytes | CDS/GPM/IMD unknown |
-| Copernicus GLO-30 | 109,843,443 bytes | None for selected tiles |
-| ESA WorldCover | 119,065,806 bytes | None for selected tile |
-| WorldPop R2025A alpha | 764,157,097 bytes | None for this raster |
-| OSM regional PBF | 557,975,955 bytes | None for current extract |
-| Reservoirs | 1,521,990 bytes | Historical series and CAG report unknown |
-| Existing Sentinel candidates CSV | 3,967 bytes | 17 listed event/reference products: 20,419,832,685 catalogued bytes; recommended minimum: 12,046,047,571 bytes |
+The raw tree contains 73 files: 55 data files and 18 `DOWNLOAD_LOG.txt` files. Data files total **14,706,156,884 bytes**; including logs the tree totals **14,706,194,481 bytes**. The ten Sentinel-1 ASF ZIPs are **12,978,427,058 bytes** in total. All 55 data files matched their logged byte size and SHA-256; no mismatches or current files without a comparable hash were found. Failed historical download attempts recorded with size 0 and `SHA-256: not applicable` are log entries, not files.
 
-D: free space at Sentinel planning check: 247,457,554,432 bytes. Catalogued scene sizes are estimates for planning, not on-disk sizes. No partial downloads were created in this close-out. The prior WorldPop partial was removed before this close-out; the user-supplied full raster remains intact.
+| Raw folder | Bytes on disk, including its logs |
+|---|---:|
+| boundary | 42,927 |
+| buildings | 435 |
+| dem | 109,845,676 |
+| historical_floods | 170,229,746 |
+| hydrology | 435 |
+| infrastructure | 440 |
+| landcover | 119,066,401 |
+| osm | 429 |
+| population | 764,158,921 |
+| reservoirs | 2,005,724 |
+| roads | 557,977,519 |
+| satellite (including the 10 ASF ZIPs) | 12,978,435,611 |
+| weather | 4,430,217 |
+| **Total** | **14,706,194,481** |
+
+D: free space at the current check: **237,648,322,560 bytes**. `data/processed` and `data/features` remain unprocessed; Phase 3 has not started. The saved catalogue includes an optional post-peak 16 Nov 2021 Sentinel-1 pair, but neither scene was downloaded. Its candidate catalogue sizes are 536.138 MB and 549.281 MB; these are catalogue values, not measured files.
+
+No raw files were extracted, renamed, or edited. Sentinel ZIPs were read in place for hashes, ZIP CRC checks and metadata. SSL verification was never disabled.

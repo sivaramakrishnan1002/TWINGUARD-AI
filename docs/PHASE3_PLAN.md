@@ -66,7 +66,7 @@ Choose and document a fallback before producing labels:
 
 ### 6. WorldPop population exposure
 
-- **Inputs:** intended WorldPop R2025A constrained India 2021 raster (CC BY 4.0), which is currently unavailable because its transfer stalled and the partial file was removed. Retry acquisition only when authorized and a stable connection is available.
+- **Inputs:** the user-supplied WorldPop R2025A constrained India 2021 raster at `data/raw/population/ind_pop_2021_CN_100m_R2025A_v1.tif` is present and verified. It is alpha (CC BY 4.0); the valid-cell-center sum inside the current CMA boundary is about 6.2 million, a model estimate that appears below the believed 2011 census CMA total. NoData is distinct from zero; see `DATA_QUALITY_REPORT.md`. It should be used for relative patterns, not an absolute headcount.
 - **Tools:** rasterio/GDAL for metadata, alignment, masking, and zonal/road-buffer summaries; pandas/geopandas for reporting.
 - **Planned outputs:** aligned population exposure surface or summarized population exposure by road segment/area, with source year, constrained/unconstrained definition, and aggregation method recorded.
 - **CRS/grid:** retain the native raster; project to EPSG:32644 for local metrics. Its approximately 100 m source cells are coarser than the proposed 10 m grid; do not upsample and imply new population detail. Prefer native-cell or defensible area-weighted summaries; if an aligned model raster is needed, document resampling and preserve the source support.
@@ -74,7 +74,7 @@ Choose and document a fallback before producing labels:
 
 ### 7. Reservoir time series
 
-- **Inputs:** desired daily or finer level/storage/inflow/outflow/gate records for Chembarambakkam, Poondi, Puzhal/Red Hills, Cholavaram, and relevant basin reservoirs for event and baseline windows. Only a CWC advisory PDF is currently held; historical time series are not collected. Manual access/request steps are in `MANUAL_TODO.md`.
+- **Inputs:** Kaggle daily storage for four reservoirs through 2020-12-03 (reported in mcft; rainfall units undocumented), six OpenCity monthly storage CSVs (too coarse for event-day releases), the CWC advisory snapshot, and CAG executive-summary figures for Chembarambakkam on 1–2 Dec 2015. No complete historic release series is available; do not infer releases from storage changes. See `DATA_MANIFEST.csv` and `MANUAL_TODO.md`.
 - **Tools:** manually authorized source acquisition; pandas for timestamp/unit normalization and quality control; geopandas only if associating reservoirs to catchments or study-area features.
 - **Planned outputs:** provenance-preserving reservoir time-series table with station/reservoir IDs, timestamps/timezone, units, missingness, release/gate metadata, and event-window aggregates. Keep unavailable periods explicit.
 - **CRS/grid:** point locations retain WGS84 and may be projected to EPSG:32644 for spatial joins. Reservoir series are temporal point data and should not be forced onto the 10 m raster grid; spatial association to catchments must be separately justified.
@@ -82,4 +82,4 @@ Choose and document a fallback before producing labels:
 
 ## Phase 3 readiness gate
 
-Before processing starts, confirm the final CMA boundary, choose the event windows, settle the December 2015 label strategy, decide whether the proposed 10 m grid is appropriate, and determine whether missing WorldPop/reservoir sources are blockers or documented scope limits. Keep all raw sources immutable and save processing outputs only in the appropriate processed/features locations after this plan is approved.
+Before processing starts, confirm the final CMA boundary, choose the event windows, settle the December 2015 label strategy, decide whether the proposed 10 m grid is appropriate, and determine whether missing rainfall or reservoir-release sources are blockers or documented scope limits. Keep all raw sources immutable and save processing outputs only in the appropriate processed/features locations after this plan is approved. This document remains a plan; no Phase 3 processing has begun.

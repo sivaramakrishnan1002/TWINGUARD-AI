@@ -41,4 +41,4 @@ D: had **247,457,554,432 bytes free** at the check, enough for either set. Keep 
 
 ## Manual acquisition constraints
 
-The project's raw folder is read-only for this close-out. Therefore this report is saved under `docs/`; no `data/raw/satellite/sentinel1_shortlist.csv` or event folders were created. Create the requested empty target folders and a CSV copy of the two tables only after resolving the raw-folder write restriction. In the Data Space Browser, select the exact full product names above, verify the name and acquisition timestamp, and keep the original `.zip` filename unchanged. See `MANUAL_TODO.md` for download and verifier steps.
+At the time of this catalogue-only planning pass (2026-10-08), raw data was held read-only, so no raw shortlist or scene ZIPs were added. This was superseded on 2026-10-14: ten ASF Vertex GRD-HD ZIPs were manually acquired and verified in the existing misspelled `data/raw/satellite/senitnel1` folder. See `SENTINEL_VERIFICATION.md` and the updated `MANUAL_TODO.md`; the catalogued products in these tables remain reference records, not the actual ASF ZIP file sizes.

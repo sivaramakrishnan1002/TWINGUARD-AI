@@ -19,7 +19,8 @@ The pre-expansion CMA boundary has one valid MultiPolygon in CRS84. Rings are cl
 | WorldPop | WorldPop R2025A alpha version | 2021 estimate, nominal ~100 m constrained | EPSG:4326; raster contains requested CMA bbox and boundary | One-band float32 GeoTIFF opens; 0.00083333333° pixels; 764,157,097 bytes. Valid pixel-center sum inside existing CMA boundary is ~6,204,904; 171 pixels are exactly zero, 23,812 are nodata, and 118,636 are positive. Nodata is -99999 and distinct from zero. This is a model estimate, not a census count. About 100 m cells are coarse for road-segment decisions. | CC BY 4.0 |
 | Reservoir advisory | CWC | Public advisory PDF, 9 pages | PDF; partial Chembarambakkam/Poondi | Opens; dated 23 Nov 2020; not historical series. | NOT FOUND (PDF-specific reuse terms) |
 | Reservoir series | TN WRD / CWC / India-WRIS | Current and 2015/2021/2023 desired | Not collected | Reviewed public pages did not yield Chennai-basin historical series. TN historical portal requires login+OTP; no login attempted. | NOT FOUND (no file acquired) |
-| Sentinel catalogue | Copernicus STAC | Event windows + same-orbit pre-event references | WGS84 footprints calculated in EPSG:32644 | 8 event-window and 9 pre-event Sentinel-1 GRD IW catalog items intersect; no images downloaded. Adjacent slices are separate items. See `SENTINEL_PLAN.md` and CSV. | Sentinel Data Legal Notice; full, free, open |
+| Sentinel catalogue | Copernicus STAC | Event windows + same-orbit pre-event references | WGS84 footprints calculated in EPSG:32644 | Catalogue query only; 8 event-window and 9 pre-event Sentinel-1 GRD IW catalog items intersect. ASF products were acquired separately; see next row. Adjacent slices are separate items. | Sentinel Data Legal Notice; full, free, open |
+| Sentinel-1 ASF GRD-HD scenes | NASA ASF Vertex (user downloads) | 10 acquisitions, 2015/2021/2023 | Individual CMA coverage 13.47–100%; date unions in verification report | Ten ZIPs pass integrity and SAFE metadata/name checks. All are pre-peak; paired acquisitions share relative orbit 92, descending pass, VV+VH. | ASF-specific licence/terms TO CONFIRM; do not infer from catalogue terms |
 | CAG report | CAG India | 2015 context, report 2017 | Not saved | Official retry failed with SSL connection closed; see `ISSUES.md`. | NOT FOUND (report-specific reuse terms) |
 
 ## 2015 UNOSAT shapefile inventory
@@ -76,7 +77,9 @@ The archive's shapefile attribute schema includes `Water_Clas`, `Sensor_ID`, `Se
 
 ## Sentinel-1 catalogue timing
 
-The public STAC catalog was queried on 2026-10-08; scene metadata, full product sizes, same-orbit reference scenes, footprint percentages, and timing gaps are in `SENTINEL_PLAN.md` and `SENTINEL_SHORTLIST.csv`. Provisional peaks remain to be validated. No scene products were downloaded.
+The public STAC catalog was queried on 2026-10-08; its shortlist and timing gaps are in `SENTINEL_PLAN.md` and `SENTINEL_SHORTLIST.csv`. On 2026-10-14, ten Sentinel-1A GRD-HD ZIPs manually downloaded from NASA ASF Vertex were verified in place. Detailed hashes, ZIP integrity, SAFE metadata, metadata/name checks, and CMA coverage are in `SENTINEL_VERIFICATION.md`. The raw folder is intentionally spelled `senitnel1`; it has not been renamed. All downloaded scenes precede the provisional event peaks.
+
+The ten ZIPs pass `zipfile.testzip()` and their names match acquisition start/stop times in SAFE metadata. They are IW mode, VV+VH, relative orbit 92, descending. Reference/event pairs match relative orbit, direction, and polarisation. Individually, both 2021 and both 2023 slices are needed to cover nearly all of the CMA. The 2021 post-peak 16 Nov option appears only in the saved catalogue; it was not downloaded. No post-peak 2015 or 2023 candidate was found in that saved catalogue. ASF download licence terms remain to be confirmed before redistribution.
 
 ## Licences and attribution
 
@@ -99,6 +102,34 @@ Terms checked against primary or provider pages on 8 October 2026. “NOT FOUND�
 | ERA5 / C3S | Copernicus data policy applies; preserve product citation. No file acquired. | Credit Copernicus Climate Change Service (C3S) and ERA5. | [Climate Data Store](https://cds.climate.copernicus.eu/) | Medium |
 | GPM IMERG / NASA | NOT FOUND: no product-specific licence verified; NASA requests citation. No file acquired. | Cite NASA GPM IMERG and product version; verify terms. | [NASA Earthdata data-use policy](https://www.earthdata.nasa.gov/engage/open-data-services-software/data-use-policy) | Low |
 | IMD rainfall | NOT FOUND: no product-specific terms verified; no file acquired. | Confirm with selected IMD product. | [IMD](https://mausam.imd.gov.in/) | Low |
-| CAG 2017 report | NOT FOUND: report-specific reuse terms not verified; official retry failed. | Credit CAG and cite official report if obtained. | [Official CAG report URL](https://www.cag.gov.in/uploads/download_audit_report/2017/Report_No_4_of_2017_-_Performance_Audit_of_Flood_Management_and_Response_in_Chennai_and_its_Suburban_Area.pdf) | Low |
+| CAG 2017 full audit report | NOT FOUND: full-report reuse terms not verified; the full report remains uncollected. Its executive summary is collected separately. | Credit CAG and cite official report if obtained. | [Official CAG report URL](https://www.cag.gov.in/uploads/download_audit_report/2017/Report_No_4_of_2017_-_Performance_Audit_of_Flood_Management_and_Response_in_Chennai_and_its_Suburban_Area.pdf) | Low |
 
 These entries summarize source terms, not legal advice. Product-specific notices in source files take precedence.
+
+### Additional downloads checked on 13 October 2026
+
+| Dataset | Licence or terms | Attribution / use note | Source |
+|---|---|---|---|
+| Kaggle Chennai Water Management | CC0 1.0 Universal, as shown in the user-provided Kaggle licence screenshot. | Public-domain dedication; cite the dataset page for provenance. | [Kaggle dataset](https://www.kaggle.com/sudalairajkumar/chennai-water-management) |
+| OpenCity Chennai lake levels | Other (Public Domain), as listed by OpenCity. | Source listed as CMWSSB. | [OpenCity dataset](https://data.opencity.in/dataset/chennai-lake-leves-since-2003) |
+| OpenCity Chennai Flooding Data | Other (Public Domain), as listed by OpenCity. | Source listed as GCC; resource page credits Vaidyanathan R. | [OpenCity dataset](https://data.opencity.in/dataset/chennai-flooding-data) |
+| Global Flood Database DFO 4309 | CC BY-NC 4.0 per the README inside the downloaded archive. | Non-commercial terms apply; cite Cloud to Street / Dartmouth Flood Observatory and the dataset paper. | [GFD event explorer](https://global-flood-database.cloudtostreet.info/#interactive-map); [Earth Engine catalogue](https://developers.google.com/earth-engine/datasets/catalog/GLOBAL_FLOOD_DB_MODIS_EVENTS_V1) |
+| CAG 2017 executive summary | PDF-specific reuse terms not located. | Cite CAG Report No. 4 of 2017; do not infer redistribution permission. | [Official CAG report page](https://cag.gov.in/en/audit-report/details/45722) |
+
+
+
+## Download verification — 13 October 2026
+
+User-acquired downloads were checked read-only. Raw datasets were not extracted, renamed, edited, or resaved. Browser file modification times are used as local download-time evidence. File sizes and SHA-256 values are in the raw download logs and DATA_MANIFEST.csv.
+
+- **Kaggle reservoir archive:** archive.zip passes the ZIP CRC check and contains two CSVs. Each has 6,182 daily rows from 1 Jan 2004 through 3 Dec 2020, with no missing or duplicate dates and no blank cells. Reservoir storage is described in mcft. The archive does not document rainfall units; do not assume them. The Kaggle licence page shown by the user identifies CC0 1.0 Universal.
+- **OpenCity lake levels:** six CSVs are present. Five cover 2003–2021 monthly; Kannankottai covers 2020–2021 and has 11 blank month cells. The page describes values as mcft and readings on the first of each month. These are storage data, not releases, and too coarse for event-day operations. OpenCity lists the dataset as Public Domain.
+- **OpenCity Chennai Flooding Data:** all nine expected KML resources are now present, each with distinct content, and all parse as XML. They include two point layers, return-period hazard scenarios, and a hazard-zone classification. Return-period layers are modelled scenarios, not observed 2015 flood extents. No inundated-area statistic was inferred from these KMLs.
+- **Global Flood Database:** ZIP check passes; archive contains GeoTIFF, README, licence, and metadata. Event metadata identifies DFO 4309 (India), 10 Nov–4 Dec 2015. GeoTIFF is EPSG:4326, five bands, nominal 250 m pixels, 3-day MODIS composites. With the existing CMA boundary and pixel-centre inclusion, 1,082 flooded-band cells occur in the CMA; 195 overlap the permanent-water band. Excluding that overlap leaves 887 cells, approximately 53.7 km2 using nominal local pixel area. This is a coarse grid estimate, not a high-resolution boundary-clipped measurement. It ends 4 Dec and does not cover 5–8 Dec. The archive README states CC BY-NC 4.0.
+- **CAG executive summary:** downloaded PDF opens as an unencrypted seven-page document. The summary reports Chembarambakkam Tank discharge of 20,960–29,000 cusecs and states 29,000 cusecs for 21 hours on 1–2 Dec 2015. These are audit findings, not a complete timestamped reservoir series. No release figures for Poondi, Puzhal/Red Hills, or Cholavaram were identified in the summary. The full CAG audit report was not downloaded; PDF-specific reuse terms were not located.
+
+Archive/PDF checks establish readability, not scientific accuracy. Phase 3 remains unstarted.
+
+## Raw-data log reconciliation — 14 October 2026
+
+The current `data/raw` tree contains 55 data files (14,706,156,884 bytes) and 18 download logs. A read-only check recomputed SHA-256 and byte sizes for all 55 files: 55 matched, 0 mismatches, and 0 current files lacked a comparable logged hash. Failed historical attempts with zero-byte/not-applicable hash entries are not present files. The ten Sentinel ZIP records are in `data/raw/satellite/senitnel1/DOWNLOAD_LOG.txt`.

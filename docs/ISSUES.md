@@ -1,6 +1,6 @@
 # Phase 2 issues and failed requests
 
-All dates are 2026-10-08 Asia/Kolkata. SSL verification was never disabled.
+Historical entries are dated 2026-10-08 unless another date is shown. SSL verification was never disabled.
 
 - NRSC original 2023 URL https://www.nrsc.gov.in/sites/default/files/pdf/DMSP/TN_7_12_2023_Michaung_Cyclone1of2.pdf returned HTTP 404; no file saved.
 - NRSC unconfirmed alternate https://www.nrsc.gov.in/nrscnew/assets/pdf/DMSP/TN_7_12_2023_Michaung_Cyclone1of2.pdf returned HTTP 404; response began with gzip bytes and was not PDF.
@@ -24,4 +24,9 @@ All dates are 2026-10-08 Asia/Kolkata. SSL verification was never disabled.
 - The restricted shell proxy blocked initial external requests; authorized elevated retries succeeded for Geofabrik and official NDEM map PDFs. SSL verification was never disabled.
 
 - CAG 2017 official report retry (2026-10-08), once with the requested 180-second timeout and normal SSL, failed before an HTTP response: `System.Net.Http.HttpRequestException: The SSL connection could not be established`; inner error `System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host`; socket error 10054, “An existing connection was forcibly closed by the remote host.” No SSL verification bypass was used and no file was saved.
-- The Copernicus public STAC catalog returned the requested Sentinel-1 GRD item records for all three event windows. No image downloads were made. The requested raw shortlist and year folders were not written because the task-level rule makes `data/raw` read-only; full results are in `docs/SENTINEL_PLAN.md` and `docs/SENTINEL_SHORTLIST.csv`.
+- The Copernicus public STAC catalog returned the requested Sentinel-1 GRD item records for all three event windows. At that time no image downloads were made and the requested raw shortlist/year folders were not written because raw data was read-only for that planning pass. This historical status was superseded by the ten user-acquired ASF ZIPs verified on 2026-10-14; see `docs/SENTINEL_VERIFICATION.md` and the allowed metadata log under `senitnel1`.
+
+- 2026-10-13: CAG executive-summary PDF subsequently downloaded from the link exposed by the official report listing and verified as a readable 7-page PDF. The earlier SSL failures remain historical attempts; SSL verification was not disabled. Full audit remains uncollected.
+
+- 2026-10-14: The ten manually acquired ASF Sentinel-1 GRD-HD ZIPs are stored under `data/raw/satellite/senitnel1` (the directory is misspelled in the existing raw tree). The name is preserved because raw data must not be moved or renamed. All ten ZIP CRC checks passed; see `SENTINEL_VERIFICATION.md`. ASF-specific download licence/terms should be confirmed before redistribution.
+- 2026-10-14: Full read-only raw-file audit found 55 data files (14,706,156,884 bytes); all 55 matched a logged size and SHA-256, with zero mismatches. Older logs contain failed-attempt entries with zero bytes and “not applicable” hashes; these do not correspond to present files and were excluded from the file-level audit. No SSL verification bypass was used.

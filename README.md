@@ -27,3 +27,5 @@ Use the existing `data/raw/boundary/chennai_cma_boundary.geojson` as the provisi
 5. Application integration, evaluation, and final documentation — planned.
 
 See `docs/PROJECT_STATUS.md` and `docs/PHASE3_PLAN.md` for current status and the planning decisions needed before Phase 3.
+
+See [`docs/handbook/TwinGuard_Project_Handbook.md`](docs/handbook/TwinGuard_Project_Handbook.md) for the complete project handbook and [`docs/handbook/COVERAGE_MATRIX.md`](docs/handbook/COVERAGE_MATRIX.md) for its source coverage map.

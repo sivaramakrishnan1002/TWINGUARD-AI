@@ -1,6 +1,6 @@
 # Manual TODO — remaining manual verification
 
-Complete the items below before treating the study data as final. Preserve raw files. For every later acquisition, record the exact URL, date/time, byte size, SHA-256, licence, and verification in its log and manifest. Phase 3 processing is now underway; see the Phase 3 follow-up section near the end.
+Complete the items below before treating the study data as final. Preserve raw files. For every later acquisition, record the exact URL, date/time, byte size, SHA-256, licence, and verification in its log and manifest. Phase 3 is complete; Phase 4 Part 1 preprocessing is recorded in `PHASE4_LOG.md`.
 
 ## 2015 December flood layers (highest priority)
 1. Open the official Bhuvan disaster flood viewer: https://bhuvan-app1.nrsc.gov.in/disaster/usrtasks/flood/flood.php?uname=empty
@@ -27,7 +27,7 @@ The user supplied `data/raw/population/ind_pop_2021_CN_100m_R2025A_v1.tif`. It o
 The Geofabrik Southern Zone PBF is downloaded and inventoried. See `docs/OSM_COUNTS.md` and `docs/OSM_WATERWAYS.md` for counts, exact requested-name results, clipped lengths, and connectivity limits.
 
 ## Sentinel products
-Ten ASF Sentinel-1 GRD-HD ZIPs were manually acquired and verified read-only on 2026-10-14. Keep their original names in `data/raw/satellite/senitnel1/2015`, `2021`, and `2023`; do not rename the existing misspelled folder or extract the archives. The ASF-specific licence and terms still need confirmation. Verification results and hashes are in `docs/SENTINEL_VERIFICATION.md` and the folder's `DOWNLOAD_LOG.txt`.
+Thirteen ASF Sentinel-1 GRD-HD ZIPs were manually acquired and verified read-only on 2026-10-14. Keep their original names in `data/raw/satellite/senitnel1/2015`, `2021`, and `2023`; do not rename the existing misspelled folder or extract the archives. The ASF-specific licence and terms still need confirmation. Verification results and hashes are in `docs/SENTINEL_VERIFICATION.md` and the folder's `DOWNLOAD_LOG.txt`.
 
 The saved catalogue contains a post-peak 16 Nov 2021 option (two slices) but no post-peak 2015 or 2023 option. Decide whether to acquire that optional pair after checking its timing and storage cost. No Sentinel processing has been done; use the future processing plan only after Phase 3 approval.
 
@@ -44,7 +44,7 @@ The CWC advisory is saved under data/raw/reservoirs. The CAG executive summary w
 
 ## Login/request rainfall sources
 - ERA5 CDS: register at https://cds.climate.copernicus.eu/ and request hourly event/baseline fields clipped to the buffered bbox.
-- GPM IMERG: use an authorized NASA Earthdata account at https://urs.earthdata.nasa.gov/ and request event precipitation clipped to bbox.
+- GPM IMERG: 86 daily V07B files are now present and compared. Confirm the actual source page/URL and product licence from the page used to acquire them; see `data/raw/weather/imerg/DOWNLOAD_LOG.txt` and `RAIN_SOURCES_COMPARISON.md`. Consider checking peak results against gauges or IMD products before relying on them.
 - IMD: request station/gridded rainfall through https://mausam.imd.gov.in/; record actual terms/fees and do not automate forms.
 
 ## Environment
@@ -111,4 +111,11 @@ Official URL retried once with 180-second timeout and normal SSL on 2026-10-08. 
 - Verify any Sentinel-1 preprocessing environment and ASF redistribution terms before starting a separately approved Sentinel task.
 - Install or otherwise approve a Parquet engine if downstream workflows require Parquet. Current reproducible weather and reservoir outputs are CSV because `pyarrow`/`fastparquet` are absent.
 - Audit OSM extraction completeness, directed connectivity and largest-component shares; review nearest-road snapping distances and named waterways. OSM absence is not proof of real-world absence; comply with ODbL attribution/share-alike obligations.
+
+## Phase 4 Part 1 decisions — 2026-10-17
+
+- Confirm the 2 m river/canal burn depth, default vehicle speeds, and 0.3 m flood-passability cutoff before interpreting terrain or route times. The flood cutoff is an assumption requiring literature confirmation.
+- Review `slope_deg_edge_safe.tif` and `twi_d8_proxy_edge_safe.tif` and the remaining −64.51 m source DEM artefact before relying on terrain derivatives.
+- On the ASF site, verify availability, required inputs, and free credit limits for HyP3/On Demand before selecting it over local SNAP. No account or network check was performed here.
+- Confirm the actual IMERG source page and licence. Consider obtaining or consulting IMD gridded daily rainfall as an independent comparison; no IMD files were collected in this task.
 

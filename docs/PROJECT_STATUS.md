@@ -33,3 +33,7 @@ Use `MANUAL_TODO.md` to resolve the study-boundary, label, data-quality, OSM-rou
 Phase 4 checks and plans are recorded. The raw audit matched all 144 logged source files. Spatial inventory, validation blocks, routing origin addendum, and corrected QC sidecars are available. Time alignment and the static cell table are **pending** because the Parquet engine is missing and network access is disallowed. Five built-in tests passed; one Parquet test was skipped. The required pytest runner is absent. No Phase 5/database work or model training was started.
 
 See `STAGE_4_REPORT.md` for the concise result, `ISSUES.md` for exact errors, and `MANUAL_TODO.md` for the remaining user/environment action.
+
+### Completion update — 2026-10-17
+
+The user installed `pyarrow==26.0.0` and `pytest==9.1.1` in `.venv`. Phase 4.1 event Parquets and the Phase 4.4 static CMA cell table were created. Pytest reports 6 passed, 0 failed, 0 skipped. Lineage was rerun and includes the new files. The raw size/hash audit still passes. The previous incomplete Stage 4 status above is superseded by the completion update in `STAGE_4_REPORT.md`. Stage 5 remains unstarted.

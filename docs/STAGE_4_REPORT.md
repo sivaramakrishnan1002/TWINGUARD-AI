@@ -22,3 +22,17 @@ Date: 2026-10-17. Scope: Stage 4 only. No Phase 5/database work, model training,
 3. Flood labels remain uneven and incomplete: the 2015 official vectors do not cover the December peak, while 2021 and 2023 references are PDFs requiring digitising. No flood-label processing or Stage 5 work was started here.
 
 Full exact errors and the preserved preliminary registry note are in `docs/ISSUES.md`. **Stopped at Stage 4.**
+
+## Completion update — 2026-10-17
+
+This update supersedes the earlier pending statuses for 4.1, 4.4, 4.6 and 4.7. The user installed the packages; verified `.venv` versions are `pyarrow==26.0.0`, `pytest==9.1.1`, `colorama==0.4.6`, `iniconfig==2.3.1`, `pluggy==1.7.0`, and `Pygments==2.21.0`. These pins were appended to `requirements.txt`; no other dependency line was changed and no package installation or network access was performed by Codex.
+
+| Item | Result | File |
+|---|---|---|
+| Event alignment | Created 2015 (1,080 hourly + 180 date-only reservoir rows), 2021 (480 hourly), and 2023 (504 hourly) Parquet tables. ERA5 hourly and daily POWER/IMERG data have source presence/missing flags; daily values remain at UTC bucket boundaries; reservoir time was not invented. | `data/features/events/aligned_2015.parquet`, `aligned_2021.parquet`, `aligned_2023.parquet`; `docs/TIME_ALIGNMENT.md` |
+| Static stack | Created 1,319,380 rows × 18 columns, matching the CMA mask. 194,961 population NoData cells remain null with `population_is_nodata=true`; zero values remain zero. Coast distance is unavailable and flagged false/null because no coastline layer exists. | `data/features/static/cell_table.parquet`; `docs/FEATURE_DICTIONARY.md` |
+| Tests | Full pytest run: **6 passed, 0 failed, 0 skipped**. | `tests/phase4/`; `docs/ISSUES.md` |
+| Lineage | Reran after making the lineage builder refreshable; new Parquet files are indexed with size and SHA-256. | `tools/build_lineage.py`; `docs/DATA_LINEAGE.md` |
+| Raw audit | 144 files, 20,338,302,958 bytes; 144 size/hash matches, zero mismatches. | `pipelines/phase4/state_check.py` |
+
+No aligned/static processing script bug surfaced. The lineage script's previous “refuse existing report” guard was fixed so its generated report can be refreshed. Remaining data limits: reservoir inputs end in 2020; Cooum did not match the exact target name in the saved waterway layer; no coastline source is present. No Stage 5/database work or model training was started.

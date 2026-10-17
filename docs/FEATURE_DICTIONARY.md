@@ -39,4 +39,28 @@ All rasters use the common EPSG:32644, 30 m grid unless the description says oth
 
 ## Phase 4 cell table (status)
 
-Planned row key and attributes for the static 30 m CMA cell table are defined in `pipelines/phase4/static_feature_stack.py`: `row`, `col`, centroid `x/y`, `cell_id`, cleaned elevation, edge-safe slope, D8 TWI proxy and accumulation, WorldCover built-up/water fractions, building density, nearest exact-match river distance, nearest road-node distance, population, and a population-NoData flag. The table and its data dictionary are **pending**, because `.venv` does not contain a Parquet engine and network access is prohibited. Coast distance is also pending because the selected source inventory has no coastline layer. No incomplete table was written. Population NoData must remain distinct from a population value of zero.
+Planned row key and attributes for the static 30 m CMA cell table are defined in `pipelines/phase4/static_feature_stack.py`: `row`, `col`, centroid `x/y`, `cell_id`, cleaned elevation, edge-safe slope, D8 TWI proxy and accumulation, WorldCover built-up/water fractions, building density, nearest exact-match river distance, nearest road-node distance, population, and a population-NoData flag. Coast distance is not computed because the selected source inventory has no coastline layer. Population NoData remains distinct from a population value of zero.
+
+### Completion update — 2026-10-17
+
+`data/features/static/cell_table.parquet` is available with **1,319,380 rows**, exactly matching the number of CMA cells in `cma_mask.tif`, and 18 columns:
+
+| Column | Meaning / units |
+|---|---|
+| `row`, `col` | Zero-based row and column on the master raster grid. |
+| `x`, `y` | Cell-centre coordinates in EPSG:32644 metres. |
+| `cell_id` | Stable text key `32644:<row>:<col>`. |
+| `elevation_m` | Cleaned GLO-30 DSM elevation, metres; raster NoData retained as null. |
+| `slope_deg` | Edge-safe slope, degrees; raster NoData retained as null. |
+| `twi_d8_proxy` | Edge-safe D8 topographic wetness proxy, dimensionless; NoData retained as null. |
+| `flow_accumulation_cells_d8` | D8 upstream contributing cell count; NoData retained as null. |
+| `worldpop_2021` | Sum-resampled WorldPop 2021 model count contribution; NoData retained as null. |
+| `population_is_nodata` | Boolean population NoData flag; **194,961** cells are true. Zero population remains numeric zero (1,010 cells), not NoData. |
+| `built_up_fraction`, `water_fraction` | WorldCover 2021 area fractions, 0–1. |
+| `building_density_per_km2` | OSM building-footprint centroid count divided by 0.0009 km²; mapped-footprint density proxy, not occupancy. |
+| `distance_to_nearest_road_node_m` | Euclidean distance from cell centre to nearest saved OSM road node, metres. |
+| `distance_to_exact_named_waterway_m` | Distance to nearest line whose saved name exactly matches a target river/canal name, metres. Matched: Adyar River, Buckingham Canal and Kosasthalaiyar River. Cooum was not found under the exact target name in this saved layer. |
+| `distance_to_coast_m` | Not computed; null for all cells because no dedicated coastline layer is available. |
+| `coast_distance_available` | Boolean availability flag; false for all cells. |
+
+Event Parquets keep ERA5 hourly, NASA POWER and IMERG daily at UTC bucket boundaries, and reservoir measurements on separate local-date rows with unknown observation time. Source missingness flags are stored with each event table; numeric range/missingness QC remains in `data/features/events/qc_flags_v2.csv` and `qc_summary_v2.json`. Machine-readable context dictionaries are `data/features/events/aligned_data_dictionary.json` and `data/features/static/cell_table_data_dictionary.json`.

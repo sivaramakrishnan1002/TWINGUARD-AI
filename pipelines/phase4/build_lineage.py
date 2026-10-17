@@ -60,8 +60,6 @@ def provenance(path: Path) -> tuple[str, str]:
 
 
 def main() -> int:
-    if DOC.exists():
-        raise FileExistsError(f"Refusing to overwrite existing lineage report: {DOC}")
     files = []
     for root in (ROOT / "data/processed", ROOT / "data/features"):
         if root.exists():
@@ -75,7 +73,12 @@ def main() -> int:
         stat = path.stat()
         created = datetime.fromtimestamp(stat.st_mtime).astimezone().isoformat(timespec="seconds")
         lines.append(f"| `{path.relative_to(ROOT).as_posix()}` | {ins} | `{script}` | {created} | {stat.st_size} | `{digest(path)}` |")
-    DOC.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    # This report is a generated inventory and must be refreshable as new
+    # derived files are added. Write to a sibling temporary, then replace the
+    # prior generated report atomically; source/data outputs are never touched.
+    temp = DOC.with_suffix(".md.tmp")
+    temp.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    temp.replace(DOC)
     print(f"LINEAGE_ROWS={len(files)}; REPORT={DOC.relative_to(ROOT)}")
     return 0
 

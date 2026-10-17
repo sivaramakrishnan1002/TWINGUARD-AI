@@ -121,3 +121,7 @@ Official URL retried once with 180-second timeout and normal SSL on 2026-10-08. 
 
 - To complete Phase 4.1 and 4.4, arrange an approved offline `.whl` for `pyarrow` (or `fastparquet`) and install it into `D:\TIWNGUARD\.venv`, then rerun `pipelines\phase4\time_alignment.py` and `pipelines\phase4\static_feature_stack.py`. The current prompt prohibited network access, so Codex did not fetch or install packages. Also install the pinned test runner `pytest` from an approved offline wheel before rerunning `pytest tests\phase4`.
 - Review the preliminary `data\processed\alignment\layer_registry.json` versus the corrected `layer_registry_complete.json`; decide later whether to archive the preliminary file under a distinct name or leave both. It was preserved to comply with the no-overwrite rule.
+
+### Completion note — 2026-10-17
+
+The user installed the approved local packages into `.venv`; Phase 4 event and static Parquet outputs were generated and all pytest checks passed. The earlier Parquet/pytest installation task above is resolved. The coastline-source and preliminary-registry review items remain open.

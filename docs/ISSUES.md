@@ -1,5 +1,12 @@
 # Phase 2 issues and failed requests
 
+## Phase 4 completion update — 2026-10-17
+
+- The user installed packages in `.venv`. Verified versions with `importlib.metadata`: `pyarrow==26.0.0`, `pytest==9.1.1`, `colorama==0.4.6`, `iniconfig==2.3.1`, `pluggy==1.7.0`, `Pygments==2.21.0`. No package was installed in this turn and no network was used. These exact six pins were appended to `requirements.txt`; existing dependency lines were preserved.
+- The Parquet blocker is resolved. Created the 2015, 2021 and 2023 aligned event tables and the 30 m static CMA cell table. See `TIME_ALIGNMENT.md`, `FEATURE_DICTIONARY.md`, and the current Stage 4 report for row counts and field semantics.
+- The previous lineage command refused to rerun because its generated report already existed. Fixed `pipelines/phase4/build_lineage.py` to atomically refresh only its generated `docs/DATA_LINEAGE.md`, as required for a re-runnable lineage tool; it does not edit source rasters or vector files.
+- pytest ran the full `tests` suite: **6 passed, 0 failed, 0 skipped**. The earlier pytest/pyarrow absence and skipped-test notes above are historical and resolved.
+
 Historical entries are dated 2026-10-08 unless another date is shown. SSL verification was never disabled.
 
 - NRSC original 2023 URL https://www.nrsc.gov.in/sites/default/files/pdf/DMSP/TN_7_12_2023_Michaung_Cyclone1of2.pdf returned HTTP 404; no file saved.

@@ -28,3 +28,8 @@
 ## Next
 
 Use `MANUAL_TODO.md` to resolve the study-boundary, label, data-quality, OSM-routing, threshold and licence decisions. Review `PHASE3_LOG.md`, `PHASE4_LOG.md`, `PHASE3_VALIDATION.json`, and `DATA_QUALITY_REPORT.md` before any later phase. Phase 4 Part 1 is not a flood-routing validation; SAR label processing and subsequent phases remain separate work.
+## Phase 4 completion status — 2026-10-17
+
+Phase 4 checks and plans are recorded. The raw audit matched all 144 logged source files. Spatial inventory, validation blocks, routing origin addendum, and corrected QC sidecars are available. Time alignment and the static cell table are **pending** because the Parquet engine is missing and network access is disallowed. Five built-in tests passed; one Parquet test was skipped. The required pytest runner is absent. No Phase 5/database work or model training was started.
+
+See `STAGE_4_REPORT.md` for the concise result, `ISSUES.md` for exact errors, and `MANUAL_TODO.md` for the remaining user/environment action.

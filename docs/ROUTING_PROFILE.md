@@ -24,3 +24,9 @@ Outputs: `data/processed/routing/vehicle_edges.gpkg`, `routing_metrics.json`, an
 ## Unreachable-origin cause audit
 
 The exact 200-origin node IDs and cause categories are saved in `data/processed/routing/routing_unreachable_audit.json`.
+
+## Largest-SCC and population-weighted origin addendum
+
+A fixed seed (42) selected 200 nodes uniformly from the largest strongly connected component (402,683 of 508,854 graph nodes; 79.14%). A second 200-draw sample weighted node selection by the existing 30 m WorldPop value within the CMA, dividing a cell's value among eligible nodes in that cell; weighted draws are with replacement. The detailed per-origin IDs, route summaries and limitations are in `data/processed/routing/routing_origin_coverage.json`. WorldPop is an alpha model estimate, not census demand, and the route times use assumed speeds without flood closures.
+
+For these two largest-SCC-only samples, all 200 origins in each sample reached both a hospital and a shelter in the graph. Uniform sample hospital travel time median/p90 was 2.95/6.92 minutes; shelter was 6.71/12.06 minutes. Population-weighted sample hospital median/p90 was 2.03/5.90 minutes; shelter was 6.00/10.30 minutes. All 200 in each set were within 30 minutes under the assumed-speed graph. These figures are conditional on starting inside the largest SCC; they do not contradict the earlier all-graph sample, where 41 of 200 origins were unreachable. The population weights sum to 1,687,592.02 across 363,747 positive-population eligible nodes; this is a node-selection weight total over the accessible graph, not total CMA population or evacuation demand.

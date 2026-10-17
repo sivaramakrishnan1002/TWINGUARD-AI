@@ -119,3 +119,5 @@ Official URL retried once with 180-second timeout and normal SSL on 2026-10-08. 
 - On the ASF site, verify availability, required inputs, and free credit limits for HyP3/On Demand before selecting it over local SNAP. No account or network check was performed here.
 - Confirm the actual IMERG source page and licence. Consider obtaining or consulting IMD gridded daily rainfall as an independent comparison; no IMD files were collected in this task.
 
+- To complete Phase 4.1 and 4.4, arrange an approved offline `.whl` for `pyarrow` (or `fastparquet`) and install it into `D:\TIWNGUARD\.venv`, then rerun `pipelines\phase4\time_alignment.py` and `pipelines\phase4\static_feature_stack.py`. The current prompt prohibited network access, so Codex did not fetch or install packages. Also install the pinned test runner `pytest` from an approved offline wheel before rerunning `pytest tests\phase4`.
+- Review the preliminary `data\processed\alignment\layer_registry.json` versus the corrected `layer_registry_complete.json`; decide later whether to archive the preliminary file under a distinct name or leave both. It was preserved to comply with the no-overwrite rule.

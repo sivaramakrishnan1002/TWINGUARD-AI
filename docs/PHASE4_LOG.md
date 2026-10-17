@@ -29,3 +29,15 @@ Run date: 17 October 2026 (Asia/Kolkata). No network, login, download, database 
 ## Output and validation notes
 
 The six original conditioned terrain rasters, three added safety rasters, routing GeoPackage/metrics JSON, and the unreachable-origin audit are new files. Rasterio opened the terrain layers on the common 1,370 × 1,760 grid; the routing GeoPackage contains 455,285 edge records. No existing data/features file was changed. Any future use of route times, raster derivatives, flood passability, or gridded rainfall requires the assumptions and source limitations in the linked reports to be reviewed first.
+## Phase 4 completion addendum — 2026-10-17
+
+- Raw-data audit: all 144 data files (20,338,302,958 bytes) matched the size and SHA-256 values in their logs; zero mismatches and zero files lacking comparable logged hashes. Raw inputs remained read-only.
+- 4.0 IMERG detail and largest-SCC/population-weighted routing addendum were already present; the state check confirmed them. The latter is in `ROUTING_PROFILE.md` and `data/processed/routing/routing_origin_coverage.json`.
+- 4.1 Time-alignment implementation and UTC/IST conventions are documented in `TIME_ALIGNMENT.md`; Parquet outputs are pending because `pyarrow` and `fastparquet` are absent and network installs are forbidden.
+- 4.2 The corrected spatial inventory is `data/processed/alignment/layer_registry_complete.json` (34 raster records, 36 vector layers, 28 derived rasters grid-aligned, zero analysis misalignments, zero metadata errors). The existing `layer_registry.json` first-pass output was preserved and is preliminary; see `ISSUES.md`.
+- 4.3 Read-only QC sidecars were written. `qc_flags.csv`/`qc_summary.json` are preserved first-pass outputs; corrected `qc_flags_v2.csv`/`qc_summary_v2.json` fix wind metadata units and add nonnegative screening for daily rainfall. No values were filled, clipped or deleted.
+- 4.4 Static cell-table script and schema are ready; Parquet output is pending without a Parquet engine. Coast distance is not computed because no coastline source is available.
+- 4.5 `SPLIT_STRATEGY.md` and the 3 km validation-block raster are complete (exact blocks 100 × 100 30 m cells; 164 blocks intersect the CMA).
+- 4.6 Six tests were run using `unittest`: five passed, one Parquet row-count test skipped. `pytest` itself could not run because it is absent; exact error is in `ISSUES.md`.
+- 4.7 `DATA_LINEAGE.md` indexes all 61 current files under `data/processed` and `data/features`, with input/script notes, file modification time, byte size and SHA-256.
+- 4.8 Assumptions are registered in `ASSUMPTIONS.md`.

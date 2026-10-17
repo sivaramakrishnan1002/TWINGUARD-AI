@@ -1,0 +1,33 @@
+# Project assumptions register
+
+Assumptions are explicit modelling choices, not verified observations. Where the originating report does not preserve a value or rationale, that limitation is stated rather than guessed.
+
+| ID | Assumption / convention | Reason or source | Used in |
+|---|---|---|---|
+| A-01 | Common analysis grid: EPSG:32644, 30 m, 1,370 × 1,760, origin (390000, 1471620); CMA membership by pixel centre. | Existing `GRID_DECISION.md`; one consistent feature grid. | Alignment, terrain, feature rasters, spatial blocks. |
+| A-02 | Continuous layers use bilinear resampling; categorical layers nearest; population uses sum-preserving resampling. | Existing grid decision; preserve variable meaning and population total. | Phase 3 grid creation. |
+| A-03 | Event dates represent Asia/Kolkata calendar days; ERA5 request metadata timezone is Asia/Kolkata; NASA POWER and IMERG are UTC. | Read source metadata. | Time alignment and rainfall comparison. |
+| A-04 | IMERG coarse daily means use unweighted 0.1° pixel centres inside the CMA; this approximates partial boundary cells. | Existing IMERG report; area weighting not implemented. | Rainfall comparison. |
+| A-05 | Reservoir date-only observations have unknown time of day; no timestamp is inferred. | Source tables do not provide measurement time. | Time alignment. |
+| A-06 | GLO-30 is a DSM with building/tree returns; no vertical datum conversion is applied because it is provided in EGM2008 heights. | Source metadata and existing terrain report. | Terrain features. |
+| A-07 | Mask CMA elevations below −5 m; treat WorldCover class 80 and mapped OSM water as water, subject to mapping omissions and rasterization width. | Phase 4 terrain-conditioning design. | Cleaned terrain. |
+| A-08 | Priority-Flood fills depressions, with valid-mask boundaries treated as outlets. | Standard conditioning choice; local hydrologic outlet truth is unavailable. | Cleaned terrain. |
+| A-09 | Burn exact-match Adyar, Cooum, Kosasthalaiyar and Buckingham Canal lines 2 m below filled surface. | Explicit project choice; not locally calibrated channel depth. | Cleaned DEM and routing elevation profile. |
+| A-10 | D8 flow direction/accumulation and the existing TWI equation are proxies; sinks/ties and masked-water outlets remain. | Existing algorithm; not calibrated hydrologic modelling. | Terrain derivatives. |
+| A-11 | Default vehicle speeds by road class apply only when `maxspeed` is absent/unparsable; values are listed in `ROUTING_PROFILE.md`. | Explicit broad assumptions where OSM speed is missing. | Vehicle routing graph. |
+| A-12 | `access=no/private` and selected non-vehicle highway types are excluded from the vehicle graph. | Vehicle-routing profile definition. | Graph connectivity and routing. |
+| A-13 | Schools and colleges are a separate candidate-shelter set, not confirmed shelters. | Candidate facilities can support later review but their shelter function is unverified. | Facility routing targets. |
+| A-14 | Flood passability blocks an edge at predicted depth ≥0.3 m. | Assumption to verify against literature; not applied to real flood data. | Routing function only. |
+| A-15 | WorldPop R2025A is an alpha constrained population model. NoData is retained as NoData with a flag; it is not converted to zero. | Product metadata and data-quality report. | Exposure and population-weighted origins. |
+| A-16 | Population-weighted route origins sample graph nodes with replacement, weighted by the cell's WorldPop count divided among eligible nodes in that cell. | Reproducible exploratory coverage sampling, seed 42. | Routing addendum. |
+| A-17 | 200 origin samples are exploratory summaries, not representative travel-time estimates. | Fixed sample size and available graph only. | Routing addendum and validation. |
+| A-18 | 3,000 m validation blocks are exactly 100 × 100 cells on the master grid; partial boundary blocks remain. | Approximate 3 km spatial grouping on 30 m cells. | Spatial validation plan. |
+| A-19 | QC screening intervals are broad flags, not proof of erroneous data; no values are removed, filled or clipped. Wind screen in v2 is 0–200 km/h, an assumption consistent with source metadata units. | QC policy and source metadata. | QC sidecars. |
+| A-20 | UNOSAT baseline-water subtraction is an exploratory label adjustment, not verified ground truth. | Baseline dates do not cover the December peak and subtraction may remove legitimate floodwater. | Flood-label strategy. |
+| A-21 | SAR-derived inundation labels, if later made, are DERIVED and not ground truth; the 24 Nov comparison may share the same Sentinel scene. | Label provenance limitation. | SAR pipeline plan. |
+| A-22 | No coastline feature is computed in this pass because a suitable coastline input is not present among the selected repo layers. | Avoid inventing a coastline source. | Planned static feature table (distance remains pending). |
+| A-23 | Kaggle storage is not reservoir outflow; Kaggle rainfall units remain unverified unless source metadata confirms them. | Available data fields and existing manual tasks. | Reservoir analysis. |
+| A-24 | Parquet delivery requires an installed Parquet engine; no package is downloaded because this task forbids network access. | Environment inspection: pyarrow and fastparquet absent; cache empty. | Temporal alignment and static cell table. |
+| A-25 | Leave-one-event-out and whole-block spatial validation are plans; no model has been trained. | Only three historical events and tiered labels are available. | `SPLIT_STRATEGY.md`. |
+
+The register captures assumptions evidenced in the current project docs and Phase 4 work; it does not make unrecorded historical choices verifiable. Review A-11 through A-19 and A-20 before model evaluation.

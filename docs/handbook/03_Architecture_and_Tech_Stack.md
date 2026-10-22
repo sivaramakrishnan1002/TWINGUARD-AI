@@ -37,7 +37,7 @@ All technologies below are planning choices supplied by the user. Except for the
 | Scientific service | Python, FastAPI | Expose model and geospatial functions to the main application. | Python pipelines exist; no FastAPI model service recorded. [repo: `pipelines/phase3/`, `README.md`] |
 | Modelling | PyTorch, scikit-learn, XGBoost, LightGBM; Transformer/vision encoder; GNN only if justified | Forecasts, fusion, uncertainty and experiments. | No model training. [repo: `docs/PROJECT_STATUS.md`; user] |
 | Geospatial | GeoPandas, Rasterio, GDAL, Shapely, xarray | Read, align, inspect and summarize spatial/weather inputs. | Pinned packages include GeoPandas, Rasterio, Shapely, pyproj; rasterio-bundled GDAL was used. [repo: `requirements.txt`, `docs/PHASE3_LOG.md`] |
-| Storage | PostgreSQL 17 + PostGIS; Docker Compose later | Spatial and application data storage. | Compose file exists with `postgis/postgis:17-3.5-alpine`; no containers started. Local install status is unknown. [repo: `docker-compose.yml`, user] |
+| Storage | PostgreSQL 18.6 + PostGIS 3.6.2 locally; Docker Compose remains stopped | Spatial and application data storage. | Local `twinguard` database is verified; Compose uses `postgis/postgis:18-3.6-alpine`, host port 5433, and a named volume. [repo: `docker-compose.yml`, `docs/STAGE_5_6_REPORT.md`] |
 | Fast messaging/cache | Redis, Apache Kafka | Potential real-time stream and state handling for Track B. | Planned only; include only if a real workload justifies them. [user] |
 | Experiment operations | MLflow, GitHub Actions, Docker | Track experiments and repeatable builds. | Not verified configured. [user; repo: folder tree] |
 | Operations and tests | Prometheus, Grafana, JUnit, Mockito, Pytest, OpenAPI | Monitoring, tests and API documentation. | Not verified configured. [user] |
@@ -46,7 +46,7 @@ The division is deliberate: Java/Spring Boot is the application brain; Python/Fa
 
 ## Database and deployment sequence
 
-The user’s decision is to install PostgreSQL 17 and PostGIS locally first to match the Compose image, then use Docker later. Docker’s default host port can clash with a local PostgreSQL service; choose a different host port for Docker if necessary. The Compose file reads credentials from `.env`; `.env.example` contains placeholders only. Containers have not been started. [user; repo: `docker-compose.yml`, `.env.example`]
+The local PostgreSQL 18.6/PostGIS 3.6.2 installation and `twinguard` database are verified. Compose remains stopped and uses a separate host port (5433 by default) so it will not collide with the local server on 5432. Compose reads secrets from `.env`; `.env.example` contains placeholders and non-secret defaults only. [repo: `docker-compose.yml`, `.env.example`, `docs/STAGE_5_6_REPORT.md`]
 
 ## Decision loop data flow
 

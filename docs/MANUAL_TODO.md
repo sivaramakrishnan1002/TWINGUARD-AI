@@ -1,6 +1,10 @@
 # Manual TODO — remaining manual verification
 
-Complete the items below before treating the study data as final. Preserve raw files. For every later acquisition, record the exact URL, date/time, byte size, SHA-256, licence, and verification in its log and manifest. Phase 3 is complete; Phase 4 Part 1 preprocessing is recorded in `PHASE4_LOG.md`.
+Complete the items below before treating the study data as final. Preserve raw files. For every later acquisition, record the exact URL, date/time, byte size, SHA-256, licence, and verification in its log and manifest. Phase 3 and Phase 4 preprocessing are complete; Stage 5/6 status and the remaining database restore check are recorded in `STAGE_5_6_REPORT.md`.
+
+## Stage 5/6 database acceptance
+- The local schema and GIS layers are loaded in `twinguard`. The configured application role lacks `CREATEDB`, so the full backup restore into a separate temporary database could not be tested. Ask an authorized database administrator to grant temporary `CREATEDB` rights or run the documented restore test with an authorized role; do not use any other database. The schema-only restore smoke test already passed and its temporary schema was dropped.
+- Review the 235 invalid geometries retained from the UNOSAT flood reference layer in `docs/GIS_DATABASE_LAYERS.md` before serving or analyzing those features.
 
 ## 2015 December flood layers (highest priority)
 1. Open the official Bhuvan disaster flood viewer: https://bhuvan-app1.nrsc.gov.in/disaster/usrtasks/flood/flood.php?uname=empty

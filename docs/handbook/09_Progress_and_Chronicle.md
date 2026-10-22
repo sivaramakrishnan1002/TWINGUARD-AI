@@ -2,16 +2,16 @@
 
 ## Status of the 26-phase roadmap
 
-This is the roadmap supplied in the project brief, reconciled to current repository evidence. “Complete” means planning/collection work is recorded, not that a production system exists. Phases 1–2 are reported closed; Phase 3 feature preparation is complete but the labels and data decisions remain exploratory. Phases 4–26 are not started unless noted. [repo: `docs/PROJECT_STATUS.md`, `docs/PHASE2_CLOSURE.md`, `docs/PHASE3_LOG.md`; user]
+This is the roadmap supplied in the project brief, reconciled to current repository evidence. “Complete” means work in the stated scope is recorded, not that a production system exists. Phases 1–2 are reported closed; Phase 3 feature preparation and Phase 4 preprocessing are complete but labels and data decisions remain exploratory. Phases 5–6 are implemented locally with one restore acceptance check pending; later phases are not started unless noted. [repo: `docs/PROJECT_STATUS.md`, `docs/PHASE2_CLOSURE.md`, `docs/PHASE3_LOG.md`, `docs/PHASE4_LOG.md`; user]
 
 | Phase | Scope | Status / evidence |
 |---:|---|---|
 | 1 | Research foundation | Reported complete; detailed evidence in earlier project work is not fully represented in this repo. [repo: `docs/PROJECT_STATUS.md`] |
 | 2 | Study area and data collection | Close-out complete for collected sources, with known gaps and manual tasks. [repo: `docs/PHASE2_CLOSURE.md`] |
 | 3 | Data engineering and features | Part B feature preparation complete; outputs exploratory, label limitations remain. [repo: `docs/PHASE3_LOG.md`] |
-| 4 | Preprocessing and temporal/spatial alignment | Not started. [repo: `docs/PHASE3_PLAN.md`] |
-| 5 | PostgreSQL/PostGIS foundation | Compose configured; containers not started, local database setup status unknown. [repo: `docker-compose.yml`; user] |
-| 6 | GIS layers | Not started as an application/database layer. Existing Phase 3 GIS outputs are research artifacts. [repo: `docs/PHASE3_LOG.md`] |
+| 4 | Preprocessing and temporal/spatial alignment | Complete; event Parquets, static cell table, conditioning and routing products are documented. [repo: `docs/PHASE4_LOG.md`, `docs/STAGE_4_REPORT.md`] |
+| 5 | PostgreSQL/PostGIS foundation | Local PostgreSQL/PostGIS verified; migrations/checksums and Compose configured. Full separate-database restore test pending because app role lacks `CREATEDB`; containers not started. [repo: `docs/STAGE_5_6_REPORT.md`] |
+| 6 | GIS layers | Core vector layers, views and MVT functions loaded locally; source flood geometry has 235 invalid features to review. [repo: `docs/GIS_DATABASE_LAYERS.md`] |
 | 7 | Digital Twin foundation | Not started; design only. [user] |
 | 8 | Historical flood dataset | Partial; no final, event-consistent label set. [repo: `docs/PHASE3_LOG.md`] |
 | 9 | Baseline ML | Not started; no model trained. [repo: `docs/PROJECT_STATUS.md`] |

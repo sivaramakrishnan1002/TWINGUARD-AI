@@ -245,7 +245,7 @@ All technologies below are planning choices supplied by the user. Except for the
 | Scientific service | Python, FastAPI | Expose model and geospatial functions to the main application. | Python pipelines exist; no FastAPI model service recorded. [repo: `pipelines/phase3/`, `README.md`] |
 | Modelling | PyTorch, scikit-learn, XGBoost, LightGBM; Transformer/vision encoder; GNN only if justified | Forecasts, fusion, uncertainty and experiments. | No model training. [repo: `docs/PROJECT_STATUS.md`; user] |
 | Geospatial | GeoPandas, Rasterio, GDAL, Shapely, xarray | Read, align, inspect and summarize spatial/weather inputs. | Pinned packages include GeoPandas, Rasterio, Shapely, pyproj; rasterio-bundled GDAL was used. [repo: `requirements.txt`, `docs/PHASE3_LOG.md`] |
-| Storage | PostgreSQL 17 + PostGIS; Docker Compose later | Spatial and application data storage. | Compose file exists with `postgis/postgis:17-3.5-alpine`; no containers started. Local install status is unknown. [repo: `docker-compose.yml`, user] |
+| Storage | PostgreSQL 18.6 + PostGIS 3.6.2 locally; Docker Compose remains stopped | Spatial and application data storage. | Local `twinguard` database is verified; Compose uses `postgis/postgis:18-3.6-alpine`, host port 5433, and a named volume. [repo: `docker-compose.yml`, `docs/STAGE_5_6_REPORT.md`] |
 | Fast messaging/cache | Redis, Apache Kafka | Potential real-time stream and state handling for Track B. | Planned only; include only if a real workload justifies them. [user] |
 | Experiment operations | MLflow, GitHub Actions, Docker | Track experiments and repeatable builds. | Not verified configured. [user; repo: folder tree] |
 | Operations and tests | Prometheus, Grafana, JUnit, Mockito, Pytest, OpenAPI | Monitoring, tests and API documentation. | Not verified configured. [user] |
@@ -254,7 +254,7 @@ The division is deliberate: Java/Spring Boot is the application brain; Python/Fa
 
 ## Database and deployment sequence
 
-The user’s decision is to install PostgreSQL 17 and PostGIS locally first to match the Compose image, then use Docker later. Docker’s default host port can clash with a local PostgreSQL service; choose a different host port for Docker if necessary. The Compose file reads credentials from `.env`; `.env.example` contains placeholders only. Containers have not been started. [user; repo: `docker-compose.yml`, `.env.example`]
+The local PostgreSQL 18.6/PostGIS 3.6.2 installation and `twinguard` database are verified. Compose remains stopped and uses a separate host port (5433 by default) so it will not collide with the local server on 5432. Compose reads secrets from `.env`; `.env.example` contains placeholders and non-secret defaults only. [repo: `docker-compose.yml`, `.env.example`, `docs/STAGE_5_6_REPORT.md`]
 
 ## Decision loop data flow
 
@@ -689,8 +689,8 @@ This is the roadmap supplied in the project brief, reconciled to current reposit
 | 2 | Study area and data collection | Close-out complete for collected sources, with known gaps and manual tasks. [repo: `docs/PHASE2_CLOSURE.md`] |
 | 3 | Data engineering and features | Part B feature preparation complete; outputs exploratory, label limitations remain. [repo: `docs/PHASE3_LOG.md`] |
 | 4 | Preprocessing and temporal/spatial alignment | Not started. [repo: `docs/PHASE3_PLAN.md`] |
-| 5 | PostgreSQL/PostGIS foundation | Compose configured; containers not started, local database setup status unknown. [repo: `docker-compose.yml`; user] |
-| 6 | GIS layers | Not started as an application/database layer. Existing Phase 3 GIS outputs are research artifacts. [repo: `docs/PHASE3_LOG.md`] |
+| 5 | PostgreSQL/PostGIS foundation | Local PostgreSQL/PostGIS verified; migrations/checksums and Compose configured. Full separate-database restore test pending because app role lacks `CREATEDB`; containers not started. [repo: `docs/STAGE_5_6_REPORT.md`] |
+| 6 | GIS layers | Core vector layers, views and MVT functions loaded locally; source flood geometry has 235 invalid features to review. [repo: `docs/GIS_DATABASE_LAYERS.md`] |
 | 7 | Digital Twin foundation | Not started; design only. [user] |
 | 8 | Historical flood dataset | Partial; no final, event-consistent label set. [repo: `docs/PHASE3_LOG.md`] |
 | 9 | Baseline ML | Not started; no model trained. [repo: `docs/PROJECT_STATUS.md`] |
@@ -740,8 +740,8 @@ The next step is **not automatically Phase 4**. First resolve open decisions and
 3. Choose a defensible flood-label plan: seek December 2015 GIS labels; assess PDF digitising; decide how validation scope changes if they remain unavailable. Keep all label types distinct.
 4. Reconcile OSM source/extract counts; validate directed road connectivity and facility-to-network mapping before routing.
 5. Verify NASA POWER and Kaggle rainfall units, WorldPop/census comparability, reservoir historical capacities, Sentinel reuse terms, and licenses/attribution.
-6. Confirm PostgreSQL 17/PostGIS local setup and port plan; do not start Docker until local port conflict is understood.
-7. Approve a separate Phase 4 work plan with inputs, outputs, backups, validation and no-overwrite rules.
+6. Complete the Stage 5 backup restore into a separate temporary database using an authorized role with `CREATEDB`; local PostgreSQL 18.6/PostGIS 3.6.2, schema and GIS layers are already verified. Docker remains stopped.
+7. Confirm boundary and label strategy, review invalid flood geometries and source licences before Stage 7/API work or model training.
 
 These tasks and dependencies are recorded in `docs/MANUAL_TODO.md` and the Part B handoff. [repo]
 
@@ -817,8 +817,8 @@ Names, institution, guide/supervisor, deadlines and role assignments are **[TO B
 
 - Project root is `D:\TIWNGUARD`, branch `main`. [repo: current Git state]
 - Python dependencies are pinned in `requirements.txt`. The Phase 3 report says to use `.venv` and records no global package installation. [repo: `requirements.txt`, `docs/PHASE3_LOG.md`]
-- `docker-compose.yml` uses `postgis/postgis:17-3.5-alpine`, a named data volume and a health check. It reads credentials from `.env`; `.env.example` contains placeholders. Containers were not started. [repo: Compose files; user]
-- The chosen order is local PostgreSQL 17/PostGIS first, Docker later. Confirm local setup and port 5432 conflict status with the teammate who installed it. [user]
+- `docker-compose.yml` uses verified `postgis/postgis:18-3.6-alpine`, a named data volume at PostgreSQL 18's `/var/lib/postgresql` path, and a health check. It reads credentials from `.env`; `.env.example` contains no real secrets. Containers were not started. [repo: Compose files]
+- Local PostgreSQL 18.6/PostGIS 3.6.2 and the `twinguard` database are verified. Local scripts use port 5432; Compose defaults to host port 5433. A separate-database restore test remains pending the app role's `CREATEDB` privilege. [repo: `docs/STAGE_5_6_REPORT.md`]
 - Never paste passwords, access tokens or real `.env` values into chat, Git or this handbook. Add `.env` locally and keep it untracked. [repo: `.gitignore`; user]
 
 ## Folder map

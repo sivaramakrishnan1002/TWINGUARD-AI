@@ -2,15 +2,15 @@
 
 ## Immediate order
 
-The next step is **not automatically Phase 4**. First resolve open decisions and database readiness; then start only the next approved phase. [repo: `docs/MANUAL_TODO.md`; user]
+The next step is **not automatically Stage 7**. First resolve open data decisions and the remaining database restore acceptance check; then start only the next approved phase. [repo: `docs/MANUAL_TODO.md`; user]
 
 1. Confirm older versus expanded CMA boundary and record final choice.
 2. Review GLO-30 coastal elevations and urban drainage artefacts; choose a documented hydrology-conditioning approach before interpreting flow accumulation/TWI.
 3. Choose a defensible flood-label plan: seek December 2015 GIS labels; assess PDF digitising; decide how validation scope changes if they remain unavailable. Keep all label types distinct.
 4. Reconcile OSM source/extract counts; validate directed road connectivity and facility-to-network mapping before routing.
 5. Verify NASA POWER and Kaggle rainfall units, WorldPop/census comparability, reservoir historical capacities, Sentinel reuse terms, and licenses/attribution.
-6. Confirm PostgreSQL 17/PostGIS local setup and port plan; do not start Docker until local port conflict is understood.
-7. Approve a separate Phase 4 work plan with inputs, outputs, backups, validation and no-overwrite rules.
+6. Complete the Stage 5 backup restore into a separate temporary database using an authorized role with `CREATEDB`; local PostgreSQL 18.6/PostGIS 3.6.2, schema and GIS layers are already verified. Docker remains stopped.
+7. Confirm boundary and label strategy, review invalid flood geometries and source licences before Stage 7/API work or model training.
 
 These tasks and dependencies are recorded in `docs/MANUAL_TODO.md` and the Part B handoff. [repo]
 

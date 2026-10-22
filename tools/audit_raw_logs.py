@@ -18,21 +18,30 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def parse_log_text(text: str, log: Path) -> list[dict]:
+    entries = []
+    chunks = re.split(r"(?=File(?: name)?:\s*)", text)
+    for chunk in chunks:
+        m = re.search(r"^File(?: name)?:\s*(.+?)\s*$", chunk, re.M)
+        if not m:
+            continue
+        name = m.group(1).strip()
+        sm = re.search(
+            r"^(?:File size \(bytes\)|Size \(bytes\)|Size bytes):\s*(\d+)",
+            chunk, re.M | re.I,
+        )
+        hm = re.search(r"^SHA-256:\s*(\S+)", chunk, re.M | re.I)
+        if sm or hm:
+            entries.append({"log": log, "name": name, "size": int(sm.group(1)) if sm else None,
+                            "sha": hm.group(1).lower() if hm else ""})
+    return entries
+
+
 def log_entries() -> list[dict]:
     entries = []
     for log in RAW.rglob("DOWNLOAD_LOG.txt"):
         text = log.read_text(encoding="utf-8", errors="replace")
-        chunks = re.split(r"(?=File name:\s*)", text)
-        for chunk in chunks:
-            m = re.search(r"^File name:\s*(.+?)\s*$", chunk, re.M)
-            if not m:
-                continue
-            name = m.group(1).strip()
-            sm = re.search(r"^(?:File size|Size) \(bytes\):\s*(\d+)", chunk, re.M | re.I)
-            hm = re.search(r"^SHA-256:\s*(\S+)", chunk, re.M | re.I)
-            if sm or hm:
-                entries.append({"log": log, "name": name, "size": int(sm.group(1)) if sm else None,
-                                "sha": hm.group(1).lower() if hm else ""})
+        entries.extend(parse_log_text(text, log))
     return entries
 
 

@@ -1,11 +1,11 @@
 # TwinGuard AI — project status
 
-**Updated 17 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Phase 3 feature preparation is complete. Phase 4 Part 1 preprocessing has started and its terrain, routing, SAR-plan and IMERG tasks are documented in `PHASE4_LOG.md`. No database work or model training was done.
+**Updated 22 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Phase 3 feature preparation and Phase 4 preprocessing are complete. Stage 5 database foundation and Stage 6 GIS loading are implemented in the local `twinguard` database; the separate temporary-database restore test remains blocked by the application role's lack of `CREATEDB`. No containers or models were started.
 
 ## Done
 
-- Project setup and PostgreSQL/PostGIS Compose files are present. Containers were not started.
-- The raw-data folder has 58 data files and 18 download logs. A read-only size and SHA-256 audit matched all 58 files with zero mismatches. Raw files were not edited.
+- Project setup and PostgreSQL/PostGIS Compose files are present. Local PostgreSQL 18.6/PostGIS 3.6.2 is verified; containers were not started.
+- The raw-data folder has 144 data files. The corrected read-only size/SHA-256 audit matched all 144 files with zero mismatches and zero files lacking comparable hashes. Raw files were not edited.
 - There are 13 verified ASF Sentinel-1 ZIPs. All passed ZIP checks and metadata/name matching. This includes a 6 Dec 2015 scene within the flood window and two 16 Nov 2021 post-peak scenes. Sentinel files remain raw and unprocessed.
 - Phase 3 created a shared 30 m EPSG:32644 grid, terrain and land-cover features, WorldPop aggregation, rainfall and reservoir tables, OSM road/facility/building/waterway layers, and exploratory flood-label inspection layers.
 - Raster validation checked 18 outputs. All are aligned to the common grid and have valid values. Five old exploratory label rasters are tiled GeoTIFFs rather than COGs; they were preserved and are listed as warnings.
@@ -15,6 +15,8 @@
 - Phase 4 Part 1 generated separate conditioned terrain rasters and a vehicle routing profile without changing the Phase 3 terrain layers. Masked 255 CMA cells below −5 m; the CMA water-mask footprint is estimated at 129.12 km². Added edge-safe slope/TWI and valid-only fill-depth copies under new names after identifying mask-edge derivative risk.
 - The routing profile has 455,285 included edges; 200 seeded sample origins yielded 159 reachable hospital routes, with median 3.16 minutes and 79.5% reaching a hospital within 30 minutes under assumed speeds. This is not an evacuation safety result.
 - The locally present 86 GPM IMERG daily NetCDF files cover all three expected date windows (45/20/21, no missing days). Their per-file hashes and filesystem dates are in the raw-folder log; licence remains to confirm. See `RAIN_SOURCES_COMPARISON.md` for UTC-aligned comparisons.
+- Stage 5 applied three checksum-tracked migrations in the local `twinguard` database. Stage 6 loaded the boundary, 455,285 vehicle edges, 15,413 facilities, 759 waterways, and 10,419 selected UNOSAT reference features; database views and MVT functions passed smoke checks. The source flood layer contains 235 invalid geometries, preserved without repair.
+- Stage 5/6 pytest suite passes (10 tests). A custom-format backup archive and schema-only temporary-schema restore passed. A full restore into a separate temporary database still needs a role with `CREATEDB`.
 
 ## Manual decisions and limitations
 
@@ -27,13 +29,4 @@
 
 ## Next
 
-Use `MANUAL_TODO.md` to resolve the study-boundary, label, data-quality, OSM-routing, threshold and licence decisions. Review `PHASE3_LOG.md`, `PHASE4_LOG.md`, `PHASE3_VALIDATION.json`, and `DATA_QUALITY_REPORT.md` before any later phase. Phase 4 Part 1 is not a flood-routing validation; SAR label processing and subsequent phases remain separate work.
-## Phase 4 completion status — 2026-10-17
-
-Phase 4 checks and plans are recorded. The raw audit matched all 144 logged source files. Spatial inventory, validation blocks, routing origin addendum, and corrected QC sidecars are available. Time alignment and the static cell table are **pending** because the Parquet engine is missing and network access is disallowed. Five built-in tests passed; one Parquet test was skipped. The required pytest runner is absent. No Phase 5/database work or model training was started.
-
-See `STAGE_4_REPORT.md` for the concise result, `ISSUES.md` for exact errors, and `MANUAL_TODO.md` for the remaining user/environment action.
-
-### Completion update — 2026-10-17
-
-The user installed `pyarrow==26.0.0` and `pytest==9.1.1` in `.venv`. Phase 4.1 event Parquets and the Phase 4.4 static CMA cell table were created. Pytest reports 6 passed, 0 failed, 0 skipped. Lineage was rerun and includes the new files. The raw size/hash audit still passes. The previous incomplete Stage 4 status above is superseded by the completion update in `STAGE_4_REPORT.md`. Stage 5 remains unstarted.
+Use `MANUAL_TODO.md` to resolve the study-boundary, label, data-quality, OSM-routing, threshold and licence decisions, and arrange an authorized temporary-database restore check. Review `PHASE3_LOG.md`, `PHASE4_LOG.md`, `STAGE_4_REPORT.md`, `STAGE_5_6_REPORT.md`, `PHASE3_VALIDATION.json`, and `DATA_QUALITY_REPORT.md` before later work. SAR label processing, Stage 7 and model training have not started.

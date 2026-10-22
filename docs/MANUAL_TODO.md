@@ -1,10 +1,10 @@
 # Manual TODO — remaining manual verification
 
-Complete the items below before treating the study data as final. Preserve raw files. For every later acquisition, record the exact URL, date/time, byte size, SHA-256, licence, and verification in its log and manifest. Phase 3 and Phase 4 preprocessing are complete; Stage 5/6 status and the remaining database restore check are recorded in `STAGE_5_6_REPORT.md`.
+Complete the items below before treating the study data as final. Preserve raw files. For every later acquisition, record the exact URL, date/time, byte size, SHA-256, licence, and verification in its log and manifest. Phase 3, Phase 4 preprocessing, and Stages 5–6 are complete; the full temporary-database restore acceptance test passed (see `STAGE_5_6_REPORT.md`).
 
 ## Stage 5/6 database acceptance
-- The local schema and GIS layers are loaded in `twinguard`. The configured application role lacks `CREATEDB`, so the full backup restore into a separate temporary database could not be tested. Ask an authorized database administrator to grant temporary `CREATEDB` rights or run the documented restore test with an authorized role; do not use any other database. The schema-only restore smoke test already passed and its temporary schema was dropped.
-- Review the 235 invalid geometries retained from the UNOSAT flood reference layer in `docs/GIS_DATABASE_LAYERS.md` before serving or analyzing those features.
+- **Complete:** the full backup was restored into a separate temporary database, all seven table counts matched, and that database was dropped. The temporary `CREATEDB` grant was revoked after the test. Do not repeat the grant unless a new test explicitly requires it.
+- **Diagnostic complete; handling still needs a decision:** 235 invalid UNOSAT geometries were inspected by validity reason and are documented in `docs/GIS_DATABASE_LAYERS.md`. They were not repaired. Decide on a derived-copy repair or exclusion policy before analyses that require valid polygons; keep source layers unchanged.
 
 ## 2015 December flood layers (highest priority)
 1. Open the official Bhuvan disaster flood viewer: https://bhuvan-app1.nrsc.gov.in/disaster/usrtasks/flood/flood.php?uname=empty
@@ -33,7 +33,7 @@ The Geofabrik Southern Zone PBF is downloaded and inventoried. See `docs/OSM_COU
 ## Sentinel products
 Thirteen ASF Sentinel-1 GRD-HD ZIPs were manually acquired and verified read-only on 2026-10-14. Keep their original names in `data/raw/satellite/senitnel1/2015`, `2021`, and `2023`; do not rename the existing misspelled folder or extract the archives. The ASF-specific licence and terms still need confirmation. Verification results and hashes are in `docs/SENTINEL_VERIFICATION.md` and the folder's `DOWNLOAD_LOG.txt`.
 
-The saved catalogue contains a post-peak 16 Nov 2021 option (two slices) but no post-peak 2015 or 2023 option. Decide whether to acquire that optional pair after checking its timing and storage cost. No Sentinel processing has been done; use the future processing plan only after Phase 3 approval.
+**Acquisition status:** the 13 ASF ZIPs are already downloaded and verified. This set includes 6 Dec 2015 and 16 Nov 2021 scenes; they remain unprocessed. No more acquisition is required by the current plan unless a later analysis identifies a specific gap. Use the processing plan only after approval.
 
 ## Reservoir measurements
 The TN Agriculture Reporting System requires officer login and OTP; obtain authorized access directly. Public search found the already-held CWC Chembarambakkam/Poondi advisory but no public historical time-series download. Check CWC's public reservoir bulletins and India-WRIS public pages; do not authenticate or submit forms here. Export current level/storage/inflow/outflow only if clearly public for Chembarambakkam, Poondi, Puzhal/Red Hills, Cholavaram and other basin reservoirs. Historical event windows remain missing.
@@ -108,13 +108,13 @@ Official URL retried once with 180-second timeout and normal SSL on 2026-10-08. 
 - Verify the current published reservoir capacities against historical capacities for the 2004–2020 periods. The present capacity percentages are contextual only.
 - Verify Kaggle rainfall column units/source metadata; do not compare its rainfall field directly until units are established.
 - Compare WorldPop totals with census figures for Chennai district and the CMA; WorldPop is an alpha constrained model estimate and should be used for relative exposure until explained.
-- Recheck NASA POWER `PRECTOTCORR` units and metadata from the official product documentation before reporting the ERA5 comparison as physical bias.
+- NASA POWER's local response metadata identifies `PRECTOTCORR` as `mm/day`; retain the caution that these gridded/model products are not gauges. Kaggle rainfall units remain undocumented and must not be assumed.
 - Obtain/confirm authoritative peak/event windows for Sentinel comparison. Two 16 Nov 2021 ZIPs are now downloaded and verified, and a 6 Dec 2015 ZIP is available within the 1–8 Dec event window; all Sentinel products remain unprocessed. Confirm ASF/Copernicus terms before any redistribution.
 - Decide whether to digitize the 2021/2023 NRSC/NDEM PDFs or narrow validation to observed dates/places. For the Dec 1–8 2015 peak, continue searching only official channels for observed GIS layers; do not use the November vectors as a December substitute.
 - Review OpenCity metadata and keep incident points separate from modeled return-period/hazard polygons.
 - Verify any Sentinel-1 preprocessing environment and ASF redistribution terms before starting a separately approved Sentinel task.
-- Install or otherwise approve a Parquet engine if downstream workflows require Parquet. Current reproducible weather and reservoir outputs are CSV because `pyarrow`/`fastparquet` are absent.
-- Audit OSM extraction completeness, directed connectivity and largest-component shares; review nearest-road snapping distances and named waterways. OSM absence is not proof of real-world absence; comply with ODbL attribution/share-alike obligations.
+- **Resolved:** `pyarrow` is installed and the required Stage 4 Parquet outputs exist. CSV weather and reservoir tables remain the documented source/feature formats where applicable; this does not indicate a missing Parquet engine.
+- **Completed in reports:** OSM graph component/connectivity, facility snapping, named-waterway matching and lengths are in `ROAD_GRAPH_CHECK.md`, `ROUTING_PROFILE.md`, `OSM_COUNTS.md`, and `OSM_WATERWAYS.md`. OSM absence is not proof of real-world absence; comply with ODbL attribution/share-alike obligations.
 
 ## Phase 4 Part 1 decisions — 2026-10-17
 
@@ -123,7 +123,7 @@ Official URL retried once with 180-second timeout and normal SSL on 2026-10-08. 
 - On the ASF site, verify availability, required inputs, and free credit limits for HyP3/On Demand before selecting it over local SNAP. No account or network check was performed here.
 - Confirm the actual IMERG source page and licence. Consider obtaining or consulting IMD gridded daily rainfall as an independent comparison; no IMD files were collected in this task.
 
-- To complete Phase 4.1 and 4.4, arrange an approved offline `.whl` for `pyarrow` (or `fastparquet`) and install it into `D:\TIWNGUARD\.venv`, then rerun `pipelines\phase4\time_alignment.py` and `pipelines\phase4\static_feature_stack.py`. The current prompt prohibited network access, so Codex did not fetch or install packages. Also install the pinned test runner `pytest` from an approved offline wheel before rerunning `pytest tests\phase4`.
+- **Resolved:** the earlier Phase 4.1/4.4 package request is historical. `pyarrow` and `pytest` were installed by the user; the three aligned event Parquet files and static cell table were generated, tests passed, and lineage/raw audits were refreshed. See `STAGE_4_REPORT.md`.
 - Review the preliminary `data\processed\alignment\layer_registry.json` versus the corrected `layer_registry_complete.json`; decide later whether to archive the preliminary file under a distinct name or leave both. It was preserved to comply with the no-overwrite rule.
 
 ### Completion note — 2026-10-17

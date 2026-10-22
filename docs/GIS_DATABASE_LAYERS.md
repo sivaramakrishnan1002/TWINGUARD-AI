@@ -12,6 +12,20 @@ The loader reads source files only; it does not rewrite them. It uses the existi
 
 The original flood geometries include **235 invalid geometries**. They were retained without automatic repair so their imported geometry remains faithful to the vector source. The other four tables have zero invalid geometries. The vector-tile functions succeeded for a Chennai z=12 test tile even with these source geometries; a map client should still treat the invalid-feature count as a data-quality warning.
 
+### Read-only invalid-geometry reason review — 2026-10-22
+
+The reasons were grouped from PostGIS `ST_IsValidReason` on the imported features; no geometry was altered:
+
+| Source layer | Count | Reported reason |
+|---|---:|---|
+| `LS8_20151014_PreFlood` | 50 | Ring Self-intersection |
+| `S1_20150901_PreFlood` | 31 | Ring Self-intersection |
+| `S1_20151112_Flood` | 34 | Ring Self-intersection |
+| `S1_20151124_Flood` | 119 | Ring Self-intersection |
+| `S1_20151124_Flood` | 1 | Interior is disconnected |
+
+Thus 234 invalid features report ring self-intersections and one reports a disconnected interior. These reasons identify geometry validity problems, not their cause or the correct scientific repair. Preserve the raw source; if valid geometries are required later, test a documented repair or exclusion on a new derived copy and compare area/feature counts.
+
 ## Views and vector tiles
 
 The migration provides `v_study_area`, `v_roads`, `v_facilities`, `v_waterways` and `v_flood_references`. The corresponding callable functions are `mvt_study_area(z,x,y)`, `mvt_roads(z,x,y)`, `mvt_facilities(z,x,y)`, `mvt_waterways(z,x,y)` and `mvt_flood_references(z,x,y)`. Each returns an MVT payload as `bytea` in Web Mercator. A smoke check at z=12, x=2960, y=1898 returned respectively 173, 2,175,224, 146,030, 5,162 and 20,668 bytes.

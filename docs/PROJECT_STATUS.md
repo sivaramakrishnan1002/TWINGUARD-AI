@@ -1,6 +1,6 @@
 # TwinGuard AI — project status
 
-**Updated 22 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Phase 3 feature preparation and Phase 4 preprocessing are complete. Stage 5 database foundation and Stage 6 GIS loading are implemented in the local `twinguard` database; the separate temporary-database restore test remains blocked by the application role's lack of `CREATEDB`. No containers or models were started.
+**Updated 22 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Phase 3 feature preparation, Phase 4 preprocessing, and Stages 5–6 are complete. The full backup restore test into a separate temporary database passed; its table counts matched and the temporary database was dropped. The temporary `CREATEDB` grant has since been revoked. No containers or models were started.
 
 ## Done
 
@@ -16,17 +16,17 @@
 - The routing profile has 455,285 included edges; 200 seeded sample origins yielded 159 reachable hospital routes, with median 3.16 minutes and 79.5% reaching a hospital within 30 minutes under assumed speeds. This is not an evacuation safety result.
 - The locally present 86 GPM IMERG daily NetCDF files cover all three expected date windows (45/20/21, no missing days). Their per-file hashes and filesystem dates are in the raw-folder log; licence remains to confirm. See `RAIN_SOURCES_COMPARISON.md` for UTC-aligned comparisons.
 - Stage 5 applied three checksum-tracked migrations in the local `twinguard` database. Stage 6 loaded the boundary, 455,285 vehicle edges, 15,413 facilities, 759 waterways, and 10,419 selected UNOSAT reference features; database views and MVT functions passed smoke checks. The source flood layer contains 235 invalid geometries, preserved without repair.
-- Stage 5/6 pytest suite passes (10 tests). A custom-format backup archive and schema-only temporary-schema restore passed. A full restore into a separate temporary database still needs a role with `CREATEDB`.
+- Stage 5/6 pytest suite passes (10 tests). The custom-format backup was restored into a separate temporary database; all seven table counts matched, and the temporary database was dropped. The user confirmed the temporary `CREATEDB` permission was revoked afterward. See `STAGE_5_6_REPORT.md`.
 
 ## Manual decisions and limitations
 
 - Confirm whether the older CMA or expanded CMA is the final study boundary.
 - The collected UNOSAT vectors are dated 1 Sep, 14 Oct, 12 Nov, and 24 Nov 2015; they do not provide a vector label for the 1–8 Dec peak. The 6 Dec Sentinel scene is unprocessed. The 2021 and 2023 flood maps are PDFs and still need manual digitising.
 - Manually review the −64.51 m DEM artifact and decide how to handle it before interpreting local hydrologic derivatives. Graph connectivity is now quantified, but routing still needs flood depth, access, closure and safety constraints.
-- Check WorldPop totals against census data, verify weather units, and confirm historical reservoir capacities. Storage changes are not reservoir releases; the available CAG summary gives only limited Chembarambakkam release findings.
+- Compare WorldPop totals with census data and confirm historical reservoir capacities. NASA POWER's local response metadata declares `PRECTOTCORR` in mm/day; Kaggle rainfall units remain undocumented. Storage changes are not reservoir releases; the available CAG summary gives only limited Chembarambakkam release findings.
 - Confirm Sentinel reuse terms and required attribution before redistribution. Do not treat the illustrative reservoir screen as a validated warning model.
 - Confirm the 2 m channel burn depth, default road speeds, and 0.3 m flood-passability threshold before using the new terrain/routing products for decisions. Check the 2021/2023 rainfall discrepancies and IMERG licence with source documentation.
 
 ## Next
 
-Use `MANUAL_TODO.md` to resolve the study-boundary, label, data-quality, OSM-routing, threshold and licence decisions, and arrange an authorized temporary-database restore check. Review `PHASE3_LOG.md`, `PHASE4_LOG.md`, `STAGE_4_REPORT.md`, `STAGE_5_6_REPORT.md`, `PHASE3_VALIDATION.json`, and `DATA_QUALITY_REPORT.md` before later work. SAR label processing, Stage 7 and model training have not started.
+Use `MANUAL_TODO.md` to resolve the study-boundary, label, data-quality, routing-threshold and licence decisions. The database restore acceptance test is complete. Review `PHASE3_LOG.md`, `PHASE4_LOG.md`, `STAGE_4_REPORT.md`, `STAGE_5_6_REPORT.md`, `PHASE3_VALIDATION.json`, and `DATA_QUALITY_REPORT.md` before later work. SAR label processing, Stage 7 and model training have not started.

@@ -43,6 +43,6 @@ Observed wall-clock timings for the completed final checks (rounded to the neare
 
 The first full GIS import ran in two successful insert batches; the exact end-to-end duration was not measured. The 19.5 s figure above is the later checksum/idempotence recheck, not the initial import duration.
 
-## Remaining acceptance item
+## Closure
 
-The database backup and restore acceptance test is complete. The configured role's temporary `CREATEDB` permission enabled the test; it should be revoked now that the temporary database has been removed. The optional viewer was not built. Stage 7 and later work remain unstarted.
+The database backup and restore acceptance test is complete. The configured role's temporary `CREATEDB` permission enabled the test and the user confirmed it was revoked after the temporary database was removed. The optional viewer was not built. Stage 7 and later work remain unstarted.

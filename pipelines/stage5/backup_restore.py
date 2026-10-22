@@ -62,37 +62,78 @@ def run_backup_restore_test() -> dict[str, str | int | bool]:
         report["archive_toc_entries"] = sum(1 for line in listing.stdout.splitlines() if line.strip() and not line.startswith(";") )
         report["archive_verified"] = True
 
-        conn = psycopg.connect(host=host, port=int(port), dbname=db, user=user,
-                               password=values["POSTGRES_PASSWORD"], connect_timeout=5,
-                               autocommit=True)
         try:
+            control = psycopg.connect(host=host, port=int(port), dbname="postgres",
+                                      user=user, password=values["POSTGRES_PASSWORD"],
+                                      connect_timeout=5, autocommit=True)
             try:
-                conn.execute(f'CREATE DATABASE "{temp_db}" TEMPLATE template0')
+                # Clone the configured DB so the temporary DB has the same PostGIS
+                # extension installed. The project schema is removed before restore.
+                control.execute(f'CREATE DATABASE "{temp_db}" TEMPLATE "{db}"')
                 createdb = True
                 report["temporary_database_created"] = True
-            except psycopg.errors.InsufficientPrivilege as exc:
-                report["temporary_database_created"] = False
-                report["temporary_database_error"] = type(exc).__name__ + ": " + str(exc).splitlines()[0]
-            if createdb:
-                restore = _run([find_tool("pg_restore"), "--host", host, "--port", port,
-                                "--username", user, "--dbname", temp_db, "--no-owner",
-                                "--no-privileges", str(archive)], child_env)
+            finally:
+                control.close()
+        except Exception as exc:
+            report["temporary_database_created"] = False
+            report["temporary_database_error"] = type(exc).__name__ + ": " + str(exc).splitlines()[0]
+        if createdb:
+            try:
+                temp_conn = psycopg.connect(
+                    host=host, port=int(port), dbname=temp_db, user=user,
+                    password=values["POSTGRES_PASSWORD"], connect_timeout=5,
+                    autocommit=True,
+                )
+                try:
+                    temp_conn.execute('DROP SCHEMA IF EXISTS "twinguard" CASCADE')
+                finally:
+                    temp_conn.close()
+                restore = _run([find_tool("pg_restore"), "--exit-on-error", "--host", host,
+                                "--port", port, "--username", user, "--dbname", temp_db,
+                                "--no-owner", "--no-privileges", str(archive)], child_env)
                 if restore.returncode:
                     err = (restore.stderr or restore.stdout).strip().replace(values["POSTGRES_PASSWORD"], "[REDACTED]")
-                    report["database_restore_error"] = err
+                    report["database_restore_error"] = err.splitlines()[0] if err else "pg_restore returned a nonzero exit code"
                 else:
                     report["database_restore_succeeded"] = True
-        finally:
-            conn.close()
-        if createdb:
-            drop_conn = psycopg.connect(host=host, port=int(port), dbname=db, user=user,
-                                        password=values["POSTGRES_PASSWORD"], autocommit=True)
-            try:
-                drop_conn.execute(f'DROP DATABASE IF EXISTS "{temp_db}" WITH (FORCE)')
+                    tables = (
+                        "study_area", "road_edges", "facilities", "waterways",
+                        "flood_references", "dataset_catalog", "schema_migrations",
+                    )
+                    source_conn = psycopg.connect(
+                        host=host, port=int(port), dbname=db, user=user,
+                        password=values["POSTGRES_PASSWORD"], connect_timeout=5,
+                    )
+                    restored_conn = psycopg.connect(
+                        host=host, port=int(port), dbname=temp_db, user=user,
+                        password=values["POSTGRES_PASSWORD"], connect_timeout=5,
+                    )
+                    try:
+                        counts = {}
+                        for table in tables:
+                            source_count = source_conn.execute(
+                                f'SELECT count(*) FROM twinguard."{table}"'
+                            ).fetchone()[0]
+                            restored_count = restored_conn.execute(
+                                f'SELECT count(*) FROM twinguard."{table}"'
+                            ).fetchone()[0]
+                            counts[table] = {"source": source_count, "restored": restored_count}
+                        report["restored_table_counts"] = counts
+                        report["restore_row_counts_verified"] = all(
+                            pair["source"] == pair["restored"] for pair in counts.values()
+                        )
+                    finally:
+                        restored_conn.close()
+                        source_conn.close()
             finally:
-                drop_conn.close()
-            report["temporary_database_dropped"] = True
-        else:
+                drop_conn = psycopg.connect(host=host, port=int(port), dbname="postgres", user=user,
+                                            password=values["POSTGRES_PASSWORD"], autocommit=True)
+                try:
+                    drop_conn.execute(f'DROP DATABASE IF EXISTS "{temp_db}" WITH (FORCE)')
+                finally:
+                    drop_conn.close()
+                report["temporary_database_dropped"] = True
+        if not createdb:
             schema_dump = Path(work) / "twinguard_schema.sql"
             result = _run([find_tool("pg_dump"), "--host", host, "--port", port,
                            "--username", user, "--dbname", db, "--format=plain",

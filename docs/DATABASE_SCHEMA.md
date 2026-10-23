@@ -1,27 +1,53 @@
-# Stage 5 — database foundation
+# Stage 5 database schema and current load
 
-## Database and connection handling
+Updated 2026-10-23 (Asia/Kolkata). The local `twinguard` database uses schema `twinguard`, PostgreSQL 18.6 and PostGIS 3.6.2. Scripts read `.env` with the project's custom parser; credentials and connection strings are never logged. `.env` is unchanged. No container or package installation was used for this update.
 
-The configured local database was reached read-only first. `SELECT version(), postgis_version()` returned PostgreSQL **18.6** and PostGIS **3.6**; the installed extension reports PostGIS **3.6.2**. No other database was queried for application work. The project schema is isolated as `twinguard` inside database `twinguard`.
+## Migrations
 
-Scripts use `pipelines/stage5/db_common.py`, a small `KEY=VALUE` parser for `.env`; it does not use `python-dotenv`, echo values, or log connection URLs. `.env` remains unmodified and ignored by Git. `.env.example` contains only example values/placeholders. Local scripts default to `POSTGRES_HOST=localhost`, `POSTGRES_PORT=5432`; Compose publishes to `${DOCKER_POSTGRES_HOST_PORT:-5433}` so it does not collide with local PostgreSQL. Containers were not started.
+The checksum ledger contains eight migrations. `pipelines/stage5/apply_migrations.py` is safe to rerun and refuses a changed checksum for an applied migration.
 
-The Compose image is `postgis/postgis:18-3.6-alpine`, confirmed on the official [PostGIS image tags](https://hub.docker.com/r/postgis/postgis/tags). PostgreSQL 18 uses `/var/lib/postgresql` as its volume path; the configuration uses a separate named volume `twinguard_postgres_data`. The five requested DB libraries are present in `.venv` at the requested versions and were already pinned in `requirements.txt`: psycopg 3.3.6, psycopg-binary 3.3.6, SQLAlchemy 2.1.6, GeoAlchemy2 0.20.0, typing-extensions 4.16.0. No package was installed and requirements lines were not changed.
+| Migration | Purpose |
+|---|---|
+| `001_core_schema.sql` | Original GIS schema, catalogue, views and indexes. |
+| `002_gis_views_and_mvt.sql` | GIS query views and five MVT functions. |
+| `003_catalog_licence_notes.sql` | Licence/caveat notes in the source catalogue. |
+| `004_provenance_repaired_floods_and_boundary.sql` | Boundary catalogue provenance fields, row-level provenance on original GIS tables, repaired UNOSAT geometry, valid flag and repaired flood view/MVT. |
+| `005_stage5_complementary_tables.sql` | Road nodes, cells, buildings, observations, labels, Sentinel scenes and loaded manifest. |
+| `006_rebuild_incomplete_imerg_daily_load.sql` | Removes the incomplete first IMERG load made by the initial loader attempt so the corrected full series can load. |
+| `007_clear_unverified_opencity_event_day.sql` | Clears an exact day assigned to OpenCity observed points; only the year is sourced, so day remains unknown. |
+| `008_preserve_and_repair_label_geometries.sql` | Keeps original flood label geometries and adds valid repaired geometry for spatial views. |
 
-## Migration design
+## Tables and counts
 
-SQL migrations are ordered, SHA-256 checked, and recorded in `twinguard.schema_migrations`. An already-applied migration with a changed checksum is rejected. `apply_migrations.py` can be rerun safely; it reports no-op when schema state is current.
+| Table | Current rows | Main contents |
+|---|---:|---|
+| `study_area` | 1 | Selected older CMA boundary. |
+| `road_edges` | 455,285 | Filtered vehicle-routing edges from the vehicle profile. |
+| `facilities` | 15,413 | OSM facility/amenity points. |
+| `waterways` | 759 | OSM waterway lines. |
+| `flood_references` | 10,419 | CMA-intersecting UNOSAT baseline/event polygons; originals retained. |
+| `road_nodes` | 508,854 | Road graph nodes; component id is NULL because the source layer does not provide it. |
+| `grid_cells` | 1,319,380 | CMA master cells loaded by batched PostgreSQL COPY. |
+| `building_footprints` | 382,294 | OSM-derived building geometries. |
+| `observation_records` | 266,773 | ERA5 hourly, NASA POWER daily, IMERG daily CMA means, reservoir daily storage and OpenCity monthly storage. |
+| `flood_labels` | 21,927 | UNOSAT, observed/modelled OpenCity, GFD coarse cross-check and derived exploratory labels with confidence tiers. |
+| `sentinel_scenes` | 13 | Scene metadata and SAFE-manifest footprints; no image pixels. |
+| `data_manifest` | 117 | Snapshot of `docs/DATA_MANIFEST.csv` when loaded. |
+| `dataset_catalog` | 59 | Source path, source layer, hash, CRS, row count, caveat/licence and boundary provenance. |
+| `schema_migrations` | 8 | Applied migration names and SHA-256 checksums. |
 
-- `001_core_schema.sql`: schema, migration ledger, source catalog, provisional study boundary, roads, facilities, waterways, flood references, geometry/date indexes.
-- `002_gis_views_and_mvt.sql`: query views and five PostGIS Mapbox Vector Tile (`bytea`) functions.
-- `003_catalog_licence_notes.sql`: explicit licence/terms note in source catalog.
+All loaded records outside the catalogue include `source_id`, file SHA-256, loader name and load time. The full source-to-table reconciliation, labels, area values, invalid reasons, spatial query evidence and remaining caveats are in `docs/STAGE5_RECONCILIATION.md`.
 
-All database geometry uses EPSG:32644, matching the project grid. Data catalog entries carry source-relative path, source layer, file SHA-256, source CRS, row count, caveat and licence note. Unknown source terms remain explicitly unconfirmed.
+## Geometry, CRS and views
 
-## Backup and restore check
+Project grid and GIS geometry tables use EPSG:32644. Sentinel scene footprints remain EPSG:4326. The original 235 invalid UNOSAT geometries remain in `flood_references.geom`; polygon-only `ST_MakeValid` results are in `geom_repaired`, with `is_valid`. All repaired UNOSAT geometries pass validity checks. OpenCity labels likewise retain their imported geometry and have a separate repaired geometry and validity flag. `v_flood_references` and `v_flood_labels` return repaired geometries; the flood-reference MVT function uses repaired geometry too.
 
-`pipelines/stage5/backup_restore.py` created a 50,667,495-byte custom-format logical backup of schema `twinguard`; archive listing passed (58 TOC entries). The temporary backup was removed when the check finished; its SHA-256 is recorded in `STAGE_5_6_REPORT.md`.
+Five tile functions are installed: `mvt_study_area`, `mvt_roads`, `mvt_facilities`, `mvt_waterways`, and `mvt_flood_references`. Each returned a nonempty z=12 Chennai tile during the most recent smoke check. Indexed sample queries and their actual execution timings are recorded in `STAGE5_RECONCILIATION.md`.
 
-The application role does not have `CREATEDB`. Creating the requested temporary database failed with the exact non-secret error `InsufficientPrivilege: permission denied to create database`. To validate DDL recovery without touching another database, a schema-only dump was restored into a uniquely named temporary schema inside `twinguard`; 12 relations (tables and views) were restored and the temporary schema was dropped. This is not a substitute for a full data restore into a separate database. A database administrator must grant the app role `CREATEDB` temporarily or perform the restore test with an authorized role before that acceptance check is complete.
+## CMA boundary provenance
 
-No optional viewer was created. Stage 7 (Twin/API), model training, and later stages were not started.
+The boundary catalogue entry names `data/raw/boundary/chennai_cma_boundary.geojson`, SHA-256 `89e81f8309a40ea9f24cf5e35c832b75ed937b65b111389d8ed8df4931804ad7`, and source URL `https://github.com/datameet/Municipal_Spatial_Data`. The source retrieval date is not in the local records, so it is stored as unknown/NULL. The project-selected older boundary's source vintage and authoritative status remain unverified. The source boundary was not edited.
+
+## Backup and restore history
+
+The earlier Stage 5/6 acceptance report records the custom-format backup and the successful restore into a temporary database. All seven tables present at that time matched; the temporary database was dropped. The role's temporary `CREATEDB` permission was subsequently revoked by the user. This later Stage 5 completion added migrations 004–008 and additional tables; it did not create or restore any database. Do not use the earlier seven-table restore as a backup/restore check of the new extension tables.

@@ -1,6 +1,6 @@
 # TwinGuard AI — project status
 
-**Updated 22 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Phase 3 feature preparation, Phase 4 preprocessing, and Stages 5–6 are complete. The full backup restore test into a separate temporary database passed; its table counts matched and the temporary database was dropped. The temporary `CREATEDB` grant has since been revoked. No containers or models were started.
+**Updated 23 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Phase 3 feature preparation, Phase 4 preprocessing, and Stage 5 schema/load work are complete. The earlier Stage 6 backup/restore test passed before the latest Stage 5 extension tables were added, so it does not certify a restore of those new tables. The temporary `CREATEDB` grant was revoked after that earlier test. No containers or models were started.
 
 ## Done
 
@@ -15,8 +15,8 @@
 - Phase 4 Part 1 generated separate conditioned terrain rasters and a vehicle routing profile without changing the Phase 3 terrain layers. Masked 255 CMA cells below −5 m; the CMA water-mask footprint is estimated at 129.12 km². Added edge-safe slope/TWI and valid-only fill-depth copies under new names after identifying mask-edge derivative risk.
 - The routing profile has 455,285 included edges; 200 seeded sample origins yielded 159 reachable hospital routes, with median 3.16 minutes and 79.5% reaching a hospital within 30 minutes under assumed speeds. This is not an evacuation safety result.
 - The locally present 86 GPM IMERG daily NetCDF files cover all three expected date windows (45/20/21, no missing days). Their per-file hashes and filesystem dates are in the raw-folder log; licence remains to confirm. See `RAIN_SOURCES_COMPARISON.md` for UTC-aligned comparisons.
-- Stage 5 applied three checksum-tracked migrations in the local `twinguard` database. Stage 6 loaded the boundary, 455,285 vehicle edges, 15,413 facilities, 759 waterways, and 10,419 selected UNOSAT reference features; database views and MVT functions passed smoke checks. The source flood layer contains 235 invalid geometries, preserved without repair.
-- Stage 5/6 pytest suite passes (10 tests). The custom-format backup was restored into a separate temporary database; all seven table counts matched, and the temporary database was dropped. The user confirmed the temporary `CREATEDB` permission was revoked afterward. See `STAGE_5_6_REPORT.md`.
+- Stage 5 now has eight checksum-tracked migrations and loads 455,285 vehicle edges, 15,413 facilities, 759 waterways, 10,419 selected UNOSAT references, 508,854 road nodes, 1,319,380 grid cells, 382,294 buildings, 266,773 weather/reservoir observations, 21,927 flood labels, 13 Sentinel scene records, and a 117-row manifest snapshot. Original invalid flood geometries remain preserved with repaired geometry in separate columns. See `STAGE5_RECONCILIATION.md`.
+- The earlier Stage 6 backup/restore check matched the seven then-existing tables and dropped its temporary database. Extension tables added later were not part of that check. Current Stage 5 tests pass (12 passed, 0 failed); lineage is refreshed to 67 rows, and the read-only raw audit matched all 144 files with zero mismatches. The complementary loader rerun did not duplicate source rows. See `STAGE_5_6_REPORT.md`.
 
 ## Manual decisions and limitations
 
@@ -29,4 +29,4 @@
 
 ## Next
 
-Use `MANUAL_TODO.md` to resolve the study-boundary, label, data-quality, routing-threshold and licence decisions. The database restore acceptance test is complete. Review `PHASE3_LOG.md`, `PHASE4_LOG.md`, `STAGE_4_REPORT.md`, `STAGE_5_6_REPORT.md`, `PHASE3_VALIDATION.json`, and `DATA_QUALITY_REPORT.md` before later work. SAR label processing, Stage 7 and model training have not started.
+Use `MANUAL_TODO.md` to resolve the boundary vintage, label, data-quality, routing-threshold and licence decisions. A full restore check for the newest Stage 5 tables would require an authorized temporary PostGIS database; the earlier restore check covered only the prior seven tables. Review `STAGE5_RECONCILIATION.md` and `STAGE_5_6_REPORT.md` before later work. SAR label processing, Stage 7 and model training have not started.

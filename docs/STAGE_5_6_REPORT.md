@@ -1,48 +1,52 @@
 # Stage 5 and 6 report
 
-Run date: 2026-10-22 (Asia/Kolkata). Raw files were read-only. No internet downloads, installs, container starts, or Stage 7 work occurred. No credentials or connection strings were printed or logged.
+Updated 2026-10-23 (Asia/Kolkata). `data/raw` remained read-only. No network download, login, install, or container start occurred. Credentials were used only by the local DB parser and were not printed or logged.
 
-| Task | Result | File | Needs my decision? |
-|---|---|---|---|
-| Initial read-only database check | **PASS.** PostgreSQL 18.6, PostGIS 3.6 (extension 3.6.2). Only version information was printed for the initial check. | `pipelines/stage5/db_common.py`; `docs/ISSUES.md` | No |
-| Dependency pins | **PASS.** All five versions verified in `.venv`; exact pins already existed, so `requirements.txt` was not changed. | `requirements.txt` | No |
-| Compose and env example | **PASS.** Verified image `postgis/postgis:18-3.6-alpine`; volume path `/var/lib/postgresql`; named volume; Docker host port defaults to 5433; local port remains 5432. Containers were not started. | `docker-compose.yml`; `.env.example` | No |
-| Schema and migrations | **PASS.** Three checksum-tracked migrations applied in the `twinguard` schema; rerun reports current. | `database/migrations/`; `pipelines/stage5/apply_migrations.py`; `docs/DATABASE_SCHEMA.md` | No |
-| GIS imports | **PASS.** 1 boundary, 455,285 vehicle edges, 15,413 facilities, 759 waterways, and 10,419 UNOSAT reference features loaded. All imported SRIDs are 32644. 235 invalid geometries are confined to the source flood references and preserved without repair. | `pipelines/stage6/load_gis_layers.py`; `docs/GIS_DATABASE_LAYERS.md` | Review invalid flood geometries and confirm boundary vintage before relying on them. |
-| GIS verification, views, MVT | **PASS with warning.** Views match table counts; five tile functions returned MVT payloads for the Chennai test tile. 15,162 facilities are inside the boundary; 414,822 road features intersect it; 687 waterways intersect it. | `pipelines/stage6/verify_gis.py`; migration `002`; `docs/GIS_DATABASE_LAYERS.md` | Optional: decide whether to build a viewer/API later. |
-| Backup / restore | **PASS.** Custom-format backup verified (50,667,495 bytes; SHA-256 `22e45700e2b18b4a1454050a184c5fa783e500c17563f6ad367bff62fa6d377f`); 58 TOC entries. Restore into a self-created temporary database succeeded, and all seven table counts matched the source. The temporary database was dropped. | `pipelines/stage5/backup_restore.py`; `docs/DATABASE_SCHEMA.md` | No |
-| Tests | **PASS.** `pytest`: 10 passed, 0 failed. | `tests/phase4/`; `tests/stage5_6/` | No |
-| Lineage and raw audit | **PASS.** Lineage refreshed to 67 rows. Raw audit: 144 files, 20,338,302,958 bytes; 144 size/hash matches, zero unmatched, zero mismatches. The audit parser was fixed for IMERG `File:` / `Size bytes:` entries. | `docs/DATA_LINEAGE.md`; `tools/audit_raw_logs.py`; `docs/ISSUES.md` | No |
+## Stage 5 completion
 
-## Table row counts
+Migrations 001–008 are applied to the existing `twinguard` schema. Added repeat-safe loaders and read-only verification in `pipelines/stage5/`. The 1,319,380-row grid was imported in PostgreSQL COPY batches. Observation tables preserve native cadence and missing-value flags; label records distinguish UNOSAT, observed, modelled, coarse cross-check and derived/unvalidated sources. Sentinel rows store metadata and footprints only.
 
 | Table | Rows |
 |---|---:|
-| `twinguard.study_area` | 1 |
-| `twinguard.road_edges` | 455,285 |
-| `twinguard.facilities` | 15,413 |
-| `twinguard.waterways` | 759 |
-| `twinguard.flood_references` | 10,419 |
-| `twinguard.dataset_catalog` | 8 source records |
-| `twinguard.schema_migrations` | 3 migration records |
+| `study_area` | 1 |
+| `road_edges` | 455,285 |
+| `facilities` | 15,413 |
+| `waterways` | 759 |
+| `flood_references` | 10,419 |
+| `road_nodes` | 508,854 |
+| `grid_cells` | 1,319,380 |
+| `building_footprints` | 382,294 |
+| `observation_records` | 266,773 |
+| `flood_labels` | 21,927 |
+| `sentinel_scenes` | 13 |
+| `data_manifest` | 117 |
+| `dataset_catalog` | 59 |
+| `schema_migrations` | 8 |
 
-## Verification timings
+The loaded UNOSAT count is 10,419 because it includes four source layers spatially intersecting the selected CMA: 4,704 (12 Nov), 3,710 (24 Nov), 1,360 (1 Sep baseline) and 645 (14 Oct baseline). These are subsets of larger source-wide counts. The routing edge table matches its own 455,285-row vehicle edge source; the 1,071,656 all-class directed graph arcs are a different graph. Facilities and waterways source-count scope differences are documented in `STAGE5_RECONCILIATION.md`.
 
-Observed wall-clock timings for the completed final checks (rounded to the nearest second unless noted):
+The 235 invalid original UNOSAT geometries were preserved; repaired polygon-only geometries are stored separately and all pass validity checks. An additional 54 invalid OpenCity polygons were also preserved with valid repaired geometry. Dissolved/intersected EPSG:32644 event areas are 84.9246 km² (12 Nov) and 98.3137 km² (24 Nov), each within 1% of the referenced 84.78 and 98.16 km² values.
 
-| Check | Time |
-|---|---:|
-| Initial version query | 1.5 s |
-| Migration idempotence check | 2.0 s |
-| GIS verification query set | 7.2 s |
-| Pytest suite (10 tests) | 12.0 s |
-| Raw size/SHA-256 audit (144 files, about 20.3 GB) | 52.3 s |
-| Lineage refresh (67 outputs) | 5.2 s |
-| Backup, restore to temporary database, row-count comparison and cleanup | about 15 s |
-| Loader idempotence check | 19.5 s |
+Catalog-count comparison and orphan provenance checks both returned zero discrepancies. All 13 Sentinel footprints intersect the CMA. Every required MVT smoke-test tile was nonempty. Four sample `EXPLAIN ANALYZE` spatial queries used their GiST indexes; timings are in the reconciliation report. Source extents are not fully covered by the CMA for some roads, nodes, facilities, buildings and waterways because source geometries can cross or extend beyond the boundary; they were retained as imported.
 
-The first full GIS import ran in two successful insert batches; the exact end-to-end duration was not measured. The 19.5 s figure above is the later checksum/idempotence recheck, not the initial import duration.
+## Stage 6 and earlier acceptance work
 
-## Closure
+PostgreSQL 18.6 and PostGIS 3.6.2 were verified locally. Compose uses `postgis/postgis:18-3.6-alpine`, PostgreSQL 18's `/var/lib/postgresql` volume path, a named volume and host port 5433; containers were not started. Existing local DB connection settings are read from `.env`; `.env` was not edited or printed.
 
-The database backup and restore acceptance test is complete. The configured role's temporary `CREATEDB` permission enabled the test and the user confirmed it was revoked after the temporary database was removed. The optional viewer was not built. Stage 7 and later work remain unstarted.
+The earlier backup/restore acceptance test passed before the current Stage 5 extension was added: a 50,667,495-byte custom-format backup (SHA-256 `22e45700e2b18b4a1454050a184c5fa783e500c17563f6ad367bff62fa6d377f`, 58 TOC entries) was restored to a temporary database cloned with PostGIS, the seven then-existing table counts matched, and that temporary database was dropped. The user later confirmed the temporary `CREATEDB` grant was revoked. That historical restore did not exercise the new tables from migrations 004–008.
+
+## Tests, lineage and raw audit
+
+- `pytest -q`: **12 passed, 0 failed** in 129.67 seconds.
+- Loader idempotence rerun: all source counts were reported unchanged; the 86 IMERG records, all 13 Sentinel scenes and label rows were not duplicated. The loader returned 0 newly inserted Sentinel rows because all 13 were already present.
+- Lineage refreshed: **67 rows** in `docs/DATA_LINEAGE.md`.
+- Read-only raw audit: **144 files**, 20,338,302,958 bytes; **144 hash matches**, 0 missing comparable hashes, 0 mismatches. Raw files were not changed.
+- Migration runner was rerun in module form after its import fix and returned `none; schema is current`.
+
+The Stage 5 extended backup/restore was not attempted: the earlier temporary `CREATEDB` grant is revoked, and this task did not authorize changing that grant or touching another database. The former restore test covered only the seven tables present before migrations 004–008.
+
+Commit: **03fafe5ab6a2b2ecf15e47cd82476dfd04a0f961** (`Complete Stage 5 data loading and verification`)
+
+## Scope boundary
+
+Stage 7, database/API work beyond this schema/load completion, model training and viewer work were not started.

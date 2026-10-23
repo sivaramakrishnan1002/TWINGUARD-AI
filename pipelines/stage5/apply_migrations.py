@@ -2,11 +2,15 @@
 from __future__ import annotations
 
 import hashlib
+import sys
 from pathlib import Path
 
 from sqlalchemy import text
 
-from db_common import ROOT, make_engine
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from pipelines.stage5.db_common import ROOT, make_engine
 
 MIGRATIONS = ROOT / "database" / "migrations"
 

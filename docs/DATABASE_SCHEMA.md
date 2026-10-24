@@ -35,9 +35,9 @@ The original Stage 5 closure covered migrations 001–008. Migration 009 records
 | `observation_records` | 266,773 | ERA5 hourly, NASA POWER daily, IMERG daily CMA means, reservoir daily storage and OpenCity monthly storage. |
 | `flood_labels` | 21,927 | UNOSAT, observed/modelled OpenCity, GFD coarse cross-check and derived exploratory labels with confidence tiers. |
 | `sentinel_scenes` | 13 | Scene metadata and SAFE-manifest footprints; no image pixels. |
-| `data_manifest` | 117 | Current snapshot of `docs/DATA_MANIFEST.csv`; latest load record is verified against the file hash. |
+| `data_manifest` | 130 | Current snapshot of `docs/DATA_MANIFEST.csv`; latest load record is verified against the file hash. |
 | `dataset_catalog` | 59 | Source path, source layer, hash, CRS, row count, caveat/licence and boundary provenance. |
-| `schema_migrations` | 11 | Applied migration names and SHA-256 checksums (001–011). |
+| `schema_migrations` | 13 | Applied migration names and SHA-256 checksums (001–013). |
 
 ### CMA intersection flags
 
@@ -72,3 +72,8 @@ The separate `twin` schema is a versioned state-model foundation, not a second c
 ## Backup and restore history
 
 The earlier Stage 5/6 acceptance report records the custom-format backup and the successful restore into a temporary database. All seven tables present at that time matched; the temporary database was dropped. The role's temporary `CREATEDB` permission was subsequently revoked by the user. This later Stage 5 completion added migrations 004–008 and additional tables; it did not create or restore any database. Do not use the earlier seven-table restore as a backup/restore check of the new extension tables.
+
+
+## Stage 8 derived label schema
+
+Migration `013_sar_derived_labels.sql` creates the separate `labels.derived_flood_polygons` table. It contains the SAR-derived polygon candidates only, with event date, method, confidence tier, `is_derived`, validity, CMA intersection, urban unreliability flag, source id and SHA-256, loader, load time, and EPSG:32644 MultiPolygon geometry. All 45,096 loaded rows are marked DERIVED; 0 are invalid or outside the CMA. The original `twinguard.flood_labels` data were left unchanged. The raster files remain in `data/features/labels/` and are referenced in `label_registry.json`.

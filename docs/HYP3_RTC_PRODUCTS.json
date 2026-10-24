@@ -1,0 +1,2121 @@
+[
+  {
+    "name": "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2015/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542.zip",
+    "size_bytes": 862587218,
+    "filesystem_date": "2026-10-24T21:51:26+05:30",
+    "sha256": "c474ef1def788080caf59c5a7febc6ab68c43e8b2fa5dc705e36121b3a593cf4",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 883310995,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20151019T003131_20151019T003200_008214_00B8EF_82E0",
+    "product_processing_time": "2026-10-24T11:14:48+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_inc_map.tif",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_VV.tif",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_VH.tif",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_ls_map.tif",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_dem.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8149,
+          9609
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          188940.0,
+          1272000.0,
+          477210.0,
+          1516470.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8149,
+          9609
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          188940.0,
+          1272000.0,
+          477210.0,
+          1516470.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8149,
+          9609
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          188940.0,
+          1272000.0,
+          477210.0,
+          1516470.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8149,
+          9609
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          188940.0,
+          1272000.0,
+          477210.0,
+          1516470.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8149,
+          9609
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          188940.0,
+          1272000.0,
+          477210.0,
+          1516470.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_VV.tif.xml",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542.png.aux.xml",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_dem.tif.xml",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_shape.dbf",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_rgb.png.aux.xml",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_rgb.png",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542.png",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_rgb.kmz",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542.png.xml",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542.README.md.txt",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_VH.tif.xml",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_shape.shp",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_ls_map.tif.xml",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_inc_map.tif.xml",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542.kmz",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_shape.prj",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_rgb.png.xml",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542.log",
+      "S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542/S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542_shape.shx"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2015/S1A_IW_GRDH_1SDV_20151019T003131_20151019T003200_008214_00B8EF_82E0.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2015/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC.zip",
+    "size_bytes": 858113503,
+    "filesystem_date": "2026-10-24T21:52:45+05:30",
+    "sha256": "214252ff29c60d46e3b9b435f6c078ff3a2600ef9ab66861ded8d87f36415730",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 881440361,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20151124T003120_20151124T003149_008739_00C723_AB80",
+    "product_processing_time": "2026-10-24T11:13:39+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_VH.tif",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_dem.tif",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_inc_map.tif",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_VV.tif",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_ls_map.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8140,
+          9600
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          204120.0,
+          1345800.0,
+          492120.0,
+          1590000.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8140,
+          9600
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          204120.0,
+          1345800.0,
+          492120.0,
+          1590000.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8140,
+          9600
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          204120.0,
+          1345800.0,
+          492120.0,
+          1590000.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8140,
+          9600
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          204120.0,
+          1345800.0,
+          492120.0,
+          1590000.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8140,
+          9600
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          204120.0,
+          1345800.0,
+          492120.0,
+          1590000.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_shape.dbf",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_shape.shx",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_rgb.png.aux.xml",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_rgb.png",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC.png",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_inc_map.tif.xml",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_VV.tif.xml",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC.png.aux.xml",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC.kmz",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC.README.md.txt",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_shape.prj",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_rgb.png.xml",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC.log",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_shape.shp",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_rgb.kmz",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_dem.tif.xml",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC.png.xml",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_ls_map.tif.xml",
+      "S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC/S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC_VH.tif.xml"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2015/S1A_IW_GRDH_1SDV_20151124T003120_20151124T003149_008739_00C723_AB80.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2015/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367.zip",
+    "size_bytes": 864081864,
+    "filesystem_date": "2026-10-24T21:52:57+05:30",
+    "sha256": "e8643bceade3520bdcc95651f9753abe759463456015244d250dd1a5b2ebe143",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 887464536,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20151206T003120_20151206T003149_008914_00CC1F_BEF9",
+    "product_processing_time": "2026-10-24T11:14:12+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_dem.tif",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_VV.tif",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_ls_map.tif",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_inc_map.tif",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_VH.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8167,
+          9606
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          203910.0,
+          1345020.0,
+          492090.0,
+          1590030.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8167,
+          9606
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          203910.0,
+          1345020.0,
+          492090.0,
+          1590030.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8167,
+          9606
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          203910.0,
+          1345020.0,
+          492090.0,
+          1590030.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8167,
+          9606
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          203910.0,
+          1345020.0,
+          492090.0,
+          1590030.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          8167,
+          9606
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          203910.0,
+          1345020.0,
+          492090.0,
+          1590030.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367.kmz",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367.png.aux.xml",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_shape.shp",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367.log",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_shape.dbf",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_rgb.png.aux.xml",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_ls_map.tif.xml",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_shape.shx",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367.README.md.txt",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_shape.prj",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_VH.tif.xml",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_rgb.png",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_VV.tif.xml",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_inc_map.tif.xml",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_dem.tif.xml",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367.png",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_rgb.kmz",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367_rgb.png.xml",
+      "S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367/S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367.png.xml"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2015/S1A_IW_GRDH_1SDV_20151206T003120_20151206T003149_008914_00CC1F_BEF9.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2021/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62.zip",
+    "size_bytes": 747530150,
+    "filesystem_date": "2026-10-24T23:28:52+05:30",
+    "sha256": "67ee31981d792e69a01d03622f9d4be7402896409c8bc22afe6363cb7c192e30",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 771431375,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20211023T003148_20211023T003213_040239_04C461_42A6",
+    "product_processing_time": "2026-10-24T17:49:07+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_VH.tif",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_inc_map.tif",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_ls_map.tif",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_VV.tif",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_dem.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7273,
+          9475
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          221700.0,
+          1441620.0,
+          505950.0,
+          1659810.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7273,
+          9475
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          221700.0,
+          1441620.0,
+          505950.0,
+          1659810.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7273,
+          9475
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          221700.0,
+          1441620.0,
+          505950.0,
+          1659810.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7273,
+          9475
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          221700.0,
+          1441620.0,
+          505950.0,
+          1659810.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7273,
+          9475
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          221700.0,
+          1441620.0,
+          505950.0,
+          1659810.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62.README.md.txt",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62.log",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_rgb.kmz",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_rgb.png.xml",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_VV.tif.xml",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_VH.tif.xml",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62.png",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_rgb.png.aux.xml",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_shape.shp",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_shape.prj",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_shape.shx",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62.kmz",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_ls_map.tif.xml",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_shape.dbf",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_rgb.png",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_inc_map.tif.xml",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62.png.xml",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62.png.aux.xml",
+      "S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62/S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62_dem.tif.xml"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2021/S1A_IW_GRDH_1SDV_20211023T003148_20211023T003213_040239_04C461_42A6.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2021/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF.zip",
+    "size_bytes": 772207146,
+    "filesystem_date": "2026-10-24T23:28:40+05:30",
+    "sha256": "8f095b841d26f19762a68d6ad20e9e60bb5f46a73aa9a70b6b27656e94ffc3dc",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 789562597,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20211023T003213_20211023T003238_040239_04C461_000E",
+    "product_processing_time": "2026-10-24T17:49:16+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_ls_map.tif",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_VH.tif",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_dem.tif",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_VV.tif",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_inc_map.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7294,
+          9496
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          187500.0,
+          1274430.0,
+          472380.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7294,
+          9496
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          187500.0,
+          1274430.0,
+          472380.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7294,
+          9496
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          187500.0,
+          1274430.0,
+          472380.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7294,
+          9496
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          187500.0,
+          1274430.0,
+          472380.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7294,
+          9496
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          187500.0,
+          1274430.0,
+          472380.0,
+          1493250.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_VV.tif.xml",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF.README.md.txt",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_ls_map.tif.xml",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF.log",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF.png.xml",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_rgb.png.aux.xml",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_dem.tif.xml",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_shape.shx",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_rgb.png",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_inc_map.tif.xml",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_rgb.kmz",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_shape.shp",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_shape.prj",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF.png.aux.xml",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_shape.dbf",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_VH.tif.xml",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF.png",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF.kmz",
+      "S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF/S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF_rgb.png.xml"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2021/S1A_IW_GRDH_1SDV_20211023T003213_20211023T003238_040239_04C461_000E.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2021/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3.zip",
+    "size_bytes": 747576780,
+    "filesystem_date": "2026-10-24T23:29:43+05:30",
+    "sha256": "b1c6642ea96d2af8ea07c2d01ad11c1065ec235a4f38f08aa52eb28c58c9fe35",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 771452154,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20211104T003147_20211104T003212_040414_04CA78_AD56",
+    "product_processing_time": "2026-10-24T17:48:59+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_VV.tif",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_dem.tif",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_inc_map.tif",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_VH.tif",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_ls_map.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7272,
+          9475
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          221790.0,
+          1441620.0,
+          506040.0,
+          1659780.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7272,
+          9475
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          221790.0,
+          1441620.0,
+          506040.0,
+          1659780.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7272,
+          9475
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          221790.0,
+          1441620.0,
+          506040.0,
+          1659780.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7272,
+          9475
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          221790.0,
+          1441620.0,
+          506040.0,
+          1659780.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7272,
+          9475
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          221790.0,
+          1441620.0,
+          506040.0,
+          1659780.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_dem.tif.xml",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_shape.shx",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_VH.tif.xml",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_shape.prj",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3.README.md.txt",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_rgb.png",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_inc_map.tif.xml",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_VV.tif.xml",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3.png.xml",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3.png.aux.xml",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_ls_map.tif.xml",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3.kmz",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_shape.shp",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_rgb.png.xml",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3.png",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3.log",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_rgb.png.aux.xml",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_shape.dbf",
+      "S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3/S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3_rgb.kmz"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2021/S1A_IW_GRDH_1SDV_20211104T003147_20211104T003212_040414_04CA78_AD56.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2021/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E.zip",
+    "size_bytes": 770226566,
+    "filesystem_date": "2026-10-24T23:30:07+05:30",
+    "sha256": "c5b41d05e169ec0279d79085c323defdf30a21da1501f47c53f8828f530dd154",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 787598572,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20211104T003212_20211104T003237_040414_04CA78_20F6",
+    "product_processing_time": "2026-10-24T17:49:13+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_VH.tif",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_dem.tif",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_inc_map.tif",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_VV.tif",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_ls_map.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7294,
+          9496
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          187590.0,
+          1274430.0,
+          472470.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7294,
+          9496
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          187590.0,
+          1274430.0,
+          472470.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7294,
+          9496
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          187590.0,
+          1274430.0,
+          472470.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7294,
+          9496
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          187590.0,
+          1274430.0,
+          472470.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7294,
+          9496
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          187590.0,
+          1274430.0,
+          472470.0,
+          1493250.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_VH.tif.xml",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_dem.tif.xml",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_shape.shx",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_ls_map.tif.xml",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_shape.shp",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_rgb.png",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_shape.dbf",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_inc_map.tif.xml",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_VV.tif.xml",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E.README.md.txt",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_rgb.kmz",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_rgb.png.xml",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E.log",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E.kmz",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_shape.prj",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E.png",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E.png.aux.xml",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E.png.xml",
+      "S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E/S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E_rgb.png.aux.xml"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2021/S1A_IW_GRDH_1SDV_20211104T003212_20211104T003237_040414_04CA78_20F6.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2021/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C.zip",
+    "size_bytes": 746341982,
+    "filesystem_date": "2026-10-24T23:30:30+05:30",
+    "sha256": "809be95b56d025a38cafe462b2295609c9bfe08e14d54f35b49ed9cd283586d3",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 770268450,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20211116T003147_20211116T003212_040589_04D094_DB41",
+    "product_processing_time": "2026-10-24T17:49:07+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_VV.tif",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_ls_map.tif",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_dem.tif",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_VH.tif",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_inc_map.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7273,
+          9475
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          221730.0,
+          1441620.0,
+          505980.0,
+          1659810.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7273,
+          9475
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          221730.0,
+          1441620.0,
+          505980.0,
+          1659810.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7273,
+          9475
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          221730.0,
+          1441620.0,
+          505980.0,
+          1659810.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7273,
+          9475
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          221730.0,
+          1441620.0,
+          505980.0,
+          1659810.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7273,
+          9475
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          221730.0,
+          1441620.0,
+          505980.0,
+          1659810.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_shape.shp",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_VH.tif.xml",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C.log",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C.png",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_ls_map.tif.xml",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C.png.aux.xml",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C.png.xml",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_inc_map.tif.xml",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_dem.tif.xml",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_rgb.png",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_rgb.png.xml",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C.README.md.txt",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_shape.prj",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_shape.dbf",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C.kmz",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_VV.tif.xml",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_rgb.png.aux.xml",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_shape.shx",
+      "S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C/S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C_rgb.kmz"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2021/S1A_IW_GRDH_1SDV_20211116T003147_20211116T003212_040589_04D094_DB41.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2021/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C.zip",
+    "size_bytes": 772071794,
+    "filesystem_date": "2026-10-24T23:30:23+05:30",
+    "sha256": "554040cad60f1acc811c0b9f43de0ac564f85720f8db0e98e734799c9536eff7",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 789426068,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20211116T003212_20211116T003237_040589_04D094_B07B",
+    "product_processing_time": "2026-10-24T17:48:59+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_inc_map.tif",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_dem.tif",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_VV.tif",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_VH.tif",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_ls_map.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7293,
+          9496
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          187530.0,
+          1274460.0,
+          472410.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7293,
+          9496
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          187530.0,
+          1274460.0,
+          472410.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7293,
+          9496
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          187530.0,
+          1274460.0,
+          472410.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7293,
+          9496
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          187530.0,
+          1274460.0,
+          472410.0,
+          1493250.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7293,
+          9496
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          187530.0,
+          1274460.0,
+          472410.0,
+          1493250.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_rgb.png.xml",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_rgb.png",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C.README.md.txt",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_rgb.png.aux.xml",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C.kmz",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_VH.tif.xml",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_dem.tif.xml",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_VV.tif.xml",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_shape.shp",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C.png",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_shape.dbf",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_rgb.kmz",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_inc_map.tif.xml",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C.png.aux.xml",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_shape.shx",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_ls_map.tif.xml",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C_shape.prj",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C.png.xml",
+      "S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C/S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C.log"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2021/S1A_IW_GRDH_1SDV_20211116T003212_20211116T003237_040589_04D094_B07B.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2023/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348.zip",
+    "size_bytes": 760518504,
+    "filesystem_date": "2026-10-24T23:27:17+05:30",
+    "sha256": "92d8137395c26cd5d1fe22ea1ae0b2a530191a6876d6fe6b72e0a3550557bb31",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 784676506,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20231118T003202_20231118T003227_051264_062F3A_F481",
+    "product_processing_time": "2026-10-24T16:51:52+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_ls_map.tif",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_inc_map.tif",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_VH.tif",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_dem.tif",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_VV.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7289,
+          9546
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          214680.0,
+          1417320.0,
+          501060.0,
+          1635990.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7289,
+          9546
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          214680.0,
+          1417320.0,
+          501060.0,
+          1635990.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7289,
+          9546
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          214680.0,
+          1417320.0,
+          501060.0,
+          1635990.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7289,
+          9546
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          214680.0,
+          1417320.0,
+          501060.0,
+          1635990.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7289,
+          9546
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          214680.0,
+          1417320.0,
+          501060.0,
+          1635990.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348.kmz",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348.png",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_dem.tif.xml",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348.README.md.txt",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_VH.tif.xml",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_VV.tif.xml",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_shape.shp",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_shape.dbf",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_rgb.png.xml",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348.png.xml",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_inc_map.tif.xml",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348.png.aux.xml",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_ls_map.tif.xml",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_rgb.kmz",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_shape.prj",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348.log",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_rgb.png",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_rgb.png.aux.xml",
+      "S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348/S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348_shape.shx"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2023/S1A_IW_GRDH_1SDV_20231118T003202_20231118T003227_051264_062F3A_F481.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2023/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599.zip",
+    "size_bytes": 774113567,
+    "filesystem_date": "2026-10-24T23:26:54+05:30",
+    "sha256": "1c820105490dea06f39032bcd4d85db0ca691bec88e4da341bbabd24cd5a8884",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 791777703,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20231118T003227_20231118T003252_051264_062F3A_94DE",
+    "product_processing_time": "2026-10-24T16:51:36+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_inc_map.tif",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_ls_map.tif",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_dem.tif",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_VH.tif",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_VV.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7310,
+          9564
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          180450.0,
+          1250160.0,
+          467370.0,
+          1469460.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7310,
+          9564
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          180450.0,
+          1250160.0,
+          467370.0,
+          1469460.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7310,
+          9564
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          180450.0,
+          1250160.0,
+          467370.0,
+          1469460.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7310,
+          9564
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          180450.0,
+          1250160.0,
+          467370.0,
+          1469460.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7310,
+          9564
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          180450.0,
+          1250160.0,
+          467370.0,
+          1469460.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_ls_map.tif.xml",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_inc_map.tif.xml",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599.png.aux.xml",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_shape.dbf",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_rgb.png.aux.xml",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_rgb.kmz",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599.log",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_shape.shx",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_VH.tif.xml",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_dem.tif.xml",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_rgb.png.xml",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599.png.xml",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599.kmz",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_rgb.png",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_shape.prj",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_shape.shp",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599.png",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599.README.md.txt",
+      "S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599/S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599_VV.tif.xml"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2023/S1A_IW_GRDH_1SDV_20231118T003227_20231118T003252_051264_062F3A_94DE.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2023/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84.zip",
+    "size_bytes": 758516662,
+    "filesystem_date": "2026-10-24T23:23:18+05:30",
+    "sha256": "2b74b05859cb86379649bda9c32dedef6c429ead95456411c048bbd889966f0b",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 782617593,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20231130T003201_20231130T003226_051439_06353D_343D",
+    "product_processing_time": "2026-10-24T16:51:20+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_inc_map.tif",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_VH.tif",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_ls_map.tif",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_VV.tif",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_dem.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7289,
+          9546
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          214920.0,
+          1417320.0,
+          501300.0,
+          1635990.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7289,
+          9546
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          214920.0,
+          1417320.0,
+          501300.0,
+          1635990.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7289,
+          9546
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          214920.0,
+          1417320.0,
+          501300.0,
+          1635990.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7289,
+          9546
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          214920.0,
+          1417320.0,
+          501300.0,
+          1635990.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7289,
+          9546
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          214920.0,
+          1417320.0,
+          501300.0,
+          1635990.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84.png.aux.xml",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_rgb.png.xml",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_rgb.png",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_shape.shp",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_rgb.kmz",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_VV.tif.xml",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84.kmz",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84.png.xml",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84.log",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_inc_map.tif.xml",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_dem.tif.xml",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_shape.dbf",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_VH.tif.xml",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_shape.prj",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84.png",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_rgb.png.aux.xml",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_ls_map.tif.xml",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84_shape.shx",
+      "S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84/S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84.README.md.txt"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2023/S1A_IW_GRDH_1SDV_20231130T003201_20231130T003226_051439_06353D_343D.zip",
+    "source_scene_zip_exists": true
+  },
+  {
+    "name": "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A.zip",
+    "relative_path": "data/raw/satellite/hpy3_rtc/2023/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A.zip",
+    "size_bytes": 772483756,
+    "filesystem_date": "2026-10-24T23:27:17+05:30",
+    "sha256": "e65a6f6ceb516f4405edd14ff782f7cb854f3129c6768db9c1a8ef0dd33d658f",
+    "source": "ASF HyP3 On Demand RTC GAMMA, user job",
+    "licence": "TO CONFIRM (Copernicus Sentinel data via ASF)",
+    "zip_entries": 25,
+    "uncompressed_bytes": 790183263,
+    "zip_integrity": "PASS",
+    "source_scene": "S1A_IW_GRDH_1SDV_20231130T003226_20231130T003251_051439_06353D_9270",
+    "product_processing_time": "2026-10-24T16:51:01+00:00",
+    "product_metadata_excerpt": {
+      "rtc_family": "RTC",
+      "pixel_spacing_claim": "30 m",
+      "crs_claim": "WGS 84 / UTM zone 44N",
+      "backscatter_claim": "gamma-0 power",
+      "speckle_filter_claim": "not applied",
+      "source_readme": "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A.README.md.txt"
+    },
+    "options_encoded_in_filename": "DVP_RTC30_G_gpuned",
+    "tiff_members": [
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_dem.tif",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_VV.tif",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_inc_map.tif",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_ls_map.tif",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_VH.tif"
+    ],
+    "raster_metadata": [
+      {
+        "member": "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_dem.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7309,
+          9564
+        ],
+        "dtype": "int16",
+        "nodata": null,
+        "bounds": [
+          180690.0,
+          1250160.0,
+          467610.0,
+          1469430.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_VV.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7309,
+          9564
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          180690.0,
+          1250160.0,
+          467610.0,
+          1469430.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_inc_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7309,
+          9564
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          180690.0,
+          1250160.0,
+          467610.0,
+          1469430.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_ls_map.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7309,
+          9564
+        ],
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "bounds": [
+          180690.0,
+          1250160.0,
+          467610.0,
+          1469430.0
+        ]
+      },
+      {
+        "member": "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_VH.tif",
+        "crs": "EPSG:32644",
+        "pixel_size": [
+          30.0,
+          30.0
+        ],
+        "shape": [
+          7309,
+          9564
+        ],
+        "dtype": "float32",
+        "nodata": 0.0,
+        "bounds": [
+          180690.0,
+          1250160.0,
+          467610.0,
+          1469430.0
+        ]
+      }
+    ],
+    "extra_layers_present": {
+      "VV": true,
+      "VH": true,
+      "DEM": true,
+      "incidence_angle": true,
+      "layover_shadow_mask": true,
+      "scattering_area": false
+    },
+    "other_package_members": [
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_rgb.png.xml",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_shape.shx",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_VV.tif.xml",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_shape.dbf",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_rgb.png",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_inc_map.tif.xml",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_shape.prj",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_rgb.png.aux.xml",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A.png",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A.png.aux.xml",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_VH.tif.xml",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A.png.xml",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_shape.shp",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_ls_map.tif.xml",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A.log",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_dem.tif.xml",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A_rgb.kmz",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A.kmz",
+      "S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A/S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A.README.md.txt"
+    ],
+    "source_scene_zip": "data/raw/satellite/sentinel1/2023/S1A_IW_GRDH_1SDV_20231130T003226_20231130T003251_051439_06353D_9270.zip",
+    "source_scene_zip_exists": true
+  }
+]

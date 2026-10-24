@@ -39,7 +39,13 @@ def parse_log_text(text: str, log: Path) -> list[dict]:
 
 def log_entries() -> list[dict]:
     entries = []
-    for log in RAW.rglob("DOWNLOAD_LOG.txt"):
+    logs = list(RAW.rglob("DOWNLOAD_LOG.txt"))
+    # Some acquisition logs must remain outside data/raw because that tree is
+    # immutable; accept the project-level verification log as provenance too.
+    project_log = ROOT / "docs/DOWNLOAD_LOG.txt"
+    if project_log.is_file():
+        logs.append(project_log)
+    for log in logs:
         text = log.read_text(encoding="utf-8", errors="replace")
         entries.extend(parse_log_text(text, log))
     return entries

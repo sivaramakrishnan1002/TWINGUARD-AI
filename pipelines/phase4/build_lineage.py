@@ -20,6 +20,12 @@ def digest(path: Path) -> str:
 
 def provenance(path: Path) -> tuple[str, str]:
     rel = path.relative_to(ROOT).as_posix()
+    if rel.startswith("data/processed/sar_work/"):
+        return ("data/raw/satellite/hpy3_rtc/*.zip; data/raw/boundary/chennai_cma_boundary.geojson; data/processed/grid/cma_mask.tif; data/processed/labels_inspection/2015-09-01_EXPLORATORY_NOT_FINAL.tif; data/processed/labels_inspection/2015-10-14_EXPLORATORY_NOT_FINAL.tif; data/features/static/cell_table.parquet",
+                "pipelines/phase8/sar_labels.py")
+    if rel.startswith("data/features/labels/"):
+        return ("data/raw/satellite/hpy3_rtc/*.zip; data/raw/boundary/chennai_cma_boundary.geojson; data/processed/grid/cma_mask.tif; data/processed/labels_inspection/*2015*.tif; data/features/static/cell_table.parquet",
+                "pipelines/phase8/sar_labels.py; pipelines/phase8/load_labels.py")
     if rel.startswith("data/processed/terrain_cleaned/"):
         return ("data/features/terrain/elevation_m.tif; data/features/landcover/worldcover_2021_class.tif; data/features/hydrology/chennai_waterways.gpkg; data/raw/boundary/chennai_cma_boundary.geojson",
                 "pipelines/phase4/terrain_conditioning.py")

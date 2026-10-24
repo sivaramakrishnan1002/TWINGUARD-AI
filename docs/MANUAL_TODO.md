@@ -126,6 +126,16 @@ Official URL retried once with 180-second timeout and normal SSL on 2026-10-08. 
 - **Resolved:** the earlier Phase 4.1/4.4 package request is historical. `pyarrow` and `pytest` were installed by the user; the three aligned event Parquet files and static cell table were generated, tests passed, and lineage/raw audits were refreshed. See `STAGE_4_REPORT.md`.
 - Review the preliminary `data\processed\alignment\layer_registry.json` versus the corrected `layer_registry_complete.json`; decide later whether to archive the preliminary file under a distinct name or leave both. It was preserved to comply with the no-overwrite rule.
 
+## Stage 8 SAR validation — QGIS manual work
+
+These steps produce reference digitisation for comparison only. The PDF maps remain raw, read-only inputs; save any georeferenced image and digitised layer as new derived files under `data/processed/sar_work/manual_validation/`. Do not call the resulting SAR-derived labels ground truth.
+
+1. In QGIS, add the 13 Nov 2021 NRSC PDF and 7 Dec 2023 NDEM PDF as raster layers. Use the Georeferencer with several clearly identifiable map-grid intersections or labelled coordinates spread around each map, not a single control point. Record control-point coordinates, residual errors, target CRS EPSG:32644, transformation and output pixel size. If the PDF has no usable graticule/control points, stop and record that the map cannot be reliably georeferenced from the available page.
+2. Save each georeferenced raster as a new GeoTIFF under the manual-validation folder. Compare its coverage to the CMA boundary; the 2021 map is only a partial Chennai extent. Do not stretch or resample the raw PDF itself.
+3. Create a new polygon layer in EPSG:32644 and digitise only the visibly mapped inundation boundary. Add fields for event date/time shown on the page, source PDF filename, georeferencing method/error, digitiser, confidence and notes about ambiguous edges. Keep uncertain areas flagged rather than drawing false precision.
+4. For any December 2015 flood map that becomes available locally later, repeat the same steps and label it by the map's actual observation time. The existing November 2015 UNOSAT vectors are not a substitute for the 1–8 Dec peak.
+5. Compare digitised polygons with the SAR candidates only after documenting alignment error and the map's stated observation time. Report overlap metrics and visual mismatches; treat a map-only raster/vector as a reference with uncertainty, not field truth.
+
 ### Completion note — 2026-10-17
 
 The user installed the approved local packages into `.venv`; Phase 4 event and static Parquet outputs were generated and all pytest checks passed. The earlier Parquet/pytest installation task above is resolved. The coastline-source and preliminary-registry review items remain open.

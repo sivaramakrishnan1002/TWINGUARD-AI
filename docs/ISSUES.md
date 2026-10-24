@@ -170,3 +170,19 @@ Historical entries are dated 2026-10-08 unless another date is shown. SSL verifi
 - **OpenCity exact date correction.** The initial metadata row assigned the flood peak day to observed points although the local source only identifies 2015. Migration 007 cleared that unsupported day; the observed-point `event_date` remains NULL.
 - **Slow spatial sample.** The first broad `EXISTS` plan scanned too much of the building/flood layers and was canceled. The final reproducible sample uses a single repaired Nov 24 flood feature and verifies roads, buildings and cells through their GiST indexes. This is a representative index smoke test, not a workload benchmark.
 - **Final loader reruns.** A full rerun after corrections skipped catalogued sources by matching hash and row count; counts stayed unchanged, including 86 IMERG rows. Catalog count checks and provenance orphan checks both returned zero.
+
+
+## Stage 8 execution notes — 2026-10-25
+
+- Initial wildcard compilation attempt failed with exact error: `[Errno 22] Invalid argument: 'pipelines/phase8/*.py'`. PowerShell did not expand the wildcard for `py_compile`; enumerating each Python file fixed it.
+- First polygon export failed with exact error: `ModuleNotFoundError: No module named 'fiona'`. Fiona is absent; the installed `pyogrio` writer was used instead, with no package installation.
+- First processing metadata write failed with exact error: `TypeError: Object of type CRS is not JSON serializable`. Rasterio CRS metadata is now written as a string.
+- First Stage 8 loader attempt failed with exact error: `FileNotFoundError: Expected derived polygon GeoPackage was not created`. The loader expected a default path; it now resolves the GPKG path from the generated label registry.
+- Failed runs left their newly generated outputs in place to honor the no-overwrite/no-delete rule. The authoritative completed run is the one named by `stage8_outputs` in `data/features/labels/label_registry.json`; earlier duplicate outputs remain unused.
+- Method warning: the primary data-derived Otsu threshold predicts 363.49 km² on 24 Nov 2015, while the evaluation-mask UNOSAT area is 37.93 km² (gross source raster is 98.16 km²). Dec 6 and 2021 candidates are 482.38 and 398.60 km². These are weak candidate maps, not validated extents. The sensitivity offset with best F1 was not substituted as the main threshold because it is only a diagnostic.
+- GFD 4309 comparison is coarse and not date-matched (GFD ends 4 Dec; SAR candidate is 6 Dec); raster comparison IoU is about 0.040. OpenCity point overlap is spatial-only because event times are not established.
+- Raw audit refreshed after adding the Stage 8 RTC checksums to the project-level log: all 157 raw files have matching recorded hashes, 0 mismatches. The raw data tree was read-only throughout.
+
+- Full test run after adding RTC manifest rows first failed `test_manifest_hash_comes_from_latest_load_record` because the existing database snapshot still had the old manifest SHA-256. Refreshed only the snapshot with `tools.refresh_data_manifest` (130 current rows). The next run then exposed the fixed assertion `AssertionError: data_manifest; assert 130 == 117`; updated that test to derive the expected row count from `docs/DATA_MANIFEST.csv`. Final suite rerun follows.
+
+- Final verification after refreshing the manifest and updating its dynamic row-count test: `pytest -q` passed **38 tests, 0 failures** (one pre-existing deprecation warning). Raw audit passed for **157 files** with zero missing comparable hashes and zero mismatches.

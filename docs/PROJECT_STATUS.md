@@ -1,6 +1,6 @@
 # TwinGuard AI — project status
 
-**Updated 24 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Phase 3 feature preparation, Phase 4 preprocessing, and Stage 5 schema/load work are complete. Stage 7's twin schema, design-only API contracts, setup notes, and visualization/realtime plans are in place. The AI service has a tested FastAPI scaffold; the backend remains unimplemented because Java build tools are missing. A single-event Phase 9 susceptibility pilot was completed on November 2015 UNOSAT labels; this is not a forecast or field-validated result. The latest full pytest run is recorded in the Phase 9 completion notes below.
+**Updated 25 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Phase 3 feature preparation, Phase 4 preprocessing, and Stage 5 schema/load work are complete. Stage 7's twin schema, design-only API contracts, setup notes, and visualization/realtime plans are in place. The AI service has a tested FastAPI scaffold; the backend remains unimplemented because Java build tools are missing. A single-event Phase 9 susceptibility pilot was completed on November 2015 UNOSAT labels; this is not a forecast or field-validated result. The latest full pytest run is recorded in the Phase 9 completion notes below.
 
 ## Done
 
@@ -33,3 +33,13 @@
 ## Next
 
 Use `MANUAL_TODO.md` to resolve label, data-quality, routing-threshold and licence decisions. If a current Docker mirror is needed, rerun `tools/db_clone_to_docker.py` after reviewing migration 011; the prior clone predates that migration and the latest manifest snapshot. Set up Maven or Gradle before implementing the backend; follow `SETUP_TOOLS.md`. SAR label processing, live Kafka/Redis flows, Stage 8 and cross-event model evaluation have not started. The Phase 9 pilot does not validate performance for December 2015, 2021 or 2023.
+
+
+## Stage 8 — SAR flood label pilot (25 October 2026)
+
+Stage 8 preprocessing and the label pilot are complete. Thirteen local ASF HyP3 RTC ZIPs (3 from 2015, 6 from 2021, 4 from 2023) passed archive checks and source-scene matching. New SAR candidates were created for 24 Nov 2015, 6 Dec 2015 and 16 Nov 2021, with a reference on 19 Oct 2015 for the 2015 pilot. No 2023 flood label was created because the available images are all before the Michaung peak. All outputs are DERIVED, not ground truth. The 24 Nov comparison is weak (IoU 0.103, F1 0.187 at the data-derived Otsu threshold); a sensitivity offset improves scores but is not a validated threshold. The derived extents are large and should not be used as validated flood boundaries. See `PHASE8_SAR_LABELS.md`, `LABEL_DATASET.md`, and `PHASE8_LOG.md`.
+
+Four polygon candidate layers (45,096 polygons total) are in the separate PostGIS `labels` schema with source provenance and DERIVED flags. Database checks found no invalid or out-of-CMA geometries. The QGIS manual validation steps for map-only PDF references are in `MANUAL_TODO.md`. No new model training, later-stage work, or live flood physics was started.
+
+
+**Stage 8 verification:** current manifest snapshot is 130 rows (refreshed in the database), Stage 8 migration 013 is applied, and the latest full test suite reports 38 passed and 0 failed. The raw audit reports 157 of 157 files checksum-matched with no mismatches.

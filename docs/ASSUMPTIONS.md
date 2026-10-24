@@ -35,3 +35,9 @@ Assumptions are explicit modelling choices, not verified observations. Where the
 | A-29 | The Phase 9 uncertainty pilot uses 20 resampled fits of the cross-validation-selected model. Its 5th–95th percentile range reflects model/resampling variability, not full uncertainty in labels or sources. | Bounded bootstrap pilot. | `PHASE9_MODEL_REGISTRY.json`. |
 
 The register captures assumptions evidenced in the current project docs and later pilot work; it does not make unrecorded historical choices verifiable. Review A-11 through A-20 and A-26 through A-29 before interpreting model results.
+
+
+| A-30 | HyP3 RTC Gamma-0 values are treated as linear power before filtering and conversion to dB. | Product README and raster metadata; processing in Stage 8. | SAR difference labels. |
+| A-31 | Pixels with `built_up_fraction >= 0.5` are flagged as dense-urban and potentially unreliable for simple SAR flood thresholding. | Screening threshold for reporting metrics only; not a claim that every flagged pixel is wrong. | Stage 8 urban-excluded metrics. |
+| A-32 | Any nonzero cell from either 2015 UNOSAT baseline raster and any WorldCover water-fraction cell above zero are removed from the SAR candidate/evaluation mask. | User-approved mask rule, not a verified permanent-water classification. | Stage 8 label candidates. |
+| A-33 | Otsu threshold offsets in the sensitivity table are diagnostic only; the primary threshold is selected from the SAR values, not UNOSAT comparison scores. | Prevents selecting a validation threshold from the same reference used to score it. | 2015 pilot. |

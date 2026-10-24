@@ -1,0 +1,148 @@
+TwinGuard AI — ASF HyP3 RTC verification log
+
+Generated: 2026-10-24T23:51:12+05:30
+Archive folder on disk: data/raw/satellite/hpy3_rtc (existing spelling preserved; user request said hyp3_rtc)
+Raw data were inspected read-only. This log is kept in docs/ because data/raw is read-only.
+
+File name: S1A_IW_20151019T003131_DVP_RTC30_G_gpuned_5542.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T21:51:26+05:30
+File size (bytes): 862587218
+SHA-256: c474ef1def788080caf59c5a7febc6ab68c43e8b2fa5dc705e36121b3a593cf4
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T11:14:48+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20151019T003131_20151019T003200_008214_00B8EF_82E0
+
+File name: S1A_IW_20151124T003120_DVP_RTC30_G_gpuned_37FC.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T21:52:45+05:30
+File size (bytes): 858113503
+SHA-256: 214252ff29c60d46e3b9b435f6c078ff3a2600ef9ab66861ded8d87f36415730
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T11:13:39+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20151124T003120_20151124T003149_008739_00C723_AB80
+
+File name: S1A_IW_20151206T003120_DVP_RTC30_G_gpuned_D367.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T21:52:57+05:30
+File size (bytes): 864081864
+SHA-256: e8643bceade3520bdcc95651f9753abe759463456015244d250dd1a5b2ebe143
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T11:14:12+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20151206T003120_20151206T003149_008914_00CC1F_BEF9
+
+File name: S1A_IW_20211023T003148_DVP_RTC30_G_gpuned_5E62.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T23:28:52+05:30
+File size (bytes): 747530150
+SHA-256: 67ee31981d792e69a01d03622f9d4be7402896409c8bc22afe6363cb7c192e30
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T17:49:07+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20211023T003148_20211023T003213_040239_04C461_42A6
+
+File name: S1A_IW_20211023T003213_DVP_RTC30_G_gpuned_9DBF.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T23:28:40+05:30
+File size (bytes): 772207146
+SHA-256: 8f095b841d26f19762a68d6ad20e9e60bb5f46a73aa9a70b6b27656e94ffc3dc
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T17:49:16+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20211023T003213_20211023T003238_040239_04C461_000E
+
+File name: S1A_IW_20211104T003147_DVP_RTC30_G_gpuned_97D3.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T23:29:43+05:30
+File size (bytes): 747576780
+SHA-256: b1c6642ea96d2af8ea07c2d01ad11c1065ec235a4f38f08aa52eb28c58c9fe35
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T17:48:59+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20211104T003147_20211104T003212_040414_04CA78_AD56
+
+File name: S1A_IW_20211104T003212_DVP_RTC30_G_gpuned_F95E.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T23:30:07+05:30
+File size (bytes): 770226566
+SHA-256: c5b41d05e169ec0279d79085c323defdf30a21da1501f47c53f8828f530dd154
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T17:49:13+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20211104T003212_20211104T003237_040414_04CA78_20F6
+
+File name: S1A_IW_20211116T003147_DVP_RTC30_G_gpuned_555C.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T23:30:30+05:30
+File size (bytes): 746341982
+SHA-256: 809be95b56d025a38cafe462b2295609c9bfe08e14d54f35b49ed9cd283586d3
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T17:49:07+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20211116T003147_20211116T003212_040589_04D094_DB41
+
+File name: S1A_IW_20211116T003212_DVP_RTC30_G_gpuned_576C.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T23:30:23+05:30
+File size (bytes): 772071794
+SHA-256: 554040cad60f1acc811c0b9f43de0ac564f85720f8db0e98e734799c9536eff7
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T17:48:59+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20211116T003212_20211116T003237_040589_04D094_B07B
+
+File name: S1A_IW_20231118T003202_DVP_RTC30_G_gpuned_0348.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T23:27:17+05:30
+File size (bytes): 760518504
+SHA-256: 92d8137395c26cd5d1fe22ea1ae0b2a530191a6876d6fe6b72e0a3550557bb31
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T16:51:52+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20231118T003202_20231118T003227_051264_062F3A_F481
+
+File name: S1A_IW_20231118T003227_DVP_RTC30_G_gpuned_D599.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T23:26:54+05:30
+File size (bytes): 774113567
+SHA-256: 1c820105490dea06f39032bcd4d85db0ca691bec88e4da341bbabd24cd5a8884
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T16:51:36+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20231118T003227_20231118T003252_051264_062F3A_94DE
+
+File name: S1A_IW_20231130T003201_DVP_RTC30_G_gpuned_6E84.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T23:23:18+05:30
+File size (bytes): 758516662
+SHA-256: 2b74b05859cb86379649bda9c32dedef6c429ead95456411c048bbd889966f0b
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T16:51:20+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20231130T003201_20231130T003226_051439_06353D_343D
+
+File name: S1A_IW_20231130T003226_DVP_RTC30_G_gpuned_F43A.zip
+Source: ASF HyP3 On Demand RTC GAMMA, user job
+Download date/time (filesystem date): 2026-10-24T23:27:17+05:30
+File size (bytes): 772483756
+SHA-256: e65a6f6ceb516f4405edd14ff782f7cb854f3129c6768db9c1a8ef0dd33d658f
+Licence: TO CONFIRM (Copernicus Sentinel data via ASF)
+Options from filename / product metadata: DVP_RTC30_G_gpuned (dual-pol VV/VH; RTC30 GAMMA gamma0 power; unmasked; no speckle filter; entire area; DEM-matched)
+Product processing time (embedded README): 2026-10-24T16:51:01+00:00
+ZIP CRC integrity: PASS; entries: 25
+Source Sentinel-1 scene: S1A_IW_GRDH_1SDV_20231130T003226_20231130T003251_051439_06353D_9270

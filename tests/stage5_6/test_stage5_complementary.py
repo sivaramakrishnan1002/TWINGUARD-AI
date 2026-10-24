@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+import csv
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -12,13 +13,15 @@ from pipelines.stage5.db_common import make_engine  # noqa: E402
 
 
 def test_stage5_complementary_source_rows_and_catalog_are_complete():
+    with (ROOT/"docs/DATA_MANIFEST.csv").open(encoding="utf-8-sig",newline="") as manifest_file:
+        manifest_rows=len(list(csv.DictReader(manifest_file)))
     engine=make_engine()
     try:
         with engine.connect() as conn:
             expected={
                 "road_nodes":508854,"grid_cells":1319380,"building_footprints":382294,
                 "observation_records":266773,"flood_labels":21927,"sentinel_scenes":13,
-                "data_manifest":117,
+                "data_manifest":manifest_rows,
             }
             for table,count in expected.items():
                 actual=conn.execute(text(f"SELECT count(*) FROM twinguard.{table}")).scalar_one()

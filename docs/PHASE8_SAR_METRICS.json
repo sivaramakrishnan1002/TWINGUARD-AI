@@ -1,0 +1,549 @@
+{
+  "metrics": {
+    "2015-11-24": {
+      "otsu_difference_threshold_db": 0.7829901948571205,
+      "otsu_event_vv_threshold_db": -2.723565163090825,
+      "candidate_methods": {
+        "difference_otsu": {
+          "with_dense_urban": {
+            "pixels": 1196220,
+            "confusion_matrix_TP_FP_FN_TN": [
+              41614,
+              362265,
+              532,
+              791809
+            ],
+            "precision": 0.10303581023029175,
+            "recall": 0.987377212546861,
+            "f1": 0.18659940586290005,
+            "iou": 0.10290026730232363,
+            "predicted_area_km2": 363.4911,
+            "UNOSAT_label_area_km2": 37.9314
+          },
+          "without_dense_urban": {
+            "pixels": 669536,
+            "confusion_matrix_TP_FP_FN_TN": [
+              41248,
+              258036,
+              434,
+              369818
+            ],
+            "precision": 0.1378222691490357,
+            "recall": 0.9895878316779425,
+            "f1": 0.24194787750098254,
+            "iou": 0.1376226986700832,
+            "predicted_area_km2": 269.3556,
+            "UNOSAT_label_area_km2": 37.513799999999996
+          }
+        },
+        "event_backscatter_otsu": {
+          "with_dense_urban": {
+            "pixels": 1196220,
+            "confusion_matrix_TP_FP_FN_TN": [
+              42133,
+              711602,
+              13,
+              442472
+            ],
+            "precision": 0.05589895652981486,
+            "recall": 0.999691548426897,
+            "f1": 0.1058776374860061,
+            "iou": 0.05589799243248406,
+            "predicted_area_km2": 678.3615,
+            "UNOSAT_label_area_km2": 37.9314
+          },
+          "without_dense_urban": {
+            "pixels": 669536,
+            "confusion_matrix_TP_FP_FN_TN": [
+              41671,
+              554709,
+              11,
+              73145
+            ],
+            "precision": 0.0698732351856199,
+            "recall": 0.9997360971162612,
+            "f1": 0.1306174008168485,
+            "iou": 0.06987194642440948,
+            "predicted_area_km2": 536.742,
+            "UNOSAT_label_area_km2": 37.513799999999996
+          }
+        }
+      },
+      "threshold_sensitivity_change_otsu_offset_db": [
+        {
+          "threshold_db": -2.2170098051428795,
+          "offset_db": -3,
+          "with_dense_urban": {
+            "pixels": 1196220,
+            "confusion_matrix_TP_FP_FN_TN": [
+              39407,
+              63155,
+              2739,
+              1090919
+            ],
+            "precision": 0.384226126635596,
+            "recall": 0.9350116262516016,
+            "f1": 0.5446416231307184,
+            "iou": 0.3742319636090825,
+            "predicted_area_km2": 92.30579999999999,
+            "UNOSAT_label_area_km2": 37.9314
+          },
+          "without_dense_urban": {
+            "pixels": 669536,
+            "confusion_matrix_TP_FP_FN_TN": [
+              39114,
+              57023,
+              2568,
+              570831
+            ],
+            "precision": 0.40685688132560827,
+            "recall": 0.9383906722326184,
+            "f1": 0.5676140445076514,
+            "iou": 0.396271718757915,
+            "predicted_area_km2": 86.52329999999999,
+            "UNOSAT_label_area_km2": 37.513799999999996
+          }
+        },
+        {
+          "threshold_db": -1.2170098051428795,
+          "offset_db": -2,
+          "with_dense_urban": {
+            "pixels": 1196220,
+            "confusion_matrix_TP_FP_FN_TN": [
+              40595,
+              107028,
+              1551,
+              1047046
+            ],
+            "precision": 0.2749910244338619,
+            "recall": 0.9631993546244009,
+            "f1": 0.4278359479156237,
+            "iou": 0.2721318728464746,
+            "predicted_area_km2": 132.8607,
+            "UNOSAT_label_area_km2": 37.9314
+          },
+          "without_dense_urban": {
+            "pixels": 669536,
+            "confusion_matrix_TP_FP_FN_TN": [
+              40283,
+              90445,
+              1399,
+              537409
+            ],
+            "precision": 0.30814362646104887,
+            "recall": 0.9664363514226765,
+            "f1": 0.46729308044776985,
+            "iou": 0.30488091003352835,
+            "predicted_area_km2": 117.6552,
+            "UNOSAT_label_area_km2": 37.513799999999996
+          }
+        },
+        {
+          "threshold_db": -0.21700980514287949,
+          "offset_db": -1,
+          "with_dense_urban": {
+            "pixels": 1196220,
+            "confusion_matrix_TP_FP_FN_TN": [
+              41235,
+              194084,
+              911,
+              959990
+            ],
+            "precision": 0.175230219404298,
+            "recall": 0.9783846628387035,
+            "f1": 0.29722667723857066,
+            "iou": 0.17455445963679464,
+            "predicted_area_km2": 211.78709999999998,
+            "UNOSAT_label_area_km2": 37.9314
+          },
+          "without_dense_urban": {
+            "pixels": 669536,
+            "confusion_matrix_TP_FP_FN_TN": [
+              40902,
+              149766,
+              780,
+              478088
+            ],
+            "precision": 0.21451947888476305,
+            "recall": 0.9812868864257953,
+            "f1": 0.3520723047127179,
+            "iou": 0.21364548075717688,
+            "predicted_area_km2": 171.6012,
+            "UNOSAT_label_area_km2": 37.513799999999996
+          }
+        },
+        {
+          "threshold_db": 0.7829901948571205,
+          "offset_db": 0,
+          "with_dense_urban": {
+            "pixels": 1196220,
+            "confusion_matrix_TP_FP_FN_TN": [
+              41614,
+              362265,
+              532,
+              791809
+            ],
+            "precision": 0.10303581023029175,
+            "recall": 0.987377212546861,
+            "f1": 0.18659940586290005,
+            "iou": 0.10290026730232363,
+            "predicted_area_km2": 363.4911,
+            "UNOSAT_label_area_km2": 37.9314
+          },
+          "without_dense_urban": {
+            "pixels": 669536,
+            "confusion_matrix_TP_FP_FN_TN": [
+              41248,
+              258036,
+              434,
+              369818
+            ],
+            "precision": 0.1378222691490357,
+            "recall": 0.9895878316779425,
+            "f1": 0.24194787750098254,
+            "iou": 0.1376226986700832,
+            "predicted_area_km2": 269.3556,
+            "UNOSAT_label_area_km2": 37.513799999999996
+          }
+        },
+        {
+          "threshold_db": 1.7829901948571205,
+          "offset_db": 1,
+          "with_dense_urban": {
+            "pixels": 1196220,
+            "confusion_matrix_TP_FP_FN_TN": [
+              41879,
+              596911,
+              267,
+              557163
+            ],
+            "precision": 0.06555988666071792,
+            "recall": 0.9936648792293457,
+            "f1": 0.12300421772383896,
+            "iou": 0.0655324955363919,
+            "predicted_area_km2": 574.911,
+            "UNOSAT_label_area_km2": 37.9314
+          },
+          "without_dense_urban": {
+            "pixels": 669536,
+            "confusion_matrix_TP_FP_FN_TN": [
+              41466,
+              399513,
+              216,
+              228341
+            ],
+            "precision": 0.09403168858381011,
+            "recall": 0.9948179070102202,
+            "f1": 0.17182245924157952,
+            "iou": 0.09398565260259069,
+            "predicted_area_km2": 396.8811,
+            "UNOSAT_label_area_km2": 37.513799999999996
+          }
+        },
+        {
+          "threshold_db": 2.7829901948571205,
+          "offset_db": 2,
+          "with_dense_urban": {
+            "pixels": 1196220,
+            "confusion_matrix_TP_FP_FN_TN": [
+              42044,
+              809549,
+              102,
+              344525
+            ],
+            "precision": 0.04937100234501693,
+            "recall": 0.9975798415033456,
+            "f1": 0.09408563350150323,
+            "iou": 0.04936508961541397,
+            "predicted_area_km2": 766.4336999999999,
+            "UNOSAT_label_area_km2": 37.9314
+          },
+          "without_dense_urban": {
+            "pixels": 669536,
+            "confusion_matrix_TP_FP_FN_TN": [
+              41592,
+              511888,
+              90,
+              115966
+            ],
+            "precision": 0.07514634675146346,
+            "recall": 0.9978407945875918,
+            "f1": 0.13976698781172184,
+            "iou": 0.07513412937839839,
+            "predicted_area_km2": 498.132,
+            "UNOSAT_label_area_km2": 37.513799999999996
+          }
+        },
+        {
+          "threshold_db": 3.7829901948571205,
+          "offset_db": 3,
+          "with_dense_urban": {
+            "pixels": 1196220,
+            "confusion_matrix_TP_FP_FN_TN": [
+              42097,
+              951054,
+              49,
+              203020
+            ],
+            "precision": 0.04238731069092212,
+            "recall": 0.9988373748398425,
+            "f1": 0.08132352358791728,
+            "iou": 0.042385219492549336,
+            "predicted_area_km2": 893.8358999999999,
+            "UNOSAT_label_area_km2": 37.9314
+          },
+          "without_dense_urban": {
+            "pixels": 669536,
+            "confusion_matrix_TP_FP_FN_TN": [
+              41639,
+              571631,
+              43,
+              56223
+            ],
+            "precision": 0.0678966849837755,
+            "recall": 0.9989683796362938,
+            "f1": 0.12715130269088423,
+            "iou": 0.0678919246779377,
+            "predicted_area_km2": 551.943,
+            "UNOSAT_label_area_km2": 37.513799999999996
+          }
+        }
+      ],
+      "evaluation_pixels": 1196220,
+      "dense_urban_pixels_in_evaluation": 526684,
+      "dense_urban_share_evaluation": 0.44029024761331526,
+      "gross_UNOSAT_rasterized_CMA_area_km2": 98.1603,
+      "gross_UNOSAT_source": "data/processed/labels_inspection/label_inspection_summary.json; source rasterization summary",
+      "evaluation_UNOSAT_area_after_common_valid_and_water_masks_km2": 37.9314,
+      "evaluation_UNOSAT_area_excluding_dense_urban_km2": 37.5138
+    },
+    "2015-12-06": {
+      "otsu_difference_db": -0.3335430882871151,
+      "otsu_event_vv_db": -3.0892558563500643,
+      "valid_land_pixels": 1196210,
+      "flooded_pixels": 535976,
+      "flooded_area_km2": 482.3784,
+      "comparison_with_24_nov_candidate_area_change_km2": 118.88729999999998,
+      "GFD_4309_cross_check": {
+        "status": "computed coarse spatial cross-check; dates differ (GFD ends 2015-12-04; SAR candidate is 2015-12-06)",
+        "member": "DFO_4309_From_20151110_to_20151204.tif",
+        "band": 1,
+        "band_description": "flooded",
+        "crs": "EPSG:4326",
+        "native_resolution_degrees": [
+          0.002245788210298804,
+          0.002245788210298804
+        ],
+        "cma_pixels_compared": 1190209,
+        "gfd_flood_pixels_in_cma": 32929,
+        "sar_candidate_pixels_in_cma": 532531,
+        "coarse_raster_iou": 0.03956700947534462
+      },
+      "OpenCity_observed_point_cross_check": {
+        "status": "computed spatial overlap only; event dates are unspecified/mismatched",
+        "point_count": 945,
+        "points_in_candidate_flood": 399,
+        "share_in_candidate_flood": 0.4222222222222222,
+        "source_files": [
+          "1bfef958-d4cc-4e50-a926-445e65bac7a8.kml",
+          "61f1f06f-1fa1-4ef0-94c7-224d892efbef.kml",
+          "7f29da20-6621-4b49-b0cf-28b9d1de232b.kml",
+          "814ca028-4c84-4bd0-aa67-6dbaeb9b6ba5.kml",
+          "93d2905a-a580-482d-96b0-4d9ccf5273ef.kml",
+          "994a99a1-6104-40c7-ac10-2b7a7ab74437.kml",
+          "a6b20b7c-d771-4572-a2c7-9d8c125e6e5d.kml",
+          "a6b4f2b1-f2b4-4dbc-93da-37be6dc7a345.kml",
+          "ef3286de-1c9b-41a2-a5f2-a075863e26f6.kml"
+        ]
+      },
+      "limitations": [
+        "GFD event 4309 ends 4 Dec; candidate is 6 Dec, so dates differ.",
+        "OpenCity points have no reliable event timestamp in the inspected source metadata; spatial overlap is not a date-matched validation."
+      ]
+    },
+    "2021-11-16": {
+      "otsu_difference_db": -0.4971337355673313,
+      "otsu_event_vv_db": -2.8804477471858263,
+      "valid_land_pixels": 1196226,
+      "flooded_pixels": 442888,
+      "flooded_area_km2": 398.5992,
+      "NRSC_13_Nov_map_vector_comparison": "not computed: local NRSC map is PDF-only and manual digitising is reserved as a QGIS validation task",
+      "OpenCity_2021_points_comparison": "not computed: available OpenCity point resources are 2015 datasets, not 2021 observations"
+    }
+  },
+  "preprocessing": {
+    "grid": {
+      "transform": "| 30.00, 0.00, 389010.00|\n| 0.00,-30.00, 1472610.00|\n| 0.00, 0.00, 1.00|",
+      "height": 1826,
+      "width": 1436,
+      "crs": "EPSG:32644",
+      "buffer_window_offset": [
+        -33,
+        -33
+      ]
+    },
+    "resampling": "bilinear in RTC linear gamma-0 power; layover-shadow mask nearest neighbour",
+    "working_buffer_m": 3000.0,
+    "filter": {
+      "method": "Lee local-mean/variance",
+      "window_pixels": [
+        5,
+        5
+      ],
+      "noise_estimator": "median local variance among lowest 10% local coefficient-of-variation pixels per date and polarization",
+      "source_HyP3_filter": "off"
+    },
+    "layover_shadow": "valid only where mask is tested (mask != 0) and layover bit 4 and shadow bit 16 are both clear; fallback steep terrain >15 degrees only if a product lacks the mask",
+    "products": {
+      "2015-10-19": {
+        "valid_pixels_in_buffer": 1876727,
+        "adjacent_slice_overlap_pixels": 0,
+        "scene_timestamps": [
+          "20151019T003131"
+        ],
+        "VV_lee_noise_variance_linear_power": 0.00020997412502765656,
+        "VH_lee_noise_variance_linear_power": 2.4710316210985184e-05,
+        "valid_pixels_inside_CMA": 1319257
+      },
+      "2015-11-24": {
+        "valid_pixels_in_buffer": 1876732,
+        "adjacent_slice_overlap_pixels": 0,
+        "scene_timestamps": [
+          "20151124T003120"
+        ],
+        "VV_lee_noise_variance_linear_power": 0.0003662360832095146,
+        "VH_lee_noise_variance_linear_power": 5.3651281632483006e-05,
+        "valid_pixels_inside_CMA": 1319262
+      },
+      "2015-12-06": {
+        "valid_pixels_in_buffer": 1876725,
+        "adjacent_slice_overlap_pixels": 0,
+        "scene_timestamps": [
+          "20151206T003120"
+        ],
+        "VV_lee_noise_variance_linear_power": 0.00020508095622062683,
+        "VH_lee_noise_variance_linear_power": 4.1603343561291695e-05,
+        "valid_pixels_inside_CMA": 1319255
+      },
+      "2021-10-23": {
+        "valid_pixels_in_buffer": 1876733,
+        "adjacent_slice_overlap_pixels": 1609,
+        "scene_timestamps": [
+          "20211023T003148",
+          "20211023T003213"
+        ],
+        "VV_lee_noise_variance_linear_power": 0.0003446880728006363,
+        "VH_lee_noise_variance_linear_power": 2.6088266167789698e-05,
+        "valid_pixels_inside_CMA": 1319263
+      },
+      "2021-11-04": {
+        "valid_pixels_in_buffer": 1876743,
+        "adjacent_slice_overlap_pixels": 1613,
+        "scene_timestamps": [
+          "20211104T003147",
+          "20211104T003212"
+        ],
+        "VV_lee_noise_variance_linear_power": 0.0002374686300754547,
+        "VH_lee_noise_variance_linear_power": 4.841969348490238e-05,
+        "valid_pixels_inside_CMA": 1319273
+      },
+      "2021-11-16": {
+        "valid_pixels_in_buffer": 1876739,
+        "adjacent_slice_overlap_pixels": 1615,
+        "scene_timestamps": [
+          "20211116T003147",
+          "20211116T003212"
+        ],
+        "VV_lee_noise_variance_linear_power": 0.0005154833197593689,
+        "VH_lee_noise_variance_linear_power": 4.262092988938093e-05,
+        "valid_pixels_inside_CMA": 1319269
+      }
+    },
+    "registration": {
+      "master_crs": "EPSG:32644",
+      "master_resolution_m": 30,
+      "working_grid_pixel_offset_from_master": [
+        -33,
+        -33
+      ],
+      "working_grid_30m_aligned": true,
+      "master_alignment_check": "all final label rasters use the exact master transform, dimensions and CRS",
+      "polygon_simplification_tolerance_m": 30.0,
+      "polygons": {
+        "2015-11-24_change": {
+          "polygon_count": 13768,
+          "simplification_tolerance_m": 30.0,
+          "is_valid_expected": true
+        },
+        "2015-11-24_event": {
+          "polygon_count": 3779,
+          "simplification_tolerance_m": 30.0,
+          "is_valid_expected": true
+        },
+        "2015-12-06_change": {
+          "polygon_count": 11763,
+          "simplification_tolerance_m": 30.0,
+          "is_valid_expected": true
+        },
+        "2021-11-16_change": {
+          "polygon_count": 15786,
+          "simplification_tolerance_m": 30.0,
+          "is_valid_expected": true
+        }
+      }
+    },
+    "grid_alignment": {
+      "permanent_water_definition": "any non-zero class in each Sep/Oct UNOSAT baseline OR WorldCover water fraction > 0",
+      "baseline_cma_nodata_pixels": {
+        "2015-09-01_EXPLORATORY_NOT_FINAL.tif": 0,
+        "2015-10-14_EXPLORATORY_NOT_FINAL.tif": 0
+      },
+      "baseline_union_pixels_in_cma": 80311,
+      "worldcover_water_cells_in_cma": 84205,
+      "dense_urban_flag": "built_up_fraction >= 0.5; treated as potentially unreliable due to urban SAR scattering",
+      "cma_valid_source_labels_have_nodata": false
+    },
+    "speckle_noise_estimates": {
+      "2015-10-19": {
+        "VV_lee_noise_variance_linear_power": 0.00020997412502765656,
+        "VH_lee_noise_variance_linear_power": 2.4710316210985184e-05
+      },
+      "2015-11-24": {
+        "VV_lee_noise_variance_linear_power": 0.0003662360832095146,
+        "VH_lee_noise_variance_linear_power": 5.3651281632483006e-05
+      },
+      "2015-12-06": {
+        "VV_lee_noise_variance_linear_power": 0.00020508095622062683,
+        "VH_lee_noise_variance_linear_power": 4.1603343561291695e-05
+      },
+      "2021-10-23": {
+        "VV_lee_noise_variance_linear_power": 0.0003446880728006363,
+        "VH_lee_noise_variance_linear_power": 2.6088266167789698e-05
+      },
+      "2021-11-04": {
+        "VV_lee_noise_variance_linear_power": 0.0002374686300754547,
+        "VH_lee_noise_variance_linear_power": 4.841969348490238e-05
+      },
+      "2021-11-16": {
+        "VV_lee_noise_variance_linear_power": 0.0005154833197593689,
+        "VH_lee_noise_variance_linear_power": 4.262092988938093e-05
+      }
+    }
+  },
+  "pilot_status": "DERIVED, not ground truth",
+  "database_load": {
+    "schema": "labels",
+    "table": "derived_flood_polygons",
+    "rows": 45096,
+    "by_event": {
+      "2015-11-24": 17547,
+      "2015-12-06": 11763,
+      "2021-11-16": 15786
+    },
+    "invalid_geometries": 0,
+    "outside_CMA": 0,
+    "wrong_srid": 0,
+    "missing_provenance": 0
+  },
+  "all_sar_outputs_are": "DERIVED, not ground truth"
+}

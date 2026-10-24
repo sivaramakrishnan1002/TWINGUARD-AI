@@ -8,8 +8,8 @@ Names, institution, guide/supervisor, deadlines and role assignments are **[TO B
 
 - Project root is `D:\TIWNGUARD`, branch `main`. [repo: current Git state]
 - Python dependencies are pinned in `requirements.txt`. The Phase 3 report says to use `.venv` and records no global package installation. [repo: `requirements.txt`, `docs/PHASE3_LOG.md`]
-- `docker-compose.yml` uses verified `postgis/postgis:18-3.6-alpine`, a named data volume at PostgreSQL 18's `/var/lib/postgresql` path, and a health check. It reads credentials from `.env`; `.env.example` contains no real secrets. Containers were not started. [repo: Compose files]
-- Local PostgreSQL 18.6/PostGIS 3.6.2 and the `twinguard` database are verified. Local scripts use port 5432; Compose defaults to host port 5433. A separate-database restore test remains pending the app role's `CREATEDB` privilege. [repo: `docs/STAGE_5_6_REPORT.md`]
+- `docker-compose.yml` uses `postgis/postgis:18-3.6-alpine`, the PostgreSQL 18 `/var/lib/postgresql` data path, a named volume, a health check and a localhost-only host mapping. Compose validation passed. The 24 Oct clone attempt found Docker Desktop's published-port/filesystem state inconsistent; the dump restore is pending. See [Team Setup](../TEAM_SETUP.md) and [Issues](../ISSUES.md). [repo: Compose files; current task]
+- Local PostgreSQL 18.6/PostGIS 3.6.2 and the `twinguard` database are verified. Local scripts use port 5432; Compose defaults to host port 5433. Do not print credentials; Compose reads `.env`. Follow [Team Setup](../TEAM_SETUP.md) for safe start, dump restore, verification and stop steps. Never run `docker compose down -v`. [repo: `docs/STAGE_5_6_REPORT.md`; user]
 - Never paste passwords, access tokens or real `.env` values into chat, Git or this handbook. Add `.env` locally and keep it untracked. [repo: `.gitignore`; user]
 
 ## Folder map

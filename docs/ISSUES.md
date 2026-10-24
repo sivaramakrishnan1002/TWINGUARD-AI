@@ -1,5 +1,13 @@
 # Phase 2 issues and failed requests
 
+## Docker database clone attempt — 2026-10-24
+
+- `docker compose config --quiet` passed after changing the published mapping to localhost-only. The first `docker compose up -d` recreated the prior container but failed to bind `127.0.0.1:5433` with: `ports are not available: exposing port TCP 127.0.0.1:5433 -> 127.0.0.1:0: listen tcp4 127.0.0.1:5433: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.` Retrying `docker compose up -d` said `Started`.
+- The local custom-format dump succeeded and was written as `backups/twinguard_20261024T050742Z.dump` (288,954,014 bytes). The folder is excluded from Git. Its runtime is approximately 93 seconds based on the UTC timestamp in the filename and the file modification time; the script's stopwatch value was not emitted. Restore runtime was not captured because the restore step failed before the script reached its report output.
+- `.venv\Scripts\python.exe tools\db_clone_to_docker.py` stopped at restore: `RuntimeError: pg_restore failed with exit code 1; client diagnostics withheld`. A sanitized diagnostic from the same attempt was: `pg_restore: error: connection to server at "[ENDPOINT]", port [ENDPOINT] failed: Connection refused (0x0000274D/10061)`.
+- Docker reported inconsistent state after the retry: `docker ps` showed the container running but with no published port; `docker inspect` showed no published ports, while another inspect read failed with `open /var/lib/docker/containers/.../hosts: read-only file system`. `docker compose logs --tail 25 db` also failed with `open /var/lib/docker/containers/.../local-logs/container.log: read-only file system`. The compose command did not remove the named volume. No restore or count comparison was verified.
+- Next action: recover Docker Desktop/engine state, confirm the service publishes on `127.0.0.1`, then rerun the helper. It refuses to overwrite a pre-existing `twinguard` target schema. Do not remove the volume to troubleshoot.
+
 ## Phase 4 completion update — 2026-10-17
 
 - The user installed packages in `.venv`. Verified versions with `importlib.metadata`: `pyarrow==26.0.0`, `pytest==9.1.1`, `colorama==0.4.6`, `iniconfig==2.3.1`, `pluggy==1.7.0`, `Pygments==2.21.0`. No package was installed in this turn and no network was used. These exact six pins were appended to `requirements.txt`; existing dependency lines were preserved.

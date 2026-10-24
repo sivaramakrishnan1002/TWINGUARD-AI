@@ -1,10 +1,10 @@
 # TwinGuard AI — project status
 
-**Updated 23 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Phase 3 feature preparation, Phase 4 preprocessing, and Stage 5 schema/load work are complete. The earlier Stage 6 backup/restore test passed before the latest Stage 5 extension tables were added, so it does not certify a restore of those new tables. The temporary `CREATEDB` grant was revoked after that earlier test. No containers or models were started.
+**Updated 24 October 2026.** TwinGuard AI is a flood Digital Twin project for Chennai. The current study boundary is the older CMA (about 1,187 km²), still provisional. Phase 3 feature preparation, Phase 4 preprocessing, and Stage 5 schema/load work are complete. The earlier Stage 6 restore test predates the latest Stage 5 extension tables. A Docker clone attempt created a private local backup, but the Docker restore was blocked by an unavailable published port and Docker's read-only container-filesystem error; table comparison is pending. See `TEAM_SETUP.md` and `ISSUES.md`. No Stage 7 work or models were started.
 
 ## Done
 
-- Project setup and PostgreSQL/PostGIS Compose files are present. Local PostgreSQL 18.6/PostGIS 3.6.2 is verified; containers were not started.
+- Project setup and PostgreSQL/PostGIS Compose files are present. Local PostgreSQL 18.6/PostGIS 3.6.2 is verified. Docker image `postgis/postgis:18-3.6-alpine` is installed. Compose validates with localhost-only binding; however, Docker Desktop reported inconsistent container/port state during the clone attempt, so Docker availability still needs recovery and a successful end-to-end check.
 - The raw-data folder has 144 data files. The corrected read-only size/SHA-256 audit matched all 144 files with zero mismatches and zero files lacking comparable hashes. Raw files were not edited.
 - There are 13 verified ASF Sentinel-1 ZIPs. All passed ZIP checks and metadata/name matching. This includes a 6 Dec 2015 scene within the flood window and two 16 Nov 2021 post-peak scenes. Sentinel files remain raw and unprocessed.
 - Phase 3 created a shared 30 m EPSG:32644 grid, terrain and land-cover features, WorldPop aggregation, rainfall and reservoir tables, OSM road/facility/building/waterway layers, and exploratory flood-label inspection layers.
@@ -29,4 +29,4 @@
 
 ## Next
 
-Use `MANUAL_TODO.md` to resolve the boundary vintage, label, data-quality, routing-threshold and licence decisions. A full restore check for the newest Stage 5 tables would require an authorized temporary PostGIS database; the earlier restore check covered only the prior seven tables. Review `STAGE5_RECONCILIATION.md` and `STAGE_5_6_REPORT.md` before later work. SAR label processing, Stage 7 and model training have not started.
+Use `MANUAL_TODO.md` to resolve the boundary vintage, label, data-quality, routing-threshold and licence decisions. Recover Docker Desktop's port/filesystem state, then rerun `tools/db_clone_to_docker.py` to complete the table-count and PostGIS comparison. Review `TEAM_SETUP.md`, `STAGE5_RECONCILIATION.md` and `STAGE_5_6_REPORT.md` before later work. SAR label processing, Stage 7 and model training have not started.

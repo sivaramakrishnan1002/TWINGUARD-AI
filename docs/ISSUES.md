@@ -15,7 +15,44 @@
 - The local custom-format dump succeeded and was written as `backups/twinguard_20261024T050742Z.dump` (288,954,014 bytes). The folder is excluded from Git. Its runtime is approximately 93 seconds based on the UTC timestamp in the filename and the file modification time; the script's stopwatch value was not emitted. Restore runtime was not captured because the restore step failed before the script reached its report output.
 - `.venv\Scripts\python.exe tools\db_clone_to_docker.py` stopped at restore: `RuntimeError: pg_restore failed with exit code 1; client diagnostics withheld`. A sanitized diagnostic from the same attempt was: `pg_restore: error: connection to server at "[ENDPOINT]", port [ENDPOINT] failed: Connection refused (0x0000274D/10061)`.
 - Docker reported inconsistent state after the retry: `docker ps` showed the container running but with no published port; `docker inspect` showed no published ports, while another inspect read failed with `open /var/lib/docker/containers/.../hosts: read-only file system`. `docker compose logs --tail 25 db` also failed with `open /var/lib/docker/containers/.../local-logs/container.log: read-only file system`. The compose command did not remove the named volume. No restore or count comparison was verified.
-- Next action: recover Docker Desktop/engine state, confirm the service publishes on `127.0.0.1`, then rerun the helper. It refuses to overwrite a pre-existing `twinguard` target schema. Do not remove the volume to troubleshoot.
+- At the time of this failed attempt, the helper refused to overwrite a pre-existing `twinguard` target schema. Docker reachability was later restored and the retry is recorded below; no volume removal was used.
+
+## Docker clone retry — resolved 2026-10-24
+
+- Docker was reachable on the configured loopback port. The old 288,954,014-byte dump was older than the latest local migration (010), so the helper made a fresh local archive. Before replacing the partial Docker copy, it preserved both existing project schemas in a separate ignored pre-clone dump. No Compose shutdown, volume deletion, or raw-data change occurred.
+- Updated `tools/db_clone_to_docker.py` to include both `twinguard` and `twin`, compare every base table in both schemas, and check all PostGIS geometry columns. The original flood-label (54) and flood-reference (235) geometries are intentionally retained invalid source geometries; their repaired columns are valid. The comparison accepts only those documented original counts, requires repaired/effective geometries valid, and requires matching SRIDs.
+- Timings: fresh local dump 55.052 s; Docker pre-clone backup 53.681 s; restore 69.831 s; total including row counts and geometry checks 255.902 s. Fresh dump size 288,988,977 bytes; pre-clone backup size 242,582,654 bytes. Both are under ignored `backups/` and were not committed.
+- All 24 base-table counts matched:
+
+| Schema.table | Rows |
+|---|---:|
+| `twin.alerts` | 0 |
+| `twin.event_replays` | 3 |
+| `twin.facility_state` | 0 |
+| `twin.grid_state_artifacts` | 0 |
+| `twin.model_versions` | 0 |
+| `twin.reservoir_state` | 0 |
+| `twin.reservoirs` | 4 |
+| `twin.road_edge_state` | 0 |
+| `twin.scenarios` | 0 |
+| `twin.state_runs` | 0 |
+| `twinguard.building_footprints` | 382,294 |
+| `twinguard.data_manifest` | 117 |
+| `twinguard.dataset_catalog` | 59 |
+| `twinguard.facilities` | 15,413 |
+| `twinguard.flood_labels` | 21,927 |
+| `twinguard.flood_references` | 10,419 |
+| `twinguard.grid_cells` | 1,319,380 |
+| `twinguard.observation_records` | 266,773 |
+| `twinguard.road_edges` | 455,285 |
+| `twinguard.road_nodes` | 508,854 |
+| `twinguard.schema_migrations` | 10 |
+| `twinguard.sentinel_scenes` | 13 |
+| `twinguard.study_area` | 1 |
+| `twinguard.waterways` | 759 |
+
+- Twenty geometry columns matched between local and Docker; repaired columns and all other geometries passed validity checks, the 289 original-invalid geometries matched their expected preserved source counts, and there were zero SRID mismatches.
+- Secret-safety scan: `.gitignore` and `requirements.txt` contain no `.env` values. `docker-compose.yml` contains no password value, but contains non-secret `.env` values used for the configured database name and PostgreSQL port; it is therefore left uncommitted under the instruction not to commit any `.env` value. No `.env` values were printed.
 
 ## Phase 4 completion update — 2026-10-17
 

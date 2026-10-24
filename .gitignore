@@ -6,6 +6,7 @@
 *.tiff
 *.pbf
 *.zip
+/backups/
 
 # Local environments and secrets
 /.venv/

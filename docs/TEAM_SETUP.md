@@ -1,6 +1,6 @@
 # Team setup: local PostGIS database
 
-These instructions are for a teammate using the project on Windows with Docker Desktop and Docker Compose. The service uses the local image `postgis/postgis:18-3.6-alpine`, publishes PostgreSQL only on `127.0.0.1`, and keeps data in the named volume `tiwnguard_postgres_data`.
+These instructions are for a teammate using the project on Windows with Docker Desktop and Docker Compose. The service uses the local image `postgis/postgis:18-3.6-alpine`, publishes PostgreSQL only on `127.0.0.1`, and keeps data in the named Compose volume `twinguard_postgres_data` (with the Compose project prefix added to its Docker volume name).
 
 ## Keep secrets and dumps private
 
@@ -23,7 +23,7 @@ Wait until the `db` service reports `healthy`. The default host port is 5433, co
 
 ## Restore a privately shared dump
 
-Only restore a project dump into a fresh, empty project database. Do not restore over a database that already contains a `twinguard` schema. Replace the example file name below with the exact privately shared archive name; keep the original dump in the ignored `backups/` folder.
+For a manual restore, use a fresh, empty project database. Do not restore over a database that already contains project schemas. Replace the example file name below with the exact privately shared archive name; keep the original dump in the ignored `backups/` folder.
 
 ```powershell
 docker cp backups\twinguard_shared.dump tiwnguard-db-1:/tmp/twinguard_shared.dump
@@ -41,9 +41,9 @@ List loaded tables and compare their counts with the checked-in Stage 5 report:
 docker compose exec -T db sh -lc 'psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT schemaname, tablename FROM pg_tables WHERE schemaname = $$twinguard$$ ORDER BY tablename;"'
 ```
 
-For row counts, use the table totals in [Stage 5 and 6 report](STAGE_5_6_REPORT.md). The project clone helper, `tools/db_clone_to_docker.py`, creates a local custom-format dump, restores to an empty Docker database, compares all local and Docker table counts, and compares PostGIS geometry-validity and SRID checks. It is for machines that also have the local `twinguard` database; it intentionally refuses to overwrite a populated Docker target.
+For row counts, use the table totals in [Stage 5 and 6 report](STAGE_5_6_REPORT.md). The project clone helper, `tools/db_clone_to_docker.py`, reuses a local custom-format dump only when it is at least as new as the latest recorded migration; otherwise it creates a fresh dump. It first saves any existing Docker `twinguard` and `twin` schemas to a separate ignored pre-clone archive, then replaces those schemas, restores both schemas, compares every table count, and compares PostGIS validity and SRID checks. Run it only when the intention is to make Docker match local; the pre-clone archive is the recovery copy. It requires the local database, PostgreSQL client tools, and a healthy Docker database.
 
-For a spot-check of geometry validity and SRIDs in a restored copy, first list its geometry columns:
+For a spot-check of geometry validity and SRIDs in a restored copy, first list its geometry columns, including repaired and original-preserved geometry columns:
 
 ```powershell
 docker compose exec -T db sh -lc 'psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT f_table_name, f_geometry_column, srid FROM geometry_columns WHERE f_table_schema = $$twinguard$$ ORDER BY 1,2;"'
@@ -70,4 +70,4 @@ This stops the container and preserves the named database volume. **Do not run `
 
 ## Current verification note
 
-On 24 October 2026, `docker compose config --quiet` passed and the compose file was changed to localhost-only binding. The first recreate hit a transient 5433 bind conflict. A subsequent `docker compose up -d` reported the container started, but Docker then reported no published port and a read-only container-filesystem error; the restore ended with connection refused. A 288,954,014-byte dump was created under ignored `backups/`, but the Docker restore and comparisons are **not verified complete**. See [ISSUES.md](ISSUES.md). Do not treat the backup alone as proof that the team setup was verified.
+On 24 October 2026, the healthy Docker target was refreshed from local using `tools/db_clone_to_docker.py`. The helper created a fresh 288,988,977-byte local archive because the earlier dump predated migration 010, preserved the existing partial Docker schemas in a 242,582,654-byte pre-clone archive, restored both schemas, and matched every table count. Twenty geometry columns matched; the 54 and 235 invalid original polygon records were preserved as expected, repaired geometry columns were valid, and there were no SRID mismatches. Timings are recorded in `ISSUES.md`. Both archives are local-only under ignored `backups/`; share dumps privately, never through Git.

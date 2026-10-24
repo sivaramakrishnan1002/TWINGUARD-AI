@@ -43,6 +43,8 @@ The original Stage 5 closure covered migrations 001–008. Migration 009 records
 
 The five OSM tables retain their original buffered-extract rows and now have an indexed `in_cma` boolean. It is true when the EPSG:32644 feature geometry intersects the selected CMA polygon; a feature that only touches the boundary is therefore counted inside. Use `WHERE in_cma` (or `NOT in_cma`) for CMA-only analysis. The `v_roads`, `v_facilities`, `v_waterways`, and new `v_buildings` views expose the flag; road, facility and waterway vector tiles also carry it. Full facility category counts are in `CMA_FACILITY_COUNTS.csv`.
 
+Migration `012_cma_target_facilities_view.sql` adds `v_cma_target_facilities`, a CMA-only view limited to the seven target facility categories: hospital, clinic, school, college, shelter, fire station and police. The expanded `CMA_FACILITY_COUNTS.csv` lists other in-CMA records by stored OSM source geometry type (`node` or `way`) and normalized facility category. The loaded schema does not preserve the original OSM amenity/shop tag key, so that CSV must not be interpreted as a complete breakdown by original OSM tag key.
+
 | Table | Inside | Outside | Total |
 |---|---:|---:|---:|
 | `road_edges` | 414,822 | 40,463 | 455,285 |

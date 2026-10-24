@@ -27,6 +27,11 @@ The manifest snapshot was refreshed in the follow-up below. FastAPI and Maven/Gr
 
 - Migration `011_add_in_cma_flags.sql` added a NOT NULL `in_cma` flag to road edges, road nodes, facilities, waterways and building footprints. It uses `ST_Intersects` against the selected EPSG:32644 study polygon. Every existing row was retained. The migrated views expose the flag, `v_buildings` was added, and road/facility/waterway vector-tile attributes include it.
 - Verified inside / outside / total counts: road edges **414,822 / 40,463 / 455,285**; road nodes **463,926 / 44,928 / 508,854**; facilities **15,162 / 251 / 15,413**; waterways **687 / 72 / 759**; buildings **375,832 / 6,462 / 382,294**. Recomputed every flag against `ST_Intersects`; all five tables had zero mismatches. Because the predicate is intersection, boundary-touching or crossing features count inside.
-- Recomputed selected CMA facility types: hospital 830, clinic 571, school 685, college 175, shelter 167, fire station 15, police 118. The complete breakdown of 299 database categories is in `CMA_FACILITY_COUNTS.csv`.
+- Recomputed selected CMA facility types: hospital 830, clinic 571, school 685, college 175, shelter 167, fire station 15, police 118. Other CMA facility categories are summarized in `CMA_FACILITY_COUNTS.csv`.
 - The user-authorized manifest-only refresh replaced the old 117-row database snapshot transactionally from the current `docs/DATA_MANIFEST.csv`. Its newest row has loader `tools.refresh_data_manifest`, and both its hash and catalogue record match the current file. No other source data was loaded.
 - Full pytest after the fix-up: **17 passed, 0 failed**. Stage 8 was not started. Docker was not resynchronized; its prior clone predates migration 011 and this manifest refresh.
+
+## CMA facility view follow-up — 2026-10-24
+
+- Applied migration `012_cma_target_facilities_view.sql`, creating `twinguard.v_cma_target_facilities` for in-CMA hospitals, clinics, schools, colleges, shelters, fire stations and police only. Verified **2,561** view rows across exactly those seven categories.
+- Replaced the earlier broad category list with the non-target CMA facility inventory: **12,601** rows across **423** source-geometry-type/category combinations. CSV `source_type` means OSM node/way; `facility_category` is the normalized stored category, not the original OSM amenity/shop tag key.

@@ -1,4 +1,13 @@
-# Phase 2 issues and failed requests
+# Project issues and failed requests
+
+## Stage 7 foundation — 2026-10-24
+
+- The separate `twin` schema migration (`010_create_twin_schema.sql`) applied successfully. Database verification found all 11 twin objects (including the grid-zone view), three event windows in `PLANNED` status, four reservoir identities with capacities left NULL, and 1,319,380 grid zones. No forecast/state rows were generated.
+- The full pytest run completed with **14 passed, 1 failed**. The remaining failure is `test_postgis_schema_and_loaded_row_counts_match_catalog`: `stage5_data_manifest` still has the hash of the 117-row CSV snapshot from its load time, while `docs/DATA_MANIFEST.csv` has since been updated to record boundary provenance. All other source file/hash checks match. No reload was performed because the task did not authorize new loads; decide whether to refresh only the manifest snapshot and its provenance in a later approved database operation.
+- Corrected the stale Stage 5 migration-count test expectation from eight to nine numbered Stage 5 migrations; migration 009 was added after that test was written. Migration 010 is the Stage 7 twin schema migration.
+- Offline API validation first found malformed JSON in `docs/api/backend.yaml` (`JSONDecodeError: Expecting ',' delimiter`); the closing structure was corrected. Both JSON-as-YAML OpenAPI 3.1 contracts then passed required-path, operation, response and local-reference checks. No full external OpenAPI validator is installed.
+- FastAPI/Starlette/httpx and Maven/Gradle were absent. No packages or global tools were installed; no application skeleton was added. Setup requirements and the exact installed versions are recorded in `SETUP_TOOLS.md`.
+- Read-only lineage refresh completed with 67 rows. Raw audit matched all 144 files (20,338,302,958 bytes), zero mismatches and zero files without a comparable hash. Raw data was not modified.
 
 ## Docker database clone attempt — 2026-10-24
 

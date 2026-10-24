@@ -23,7 +23,8 @@ def test_stage5_complementary_source_rows_and_catalog_are_complete():
             for table,count in expected.items():
                 actual=conn.execute(text(f"SELECT count(*) FROM twinguard.{table}")).scalar_one()
                 assert actual==count,table
-            assert conn.execute(text("SELECT count(*) FROM twinguard.schema_migrations WHERE version LIKE '00%'")).scalar_one()==8
+            # Migrations 001–009 are Stage 5 (009 adds boundary provenance).
+            assert conn.execute(text("SELECT count(*) FROM twinguard.schema_migrations WHERE version LIKE '00%'")).scalar_one()==9
             assert conn.execute(text("SELECT count(*) FROM twinguard.dataset_catalog c WHERE c.layer_key IN (SELECT DISTINCT source_id FROM twinguard.grid_cells UNION SELECT DISTINCT source_id FROM twinguard.observation_records UNION SELECT DISTINCT source_id FROM twinguard.flood_labels UNION SELECT DISTINCT source_id FROM twinguard.sentinel_scenes UNION SELECT DISTINCT source_id FROM twinguard.road_nodes UNION SELECT DISTINCT source_id FROM twinguard.building_footprints UNION SELECT DISTINCT source_id FROM twinguard.data_manifest)")).scalar_one()>=35
     finally:
         engine.dispose()

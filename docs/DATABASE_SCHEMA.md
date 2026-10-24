@@ -4,7 +4,7 @@ Updated 2026-10-23 (Asia/Kolkata). The local `twinguard` database uses schema `t
 
 ## Migrations
 
-The checksum ledger contains eight migrations. `pipelines/stage5/apply_migrations.py` is safe to rerun and refuses a changed checksum for an applied migration.
+The original Stage 5 closure covered migrations 001–008. Migration 009 records the corrected boundary catalogue provenance; migration 010 creates the Digital Twin foundation schema. The checksum ledger now has 10 entries total (nine `00*` migrations plus `010`). `pipelines/stage5/apply_migrations.py` is safe to rerun and refuses a changed checksum for an applied migration.
 
 | Migration | Purpose |
 |---|---|
@@ -16,6 +16,8 @@ The checksum ledger contains eight migrations. `pipelines/stage5/apply_migration
 | `006_rebuild_incomplete_imerg_daily_load.sql` | Removes the incomplete first IMERG load made by the initial loader attempt so the corrected full series can load. |
 | `007_clear_unverified_opencity_event_day.sql` | Clears an exact day assigned to OpenCity observed points; only the year is sourced, so day remains unknown. |
 | `008_preserve_and_repair_label_geometries.sql` | Keeps original flood label geometries and adds valid repaired geometry for spatial views. |
+| `009_record_cma_source_details.sql` | Records the Datameet community boundary source file, approximate retrieval date, area and authority caveat without changing geometry. |
+| `010_create_twin_schema.sql` | Adds replay windows, versions, runs, scenarios, grid-artifact references, edge/facility/reservoir states and alerts in the separate `twin` schema. |
 
 ## Tables and counts
 
@@ -34,7 +36,7 @@ The checksum ledger contains eight migrations. `pipelines/stage5/apply_migration
 | `sentinel_scenes` | 13 | Scene metadata and SAFE-manifest footprints; no image pixels. |
 | `data_manifest` | 117 | Snapshot of `docs/DATA_MANIFEST.csv` when loaded. |
 | `dataset_catalog` | 59 | Source path, source layer, hash, CRS, row count, caveat/licence and boundary provenance. |
-| `schema_migrations` | 8 | Applied migration names and SHA-256 checksums. |
+| `schema_migrations` | 10 | Applied migration names and SHA-256 checksums (001–010). |
 
 All loaded records outside the catalogue include `source_id`, file SHA-256, loader name and load time. The full source-to-table reconciliation, labels, area values, invalid reasons, spatial query evidence and remaining caveats are in `docs/STAGE5_RECONCILIATION.md`.
 
@@ -46,7 +48,11 @@ Five tile functions are installed: `mvt_study_area`, `mvt_roads`, `mvt_facilitie
 
 ## CMA boundary provenance
 
-The boundary catalogue entry names `data/raw/boundary/chennai_cma_boundary.geojson`, SHA-256 `89e81f8309a40ea9f24cf5e35c832b75ed937b65b111389d8ed8df4931804ad7`, and source URL `https://github.com/datameet/Municipal_Spatial_Data`. The source retrieval date is not in the local records, so it is stored as unknown/NULL. The project-selected older boundary's source vintage and authoritative status remain unverified. The source boundary was not edited.
+The boundary catalogue entry records the Datameet `Municipal_Spatial_Data` file `Chennai/CMA.geojson`, with retrieval around 8 Sep 2026 based on its filesystem date. The geometry area is 1,187.46 km², consistent with the pre-2022 CMA of about 1,189 km². It is a community dataset and not an official CMDA product; exact vintage and authoritative status remain unverified. The local path is `data/raw/boundary/chennai_cma_boundary.geojson` (SHA-256 `89e81f8309a40ea9f24cf5e35c832b75ed937b65b111389d8ed8df4931804ad7`). The boundary was not edited.
+
+## Digital Twin foundation schema
+
+The separate `twin` schema is a versioned state-model foundation, not a second copy of static GIS data. `twin.grid_zones` views the existing grid-cell dimension, while dynamic cell state is referenced by file path and SHA-256. Edge and facility states reference Stage 5 feature IDs; four reservoir identities are seeded from existing daily observations, with unknown capacities left NULL. Replay windows are PLANNED; no predicted state rows or models have been created. See `docs/TWIN_MODEL.md`.
 
 ## Backup and restore history
 

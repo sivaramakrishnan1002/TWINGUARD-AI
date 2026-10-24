@@ -40,6 +40,9 @@ def provenance(path: Path) -> tuple[str, str]:
     if rel.startswith("data/features/events/"):
         return ("data/features/weather/era5_event_hourly_features.csv; data/features/weather/daily_era5_nasa_power_comparison.csv; data/features/reservoirs/kaggle_daily_storage_features.csv; data/features/reservoirs/opencity_monthly_storage_tidy.csv",
                 "pipelines/phase4/qc_check.py; pipelines/phase4/time_alignment.py (Parquet outputs pending)")
+    if rel.startswith("data/features/predictions/"):
+        return ("data/features/static/cell_table.parquet; data/processed/alignment/spatial_blocks.tif; data/processed/grid/cma_mask.tif; data/processed/labels_inspection/2015-09-01_EXPLORATORY_NOT_FINAL.tif; data/processed/labels_inspection/2015-10-14_EXPLORATORY_NOT_FINAL.tif; data/processed/labels_inspection/2015-11-12_EXPLORATORY_NOT_FINAL.tif; data/processed/labels_inspection/2015-11-24_EXPLORATORY_NOT_FINAL.tif",
+                "pipelines/phase9/pilot.py")
     if rel.startswith("data/features/terrain/"):
         return ("data/raw/dem/Copernicus DSM tiles; data/raw/boundary/chennai_cma_boundary.geojson", "pipelines/phase3/phase3_core.py")
     if rel.startswith("data/features/landcover/"):

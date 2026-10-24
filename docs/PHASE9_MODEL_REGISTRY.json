@@ -1,0 +1,651 @@
+{
+  "registry_version": 1,
+  "pilot_status": "PILOT, SINGLE EVENT",
+  "default_target": "target_union_minus_baseline",
+  "data_hash_sha256": "02efe3144db402b53853fd9e0bf6fb9f5a6e6b87d83a1f892f767d56a62650d6",
+  "input_sha256": {
+    "cell_table": "424156776f5262803a76d148114255194522317fa52381da56d366fee5e87c2b",
+    "blocks": "0c845d48c1bf2c6207b4034fb478ccdf111105f8dcb37b0a7e62db5f5cc962f0",
+    "grid": "8e2ed72fcb76127022d23e438133a5e951cb311feb3837bfa7ab090849d44094",
+    "label_12": "b0ef1b4e3ae5c6f3eda52f65ca719ead7fe224981dc5e64f96f95660ed25b662",
+    "label_24": "805bb087b29d859ac8dbee392ed537125a7e7af348cb9eb6ab0f011d827c7e7b",
+    "baseline_sep": "2a2609e7ad11fd724f4efa023a454dfbf19968886a85deb69d4b76538b6a2d5e",
+    "baseline_oct": "a0eeff88574a293fe6900d00f033fab8453199eaa666eece242e6cb756b0a314"
+  },
+  "models": [
+    {
+      "model": "logistic_regression",
+      "parameters": {
+        "C": 1.0,
+        "max_iter": 400,
+        "solver": "lbfgs"
+      },
+      "seed": 20261024,
+      "metrics": {
+        "n": 1196300,
+        "prevalence": 0.05112931538911644,
+        "roc_auc": 0.8741861037997389,
+        "pr_auc_average_precision": 0.23930509934197564,
+        "f1": 0.32116004296455425,
+        "iou": 0.19129878438899553,
+        "brier_score": 0.04611564373318718,
+        "expected_calibration_error_10_equal_width_bins": 0.017762937909490455,
+        "threshold": 0.22459589493915405,
+        "actual_flooded_area_km2": 55.0494,
+        "predicted_binary_area_km2": 104.1516,
+        "predicted_probability_area_km2": 70.23111461962111,
+        "reliability_curve": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "mean_probability": 0.015165264914172574,
+            "observed_fraction": 0.017441413434023743,
+            "count": 962422
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "mean_probability": 0.1434011083384863,
+            "observed_fraction": 0.13645331712562533,
+            "count": 106945
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "mean_probability": 0.24541917580615547,
+            "observed_fraction": 0.18612863023528078,
+            "count": 52958
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "mean_probability": 0.34516425762606473,
+            "observed_fraction": 0.24093857306371613,
+            "count": 31452
+          },
+          {
+            "bin_low": 0.4,
+            "bin_high": 0.5,
+            "mean_probability": 0.4453830318162795,
+            "observed_fraction": 0.26261061946902653,
+            "count": 18080
+          },
+          {
+            "bin_low": 0.5,
+            "bin_high": 0.6000000000000001,
+            "mean_probability": 0.544301366274264,
+            "observed_fraction": 0.27489678783606886,
+            "count": 9931
+          },
+          {
+            "bin_low": 0.6000000000000001,
+            "bin_high": 0.7000000000000001,
+            "mean_probability": 0.6469347704464854,
+            "observed_fraction": 0.28042959427207637,
+            "count": 5866
+          },
+          {
+            "bin_low": 0.7000000000000001,
+            "bin_high": 0.8,
+            "mean_probability": 0.7470751395189487,
+            "observed_fraction": 0.3273500236183278,
+            "count": 4234
+          },
+          {
+            "bin_low": 0.8,
+            "bin_high": 0.9,
+            "mean_probability": 0.8486523594362542,
+            "observed_fraction": 0.3707229991074085,
+            "count": 3361
+          },
+          {
+            "bin_low": 0.9,
+            "bin_high": 1.0,
+            "mean_probability": 0.9341603881625421,
+            "observed_fraction": 0.5680304471931494,
+            "count": 1051
+          }
+        ],
+        "fold_specific_threshold_f1_iou_applied": true,
+        "threshold_mean": 0.22459589493915405,
+        "threshold_std": 0.03943084161030138
+      },
+      "fold_mean_std": {
+        "roc_auc": {
+          "mean": 0.8741278562580191,
+          "std": 0.014148525653598832
+        },
+        "pr_auc_average_precision": {
+          "mean": 0.25400320134579146,
+          "std": 0.0861878795263008
+        },
+        "f1": {
+          "mean": 0.3057729835193781,
+          "std": 0.055701096329025104
+        },
+        "iou": {
+          "mean": 0.18150886607042038,
+          "std": 0.03915394407347579
+        },
+        "brier_score": {
+          "mean": 0.04611529808072353,
+          "std": 0.009450505117871018
+        },
+        "expected_calibration_error_10_equal_width_bins": {
+          "mean": 0.021982264106479976,
+          "std": 0.011773958595600119
+        },
+        "actual_flooded_area_km2": {
+          "mean": 11.009879999999999,
+          "std": 3.5581468641696055
+        },
+        "predicted_binary_area_km2": {
+          "mean": 20.83032,
+          "std": 12.357651293105821
+        },
+        "predicted_probability_area_km2": {
+          "mean": 14.046222923579649,
+          "std": 4.373900329442858
+        }
+      },
+      "beats_baselines_by_pr_auc": {
+        "elevation_only_threshold": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.23930509934197564,
+          "baseline_pr_auc": 0.05152928098305133
+        },
+        "river_distance_only": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.23930509934197564,
+          "baseline_pr_auc": 0.046463603491372484
+        },
+        "random": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.23930509934197564,
+          "baseline_pr_auc": 0.051200657654675255
+        }
+      }
+    },
+    {
+      "model": "random_forest",
+      "parameters": {
+        "n_estimators": 140,
+        "max_depth": 16,
+        "min_samples_leaf": 3,
+        "max_features": "sqrt",
+        "n_jobs": 4
+      },
+      "seed": 20261024,
+      "metrics": {
+        "n": 1196300,
+        "prevalence": 0.05112931538911644,
+        "roc_auc": 0.8910926858306198,
+        "pr_auc_average_precision": 0.3414806013898937,
+        "f1": 0.36826754812366325,
+        "iou": 0.22569113441372735,
+        "brier_score": 0.03975920500513066,
+        "expected_calibration_error_10_equal_width_bins": 0.009285855989262721,
+        "threshold": 0.23656735646949598,
+        "actual_flooded_area_km2": 55.0494,
+        "predicted_binary_area_km2": 46.782,
+        "predicted_probability_area_km2": 47.9932360970252,
+        "reliability_curve": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "mean_probability": 0.016534993983297986,
+            "observed_fraction": 0.021845816520396508,
+            "count": 1045326
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "mean_probability": 0.14055820218713697,
+            "observed_fraction": 0.17232203022031362,
+            "count": 87557
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "mean_probability": 0.24141273157632256,
+            "observed_fraction": 0.2672780213527896,
+            "count": 29879
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "mean_probability": 0.3451962913790593,
+            "observed_fraction": 0.29158739349822155,
+            "count": 12089
+          },
+          {
+            "bin_low": 0.4,
+            "bin_high": 0.5,
+            "mean_probability": 0.4497354282023658,
+            "observed_fraction": 0.41383570105003087,
+            "count": 8095
+          },
+          {
+            "bin_low": 0.5,
+            "bin_high": 0.6000000000000001,
+            "mean_probability": 0.5477770107185317,
+            "observed_fraction": 0.5685785536159601,
+            "count": 5213
+          },
+          {
+            "bin_low": 0.6000000000000001,
+            "bin_high": 0.7000000000000001,
+            "mean_probability": 0.6470174435183846,
+            "observed_fraction": 0.7076064200976971,
+            "count": 4299
+          },
+          {
+            "bin_low": 0.7000000000000001,
+            "bin_high": 0.8,
+            "mean_probability": 0.7427888711010918,
+            "observed_fraction": 0.6467520151730678,
+            "count": 2109
+          },
+          {
+            "bin_low": 0.8,
+            "bin_high": 0.9,
+            "mean_probability": 0.828332464831042,
+            "observed_fraction": 0.6916524701873935,
+            "count": 1174
+          },
+          {
+            "bin_low": 0.9,
+            "bin_high": 1.0,
+            "mean_probability": 0.9509005404755553,
+            "observed_fraction": 0.3559928443649374,
+            "count": 559
+          }
+        ],
+        "fold_specific_threshold_f1_iou_applied": true,
+        "threshold_mean": 0.23656735646949598,
+        "threshold_std": 0.041253872781363984
+      },
+      "fold_mean_std": {
+        "roc_auc": {
+          "mean": 0.8897919807333079,
+          "std": 0.007767310910233122
+        },
+        "pr_auc_average_precision": {
+          "mean": 0.33397702277392083,
+          "std": 0.1018215214873147
+        },
+        "f1": {
+          "mean": 0.3498772285032158,
+          "std": 0.07908060516799517
+        },
+        "iou": {
+          "mean": 0.2143277071629776,
+          "std": 0.05994985293491894
+        },
+        "brier_score": {
+          "mean": 0.03975952190723901,
+          "std": 0.009302248262038192
+        },
+        "expected_calibration_error_10_equal_width_bins": {
+          "mean": 0.013125088729329043,
+          "std": 0.0070382448223248045
+        },
+        "actual_flooded_area_km2": {
+          "mean": 11.009879999999999,
+          "std": 3.5581468641696055
+        },
+        "predicted_binary_area_km2": {
+          "mean": 9.356399999999999,
+          "std": 3.1554415214039375
+        },
+        "predicted_probability_area_km2": {
+          "mean": 9.598647221984448,
+          "std": 1.106882521423179
+        }
+      },
+      "beats_baselines_by_pr_auc": {
+        "elevation_only_threshold": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.3414806013898937,
+          "baseline_pr_auc": 0.05152928098305133
+        },
+        "river_distance_only": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.3414806013898937,
+          "baseline_pr_auc": 0.046463603491372484
+        },
+        "random": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.3414806013898937,
+          "baseline_pr_auc": 0.051200657654675255
+        }
+      }
+    },
+    {
+      "model": "xgboost",
+      "parameters": {
+        "n_estimators": 180,
+        "max_depth": 6,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_lambda": 1.0,
+        "tree_method": "hist",
+        "n_jobs": 4
+      },
+      "seed": 20261024,
+      "metrics": {
+        "n": 1196300,
+        "prevalence": 0.05112931538911644,
+        "roc_auc": 0.8840359869292844,
+        "pr_auc_average_precision": 0.32775543540383917,
+        "f1": 0.3713615551728018,
+        "iou": 0.22801964202202288,
+        "brier_score": 0.040749519964445056,
+        "expected_calibration_error_10_equal_width_bins": 0.016224048512283904,
+        "threshold": 0.26614843418262807,
+        "actual_flooded_area_km2": 55.0494,
+        "predicted_binary_area_km2": 48.9339,
+        "predicted_probability_area_km2": 46.30948300322642,
+        "reliability_curve": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "mean_probability": 0.01178621391188717,
+            "observed_fraction": 0.024268291076472593,
+            "count": 1062786
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "mean_probability": 0.14144219376039702,
+            "observed_fraction": 0.1580123203285421,
+            "count": 60875
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "mean_probability": 0.24348240427187381,
+            "observed_fraction": 0.2545271629778672,
+            "count": 25844
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "mean_probability": 0.34726624037239545,
+            "observed_fraction": 0.29060879060879063,
+            "count": 14652
+          },
+          {
+            "bin_low": 0.4,
+            "bin_high": 0.5,
+            "mean_probability": 0.44776299639613176,
+            "observed_fraction": 0.33690924905769787,
+            "count": 10347
+          },
+          {
+            "bin_low": 0.5,
+            "bin_high": 0.6000000000000001,
+            "mean_probability": 0.5461035106330645,
+            "observed_fraction": 0.4150330877762517,
+            "count": 8009
+          },
+          {
+            "bin_low": 0.6000000000000001,
+            "bin_high": 0.7000000000000001,
+            "mean_probability": 0.6477532502907926,
+            "observed_fraction": 0.5468673319155897,
+            "count": 6113
+          },
+          {
+            "bin_low": 0.7000000000000001,
+            "bin_high": 0.8,
+            "mean_probability": 0.7500546221727967,
+            "observed_fraction": 0.6699516215731948,
+            "count": 5581
+          },
+          {
+            "bin_low": 0.8,
+            "bin_high": 0.9,
+            "mean_probability": 0.8320139234507964,
+            "observed_fraction": 0.527588344699318,
+            "count": 1613
+          },
+          {
+            "bin_low": 0.9,
+            "bin_high": 1.0,
+            "mean_probability": 0.9233428265899419,
+            "observed_fraction": 0.36666666666666664,
+            "count": 480
+          }
+        ],
+        "fold_specific_threshold_f1_iou_applied": true,
+        "threshold_mean": 0.26614843418262807,
+        "threshold_std": 0.01973403851332785
+      },
+      "fold_mean_std": {
+        "roc_auc": {
+          "mean": 0.881335459881124,
+          "std": 0.015220697921100933
+        },
+        "pr_auc_average_precision": {
+          "mean": 0.32729120207111034,
+          "std": 0.11999947743951274
+        },
+        "f1": {
+          "mean": 0.34980251746345875,
+          "std": 0.09984263661837649
+        },
+        "iou": {
+          "mean": 0.21561595796399918,
+          "std": 0.07528856513835001
+        },
+        "brier_score": {
+          "mean": 0.04074938712952071,
+          "std": 0.007663852631939804
+        },
+        "expected_calibration_error_10_equal_width_bins": {
+          "mean": 0.01968560406417209,
+          "std": 0.004128439045309837
+        },
+        "actual_flooded_area_km2": {
+          "mean": 11.009879999999999,
+          "std": 3.5581468641696055
+        },
+        "predicted_binary_area_km2": {
+          "mean": 9.78678,
+          "std": 3.685176656145537
+        },
+        "predicted_probability_area_km2": {
+          "mean": 9.261896597040908,
+          "std": 2.717527456446824
+        }
+      },
+      "beats_baselines_by_pr_auc": {
+        "elevation_only_threshold": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.32775543540383917,
+          "baseline_pr_auc": 0.05152928098305133
+        },
+        "river_distance_only": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.32775543540383917,
+          "baseline_pr_auc": 0.046463603491372484
+        },
+        "random": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.32775543540383917,
+          "baseline_pr_auc": 0.051200657654675255
+        }
+      }
+    },
+    {
+      "model": "lightgbm",
+      "parameters": {
+        "n_estimators": 180,
+        "num_leaves": 31,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_lambda": 1.0,
+        "n_jobs": 4,
+        "verbosity": -1
+      },
+      "seed": 20261024,
+      "metrics": {
+        "n": 1196300,
+        "prevalence": 0.05112931538911644,
+        "roc_auc": 0.8809318312261514,
+        "pr_auc_average_precision": 0.308024513891175,
+        "f1": 0.3629806864736462,
+        "iou": 0.22173268419890432,
+        "brier_score": 0.04163289471784243,
+        "expected_calibration_error_10_equal_width_bins": 0.017926826693862943,
+        "threshold": 0.28270872851900636,
+        "actual_flooded_area_km2": 55.0494,
+        "predicted_binary_area_km2": 49.5198,
+        "predicted_probability_area_km2": 48.16127953060913,
+        "reliability_curve": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "mean_probability": 0.011732576558629132,
+            "observed_fraction": 0.02444125879158129,
+            "count": 1056124
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "mean_probability": 0.1413288296915407,
+            "observed_fraction": 0.1592541963377416,
+            "count": 62912
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "mean_probability": 0.2446185113822351,
+            "observed_fraction": 0.2057111274871039,
+            "count": 27140
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "mean_probability": 0.3474078130807835,
+            "observed_fraction": 0.28501988510826337,
+            "count": 15841
+          },
+          {
+            "bin_low": 0.4,
+            "bin_high": 0.5,
+            "mean_probability": 0.4486593882018454,
+            "observed_fraction": 0.3660164271047228,
+            "count": 11688
+          },
+          {
+            "bin_low": 0.5,
+            "bin_high": 0.6000000000000001,
+            "mean_probability": 0.5496873150507575,
+            "observed_fraction": 0.4624986549015388,
+            "count": 9293
+          },
+          {
+            "bin_low": 0.6000000000000001,
+            "bin_high": 0.7000000000000001,
+            "mean_probability": 0.6477272803126458,
+            "observed_fraction": 0.3980140670252379,
+            "count": 4834
+          },
+          {
+            "bin_low": 0.7000000000000001,
+            "bin_high": 0.8,
+            "mean_probability": 0.7551337920633333,
+            "observed_fraction": 0.6033589703343274,
+            "count": 6371
+          },
+          {
+            "bin_low": 0.8,
+            "bin_high": 0.9,
+            "mean_probability": 0.831172392162353,
+            "observed_fraction": 0.4594240837696335,
+            "count": 1528
+          },
+          {
+            "bin_low": 0.9,
+            "bin_high": 1.0,
+            "mean_probability": 0.9203630955022333,
+            "observed_fraction": 0.3339191564147627,
+            "count": 569
+          }
+        ],
+        "fold_specific_threshold_f1_iou_applied": true,
+        "threshold_mean": 0.28270872851900636,
+        "threshold_std": 0.023082032511234196
+      },
+      "fold_mean_std": {
+        "roc_auc": {
+          "mean": 0.8795964481149887,
+          "std": 0.01669263357723295
+        },
+        "pr_auc_average_precision": {
+          "mean": 0.31783713712752903,
+          "std": 0.12133421588964483
+        },
+        "f1": {
+          "mean": 0.33907892827118885,
+          "std": 0.10478406479827429
+        },
+        "iou": {
+          "mean": 0.20816980255657952,
+          "std": 0.07968586452608188
+        },
+        "brier_score": {
+          "mean": 0.04163252567162233,
+          "std": 0.00798559591937828
+        },
+        "expected_calibration_error_10_equal_width_bins": {
+          "mean": 0.02091592151110539,
+          "std": 0.008055943887200547
+        },
+        "actual_flooded_area_km2": {
+          "mean": 11.009879999999999,
+          "std": 3.5581468641696055
+        },
+        "predicted_binary_area_km2": {
+          "mean": 9.90396,
+          "std": 4.503000841438962
+        },
+        "predicted_probability_area_km2": {
+          "mean": 9.632255907468991,
+          "std": 2.5893587419034803
+        }
+      },
+      "beats_baselines_by_pr_auc": {
+        "elevation_only_threshold": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.308024513891175,
+          "baseline_pr_auc": 0.05152928098305133
+        },
+        "river_distance_only": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.308024513891175,
+          "baseline_pr_auc": 0.046463603491372484
+        },
+        "random": {
+          "beats_baseline_on_overall_pr_auc": true,
+          "model_pr_auc": 0.308024513891175,
+          "baseline_pr_auc": 0.051200657654675255
+        }
+      }
+    }
+  ],
+  "selected_bootstrap_model": "random_forest",
+  "bootstrap_parameters": {
+    "n_estimators": 140,
+    "max_depth": 16,
+    "min_samples_leaf": 3,
+    "max_features": "sqrt",
+    "n_jobs": 4
+  },
+  "bootstrap_seed_base": 20271024,
+  "bootstrap_size": 20
+}

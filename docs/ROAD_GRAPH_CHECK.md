@@ -233,6 +233,8 @@ Every listed facility point was assigned to its nearest saved road node to compu
 
 The source inventory reports 908 hospitals, 706 schools and 172 shelters, compared with 848, 696 and 171 in this facility layer. The inventory uses a rectangular bounding box; the extracted layer covers the CMA polygon plus 2 km, and geometry conversion, tag grouping and deduplication may also differ. These are plausible scope/method causes, but the exact 60/10/1 differences remain unresolved without a like-for-like recount of the PBF using the same geometry, tags and deduplication rules. [repo: `docs/OSM_COUNTS.md`, saved `facilities` layer]
 
+For a strict CMA-only subset, the database's `in_cma` flag (migration 011, geometry intersects the selected boundary in EPSG:32644) yields 830 hospitals, 571 clinics, 685 schools, 175 colleges, 167 shelters, 15 fire stations and 118 police facilities. These counts exclude buffered points outside the CMA; all rows remain stored. The complete category list is in `docs/CMA_FACILITY_COUNTS.csv`.
+
 ## Example routes
 
 Sample hospital-to-shelter routes use nearest-node attachments and Dijkstra over saved directed arcs weighted by segment lengths. This only tests graph connectivity; it does not check closures, bridge capacity, flood depth, access restrictions, or safety.

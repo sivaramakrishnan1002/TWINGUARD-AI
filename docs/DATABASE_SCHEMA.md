@@ -1,10 +1,10 @@
 # Stage 5 database schema and current load
 
-Updated 2026-10-23 (Asia/Kolkata). The local `twinguard` database uses schema `twinguard`, PostgreSQL 18.6 and PostGIS 3.6.2. Scripts read `.env` with the project's custom parser; credentials and connection strings are never logged. `.env` is unchanged. No container or package installation was used for this update.
+Updated 2026-10-24 (Asia/Kolkata). The local `twinguard` database uses schema `twinguard`, PostgreSQL 18.6 and PostGIS 3.6.2. Scripts read `.env` with the project's custom parser; credentials and connection strings are never logged. `.env` is unchanged. No container, network, or package installation was used for this update.
 
 ## Migrations
 
-The original Stage 5 closure covered migrations 001–008. Migration 009 records the corrected boundary catalogue provenance; migration 010 creates the Digital Twin foundation schema. The checksum ledger now has 10 entries total (nine `00*` migrations plus `010`). `pipelines/stage5/apply_migrations.py` is safe to rerun and refuses a changed checksum for an applied migration.
+The original Stage 5 closure covered migrations 001–008. Migration 009 records the corrected boundary catalogue provenance; migration 010 creates the Digital Twin foundation schema; migration 011 adds CMA-intersection flags without deleting rows. The checksum ledger now has 11 entries total (nine `00*` migrations plus `010` and `011`). `pipelines/stage5/apply_migrations.py` is safe to rerun and refuses a changed checksum for an applied migration.
 
 | Migration | Purpose |
 |---|---|
@@ -18,6 +18,7 @@ The original Stage 5 closure covered migrations 001–008. Migration 009 records
 | `008_preserve_and_repair_label_geometries.sql` | Keeps original flood label geometries and adds valid repaired geometry for spatial views. |
 | `009_record_cma_source_details.sql` | Records the Datameet community boundary source file, approximate retrieval date, area and authority caveat without changing geometry. |
 | `010_create_twin_schema.sql` | Adds replay windows, versions, runs, scenarios, grid-artifact references, edge/facility/reservoir states and alerts in the separate `twin` schema. |
+| `011_add_in_cma_flags.sql` | Adds `in_cma` to roads, nodes, facilities, waterways and buildings using `ST_Intersects` in EPSG:32644; adds it to analysis views and map tile attributes without removing rows. |
 
 ## Tables and counts
 
@@ -34,9 +35,21 @@ The original Stage 5 closure covered migrations 001–008. Migration 009 records
 | `observation_records` | 266,773 | ERA5 hourly, NASA POWER daily, IMERG daily CMA means, reservoir daily storage and OpenCity monthly storage. |
 | `flood_labels` | 21,927 | UNOSAT, observed/modelled OpenCity, GFD coarse cross-check and derived exploratory labels with confidence tiers. |
 | `sentinel_scenes` | 13 | Scene metadata and SAFE-manifest footprints; no image pixels. |
-| `data_manifest` | 117 | Snapshot of `docs/DATA_MANIFEST.csv` when loaded. |
+| `data_manifest` | 117 | Current snapshot of `docs/DATA_MANIFEST.csv`; latest load record is verified against the file hash. |
 | `dataset_catalog` | 59 | Source path, source layer, hash, CRS, row count, caveat/licence and boundary provenance. |
-| `schema_migrations` | 10 | Applied migration names and SHA-256 checksums (001–010). |
+| `schema_migrations` | 11 | Applied migration names and SHA-256 checksums (001–011). |
+
+### CMA intersection flags
+
+The five OSM tables retain their original buffered-extract rows and now have an indexed `in_cma` boolean. It is true when the EPSG:32644 feature geometry intersects the selected CMA polygon; a feature that only touches the boundary is therefore counted inside. Use `WHERE in_cma` (or `NOT in_cma`) for CMA-only analysis. The `v_roads`, `v_facilities`, `v_waterways`, and new `v_buildings` views expose the flag; road, facility and waterway vector tiles also carry it. Full facility category counts are in `CMA_FACILITY_COUNTS.csv`.
+
+| Table | Inside | Outside | Total |
+|---|---:|---:|---:|
+| `road_edges` | 414,822 | 40,463 | 455,285 |
+| `road_nodes` | 463,926 | 44,928 | 508,854 |
+| `facilities` | 15,162 | 251 | 15,413 |
+| `waterways` | 687 | 72 | 759 |
+| `building_footprints` | 375,832 | 6,462 | 382,294 |
 
 All loaded records outside the catalogue include `source_id`, file SHA-256, loader name and load time. The full source-to-table reconciliation, labels, area values, invalid reasons, spatial query evidence and remaining caveats are in `docs/STAGE5_RECONCILIATION.md`.
 

@@ -56,12 +56,12 @@ def main() -> None:
                     SELECT ST_Area(geom)/1000000.0 FROM clipped"""),{"layer":layer}).scalar_one()
                 out["areas"][layer]={"area_km2":float(r),"seconds":round(time.perf_counter()-start,3),"reference_km2":84.78 if layer == "S1_20151112_Flood" else 98.16}
             checks={
-              "outside_road_edges":"SELECT count(*) FROM twinguard.road_edges r,twinguard.study_area s WHERE NOT ST_CoveredBy(r.geom,s.geom)",
-              "outside_facilities":"SELECT count(*) FROM twinguard.facilities f,twinguard.study_area s WHERE NOT ST_CoveredBy(f.geom,s.geom)",
-              "outside_buildings":"SELECT count(*) FROM twinguard.building_footprints b,twinguard.study_area s WHERE NOT ST_CoveredBy(b.geom,s.geom)",
+              "outside_road_edges":"SELECT count(*) FROM twinguard.road_edges WHERE NOT in_cma",
+              "outside_facilities":"SELECT count(*) FROM twinguard.facilities WHERE NOT in_cma",
+              "outside_buildings":"SELECT count(*) FROM twinguard.building_footprints WHERE NOT in_cma",
               "outside_grid":"SELECT count(*) FROM twinguard.grid_cells g,twinguard.study_area s WHERE NOT ST_CoveredBy(g.geom,s.geom)",
-              "outside_road_nodes":"SELECT count(*) FROM twinguard.road_nodes n,twinguard.study_area s WHERE NOT ST_CoveredBy(n.geom,s.geom)",
-              "outside_waterways":"SELECT count(*) FROM twinguard.waterways w,twinguard.study_area s WHERE NOT ST_CoveredBy(w.geom,s.geom)",
+              "outside_road_nodes":"SELECT count(*) FROM twinguard.road_nodes WHERE NOT in_cma",
+              "outside_waterways":"SELECT count(*) FROM twinguard.waterways WHERE NOT in_cma",
               "invalid_label_geometries_original":"SELECT count(*) FROM twinguard.flood_labels WHERE geom IS NOT NULL AND NOT ST_IsValid(geom)",
               "invalid_label_geometries_repaired":"SELECT count(*) FROM twinguard.flood_labels WHERE geom_repaired IS NOT NULL AND (NOT geometry_valid_after_repair OR NOT ST_IsValid(geom_repaired))",
               "sentinel_footprints_intersect_cma":"SELECT count(*) FROM twinguard.sentinel_scenes a,twinguard.study_area s WHERE ST_Intersects(ST_Transform(a.footprint,32644),s.geom)",

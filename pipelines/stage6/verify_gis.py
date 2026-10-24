@@ -67,15 +67,22 @@ def verify() -> dict:
                                 ("v_facilities", "facilities"), ("v_waterways", "waterways"),
                                 ("v_flood_references", "flood_references")):
                 report["views"][view] = conn.execute(text(f"SELECT count(*) FROM twinguard.{view}")).scalar_one()
-            report["cma_containment"] = conn.execute(text("""
-                SELECT
-                  (SELECT count(*) FROM twinguard.facilities f,twinguard.study_area a
-                   WHERE ST_Covers(a.geom,f.geom)),
-                  (SELECT count(*) FROM twinguard.road_edges r,twinguard.study_area a
-                   WHERE ST_Intersects(a.geom,r.geom)),
-                  (SELECT count(*) FROM twinguard.waterways w,twinguard.study_area a
-                   WHERE ST_Intersects(a.geom,w.geom))
-            """)).one()
+            report["cma_flags"] = {}
+            for table in ("road_edges", "road_nodes", "facilities", "waterways", "building_footprints"):
+                inside, outside = conn.execute(text(
+                    f"SELECT count(*) FILTER (WHERE in_cma), "
+                    f"count(*) FILTER (WHERE NOT in_cma) FROM twinguard.{table}"
+                )).one()
+                mismatches = conn.execute(text(
+                    f"SELECT count(*) FROM twinguard.{table} t "
+                    "CROSS JOIN twinguard.study_area s "
+                    "WHERE t.in_cma IS DISTINCT FROM "
+                    "(t.geom && s.geom AND ST_Intersects(t.geom, s.geom))"
+                )).scalar_one()
+                report["cma_flags"][table] = {
+                    "inside": inside, "outside": outside, "total": inside + outside,
+                    "mismatches": mismatches,
+                }
             z, x, y = chennai_tile()
             report["mvt_tile"] = {"z": z, "x": x, "y": y, "bytes": {}}
             for name in FUNCTIONS:

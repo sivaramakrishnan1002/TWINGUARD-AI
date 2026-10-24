@@ -54,6 +54,14 @@
 - Twenty geometry columns matched between local and Docker; repaired columns and all other geometries passed validity checks, the 289 original-invalid geometries matched their expected preserved source counts, and there were zero SRID mismatches.
 - Secret-safety scan: `.gitignore` and `requirements.txt` contain no `.env` values. `docker-compose.yml` contains no password value, but contains non-secret `.env` values used for the configured database name and PostgreSQL port; it is therefore left uncommitted under the instruction not to commit any `.env` value. No `.env` values were printed.
 
+## CMA flags and manifest refresh — 2026-10-24
+
+- Applied migration `011_add_in_cma_flags.sql` to the local `twinguard` database. Five existing tables now have `in_cma`, computed with EPSG:32644 `ST_Intersects`; no rows were deleted or reloaded. Views expose the flag. Exact inside/outside counts and facility category counts are recorded in `PHASE7_LOG.md`, `DATABASE_SCHEMA.md`, and `CMA_FACILITY_COUNTS.csv`; recomputation found zero flag mismatches.
+- Refreshed only the database snapshot of `docs/DATA_MANIFEST.csv` transactionally using `tools/refresh_data_manifest.py`. The latest row's load time, loader, and SHA-256 now match the current CSV and `dataset_catalog`. This resolves the earlier Stage 7 test's stale-manifest failure without loading any other data.
+- The failing source-hash test now checks the latest manifest load record against the current file and catalogue, rather than treating the old snapshot hash as a permanent expected value. Full pytest passed: **17 passed, 0 failed**. The first collection attempt caught an indentation `SyntaxError` in the revised test; it was fixed before the successful full run.
+- `docker-compose.yml` remains changed locally and is not committed: it contains no password, but the strict `.env`-value scan found non-secret database-name/port values. `.gitignore` and `requirements.txt` contained no `.env` values. No `.env`, backup or data files were staged.
+- Docker remains at its previous verified clone and has not been synchronized to migration 011 or the refreshed manifest in this follow-up. This was a local-database fix-up; no Stage 8 work began.
+
 ## Phase 4 completion update — 2026-10-17
 
 - The user installed packages in `.venv`. Verified versions with `importlib.metadata`: `pyarrow==26.0.0`, `pytest==9.1.1`, `colorama==0.4.6`, `iniconfig==2.3.1`, `pluggy==1.7.0`, `Pygments==2.21.0`. No package was installed in this turn and no network was used. These exact six pins were appended to `requirements.txt`; existing dependency lines were preserved.

@@ -34,6 +34,20 @@ The database facility rows match the saved extracted/graph counts exactly. This 
 | Fire station | 15 | 15 | 0 |
 | Police | 121 | 123 | -2 |
 
+Migration 011 adds `in_cma` to the buffered database layers using `ST_Intersects` against the selected CMA polygon in EPSG:32644. Counts below are CMA-intersecting features only; outside features remain in the source tables. The full 299-category database breakdown is in `CMA_FACILITY_COUNTS.csv`.
+
+| Database category | Inside CMA |
+|---|---:|
+| Hospital | 830 |
+| Clinic | 571 |
+| School | 685 |
+| College | 175 |
+| Shelter | 167 |
+| Fire station | 15 |
+| Police | 118 |
+
+These values differ from the buffered-extract counts above because the new figures filter points by the actual CMA polygon. The separate broad-rectangle OSM inventory remains a different spatial scope and was not recomputed.
+
 For buildings, the 385,373 inventory is the number of building-tagged ways intersecting the buffered rectangular bounds. The extractor output has 382,294 footprints and the database matches that count. The extractor requires closed ways with available node coordinates and valid polygon geometry intersecting the CMA-plus-2-km buffer, then clips retained polygons. The exact number rejected by each rule was not recorded; the 3,079-count difference is therefore explained by differing inclusion rules in aggregate, not precisely allocated.
 
 The parser considered 519,628 intersecting ways and read 89,682,822 total PBF objects. These are OpenStreetMap mapped objects, not a completeness estimate. Counts can overlap between tag groups and exclude relation geometries. Broad substring searches for Adyar, Cooum, Kosasthalaiyar, and Buckingham Canal produced false positives from POI/road names. Exact waterway/water-feature name-field matching, clipped lengths, way IDs, and named-subset endpoint connectivity are now documented in `OSM_WATERWAYS.md`; these do not establish ground completeness.

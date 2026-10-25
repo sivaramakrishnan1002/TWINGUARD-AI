@@ -1,0 +1,445 @@
+{
+  "status": "PRE_EVENT_PHYSICS_SAMPLES; thresholds are defaults to confirm, not event-label tuned",
+  "seed": 20261025,
+  "grid": {
+    "crs": "EPSG:32644",
+    "pixel_m": 30,
+    "shape": [
+      1826,
+      1436
+    ],
+    "cma_cells": 1319380
+  },
+  "water_sample_definition": "CMA \u2229 one-cell-eroded WorldCover class 80 \u2229 nonzero UNOSAT 2015-09-01 \u2229 nonzero UNOSAT 2015-10-14",
+  "dry_sample_definition": "CMA cells outside all mapped baseline-water cells, stratified by WorldCover class 50/40/10/60/30; stability is an unverified assumption because no field dry/wet labels exist",
+  "stable_water_cells": 19998,
+  "stable_dry_cells_by_landcover": {
+    "built-up": 534488,
+    "cropland": 234160,
+    "tree": 312336,
+    "bare": 18466,
+    "grass": 89061
+  },
+  "sampling": "Up to 20,000 pixels per water and land-cover stratum per date, fixed seed; observations are spatially autocorrelated.",
+  "scenes": {
+    "2015-10-19": {
+      "VV": {
+        "water": {
+          "n": 19998,
+          "mean_db": -18.050235748291016,
+          "sd_db": 2.683218240737915,
+          "p05_db": -21.44684410095215,
+          "median_db": -18.444028854370117,
+          "p95_db": -13.034756660461426
+        },
+        "dry_by_landcover": {
+          "built-up": {
+            "n": 20000,
+            "mean_db": -2.9370315074920654,
+            "sd_db": 3.7622580528259277,
+            "p05_db": -8.092004776000977,
+            "median_db": -3.4469807147979736,
+            "p95_db": 3.808885097503662
+          },
+          "cropland": {
+            "n": 20000,
+            "mean_db": -8.180213928222656,
+            "sd_db": 1.8963340520858765,
+            "p05_db": -10.798576354980469,
+            "median_db": -8.358234405517578,
+            "p95_db": -5.160234451293945
+          },
+          "tree": {
+            "n": 20000,
+            "mean_db": -6.214715480804443,
+            "sd_db": 2.2395682334899902,
+            "p05_db": -9.136462211608887,
+            "median_db": -6.4998321533203125,
+            "p95_db": -2.0491364002227783
+          },
+          "bare": {
+            "n": 18461,
+            "mean_db": -7.525774955749512,
+            "sd_db": 3.584958076477051,
+            "p05_db": -11.880355834960938,
+            "median_db": -8.031526565551758,
+            "p95_db": -0.9618674516677856
+          },
+          "grass": {
+            "n": 20000,
+            "mean_db": -8.20198917388916,
+            "sd_db": 2.1863508224487305,
+            "p05_db": -11.066215515136719,
+            "median_db": -8.464630126953125,
+            "p95_db": -4.547605991363525
+          }
+        },
+        "balanced_dry": {
+          "n": 98461,
+          "mean_db": -6.597661018371582,
+          "sd_db": 3.4568145275115967,
+          "p05_db": -10.833569526672363,
+          "median_db": -7.2817511558532715,
+          "p95_db": 0.4303789734840393
+        },
+        "roc_auc_lower_db_as_water": 0.9929604024681725,
+        "median_midpoint_threshold_db": -12.862890005111694
+      },
+      "VH": {
+        "water": {
+          "n": 19998,
+          "mean_db": -24.885913848876953,
+          "sd_db": 1.6881544589996338,
+          "p05_db": -26.62369155883789,
+          "median_db": -25.35658073425293,
+          "p95_db": -21.516801834106445
+        },
+        "dry_by_landcover": {
+          "built-up": {
+            "n": 20000,
+            "mean_db": -13.385634422302246,
+            "sd_db": 1.872101902961731,
+            "p05_db": -15.763233184814453,
+            "median_db": -13.573565483093262,
+            "p95_db": -10.400527954101562
+          },
+          "cropland": {
+            "n": 20000,
+            "mean_db": -14.95568561553955,
+            "sd_db": 1.7975105047225952,
+            "p05_db": -18.260046005249023,
+            "median_db": -14.755861282348633,
+            "p95_db": -12.33885383605957
+          },
+          "tree": {
+            "n": 20000,
+            "mean_db": -13.419384002685547,
+            "sd_db": 1.40845787525177,
+            "p05_db": -15.680245399475098,
+            "median_db": -13.417673110961914,
+            "p95_db": -11.250892639160156
+          },
+          "bare": {
+            "n": 18461,
+            "mean_db": -15.948307991027832,
+            "sd_db": 3.039046287536621,
+            "p05_db": -20.782093048095703,
+            "median_db": -15.829858779907227,
+            "p95_db": -11.522059440612793
+          },
+          "grass": {
+            "n": 20000,
+            "mean_db": -15.21078109741211,
+            "sd_db": 1.823011875152588,
+            "p05_db": -18.410354614257812,
+            "median_db": -15.0819091796875,
+            "p95_db": -12.512940406799316
+          }
+        },
+        "balanced_dry": {
+          "n": 98461,
+          "mean_db": -14.56263256072998,
+          "sd_db": 2.2806472778320312,
+          "p05_db": -18.772302627563477,
+          "median_db": -14.325300216674805,
+          "p95_db": -11.471457481384277
+        },
+        "roc_auc_lower_db_as_water": 0.9968041037353449,
+        "median_midpoint_threshold_db": -19.840940475463867
+      }
+    },
+    "2021-10-23": {
+      "VV": {
+        "water": {
+          "n": 19998,
+          "mean_db": -19.780977249145508,
+          "sd_db": 2.4476068019866943,
+          "p05_db": -23.04074478149414,
+          "median_db": -20.068195343017578,
+          "p95_db": -15.765002250671387
+        },
+        "dry_by_landcover": {
+          "built-up": {
+            "n": 20000,
+            "mean_db": -2.804656982421875,
+            "sd_db": 3.75393009185791,
+            "p05_db": -7.979588508605957,
+            "median_db": -3.202117919921875,
+            "p95_db": 3.6982688903808594
+          },
+          "cropland": {
+            "n": 20000,
+            "mean_db": -7.953382968902588,
+            "sd_db": 2.16424822807312,
+            "p05_db": -11.029279708862305,
+            "median_db": -8.04318618774414,
+            "p95_db": -4.453733921051025
+          },
+          "tree": {
+            "n": 20000,
+            "mean_db": -6.155667781829834,
+            "sd_db": 2.2452023029327393,
+            "p05_db": -8.782598495483398,
+            "median_db": -6.599030494689941,
+            "p95_db": -1.777379035949707
+          },
+          "bare": {
+            "n": 18461,
+            "mean_db": -6.612276554107666,
+            "sd_db": 4.6404266357421875,
+            "p05_db": -12.719003677368164,
+            "median_db": -7.3509907722473145,
+            "p95_db": 2.1047563552856445
+          },
+          "grass": {
+            "n": 20000,
+            "mean_db": -8.189506530761719,
+            "sd_db": 2.889585018157959,
+            "p05_db": -11.818143844604492,
+            "median_db": -8.494453430175781,
+            "p95_db": -2.9602153301239014
+          }
+        },
+        "balanced_dry": {
+          "n": 98461,
+          "mean_db": -6.338890552520752,
+          "sd_db": 3.788679361343384,
+          "p05_db": -11.190896034240723,
+          "median_db": -7.05336332321167,
+          "p95_db": 0.956718921661377
+        },
+        "roc_auc_lower_db_as_water": 0.9955294307627206,
+        "median_midpoint_threshold_db": -13.560779333114624
+      },
+      "VH": {
+        "water": {
+          "n": 19998,
+          "mean_db": -26.237024307250977,
+          "sd_db": 1.925308108329773,
+          "p05_db": -28.020767211914062,
+          "median_db": -26.70734214782715,
+          "p95_db": -22.765239715576172
+        },
+        "dry_by_landcover": {
+          "built-up": {
+            "n": 20000,
+            "mean_db": -13.528701782226562,
+            "sd_db": 1.9583929777145386,
+            "p05_db": -15.793662071228027,
+            "median_db": -13.809316635131836,
+            "p95_db": -10.236593246459961
+          },
+          "cropland": {
+            "n": 20000,
+            "mean_db": -14.95639705657959,
+            "sd_db": 1.895403504371643,
+            "p05_db": -18.790908813476562,
+            "median_db": -14.613734245300293,
+            "p95_db": -12.591962814331055
+          },
+          "tree": {
+            "n": 20000,
+            "mean_db": -13.439379692077637,
+            "sd_db": 1.2656923532485962,
+            "p05_db": -15.390034675598145,
+            "median_db": -13.439815521240234,
+            "p95_db": -11.488897323608398
+          },
+          "bare": {
+            "n": 18461,
+            "mean_db": -15.944056510925293,
+            "sd_db": 3.3262484073638916,
+            "p05_db": -21.128803253173828,
+            "median_db": -16.040761947631836,
+            "p95_db": -10.417719841003418
+          },
+          "grass": {
+            "n": 20000,
+            "mean_db": -15.295462608337402,
+            "sd_db": 1.9998458623886108,
+            "p05_db": -18.603506088256836,
+            "median_db": -15.116070747375488,
+            "p95_db": -12.620048522949219
+          }
+        },
+        "balanced_dry": {
+          "n": 98461,
+          "mean_db": -14.612303733825684,
+          "sd_db": 2.3854076862335205,
+          "p05_db": -18.89111328125,
+          "median_db": -14.361610412597656,
+          "p95_db": -11.503952980041504
+        },
+        "roc_auc_lower_db_as_water": 0.9943178746226966,
+        "median_midpoint_threshold_db": -20.534476280212402
+      }
+    },
+    "2021-11-04": {
+      "VV": {
+        "water": {
+          "n": 19998,
+          "mean_db": -18.21980094909668,
+          "sd_db": 2.3952412605285645,
+          "p05_db": -20.885129928588867,
+          "median_db": -18.677146911621094,
+          "p95_db": -13.655461311340332
+        },
+        "dry_by_landcover": {
+          "built-up": {
+            "n": 20000,
+            "mean_db": 0.1107536032795906,
+            "sd_db": 4.336347579956055,
+            "p05_db": -6.058156967163086,
+            "median_db": -0.4007771611213684,
+            "p95_db": 7.793737888336182
+          },
+          "cropland": {
+            "n": 20000,
+            "mean_db": -6.898081302642822,
+            "sd_db": 2.911078691482544,
+            "p05_db": -10.867635726928711,
+            "median_db": -7.119134426116943,
+            "p95_db": -1.7602431774139404
+          },
+          "tree": {
+            "n": 20000,
+            "mean_db": -4.741006851196289,
+            "sd_db": 2.7986769676208496,
+            "p05_db": -7.876625061035156,
+            "median_db": -5.415535926818848,
+            "p95_db": 0.9730474352836609
+          },
+          "bare": {
+            "n": 18462,
+            "mean_db": -4.987409591674805,
+            "sd_db": 5.298799991607666,
+            "p05_db": -11.824514389038086,
+            "median_db": -6.042046070098877,
+            "p95_db": 5.354243755340576
+          },
+          "grass": {
+            "n": 20000,
+            "mean_db": -6.882174968719482,
+            "sd_db": 3.713414430618286,
+            "p05_db": -12.04976749420166,
+            "median_db": -7.2972564697265625,
+            "p95_db": 0.038529329001903534
+          }
+        },
+        "balanced_dry": {
+          "n": 98462,
+          "mean_db": -4.67477560043335,
+          "sd_db": 4.675649166107178,
+          "p05_db": -10.557028770446777,
+          "median_db": -5.769471168518066,
+          "p95_db": 4.539762496948242
+        },
+        "roc_auc_lower_db_as_water": 0.9954255802680063,
+        "median_midpoint_threshold_db": -12.22330904006958
+      },
+      "VH": {
+        "water": {
+          "n": 19998,
+          "mean_db": -25.4687557220459,
+          "sd_db": 1.7722092866897583,
+          "p05_db": -27.214862823486328,
+          "median_db": -25.890960693359375,
+          "p95_db": -21.77625274658203
+        },
+        "dry_by_landcover": {
+          "built-up": {
+            "n": 20000,
+            "mean_db": -11.883251190185547,
+            "sd_db": 1.9174988269805908,
+            "p05_db": -14.310768127441406,
+            "median_db": -12.12980842590332,
+            "p95_db": -8.699256896972656
+          },
+          "cropland": {
+            "n": 20000,
+            "mean_db": -14.402030944824219,
+            "sd_db": 2.1812145709991455,
+            "p05_db": -18.651453018188477,
+            "median_db": -13.918296813964844,
+            "p95_db": -11.762680053710938
+          },
+          "tree": {
+            "n": 20000,
+            "mean_db": -12.32411003112793,
+            "sd_db": 1.2820888757705688,
+            "p05_db": -14.392115592956543,
+            "median_db": -12.304913520812988,
+            "p95_db": -10.390022277832031
+          },
+          "bare": {
+            "n": 18462,
+            "mean_db": -14.882769584655762,
+            "sd_db": 3.32757568359375,
+            "p05_db": -20.406333923339844,
+            "median_db": -14.842872619628906,
+            "p95_db": -9.560542106628418
+          },
+          "grass": {
+            "n": 20000,
+            "mean_db": -14.479881286621094,
+            "sd_db": 2.3173110485076904,
+            "p05_db": -18.968236923217773,
+            "median_db": -14.099339485168457,
+            "p95_db": -11.709200859069824
+          }
+        },
+        "balanced_dry": {
+          "n": 98462,
+          "mean_db": -13.574284553527832,
+          "sd_db": 2.595956802368164,
+          "p05_db": -18.451763153076172,
+          "median_db": -13.187141418457031,
+          "p95_db": -10.212176322937012
+        },
+        "roc_auc_lower_db_as_water": 0.9966830715490146,
+        "median_midpoint_threshold_db": -19.539051055908203
+      }
+    }
+  },
+  "threshold_method": "For each polarization, compute ROC-AUC for lower dB as water; choose midpoint of sampled water and balanced-land medians as a descriptive screening threshold (not fitted to event flood labels).",
+  "change_threshold_method": "Per-polarization 2021 Nov 04 minus Oct 23 dB change on stable dry samples; mean \u2212 2 sample standard deviations (k=2, DEFAULT to confirm).",
+  "water_land_thresholds": {
+    "VV": {
+      "water_median_db": -19.12864112854004,
+      "balanced_dry_median_db": -6.737061977386475,
+      "midpoint_threshold_db": -12.932851552963257,
+      "roc_auc_lower_db_as_water": 0.9946778196053498,
+      "water_sample_n": 59994,
+      "balanced_dry_sample_n": 295384,
+      "interpretation": "AUC near 0.5 indicates weak separation; thresholds are only screening defaults."
+    },
+    "VH": {
+      "water_median_db": -25.891403198242188,
+      "balanced_dry_median_db": -14.027420043945312,
+      "midpoint_threshold_db": -19.95941162109375,
+      "roc_auc_lower_db_as_water": 0.9958894607175062,
+      "water_sample_n": 59994,
+      "balanced_dry_sample_n": 295384,
+      "interpretation": "AUC near 0.5 indicates weak separation; thresholds are only screening defaults."
+    }
+  },
+  "stable_dry_change_thresholds": {
+    "VV": {
+      "n": 1188386,
+      "mean_db": 2.0105526447296143,
+      "sd_db": 2.505784749984741,
+      "mean_minus_2sd_db": -3.001016855239868,
+      "p05_db": -1.4841755628585815,
+      "p95_db": 6.578037738800049
+    },
+    "VH": {
+      "n": 1188386,
+      "mean_db": 1.2173320055007935,
+      "sd_db": 1.5109881162643433,
+      "mean_minus_2sd_db": -1.804644227027893,
+      "p05_db": -1.259727954864502,
+      "p95_db": 3.397646903991699
+    }
+  },
+  "note": "Pre-event classifier distributions use existing Lee 5x5 dB RTC aligned products; duplicate adjacent slices are already mosaicked by the prior Stage 8 workflow. WorldCover is 2021 and the 2015 baseline labels are exploratory. No event flood label or UNOSAT event extent is used to choose these thresholds."
+}

@@ -1,0 +1,72 @@
+{
+  "status": "DERIVED_NOT_ACCEPTED; no UNOSAT event labels were read or evaluated",
+  "event": "2015-11-24",
+  "event_scene": "2015-11-24",
+  "reference_scenes": [
+    "2015-10-19"
+  ],
+  "thresholds_source": "docs/T2_PHYSICS_THRESHOLDS.json",
+  "fixed_rule": {
+    "vv_water_db": -12.932851552963257,
+    "vh_water_db": -19.95941162109375,
+    "vv_change_db": -3.001016855239868,
+    "vh_change_db": -1.804644227027893,
+    "per_polarisation_pass": "event dB <= water median-midpoint AND event-minus-reference dB <= corresponding stable-dry mean\u22122SD",
+    "flood_confidence": "medium if exactly one polarization passes both tests; high if both pass",
+    "permanent_water": "WorldCover class 80 OR baseline-water geometries from labels.v_usable_flood_labels",
+    "max_slope_deg": 5.0,
+    "max_HAND_m": 5.0,
+    "stream_accumulation_cells": 100,
+    "dense_urban_excluded_if_built_up_fraction_gt": 0.5,
+    "minimum_mapping_unit": {
+      "connected_cells": 5,
+      "connectivity": 8,
+      "area_km2": 0.0045
+    }
+  },
+  "hand": {
+    "valid_cells": 1762770,
+    "stream_cells": 1511,
+    "cells_reaching_stream": 51385,
+    "unassigned_sink_or_outlet_cells": 1711385,
+    "units": "m",
+    "valid_cma_cells": 25196,
+    "valid_cma_percent": 1.909684851975928,
+    "median_m": 3.74462890625,
+    "p95_m": 24.376802444458008,
+    "max_m": 131.5155792236328,
+    "definition": "cleaned DEM minus elevation of first downstream D8 cell whose upstream accumulation is >= threshold"
+  },
+  "mask_counts": {
+    "cma_cells": 1319380,
+    "baseline_water_features_from_usable_view": 2005,
+    "permanent_water_cells": 110788,
+    "common_sar_and_cma_cells": 1319255,
+    "eligible_after_all_masks": 13533,
+    "excluded_nodata_slope_cells": 135020,
+    "excluded_dense_urban_cells": 1744,
+    "raw_components_8_connected": 24,
+    "retained_components": 14
+  },
+  "candidate": {
+    "flood_cells": 242,
+    "flood_area_km2": 0.2178,
+    "high_confidence_cells": 175,
+    "medium_confidence_cells": 67,
+    "eligible_nonflood_cells": 13291,
+    "nodata_or_excluded_cells": 2608603
+  },
+  "limitations": [
+    "DERIVED candidate, not accepted or field-validated",
+    "no UNOSAT event layer used for threshold selection",
+    "DEM is a DSM; urban height artifacts remain",
+    "HAND stream threshold and cutoffs are defaults to confirm",
+    "common RTC validity masks constrain area"
+  ],
+  "run_id": "20261025_03",
+  "output_files": [
+    "data\\features\\labels\\label_2015-11-24_rule_v2_20261025_03_DERIVED.tif",
+    "data\\features\\labels\\label_2015-11-24_rule_v2_confidence_20261025_03_DERIVED.tif",
+    "data\\processed\\sar_work\\hand_d8_100cells_20261025_03_DEFAULT.tif"
+  ]
+}

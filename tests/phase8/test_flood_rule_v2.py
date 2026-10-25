@@ -1,6 +1,6 @@
 import numpy as np
 
-from pipelines.phase8.flood_rule_v2 import compute_hand
+from pipelines.phase8.flood_rule_v2 import compute_hand, valid_slope_mask
 
 
 def test_hand_follows_d8_to_first_threshold_stream_cell():
@@ -22,3 +22,9 @@ def test_hand_leaves_sink_without_drainage_as_nodata():
     hand, counts = compute_hand(dem, direction, accumulation, valid, 2)
     assert np.isnan(hand).all()
     assert counts["cells_reaching_stream"] == 0
+
+
+def test_slope_nodata_sentinel_is_not_eligible():
+    slope = np.array([[2.0, -9999.0, 5.0]], dtype=np.float32)
+    mask = valid_slope_mask(slope, -9999.0, 5.0)
+    assert mask.tolist() == [[True, False, True]]

@@ -84,6 +84,10 @@ def _valid_float(a: np.ndarray, nodata: float | int | None) -> np.ndarray:
     return np.isfinite(a) & ((a != nodata) if nodata is not None else True) & (a > 0)
 
 
+def valid_slope_mask(slope: np.ndarray, nodata: float | int | None, maximum_deg: float) -> np.ndarray:
+    return np.isfinite(slope) & ((slope != nodata) if nodata is not None else True) & (slope <= maximum_deg)
+
+
 def baseline_water_from_view(ref_profile: dict) -> tuple[np.ndarray, int]:
     from rasterio.features import rasterize
     from shapely import wkb
@@ -106,7 +110,7 @@ def baseline_water_from_view(ref_profile: dict) -> tuple[np.ndarray, int]:
     return mask.astype(bool), len(geoms)
 
 
-def main(run_id: str = "20261025_02") -> None:
+def main(run_id: str = "20261025_03") -> None:
     if not run_id.replace("_", "").isalnum():
         raise ValueError("run id may contain only letters, digits and underscores")
     hand_path = ROOT / f"data/processed/sar_work/hand_d8_100cells_{run_id}_DEFAULT.tif"
@@ -133,7 +137,10 @@ def main(run_id: str = "20261025_02") -> None:
         ds.update_tags(derivation="D8 height above first downstream cell with accumulation >= 1000", stream_threshold_cells=str(STREAM_ACCUMULATION_CELLS), status="DEFAULT_TO_CONFIRM")
 
     # Terrain and land cover layers are aligned exactly by integer grid offsets.
-    slope = _align(TERRAIN / "slope_deg_edge_safe.tif", profile).astype(np.float32)
+    slope_path = TERRAIN / "slope_deg_edge_safe.tif"
+    with rasterio.open(slope_path) as slope_ds:
+        slope_nodata = slope_ds.nodata
+        slope = _align(slope_path, profile).astype(np.float32)
     cma = _align(ROOT / "data/processed/grid/cma_mask.tif", profile) == 1
     wc_class = _align(ROOT / "data/features/landcover/worldcover_2021_class.tif", profile)
     with rasterio.open(ROOT / "data/features/landcover/worldcover_2021_area_fractions_30m.tif") as wc:
@@ -159,7 +166,9 @@ def main(run_id: str = "20261025_02") -> None:
         input_valid &= _align(SAR / f"{date}_valid_layover_shadow_mask.tif", profile) == 1
     thresholds = json.loads((ROOT / "docs/T2_PHYSICS_THRESHOLDS.json").read_text(encoding="utf-8"))
     valid_hand = np.isfinite(hand)
-    eligible = (input_valid & ~permanent_water & valid_hand & np.isfinite(slope) & (slope <= MAX_SLOPE_DEG)
+    slope_valid = np.isfinite(slope) & ((slope != slope_nodata) if slope_nodata is not None else True)
+    slope_eligible = valid_slope_mask(slope, slope_nodata, MAX_SLOPE_DEG)
+    eligible = (input_valid & ~permanent_water & valid_hand & slope_eligible
                 & (hand <= MAX_HAND_M) & np.isfinite(builtup) & (builtup <= MAX_BUILT_UP_FRACTION))
     raw_confidence = np.zeros(shape, dtype=np.uint8)
     passes = {}
@@ -216,7 +225,8 @@ def main(run_id: str = "20261025_02") -> None:
             "cma_cells": int(cma.sum()), "baseline_water_features_from_usable_view": baseline_count,
             "permanent_water_cells": int((cma & permanent_water).sum()),
             "common_sar_and_cma_cells": int(input_valid.sum()), "eligible_after_all_masks": int(eligible.sum()),
-            "excluded_dense_urban_cells": int((input_valid & ~permanent_water & valid_hand & (slope <= MAX_SLOPE_DEG) & (hand <= MAX_HAND_M) & (builtup > MAX_BUILT_UP_FRACTION)).sum()),
+            "excluded_nodata_slope_cells": int((input_valid & ~permanent_water & ~slope_valid).sum()),
+            "excluded_dense_urban_cells": int((input_valid & ~permanent_water & valid_hand & slope_valid & (slope <= MAX_SLOPE_DEG) & (hand <= MAX_HAND_M) & (builtup > MAX_BUILT_UP_FRACTION)).sum()),
             "raw_components_8_connected": int(count), "retained_components": int(np.count_nonzero(keep)),
         },
         "candidate": {"flood_cells": int(cleaned.sum()), "flood_area_km2": float(cleaned.sum() * 0.0009),
@@ -233,5 +243,5 @@ def main(run_id: str = "20261025_02") -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run-id", default="20261025_02")
+    parser.add_argument("--run-id", default="20261025_03")
     main(parser.parse_args().run_id)

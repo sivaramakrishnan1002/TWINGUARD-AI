@@ -300,7 +300,13 @@
       "depends_on": [],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docs/LABEL_ACCEPTANCE.md",
+        "docs/FLOOD_RULE_V2.md",
+        "data/features/labels/label_2015-11-24_rule_v2_DERIVED.tif",
+        "data/features/labels/label_2015-12-06_rule_v2_DERIVED.tif",
+        "data/features/labels/label_2021-11-16_rule_v2_DERIVED.tif"
+      ],
       "acceptance": [],
       "evidence": [
         "docs/batches/BATCH_1.md",
@@ -314,7 +320,9 @@
       "manual": false,
       "estimate_days": null,
       "target_day": null,
-      "notes": []
+      "notes": [
+        "Board update observed 2026-10-25: T3 done at commit a092c31; T4 doing after preregistration; combined A01 remains running through T5."
+      ]
     },
     {
       "id": "A02",
@@ -327,7 +335,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "data/features/depth/",
+        "docs/DEPTH_FIELD_CONTRACT.md"
+      ],
       "acceptance": [],
       "evidence": [
         "docs/batches/BATCH_1.md"
@@ -353,7 +364,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docs/PHASE10_RISK_MAP.md",
+        "data/features/predictions/phase10/"
+      ],
       "acceptance": [],
       "evidence": [
         "docs/batches/BATCH_1.md"
@@ -379,7 +393,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "pipelines/phase9b/",
+        "experiments/phase9b/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -405,7 +422,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "pipelines/phase11/",
+        "data/features/forecast/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -429,7 +449,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "pipelines/phase12/",
+        "data/features/simulation/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -453,7 +476,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "pipelines/phase13/",
+        "data/features/impact/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -477,7 +503,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "pipelines/routing/",
+        "data/features/routing/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -502,7 +531,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docs/ROUTING_PROFILE.md",
+        "data/features/routing/results/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -527,7 +559,9 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "data/features/decision/shelters/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -552,7 +586,9 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "data/features/decision/priority_zones/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -576,7 +612,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docs/EXPLAINABILITY.md",
+        "experiments/explainability/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -602,7 +641,9 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "experiments/uncertainty_decisions/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -627,7 +668,9 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "experiments/temporal_models/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -653,7 +696,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docs/VALIDATION_REPORT.md",
+        "docs/figures/validation/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -675,7 +721,10 @@
       "depends_on": [],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "requirements-A.txt",
+        "experiments/mlflow/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -699,7 +748,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docs/PAPER_DRAFT.md",
+        "docs/FINAL_REPORT.md"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -721,7 +773,10 @@
       "depends_on": [],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "pipelines/trackb/",
+        "docs/trackb/AUDIT_AND_BACKTEST.md"
+      ],
       "acceptance": [],
       "evidence": [
         "docs/trackb/PROGRESS_BOARD.md",
@@ -749,7 +804,11 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docker-compose.trackb.yml",
+        "pipelines/trackb/streaming/",
+        "docs/trackb/RUNBOOK.md"
+      ],
       "acceptance": [],
       "evidence": [
         "docs/trackb/PROGRESS_BOARD.md",
@@ -776,7 +835,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "database/migrations/100_trackb_twin_link.sql",
+        "services/trackb/"
+      ],
       "acceptance": [],
       "evidence": [
         "database/migrations/100_trackb_twin_link.sql",
@@ -801,7 +863,9 @@
       "depends_on": [],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "frontend/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -825,7 +889,9 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "frontend/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -850,7 +916,9 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "frontend/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -875,7 +943,9 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "frontend/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -900,7 +970,9 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "services/ai-service/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -924,7 +996,9 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "services/backend/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -948,7 +1022,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        ".github/",
+        "infra/monitoring/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -974,7 +1051,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docker-compose.trackb.yml",
+        "docs/trackb/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -996,7 +1076,10 @@
       "depends_on": [],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docs/trackb/",
+        "docs/handbook/"
+      ],
       "acceptance": [],
       "evidence": [
         "docs/trackb/PROGRESS_BOARD.md"
@@ -1024,7 +1107,9 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "tests/e2e/"
+      ],
       "acceptance": [],
       "evidence": [
         "docs/trackb/PROGRESS_BOARD.md"
@@ -1048,7 +1133,9 @@
       "depends_on": [],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docs/master/GATE_Gn_REPORT.md"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -1072,7 +1159,11 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "requirements.txt",
+        "requirements-A.txt",
+        "requirements-B.txt"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -1094,7 +1185,10 @@
       "depends_on": [],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "docs/master/CONTRACTS.md",
+        "docs/master/contracts/"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,
@@ -1118,7 +1212,10 @@
       ],
       "prerequisites": [],
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        "backups/",
+        "git tag"
+      ],
       "acceptance": [],
       "evidence": [],
       "session": null,

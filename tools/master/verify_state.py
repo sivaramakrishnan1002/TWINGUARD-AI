@@ -9,7 +9,11 @@ status=subprocess.run(['git','status','--short'],cwd=ROOT,text=True,capture_outp
 print('Git status entries:',len(status.splitlines()))
 print('Lane boards:')
 for p in ['docs/PROGRESS_BOARD.md','docs/trackb/PROGRESS_BOARD.md']:
- print(f'  {p}: '+('present' if (ROOT/p).exists() else 'MISSING'))
+ board=ROOT/p
+ print(f'  {p}: '+('present' if board.exists() else 'MISSING'))
+ if board.exists():
+  for line in board.read_text(encoding='utf-8').splitlines():
+   if line.startswith('|') and ('done' in line.lower() or 'doing' in line.lower() or 'blocked' in line.lower()): print('    '+line.strip().encode('ascii','replace').decode('ascii'))
 print('Migrations on disk:',len(list((ROOT/'database/migrations').glob('*.sql'))))
 try:
  import psycopg
@@ -25,3 +29,4 @@ except Exception as exc: print('DB read unavailable:',type(exc).__name__)
 for issue in errors: print('DRIFT:',issue)
 print('Claimed task state is not a replacement for lane-board evidence; inspect docs/master/RECONCILIATION.md.')
 raise SystemExit(bool(errors))
+

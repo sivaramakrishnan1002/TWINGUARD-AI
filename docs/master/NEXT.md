@@ -11,6 +11,15 @@
 - **M7 — Census/licence checks** (blocked_manual)
 - **M8 — Mentor review dates** (blocked_manual)
 
+  - Steps: Open docs/trackb/RUNBOOK.md; confirm image tags, pull the four listed images, then start only the trackb profile. Do not delete volumes.
+  - Steps: Install Maven on the development machine; verify with `mvn -version`, then record the version in the setup notes.
+  - Steps: Approve network/package installation for the UI; from frontend run `npm install`, then report permission or dependency failures.
+  - Steps: Create the GitHub repository, confirm its remote and default branch, then push only after reviewing the staged paths.
+  - Steps: Install MLflow in the project environment when approved; record the pinned package in the Lane A requirements file.
+  - Steps: Optional: georeference the 2021/2023 PDFs and December maps in QGIS; preserve originals and document control points/CRS.
+  - Steps: Verify census provenance and dataset licences; record source, terms, date and permitted use in the project catalogue.
+  - Steps: Set mentor review dates and record them in the project schedule.
+
 ## Ready tasks by lane A
 
 - None.

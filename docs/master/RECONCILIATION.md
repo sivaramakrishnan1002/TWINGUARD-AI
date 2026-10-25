@@ -2,7 +2,7 @@
 
 ## Sources inspected
 
-Git HEAD `54ebad0`; dirty worktree includes concurrent Lane A and Lane B changes. Read both batch specifications and progress boards, project status, handbook, phase 8/9 reports, migrations, tools/requirements, and recursive feature/processed file listings. PostgreSQL was queried through `.env` using a read-only transaction; credentials were not printed. Full pytest completed: 44 passed, one Starlette/httpx deprecation warning. Raw audit completed: 157 files, 30,544,672,450 bytes; 157 hash matches, zero missing comparable hashes, zero mismatches.
+Git HEAD `54ebad0`; dirty worktree includes concurrent Lane A and Lane B changes. Read both batch specifications and progress boards, project status, handbook, phase 8/9 reports, migrations, tools/requirements, and recursive feature/processed file listings. PostgreSQL was queried through `.env` using a read-only transaction; credentials were not printed. Initial reconciliation suite: 44 passed; after master-control tests, 46 passed. Latest full suite (with concurrent Lane A acceptance test) reports 47 passed, 1 failed, and one Starlette/httpx deprecation warning. The failure is `tests/phase8/test_rule_v2_acceptance.py::test_confusion_metrics_and_iou`: its expected IoU 0.5 conflicts with the standard formula TP/(TP+FP+FN)=1/3 for TP=FP=FN=1. This lane-owned test was not changed. Raw audit completed: 157 files, 30,544,672,450 bytes; 157 hash matches, zero missing comparable hashes, zero mismatches.
 
 ## Verified database snapshot
 
@@ -26,9 +26,9 @@ Database `twinguard`, PostgreSQL 18.6. 26 non-system base tables; `twinguard.sch
 | Raw audit | Process started as command session 12946. | Final count/hash status pending. |
 | pytest | Process started as session 69450. | Final result pending. |
 
-The Lane A board has since advanced: T3 remains doing and T4 is now registered as todo with the acceptance preregistration recorded at 2026-10-25 09:42:35 Asia/Kolkata. This is a live lane-owned change, not an integrator edit.
+The Lane A board advanced during this work: T3 is now done at commit a092c31; T4 is doing after preregistration recorded at 2026-10-25 09:42:35 Asia/Kolkata. The combined catalogue task A01 remains running until T5 completes. This is a live lane-owned change, not an integrator edit.
 
 ## Initial running work
 
-Batch 1 is treated as running at T3 per its board. Track B is treated as running documentation/integration activity per its board; the B7–B9 runtime subtask is blocked. Re-run `verify_state.py` and reread both boards at each session start.
+Batch 1 A01 is running through T5; T3 is done and T4 is doing. Track B is treated as running documentation/integration activity per its board; the B7–B9 runtime subtask is blocked. Re-run `verify_state.py` and reread both boards at each session start.
 

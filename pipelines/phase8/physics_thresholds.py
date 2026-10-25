@@ -11,8 +11,13 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import rasterio
+from rasterio.features import rasterize
 from scipy.ndimage import binary_erosion
 from sklearn.metrics import roc_auc_score
+from shapely import wkb
+from sqlalchemy import text
+
+from pipelines.stage5.db_common import make_engine
 
 ROOT = Path(__file__).resolve().parents[2]
 SAR = ROOT / "data/processed/sar_work/rtc_aligned"
@@ -56,6 +61,37 @@ def values(path: Path) -> np.ndarray:
         return np.where(np.isfinite(a) & (a != ds.nodata) & (a > -100), a, np.nan)
 
 
+def baseline_masks_from_usable_view(reference: rasterio.DatasetReader) -> tuple[np.ndarray, np.ndarray, dict[str, int]]:
+    """Rasterize baseline-water geometries from the T1 accepted-label view."""
+    engine = make_engine()
+    try:
+        with engine.connect() as connection:
+            rows = connection.execute(text("""
+                SELECT event_date, ST_AsBinary(geom)
+                FROM labels.v_usable_flood_labels
+                WHERE reference_role = 'baseline_water'
+                  AND event_date IN (DATE '2015-09-01', DATE '2015-10-14')
+                  AND ST_SRID(geom) = 32644
+            """)).fetchall()
+    finally:
+        engine.dispose()
+    geoms: dict[str, list] = {"2015-09-01": [], "2015-10-14": []}
+    for event_date, geom_wkb in rows:
+        key = event_date.isoformat()
+        geoms[key].append(wkb.loads(bytes(geom_wkb)))
+    masks = {}
+    for key, items in geoms.items():
+        masks[key] = rasterize(
+            ((geom, 1) for geom in items),
+            out_shape=(reference.height, reference.width),
+            transform=reference.transform,
+            fill=0,
+            dtype="uint8",
+            all_touched=False,
+        )
+    return masks["2015-09-01"], masks["2015-10-14"], {k: len(v) for k, v in geoms.items()}
+
+
 def sample(a: np.ndarray, mask: np.ndarray, rng: np.random.Generator) -> np.ndarray:
     v = a[mask & np.isfinite(a)]
     if v.size > SAMPLE_PER_GROUP:
@@ -83,8 +119,7 @@ def main() -> None:
         shape = (ref.height, ref.width)
         cma_native = read_on_grid(ROOT / "data/processed/grid/cma_mask.tif", ref) == 1
         wc_class = read_on_grid(ROOT / "data/features/landcover/worldcover_2021_class.tif", ref)
-        sep = read_on_grid(ROOT / "data/processed/labels_inspection/2015-09-01_EXPLORATORY_NOT_FINAL.tif", ref)
-        octo = read_on_grid(ROOT / "data/processed/labels_inspection/2015-10-14_EXPLORATORY_NOT_FINAL.tif", ref)
+        sep, octo, baseline_feature_counts = baseline_masks_from_usable_view(ref)
         # Erode the native WorldCover 2021 water class by one 30 m cell before reprojection.
         with rasterio.open(ROOT / "data/features/landcover/worldcover_2021_class.tif") as wc:
             wc_water = wc.read(1) == 80
@@ -104,6 +139,7 @@ def main() -> None:
         "water_sample_definition": "CMA ∩ one-cell-eroded WorldCover class 80 ∩ nonzero UNOSAT 2015-09-01 ∩ nonzero UNOSAT 2015-10-14",
         "dry_sample_definition": "CMA cells outside all mapped baseline-water cells, stratified by WorldCover class 50/40/10/60/30; stability is an unverified assumption because no field dry/wet labels exist",
         "stable_water_cells": int(stable_water.sum()),
+        "baseline_features_from_usable_view": baseline_feature_counts,
         "stable_dry_cells_by_landcover": {name: int(mask.sum()) for name, mask in dry_masks.items()},
         "sampling": f"Up to {SAMPLE_PER_GROUP:,} pixels per water and land-cover stratum per date, fixed seed; observations are spatially autocorrelated.",
         "scenes": {},

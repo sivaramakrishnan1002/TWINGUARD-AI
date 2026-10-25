@@ -13,6 +13,10 @@
   "water_sample_definition": "CMA \u2229 one-cell-eroded WorldCover class 80 \u2229 nonzero UNOSAT 2015-09-01 \u2229 nonzero UNOSAT 2015-10-14",
   "dry_sample_definition": "CMA cells outside all mapped baseline-water cells, stratified by WorldCover class 50/40/10/60/30; stability is an unverified assumption because no field dry/wet labels exist",
   "stable_water_cells": 19998,
+  "baseline_features_from_usable_view": {
+    "2015-09-01": 1360,
+    "2015-10-14": 645
+  },
   "stable_dry_cells_by_landcover": {
     "built-up": 534488,
     "cropland": 234160,

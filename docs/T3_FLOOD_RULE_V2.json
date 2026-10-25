@@ -1,0 +1,5 @@
+{
+  "status": "SUPERSEDED_INITIAL_UNVERSIONED_OUTPUT",
+  "superseded_by": "T3_FLOOD_RULE_V2_20261025_02.json",
+  "note": "Use the versioned run summary. The original stream threshold trial produced no drainage cells; see docs/FLOOD_RULE_V2.md for the correction and limitations."
+}

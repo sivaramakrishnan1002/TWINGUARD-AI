@@ -29,7 +29,7 @@ LAND_COVER = {50: "built-up", 40: "cropland", 10: "tree", 60: "bare", 30: "grass
 SCENES = {"2015-10-19": "2015-10-19", "2021-10-23": "2021-10-23", "2021-11-04": "2021-11-04"}
 
 
-def align_exact(source_array: np.ndarray, src_transform, src_crs, dst_transform, dst_crs, shape) -> np.ndarray:
+def align_exact(source_array: np.ndarray, src_transform, src_crs, dst_transform, dst_crs, shape, fill_value=0) -> np.ndarray:
     """Copy between congruent 30 m grids with an integer pixel offset; do not resample."""
     if src_crs != dst_crs or abs(src_transform.a - dst_transform.a) > 1e-8 or abs(src_transform.e - dst_transform.e) > 1e-8:
         raise ValueError("Input and master grid must have identical CRS and pixel size")
@@ -38,7 +38,7 @@ def align_exact(source_array: np.ndarray, src_transform, src_crs, dst_transform,
     col_off, row_off = round(col_off_f), round(row_off_f)
     if abs(col_off_f - col_off) > 1e-6 or abs(row_off_f - row_off) > 1e-6:
         raise ValueError("Input raster is not pixel-aligned to the master grid")
-    result = np.zeros(shape, dtype=source_array.dtype)
+    result = np.full(shape, fill_value, dtype=source_array.dtype)
     src_r0, src_c0 = max(0, -row_off), max(0, -col_off)
     dst_r0, dst_c0 = max(0, row_off), max(0, col_off)
     height = min(source_array.shape[0] - src_r0, shape[0] - dst_r0)

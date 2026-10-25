@@ -1,0 +1,147 @@
+{
+  "status": "DERIVED assumption-based depth product; not observed depth or a calibrated uncertainty forecast",
+  "events": {
+    "2015-11-12": {
+      "source_features": 4704,
+      "rasterized_extent_cells": 94195,
+      "rasterized_extent_area_km2": 84.7755,
+      "extent_cells_without_cleaned_dem": 63960,
+      "extent_cells_with_cleaned_dem": 30235,
+      "depth_coverage_fraction_of_rasterized_extent": 0.32098306704177504,
+      "rasters": {
+        "mean": {
+          "path": "data/features/depth/batch1_v1/depth_mean_2015-11-12_UNOSAT_A_DERIVED.tif",
+          "crs_epsg": 32644,
+          "pixel_size_m": [
+            30.0,
+            30.0
+          ],
+          "nodata": -9999.0,
+          "distribution_m": {
+            "count": 30235,
+            "min": 0.0,
+            "median": 0.0,
+            "mean": 0.09596868604421616,
+            "p95": 0.480042964220047,
+            "max": 22.817066192626953
+          },
+          "version": "batch1-depth-v1",
+          "run_time_utc": "2026-10-25T04:47:06.612287+00:00"
+        },
+        "p05": {
+          "path": "data/features/depth/batch1_v1/depth_p05_2015-11-12_UNOSAT_A_DERIVED.tif",
+          "crs_epsg": 32644,
+          "pixel_size_m": [
+            30.0,
+            30.0
+          ],
+          "nodata": -9999.0,
+          "distribution_m": {
+            "count": 30235,
+            "min": 0.0,
+            "median": 0.0,
+            "mean": 0.0029955869540572166,
+            "p95": 0.0,
+            "max": 18.817066192626953
+          },
+          "version": "batch1-depth-v1",
+          "run_time_utc": "2026-10-25T04:47:06.612287+00:00"
+        },
+        "p95": {
+          "path": "data/features/depth/batch1_v1/depth_p95_2015-11-12_UNOSAT_A_DERIVED.tif",
+          "crs_epsg": 32644,
+          "pixel_size_m": [
+            30.0,
+            30.0
+          ],
+          "nodata": -9999.0,
+          "distribution_m": {
+            "count": 30235,
+            "min": 4.0,
+            "median": 4.0,
+            "mean": 4.095968723297119,
+            "p95": 4.480042934417725,
+            "max": 26.817066192626953
+          },
+          "version": "batch1-depth-v1",
+          "run_time_utc": "2026-10-25T04:47:06.612287+00:00"
+        }
+      },
+      "band_order_violations": {
+        "p05_above_mean": 0,
+        "mean_above_p95": 0
+      }
+    },
+    "2015-11-24": {
+      "source_features": 3710,
+      "rasterized_extent_cells": 109067,
+      "rasterized_extent_area_km2": 98.16029999999999,
+      "extent_cells_without_cleaned_dem": 76440,
+      "extent_cells_with_cleaned_dem": 32627,
+      "depth_coverage_fraction_of_rasterized_extent": 0.2991463962518452,
+      "rasters": {
+        "mean": {
+          "path": "data/features/depth/batch1_v1/depth_mean_2015-11-24_UNOSAT_A_DERIVED.tif",
+          "crs_epsg": 32644,
+          "pixel_size_m": [
+            30.0,
+            30.0
+          ],
+          "nodata": -9999.0,
+          "distribution_m": {
+            "count": 32627,
+            "min": 0.0,
+            "median": 0.0,
+            "mean": 0.12478045374155045,
+            "p95": 0.5835767984390259,
+            "max": 6.376161575317383
+          },
+          "version": "batch1-depth-v1",
+          "run_time_utc": "2026-10-25T04:47:42.948183+00:00"
+        },
+        "p05": {
+          "path": "data/features/depth/batch1_v1/depth_p05_2015-11-24_UNOSAT_A_DERIVED.tif",
+          "crs_epsg": 32644,
+          "pixel_size_m": [
+            30.0,
+            30.0
+          ],
+          "nodata": -9999.0,
+          "distribution_m": {
+            "count": 32627,
+            "min": 0.0,
+            "median": 0.0,
+            "mean": 0.00018953847757074982,
+            "p95": 0.0,
+            "max": 2.376161575317383
+          },
+          "version": "batch1-depth-v1",
+          "run_time_utc": "2026-10-25T04:47:42.948183+00:00"
+        },
+        "p95": {
+          "path": "data/features/depth/batch1_v1/depth_p95_2015-11-24_UNOSAT_A_DERIVED.tif",
+          "crs_epsg": 32644,
+          "pixel_size_m": [
+            30.0,
+            30.0
+          ],
+          "nodata": -9999.0,
+          "distribution_m": {
+            "count": 32627,
+            "min": 4.0,
+            "median": 4.0,
+            "mean": 4.124780178070068,
+            "p95": 4.583576679229736,
+            "max": 10.376161575317383
+          },
+          "version": "batch1-depth-v1",
+          "run_time_utc": "2026-10-25T04:47:42.948183+00:00"
+        }
+      },
+      "band_order_violations": {
+        "p05_above_mean": 0,
+        "mean_above_p95": 0
+      }
+    }
+  }
+}

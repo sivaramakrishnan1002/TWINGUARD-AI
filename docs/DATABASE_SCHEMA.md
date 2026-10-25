@@ -77,3 +77,7 @@ The earlier Stage 5/6 acceptance report records the custom-format backup and the
 ## Stage 8 derived label schema
 
 Migration `013_sar_derived_labels.sql` creates the separate `labels.derived_flood_polygons` table. It contains the SAR-derived polygon candidates only, with event date, method, confidence tier, `is_derived`, validity, CMA intersection, urban unreliability flag, source id and SHA-256, loader, load time, and EPSG:32644 MultiPolygon geometry. All 45,096 loaded rows are marked DERIVED; 0 are invalid or outside the CMA. The original `twinguard.flood_labels` data were left unchanged. The raster files remain in `data/features/labels/` and are referenced in `label_registry.json`.
+
+## Batch 1 label and depth disposition
+
+The Batch 1 fixed-rule applications for 24 Nov 2015, 6 Dec 2015 and 16 Nov 2021 remain tier D and are excluded from `labels.v_usable_flood_labels`. Existing Stage 8 SAR rows remain preserved and rejected pending rework. No Batch 1 candidates were inserted into the database and no migration or database table was added for the depth products. The six Nov 2015 depth GeoTIFFs are local DERIVED artifacts under `data/features/depth/batch1_v1/`; they are not observations and have no event-matched depth validation. The accepted label view still provides only official 2015 reference layers; Phase 10's independent event/date validation prerequisite is therefore absent. See `BATCH_1_REPORT.md`, `LABEL_EVALUATION.md`, `DEPTH_FIELD_CONTRACT.md` and `PHASE10_RISK_MAP.md`.

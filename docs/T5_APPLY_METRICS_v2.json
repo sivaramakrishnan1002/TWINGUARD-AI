@@ -1,0 +1,282 @@
+{
+  "2015-12-06": {
+    "status": "DERIVED fixed-rule candidate; not accepted and not a ground-truth label",
+    "run_id": "20261025_T5_20151206",
+    "reference_scenes": [
+      "2015-10-19",
+      "2015-11-24"
+    ],
+    "candidate_file": "data/features/labels/label_2015-12-06_rule_v2_20261025_T5_20151206_DERIVED.tif",
+    "cma_cells": 1319380,
+    "eligible_cells": 13533,
+    "flood_cells": 258,
+    "candidate_area_km2": 0.2322,
+    "eligible_fraction_cma": 0.01025709045157574,
+    "landcover_fractions": {
+      "tree": {
+        "class_cells_in_cma": 314916,
+        "eligible_cells": 3120,
+        "predicted_flood_cells": 32,
+        "eligible_fraction_of_class": 0.009907403879129672,
+        "predicted_flood_fraction_of_eligible_class": 0.010256410256410256,
+        "predicted_flood_fraction_of_all_class_cells": 0.00010161439876030434
+      },
+      "shrub": {
+        "class_cells_in_cma": 13110,
+        "eligible_cells": 554,
+        "predicted_flood_cells": 9,
+        "eligible_fraction_of_class": 0.04225781845919146,
+        "predicted_flood_fraction_of_eligible_class": 0.016245487364620937,
+        "predicted_flood_fraction_of_all_class_cells": 0.0006864988558352403
+      },
+      "grass": {
+        "class_cells_in_cma": 91895,
+        "eligible_cells": 2231,
+        "predicted_flood_cells": 82,
+        "eligible_fraction_of_class": 0.024277708253985526,
+        "predicted_flood_fraction_of_eligible_class": 0.03675481846705513,
+        "predicted_flood_fraction_of_all_class_cells": 0.0008923227596713641
+      },
+      "cropland": {
+        "class_cells_in_cma": 261447,
+        "eligible_cells": 7368,
+        "predicted_flood_cells": 132,
+        "eligible_fraction_of_class": 0.02818161998416505,
+        "predicted_flood_fraction_of_eligible_class": 0.017915309446254073,
+        "predicted_flood_fraction_of_all_class_cells": 0.0005048824427130547
+      },
+      "built_up": {
+        "class_cells_in_cma": 535358,
+        "eligible_cells": 100,
+        "predicted_flood_cells": 0,
+        "eligible_fraction_of_class": 0.00018679089506461096,
+        "predicted_flood_fraction_of_eligible_class": 0.0,
+        "predicted_flood_fraction_of_all_class_cells": 0.0
+      },
+      "bare": {
+        "class_cells_in_cma": 20501,
+        "eligible_cells": 154,
+        "predicted_flood_cells": 2,
+        "eligible_fraction_of_class": 0.007511828691283352,
+        "predicted_flood_fraction_of_eligible_class": 0.012987012987012988,
+        "predicted_flood_fraction_of_all_class_cells": 9.755621676991366e-05
+      },
+      "water": {
+        "class_cells_in_cma": 68691,
+        "eligible_cells": 0,
+        "predicted_flood_cells": 0,
+        "eligible_fraction_of_class": 0.0,
+        "predicted_flood_fraction_of_eligible_class": null,
+        "predicted_flood_fraction_of_all_class_cells": 0.0
+      },
+      "wetland": {
+        "class_cells_in_cma": 13462,
+        "eligible_cells": 6,
+        "predicted_flood_cells": 1,
+        "eligible_fraction_of_class": 0.00044569900460555636,
+        "predicted_flood_fraction_of_eligible_class": 0.16666666666666666,
+        "predicted_flood_fraction_of_all_class_cells": 7.42831674342594e-05
+      }
+    },
+    "elevation_m": {
+      "all_valid_cma": {
+        "count": 1175660,
+        "min": -4.980942726135254,
+        "p05": 3.271437644958496,
+        "median": 15.757528305053711,
+        "mean": 17.141151428222656,
+        "p95": 34.440162658691406,
+        "max": 168.7034149169922
+      },
+      "predicted_flood": {
+        "count": 258,
+        "min": 1.284026861190796,
+        "p05": 5.817419528961182,
+        "median": 25.002822875976562,
+        "mean": 21.543270111083984,
+        "p95": 35.310035705566406,
+        "max": 37.770816802978516
+      }
+    },
+    "hand_m": {
+      "all_valid_cma": {
+        "count": 25196,
+        "min": 0.0,
+        "p05": 0.27787303924560547,
+        "median": 3.74462890625,
+        "mean": 7.003926753997803,
+        "p95": 24.376802444458008,
+        "max": 131.5155792236328
+      },
+      "predicted_flood": {
+        "count": 258,
+        "min": 0.0,
+        "p05": 0.0,
+        "median": 0.7347631454467773,
+        "mean": 1.213645577430725,
+        "p95": 3.6970043182373047,
+        "max": 4.949249267578125
+      },
+      "valid_fraction_cma": 0.01909684851975928
+    },
+    "limitations": [
+      "HAND validity is only about 1.91% of CMA, so the rule is strongly coverage-limited.",
+      "WorldCover 2021 is used for both historical events and may differ from event-date land cover.",
+      "No official vector reference exists for this event/date; no preregistered B/C score can be assigned."
+    ],
+    "global_flood_database_4309": {
+      "archive": "data/raw/historical_floods/2015/global_flood_database/DFO_4309_From_20151110_to_20151204.zip",
+      "member": "DFO_4309_From_20151110_to_20151204.tif",
+      "native_crs": "EPSG:4326",
+      "native_shape": [
+        3693,
+        2388
+      ],
+      "comparison_grid": "GFD native grid; candidate resampled with maximum (any source flood pixel represented), CMA with nearest",
+      "valid_comparison_cells": 19648,
+      "gfd_flood_cells": 1084,
+      "candidate_coarse_cells_touched": 37,
+      "intersection_cells": 2,
+      "union_cells": 1119,
+      "coarse_iou": 0.0017873100983020554,
+      "warning": "GFD event 4309 covers 10 Nov\u20134 Dec 2015; this candidate is 6 Dec, so dates do not match."
+    },
+    "opencity_observed_point_overlap": {
+      "source_files": {
+        "814ca028-4c84-4bd0-aa67-6dbaeb9b6ba5.kml": 192,
+        "93d2905a-a580-482d-96b0-4d9ccf5273ef.kml": 753
+      },
+      "total_point_features": 945,
+      "points_inside_cma": 944,
+      "points_in_candidate": 0,
+      "share_inside_points_in_candidate": 0.0,
+      "date_status": "source does not provide a reliable event date; spatial overlap only"
+    }
+  },
+  "2021-11-16": {
+    "status": "DERIVED fixed-rule candidate; not accepted and not a ground-truth label",
+    "run_id": "20261025_T5_20211116",
+    "reference_scenes": [
+      "2021-10-23",
+      "2021-11-04"
+    ],
+    "candidate_file": "data/features/labels/label_2021-11-16_rule_v2_20261025_T5_20211116_DERIVED.tif",
+    "cma_cells": 1319380,
+    "eligible_cells": 13533,
+    "flood_cells": 102,
+    "candidate_area_km2": 0.09179999999999999,
+    "eligible_fraction_cma": 0.01025709045157574,
+    "landcover_fractions": {
+      "tree": {
+        "class_cells_in_cma": 314916,
+        "eligible_cells": 3120,
+        "predicted_flood_cells": 1,
+        "eligible_fraction_of_class": 0.009907403879129672,
+        "predicted_flood_fraction_of_eligible_class": 0.0003205128205128205,
+        "predicted_flood_fraction_of_all_class_cells": 3.1754499612595106e-06
+      },
+      "shrub": {
+        "class_cells_in_cma": 13110,
+        "eligible_cells": 554,
+        "predicted_flood_cells": 2,
+        "eligible_fraction_of_class": 0.04225781845919146,
+        "predicted_flood_fraction_of_eligible_class": 0.0036101083032490976,
+        "predicted_flood_fraction_of_all_class_cells": 0.00015255530129672007
+      },
+      "grass": {
+        "class_cells_in_cma": 91895,
+        "eligible_cells": 2231,
+        "predicted_flood_cells": 41,
+        "eligible_fraction_of_class": 0.024277708253985526,
+        "predicted_flood_fraction_of_eligible_class": 0.018377409233527566,
+        "predicted_flood_fraction_of_all_class_cells": 0.00044616137983568204
+      },
+      "cropland": {
+        "class_cells_in_cma": 261447,
+        "eligible_cells": 7368,
+        "predicted_flood_cells": 57,
+        "eligible_fraction_of_class": 0.02818161998416505,
+        "predicted_flood_fraction_of_eligible_class": 0.007736156351791531,
+        "predicted_flood_fraction_of_all_class_cells": 0.0002180174184442736
+      },
+      "built_up": {
+        "class_cells_in_cma": 535358,
+        "eligible_cells": 100,
+        "predicted_flood_cells": 0,
+        "eligible_fraction_of_class": 0.00018679089506461096,
+        "predicted_flood_fraction_of_eligible_class": 0.0,
+        "predicted_flood_fraction_of_all_class_cells": 0.0
+      },
+      "bare": {
+        "class_cells_in_cma": 20501,
+        "eligible_cells": 154,
+        "predicted_flood_cells": 0,
+        "eligible_fraction_of_class": 0.007511828691283352,
+        "predicted_flood_fraction_of_eligible_class": 0.0,
+        "predicted_flood_fraction_of_all_class_cells": 0.0
+      },
+      "water": {
+        "class_cells_in_cma": 68691,
+        "eligible_cells": 0,
+        "predicted_flood_cells": 0,
+        "eligible_fraction_of_class": 0.0,
+        "predicted_flood_fraction_of_eligible_class": null,
+        "predicted_flood_fraction_of_all_class_cells": 0.0
+      },
+      "wetland": {
+        "class_cells_in_cma": 13462,
+        "eligible_cells": 6,
+        "predicted_flood_cells": 1,
+        "eligible_fraction_of_class": 0.00044569900460555636,
+        "predicted_flood_fraction_of_eligible_class": 0.16666666666666666,
+        "predicted_flood_fraction_of_all_class_cells": 7.42831674342594e-05
+      }
+    },
+    "elevation_m": {
+      "all_valid_cma": {
+        "count": 1175660,
+        "min": -4.980942726135254,
+        "p05": 3.271437644958496,
+        "median": 15.757528305053711,
+        "mean": 17.141151428222656,
+        "p95": 34.440162658691406,
+        "max": 168.7034149169922
+      },
+      "predicted_flood": {
+        "count": 102,
+        "min": 1.284026861190796,
+        "p05": 1.7246654033660889,
+        "median": 24.893278121948242,
+        "mean": 23.247650146484375,
+        "p95": 26.45271873474121,
+        "max": 26.686674118041992
+      }
+    },
+    "hand_m": {
+      "all_valid_cma": {
+        "count": 25196,
+        "min": 0.0,
+        "p05": 0.27787303924560547,
+        "median": 3.74462890625,
+        "mean": 7.003926753997803,
+        "p95": 24.376802444458008,
+        "max": 131.5155792236328
+      },
+      "predicted_flood": {
+        "count": 102,
+        "min": 0.0,
+        "p05": 0.0,
+        "median": 0.5319700241088867,
+        "mean": 0.641020655632019,
+        "p95": 1.9453099966049194,
+        "max": 2.158235549926758
+      },
+      "valid_fraction_cma": 0.01909684851975928
+    },
+    "limitations": [
+      "HAND validity is only about 1.91% of CMA, so the rule is strongly coverage-limited.",
+      "WorldCover 2021 is used for both historical events and may differ from event-date land cover.",
+      "No official vector reference exists for this event/date; no preregistered B/C score can be assigned."
+    ]
+  }
+}

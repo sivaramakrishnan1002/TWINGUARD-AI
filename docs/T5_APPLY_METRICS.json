@@ -1,0 +1,5 @@
+{
+  "status": "SUPERSEDED; do not use for comparison",
+  "reason": "This initial check upsampled the coarse GFD map to the 30 m scene grid, making pixel counts resolution-dependent. The corrected comparison is performed on the GFD native grid with maximum aggregation of candidate flood pixels.",
+  "corrected_report": "T5_APPLY_METRICS_v2.json"
+}

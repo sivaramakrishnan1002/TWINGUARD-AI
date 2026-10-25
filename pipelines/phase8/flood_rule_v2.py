@@ -17,9 +17,8 @@ ROOT = Path(__file__).resolve().parents[2]
 SAR = ROOT / "data/processed/sar_work/rtc_aligned"
 TERRAIN = ROOT / "data/processed/terrain_cleaned"
 OUT = ROOT / "data/features/labels"
-EVENT = "2015-11-24"
-EVENT_SCENE = "2015-11-24"
-REFERENCE_SCENES = ["2015-10-19"]
+DEFAULT_EVENT = "2015-11-24"
+DEFAULT_REFERENCE_SCENES = ["2015-10-19"]
 STREAM_ACCUMULATION_CELLS = 100
 MAX_SLOPE_DEG = 5.0
 MAX_HAND_M = 5.0
@@ -110,17 +109,20 @@ def baseline_water_from_view(ref_profile: dict) -> tuple[np.ndarray, int]:
     return mask.astype(bool), len(geoms)
 
 
-def main(run_id: str = "20261025_03") -> None:
+def main(run_id: str = "20261025_03", event: str = DEFAULT_EVENT,
+         reference_scenes: list[str] | None = None) -> None:
     if not run_id.replace("_", "").isalnum():
         raise ValueError("run id may contain only letters, digits and underscores")
+    reference_scenes = reference_scenes or DEFAULT_REFERENCE_SCENES
+    event_scene = event
     hand_path = ROOT / f"data/processed/sar_work/hand_d8_100cells_{run_id}_DEFAULT.tif"
-    label_path = OUT / f"label_{EVENT}_rule_v2_{run_id}_DERIVED.tif"
-    confidence_path = OUT / f"label_{EVENT}_rule_v2_confidence_{run_id}_DERIVED.tif"
+    label_path = OUT / f"label_{event}_rule_v2_{run_id}_DERIVED.tif"
+    confidence_path = OUT / f"label_{event}_rule_v2_confidence_{run_id}_DERIVED.tif"
     summary_path = ROOT / f"docs/T3_FLOOD_RULE_V2_{run_id}.json"
     existing = [p for p in (hand_path, label_path, confidence_path, summary_path) if p.exists()]
     if existing:
         raise FileExistsError("Refusing to overwrite Batch 1 outputs; choose a new --run-id")
-    ref_path = SAR / f"{REFERENCE_SCENES[0]}_VV_gamma0_power_lee5.tif"
+    ref_path = SAR / f"{reference_scenes[0]}_VV_gamma0_power_lee5.tif"
     with rasterio.open(ref_path) as ref:
         profile = ref.profile.copy()
     shape = (profile["height"], profile["width"])
@@ -134,7 +136,7 @@ def main(run_id: str = "20261025_03") -> None:
     hand_path.parent.mkdir(parents=True, exist_ok=True)
     with rasterio.open(hand_path, "w", **hand_profile) as ds:
         ds.write(np.where(np.isfinite(hand), hand, -9999.0).astype(np.float32), 1)
-        ds.update_tags(derivation="D8 height above first downstream cell with accumulation >= 1000", stream_threshold_cells=str(STREAM_ACCUMULATION_CELLS), status="DEFAULT_TO_CONFIRM")
+        ds.update_tags(derivation=f"D8 height above first downstream cell with accumulation >= {STREAM_ACCUMULATION_CELLS}", stream_threshold_cells=str(STREAM_ACCUMULATION_CELLS), status="DEFAULT_TO_CONFIRM")
 
     # Terrain and land cover layers are aligned exactly by integer grid offsets.
     slope_path = TERRAIN / "slope_deg_edge_safe.tif"
@@ -149,12 +151,12 @@ def main(run_id: str = "20261025_03") -> None:
     permanent_water = (wc_class == 80) | baseline_water
     event_power = {}; ref_power = {}; input_valid = cma.copy()
     for pol in ("VV", "VH"):
-        e_path = SAR / f"{EVENT_SCENE}_{pol}_gamma0_power_lee5.tif"
+        e_path = SAR / f"{event_scene}_{pol}_gamma0_power_lee5.tif"
         event_power[pol] = _align(e_path, profile).astype(np.float32)
         with rasterio.open(e_path) as ds:
             input_valid &= _valid_float(event_power[pol], ds.nodata)
         aligned_refs=[]
-        for date in REFERENCE_SCENES:
+        for date in reference_scenes:
             r_path = SAR / f"{date}_{pol}_gamma0_power_lee5.tif"
             r = _align(r_path, profile).astype(np.float32)
             with rasterio.open(r_path) as ds:
@@ -162,7 +164,7 @@ def main(run_id: str = "20261025_03") -> None:
             aligned_refs.append(r)
         # Reference scenes are combined in linear power, not by averaging dB.
         ref_power[pol] = np.mean(aligned_refs, axis=0, dtype=np.float64).astype(np.float32)
-    for date in [EVENT_SCENE, *REFERENCE_SCENES]:
+    for date in [event_scene, *reference_scenes]:
         input_valid &= _align(SAR / f"{date}_valid_layover_shadow_mask.tif", profile) == 1
     thresholds = json.loads((ROOT / "docs/T2_PHYSICS_THRESHOLDS.json").read_text(encoding="utf-8"))
     valid_hand = np.isfinite(hand)
@@ -197,10 +199,10 @@ def main(run_id: str = "20261025_03") -> None:
                              (confidence_path, confidence_out, "Flood Rule v2 confidence; 2=both polarisations, 1=one, 0=eligible nonflood, 255=excluded/nodata")]:
         with rasterio.open(path, "w", **profile_out) as ds:
             ds.write(arr, 1); ds.set_band_description(1, desc)
-            ds.update_tags(status="DERIVED_NOT_ACCEPTED", event=EVENT, reference=",".join(REFERENCE_SCENES), rule_version="v2", thresholds_json="docs/T2_PHYSICS_THRESHOLDS.json")
+            ds.update_tags(status="DERIVED_NOT_ACCEPTED", event=event, reference=",".join(reference_scenes), rule_version="v2", thresholds_json="docs/T2_PHYSICS_THRESHOLDS.json")
     report = {
         "status": "DERIVED_NOT_ACCEPTED; no UNOSAT event labels were read or evaluated",
-        "event": EVENT, "event_scene": EVENT_SCENE, "reference_scenes": REFERENCE_SCENES,
+        "event": event, "event_scene": event_scene, "reference_scenes": reference_scenes,
         "thresholds_source": "docs/T2_PHYSICS_THRESHOLDS.json",
         "fixed_rule": {
             "vv_water_db": thresholds["water_land_thresholds"]["VV"]["midpoint_threshold_db"],
@@ -244,4 +246,11 @@ def main(run_id: str = "20261025_03") -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-id", default="20261025_03")
-    main(parser.parse_args().run_id)
+    parser.add_argument("--event", default=DEFAULT_EVENT, help="ISO event scene date, e.g. 2015-12-06")
+    parser.add_argument("--reference-scenes", default=",".join(DEFAULT_REFERENCE_SCENES),
+                        help="Comma-separated ISO scene dates; linear powers are averaged before dB conversion")
+    args = parser.parse_args()
+    references = [value.strip() for value in args.reference_scenes.split(",") if value.strip()]
+    if not references:
+        parser.error("at least one --reference-scenes date is required")
+    main(args.run_id, args.event, references)

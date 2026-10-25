@@ -1,0 +1,256 @@
+{
+  "input_files": {
+    "label": "D:\\TIWNGUARD\\data\\processed\\labels_inspection\\2015-11-24_EXPLORATORY_NOT_FINAL.tif",
+    "baselines": [
+      "D:\\TIWNGUARD\\data\\processed\\labels_inspection\\2015-09-01_EXPLORATORY_NOT_FINAL.tif",
+      "D:\\TIWNGUARD\\data\\processed\\labels_inspection\\2015-10-14_EXPLORATORY_NOT_FINAL.tif"
+    ],
+    "features": "D:\\TIWNGUARD\\data\\features\\static\\cell_table_phase9b_v2.parquet",
+    "sar": {
+      "VV_event": "D:\\TIWNGUARD\\data\\processed\\sar_work\\rtc_aligned\\2015-11-24_VV_dB_lee5.tif",
+      "VH_event": "D:\\TIWNGUARD\\data\\processed\\sar_work\\rtc_aligned\\2015-11-24_VH_dB_lee5.tif",
+      "VV_reference": "D:\\TIWNGUARD\\data\\processed\\sar_work\\rtc_aligned\\2015-10-19_VV_dB_lee5.tif"
+    }
+  },
+  "grid_alignment": {
+    "label": {
+      "crs": "EPSG:32644",
+      "transform": [
+        30.0,
+        0.0,
+        390000.0,
+        0.0,
+        -30.0,
+        1471620.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "shape": [
+        1760,
+        1370
+      ]
+    },
+    "rtc": {
+      "vv": {
+        "crs": "EPSG:32644",
+        "transform": [
+          30.0,
+          0.0,
+          389010.0,
+          0.0,
+          -30.0,
+          1472610.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "shape": [
+          1826,
+          1436
+        ],
+        "nodata": -9999.0
+      },
+      "vh": {
+        "crs": "EPSG:32644",
+        "transform": [
+          30.0,
+          0.0,
+          389010.0,
+          0.0,
+          -30.0,
+          1472610.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "shape": [
+          1826,
+          1436
+        ],
+        "nodata": -9999.0
+      },
+      "vv_ref": {
+        "crs": "EPSG:32644",
+        "transform": [
+          30.0,
+          0.0,
+          389010.0,
+          0.0,
+          -30.0,
+          1472610.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "shape": [
+          1826,
+          1436
+        ],
+        "nodata": -9999.0
+      }
+    },
+    "sampling_by_cell_center": true,
+    "label_raster_uses": "official UNOSAT November product inspected exploratory; 1=flood, 0=not mapped flood; 255 nodata",
+    "eligible_exclusions": "either Sep/Oct reference value >0 or WorldCover water fraction >0; RTC invalid and layover/shadow bit 4/16 excluded"
+  },
+  "counts": {
+    "feature_table_rows": 1319380,
+    "label_cells_mapped": 1319380,
+    "eligible_positive_before_hand": 42146,
+    "eligible_negative_before_hand": 1154154,
+    "hand_missing_positive_excluded": 39697,
+    "eligible_positive_before_rtc": 2449,
+    "eligible_negative_before_rtc": 57881,
+    "valid_positive_after_rtc": 2449,
+    "valid_negative_after_rtc": 57879,
+    "matched_positive": 2449,
+    "matched_negative": 2449,
+    "unmatched_positive_strata": 0,
+    "hand_bins_m": [
+      "<2",
+      "2-5",
+      "5-10",
+      ">=10"
+    ],
+    "hand_finite_in_cell_table": 69138,
+    "landcover_categories": [
+      "tree_fraction",
+      "crop_fraction",
+      "grass_fraction",
+      "bare_fraction",
+      "built_up_fraction_phase9b"
+    ]
+  },
+  "auc": {
+    "VV event dB": {
+      "raw_auc_flood_higher": 0.03499782663101463,
+      "direction_aware_auc": 0.9650021733689854,
+      "flood_direction": "lower"
+    },
+    "VH event dB": {
+      "raw_auc_flood_higher": 0.049250692068378676,
+      "direction_aware_auc": 0.9507493079316214,
+      "flood_direction": "lower"
+    },
+    "VV dB change (24 Nov - 19 Oct)": {
+      "raw_auc_flood_higher": 0.04386587237130313,
+      "direction_aware_auc": 0.9561341276286969,
+      "flood_direction": "lower"
+    }
+  },
+  "spatial_block_decision_stump": {
+    "VV event dB": {
+      "fold_auc": [
+        0.9164862092546159,
+        0.9353314238952536,
+        0.9337024043928006,
+        0.9015232387551894,
+        0.8645432017087339
+      ],
+      "fold_threshold": [
+        -11.962849140167236,
+        -11.376958847045898,
+        -11.962849140167236,
+        -11.376958847045898,
+        -11.376958847045898
+      ],
+      "mean": 0.9103172956013188,
+      "sd": 0.029082763497718194
+    },
+    "VH event dB": {
+      "fold_auc": [
+        0.8747293138819239,
+        0.893033960720131,
+        0.9011203860339999,
+        0.8791147735430909,
+        0.8483398874722317
+      ],
+      "fold_threshold": [
+        -18.40589427947998,
+        -18.39628028869629,
+        -18.401063919067383,
+        -17.90581512451172,
+        -17.91132640838623
+      ],
+      "mean": 0.8792676643302755,
+      "sd": 0.02027436647542647
+    },
+    "VV dB change (24 Nov - 19 Oct)": {
+      "fold_auc": [
+        0.8896455436516981,
+        0.9364975450081833,
+        0.918900274550043,
+        0.8882979055467116,
+        0.8479249662787415
+      ],
+      "fold_threshold": [
+        -2.2173309326171875,
+        -2.310586452484131,
+        -2.2814884185791016,
+        -2.3116354942321777,
+        -2.310586452484131
+      ],
+      "mean": 0.8962532470070755,
+      "sd": 0.03381960710029837
+    }
+  },
+  "label_shift_overlap_iou": {
+    "1": {
+      "iou_cardinal_mean": 0.7631984222884732,
+      "iou_cardinal": [
+        0.7738942335060056,
+        0.7738942335060056,
+        0.7525026110709407,
+        0.7525026110709407
+      ]
+    },
+    "2": {
+      "iou_cardinal_mean": 0.6332472315189376,
+      "iou_cardinal": [
+        0.6442219994422125,
+        0.6442219994422125,
+        0.6222724635956627,
+        0.6222724635956627
+      ]
+    },
+    "3": {
+      "iou_cardinal_mean": 0.5611354620561588,
+      "iou_cardinal": [
+        0.5691851723964291,
+        0.5691851723964291,
+        0.5530857517158887,
+        0.5530857517158887
+      ]
+    }
+  },
+  "baseline_value_counts": {
+    "2015-09-01_EXPLORATORY_NOT_FINAL.tif": {
+      "0": 2359624,
+      "1": 49704,
+      "2": 1872
+    },
+    "2015-10-14_EXPLORATORY_NOT_FINAL.tif": {
+      "0": 2353711,
+      "1": 33364,
+      "2": 24125
+    }
+  },
+  "permanent_water_alignment_check": {
+    "VV event dB": {
+      "permanent_water_n": 123038,
+      "eligible_land_n": 60329,
+      "permanent_water_median_db": -14.198412895202637,
+      "eligible_land_median_db": -5.778966903686523,
+      "permanent_water_lower_backscatter_fraction": 0.9401241892748582
+    },
+    "VH event dB": {
+      "permanent_water_n": 123038,
+      "eligible_land_n": 60329,
+      "permanent_water_median_db": -21.851482391357422,
+      "eligible_land_median_db": -12.841562271118164,
+      "permanent_water_lower_backscatter_fraction": 0.9651814886457842
+    }
+  },
+  "interpretation": "Matched, one-dimensional separability diagnostic only; does not establish causal inundation or accepted label status. Spatial folds are grouped by 3 km blocks but not buffered, so stump CV is a small diagnostic rather than a model-quality gate."
+}

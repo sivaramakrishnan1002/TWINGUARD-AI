@@ -1,0 +1,789 @@
+[
+  {
+    "source": "data/raw/historical_floods/2021/ChennaiCity-ChennaiCorporationTaluk-4.pdf",
+    "file_size_bytes": 1281740,
+    "source_sha256": "0dc698a81e38eb06bc0731a9cc3338572361353ec97470a4e4d21ec69bd26c71",
+    "pdf_metadata": {
+      "/Creator": "Esri ArcMap 10.7.1.11595",
+      "/CreationDate": "D:20211114173424+05"
+    },
+    "page_count": 1,
+    "pages": [
+      {
+        "page": 1,
+        "media_box_points": [
+          0.0,
+          0.0,
+          842.25827,
+          595.50236
+        ],
+        "geospatial_viewports": [
+          {
+            "name": "Postflood",
+            "bbox_pdf_points": [
+              424.27465,
+              552.31207,
+              820.71227,
+              136.24557
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              13.09681,
+              80.24949,
+              13.10999,
+              80.24912,
+              13.11033,
+              80.26193,
+              13.09715,
+              80.2623
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/PROJCS",
+            "gcs_wkt_prefix": "PROJCS[\"WGS_1984_UTM_Zone_45N\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PRO"
+          },
+          {
+            "name": "pre",
+            "bbox_pdf_points": [
+              15.35836,
+              551.35228,
+              420.91501,
+              133.8461
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              13.09612,
+              80.25049,
+              13.10935,
+              80.25012,
+              13.10969,
+              80.26324,
+              13.09646,
+              80.2636
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/PROJCS",
+            "gcs_wkt_prefix": "PROJCS[\"WGS_1984_UTM_Zone_45N\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PRO"
+          },
+          {
+            "name": "New Data Frame 2",
+            "bbox_pdf_points": [
+              10.07892,
+              115.6102,
+              98.38948,
+              30.1894
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              4.34034,
+              65.92704,
+              38.04864,
+              61.12091,
+              37.80007,
+              104.88346,
+              4.15292,
+              99.62661
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/PROJCS",
+            "gcs_wkt_prefix": "PROJCS[\"Everest_Adj_1937_Lambert_Conformal_Conic\",GEOGCS[\"GCS_Everest_Adj_1937\",DATUM[\"D_Everest_Adj_1937\",SPHEROID[\"Everest_Adjustment_1937\",6377276.345,300.8017]],PRIMEM[\"Greenwi"
+          },
+          {
+            "name": "New Data Frame 3",
+            "bbox_pdf_points": [
+              117.10748,
+              114.17053,
+              215.01702,
+              30.1894
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              7.44701,
+              74.82288,
+              13.69744,
+              74.27632,
+              14.13839,
+              81.85385,
+              7.8559,
+              82.04415
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/PROJCS",
+            "gcs_wkt_prefix": "PROJCS[\"Everest_Modified_Lambert_Conformal_Conic\",GEOGCS[\"GCS_Everest_Modified\",DATUM[\"D_Everest_Modified\",SPHEROID[\"Everest_1830_Modified\",6377304.063,300.8017]],PRIMEM[\"Greenwich"
+          },
+          {
+            "name": "New Data Frame 3",
+            "bbox_pdf_points": [
+              230.37537,
+              118.00966,
+              350.8425,
+              18.67199
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              12.92668,
+              80.12068,
+              13.20181,
+              80.10836,
+              13.21605,
+              80.44907,
+              12.94088,
+              80.46067
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/PROJCS",
+            "gcs_wkt_prefix": "PROJCS[\"Everest_Modified_Lambert_Conformal_Conic\",GEOGCS[\"GCS_Everest_Modified\",DATUM[\"D_Everest_Modified\",SPHEROID[\"Everest_1830_Modified\",6377304.063,300.8017]],PRIMEM[\"Greenwich"
+          },
+          {
+            "name": "New Data Frame 3",
+            "bbox_pdf_points": [
+              364.76101,
+              123.76837,
+              536.58264,
+              5.23501
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              13.09718,
+              80.24707,
+              13.10922,
+              80.24655,
+              13.10996,
+              80.26435,
+              13.09793,
+              80.26487
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/PROJCS",
+            "gcs_wkt_prefix": "PROJCS[\"Everest_Modified_Lambert_Conformal_Conic\",GEOGCS[\"GCS_Everest_Modified\",DATUM[\"D_Everest_Modified\",SPHEROID[\"Everest_1830_Modified\",6377304.063,300.8017]],PRIMEM[\"Greenwich"
+          }
+        ],
+        "embedded_images": [
+          {
+            "name": "Image_3.jpg",
+            "path": "data/processed/pdf_maps/extracted_images/ChennaiCity-ChennaiCorporationTaluk-4/page001_Image_3.jpg",
+            "width_px": 826,
+            "height_px": 635,
+            "mode": "RGB",
+            "size_bytes": 773964,
+            "sha256": "6219e17efad57573603b075e9bbf41ce31873389ff555eb4d4e6e865ba75f95b"
+          },
+          {
+            "name": "Image_5.jpg",
+            "path": "data/processed/pdf_maps/extracted_images/ChennaiCity-ChennaiCorporationTaluk-4/page001_Image_5.jpg",
+            "width_px": 826,
+            "height_px": 234,
+            "mode": "RGB",
+            "size_bytes": 332512,
+            "sha256": "6abcc7ff7c165afc15495e85950e54d32a870430be54446b2d55ace7d2cc69fa"
+          },
+          {
+            "name": "Image_7.jpg",
+            "path": "data/processed/pdf_maps/extracted_images/ChennaiCity-ChennaiCorporationTaluk-4/page001_Image_7.jpg",
+            "width_px": 845,
+            "height_px": 621,
+            "mode": "RGB",
+            "size_bytes": 859924,
+            "sha256": "5a9c4370628c3c5dcf3839d1907033a6b1a5ed8c22192e9fb46be2d215c528df"
+          },
+          {
+            "name": "Image_9.jpg",
+            "path": "data/processed/pdf_maps/extracted_images/ChennaiCity-ChennaiCorporationTaluk-4/page001_Image_9.jpg",
+            "width_px": 845,
+            "height_px": 251,
+            "mode": "RGB",
+            "size_bytes": 366008,
+            "sha256": "0e932ee3bbb56afb8b4e49062209e5b64a196267519d304eeab4f72ea2e469f2"
+          },
+          {
+            "name": "Image_11.png",
+            "path": "data/processed/pdf_maps/extracted_images/ChennaiCity-ChennaiCorporationTaluk-4/page001_Image_11.png",
+            "width_px": 124,
+            "height_px": 115,
+            "mode": "RGB",
+            "size_bytes": 9740,
+            "sha256": "cd57181ca47b47e188a15fb22efbe73d29b8fceb5e61e12b8167e59d55bbc73d"
+          },
+          {
+            "name": "Image_13.jpg",
+            "path": "data/processed/pdf_maps/extracted_images/ChennaiCity-ChennaiCorporationTaluk-4/page001_Image_13.jpg",
+            "width_px": 358,
+            "height_px": 248,
+            "mode": "RGB",
+            "size_bytes": 239832,
+            "sha256": "481f02bd701b751e83ad535ee8450effc03a68f383f25bb46f8ddc6aedf7b5fb"
+          }
+        ],
+        "selectable_text_lines_with_coordinate_hints": [
+          "Date of Issue : 14.11.2021",
+          "Hyderabad- 500 037",
+          "DISASTER EVENT ID: 15-FL-2021-TN",
+          "Cartosat-2E-MX  Image of 07-Febrauary-2021 Cartosat-2E-MX  Image of 13-November-2021"
+        ],
+        "legend_text_excerpt": [
+          "Inundated Area for a part of Chennai City,",
+          "E-Mail: flood@nrsc.gov.in",
+          "Flood Inundation",
+          "<---Inundated area",
+          "Pre Data During Flood"
+        ],
+        "text_excerpt": "Inundated Area for a part of Chennai City,\nChennai Corporation Taluk,Chennai District,Tamil Nadu State\nFor official use\nDate of Issue : 14.11.2021\nnrsc\nRRES\nNational Remote Sensing Centre, ISRO \nDept. of Space, Govt. of India\nHyderabad- 500 037\nE-Mail: flood@nrsc.gov.in\nwww.nrsc.gov.in\nMAP ID: 2021/16\nDISASTER EVENT ID: 15-FL-2021-TN\nFlood Inundation\n¯ ¯\nOtteri Nala---->\n<---Inundated area\nLocation Map\nThiruvallur\nChennai\nKancheepuram\nChennai District \nChennai Corporation\nTamil Nadu State Part of Chennai City\nPre Data During Flood\nCartosat-2E-MX  Image of 07-Febrauary-2021 Cartosat-2E-MX  Image of 13-November-2021 \nWatterlogged\n         area---->\nESI Govt. \nStaff Quaters <--Submerged  road\nCloud\nOtteri Nala---->\nBuckingham Carnatic Mills\nCentre of Indian\n trade union\nESI Govt. \nStaff Quaters\nCentre of Indian\n trade union\nShadow-->\nShadow-->\nCorporation Primary SchoolCorporation Primary \nSchool\n<--Road\nBuckingham Carnatic Mills\nShadow-->\nWatterlogged\n         area---->\nPranav Mathvara EnclavePranav Mathvara Enclave"
+      }
+    ],
+    "geopdf_embedded_georeferencing": true
+  },
+  {
+    "source": "data/raw/historical_floods/2023/tncyclone50dsc07122023_0600hrs_map.pdf",
+    "file_size_bytes": 967050,
+    "source_sha256": "6ffe3ee78b16cce93827c7159276f9073b19a0d80e6c54dc1125b54825f38d0a",
+    "pdf_metadata": {
+      "/ModDate": "D:20231207171137+05'30'",
+      "/Creator": "Nitro Pro 8"
+    },
+    "page_count": 2,
+    "pages": [
+      {
+        "page": 1,
+        "media_box_points": [
+          0.0,
+          0.0,
+          1190.2394,
+          842.2582
+        ],
+        "geospatial_viewports": [
+          {
+            "name": "Layers",
+            "bbox_pdf_points": [
+              17.281,
+              765.5899,
+              987.5389,
+              126.6866
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              12.3011,
+              78.9041,
+              13.5365,
+              78.9041,
+              13.5365,
+              80.7798,
+              12.3011,
+              80.7798
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/GEOGCS",
+            "gcs_wkt_prefix": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"
+          },
+          {
+            "name": "India",
+            "bbox_pdf_points": [
+              11.5207,
+              118.048,
+              140.0484,
+              15.1035
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              5.2446,
+              61.9864,
+              38.5942,
+              61.9864,
+              38.5942,
+              103.6151,
+              5.2446,
+              103.6151
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/GEOGCS",
+            "gcs_wkt_prefix": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"
+          },
+          {
+            "name": "State",
+            "bbox_pdf_points": [
+              128.1676,
+              114.8084,
+              257.0553,
+              11.864
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              7.8034,
+              74.5122,
+              13.839,
+              74.5122,
+              13.839,
+              82.0673,
+              7.8034,
+              82.0673
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/GEOGCS",
+            "gcs_wkt_prefix": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"
+          }
+        ],
+        "embedded_images": [
+          {
+            "name": "Image_3.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_3.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 8369,
+            "sha256": "592fe5fa8cafaf9da8eaedda4b460a798122133e0d0f280eca3a7d576bc8431e"
+          },
+          {
+            "name": "Image_5.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_5.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 10320,
+            "sha256": "229e96b810ae15ba5a2d9001501bc51848a1c5c47669816c87de471e9ec3745d"
+          },
+          {
+            "name": "Image_7.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_7.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 7969,
+            "sha256": "da592371fcc22a13e8b7d9caaa47d48b3b61bd975744af2adbba309ba2535bfb"
+          },
+          {
+            "name": "Image_9.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_9.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 12135,
+            "sha256": "b3150cfcc463ce2290e738da03976eaa323cc0a9943358bb51c217280c05c435"
+          },
+          {
+            "name": "Image_11.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_11.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 22334,
+            "sha256": "e4afbc9decb8e9342888031f07edb69ec6d0000b8f066762276075aa666d82f3"
+          },
+          {
+            "name": "Image_13.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_13.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 25218,
+            "sha256": "c0a2628d24d3951cc454a9539f25479242e94359150c2d325cac6710f4ff257c"
+          },
+          {
+            "name": "Image_15.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_15.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 25131,
+            "sha256": "ed1e2efe29200fbe680ce2b462149a81717b59ade7fa33699640e39ae3ae6ffa"
+          },
+          {
+            "name": "Image_17.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_17.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 19797,
+            "sha256": "e6601e7fffcd23768a00df02f0553690a349a44691616ca7574ea35560e3da70"
+          },
+          {
+            "name": "Image_19.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_19.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 13333,
+            "sha256": "c3ab98c58e0214e242742317ac2bb39fd3bfdc1861e23cf0d2e2a6030c5bd534"
+          },
+          {
+            "name": "Image_21.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_21.png",
+            "width_px": 2695,
+            "height_px": 30,
+            "mode": "RGB",
+            "size_bytes": 1845,
+            "sha256": "00f92433dd9a22e29f88ecaeac46cb28076a39aac5f63f6c8538431e7f8dfc98"
+          },
+          {
+            "name": "Image_23.jpg",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_23.jpg",
+            "width_px": 401,
+            "height_px": 371,
+            "mode": "RGB",
+            "size_bytes": 50921,
+            "sha256": "f8eb9e878eed3199b0258d19235740c1f7bdbfa727e8f0045a9d65a40a83e1f7"
+          },
+          {
+            "name": "Image_25.jpg",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page001_Image_25.jpg",
+            "width_px": 158,
+            "height_px": 152,
+            "mode": "RGB",
+            "size_bytes": 33184,
+            "sha256": "3f957ec250552cb5f930fa233164a8edf388eb7ca77ed9e02773a9801eb202dd"
+          }
+        ],
+        "selectable_text_lines_with_coordinate_hints": [
+          "Hyderabad- 500 037",
+          "Based on the analysis of RISAT-1A MRS SAR Satellite Image of 7-12-2023 (0600 Hrs IST)",
+          "Satellite: RISAT-1A - MRS",
+          "Date of Pass:05-11-2023",
+          "Satellite: RISAT1A-MRS-SAR",
+          "Date of Pass: 07-12-2023",
+          "of 2018-2019, Bhuvan Geospatial",
+          "Citation ' NRSC (2023) - Flood Inundated areas in Part of Tamilnadu State (as on 07.12.2023)' ,  Map no :2023/CY/TN/01a/07122023, NRSC/ISRO,Hyderabad",
+          "2023/CY/TN/01a/07122023",
+          "Michaung Cyclone (05.12.2023) and"
+        ],
+        "legend_text_excerpt": [
+          "E-Mail: flood@nrsc.gov.in",
+          "Flood / Rain affected areas during Michaung Cyclone in Parts of TAMILNADU State",
+          "Pre Flood Data",
+          "Post Flood Data",
+          "Flood inundation may include rain water accumulation / flood water in low lying areas / paddy  fields  with standing water. No ground verification is done.",
+          "Citation ' NRSC (2023) - Flood Inundated areas in Part of Tamilnadu State (as on 07.12.2023)' ,  Map no :2023/CY/TN/01a/07122023, NRSC/ISRO,Hyderabad",
+          "affected Coastal parts of Tamil Nadu",
+          "This map highlights the areas of flood",
+          "inundation / Standing water due to",
+          "Flood / Standing Water due to Rains"
+        ],
+        "text_excerpt": "TIRUVALLUR\nTIRUVANNAMALAI\nCHENGALPATTU\nVELLORE\nRANIPPETTAI\nKANCHIPURAM\nVILLUPURAM\nCHENNAI\nKANCHIPURAM\nDisaster Management Support Group (DMSG)\nNational Remote Sensing Centre, ISRO \nDept. of Space, Govt. of India\nHyderabad- 500 037\nE-Mail: flood@nrsc.gov.in\nwww.nrsc.gov.in\nnrsc\nFor Official Use\nFlood / Rain affected areas during Michaung Cyclone in Parts of TAMILNADU State\nBased on the analysis of RISAT-1A MRS SAR Satellite Image of 7-12-2023 (0600 Hrs IST)\nAbout the Event\nID:\nSatellite Observations:\nPre Flood Data\nSatellite: RISAT-1A - MRS\nDate of Pass:05-11-2023\nPost Flood Data\nSatellite: RISAT1A-MRS-SAR\nDate of Pass: 07-12-2023\nNRSC Landuse/Landcover Data\nof 2018-2019, Bhuvan Geospatial \nLegacy Data\n±\nDisclaimer : This Map  is prepared on rapid mapping mode for immediate use and sharing amongst official agencies. This provides preliminary results.\nFlood inundation may include rain water accumulation / flood water in low lying areas / paddy  fields  with standing water. No ground verification is done.\nMap extent is  limited to the available satellite coverage. All geographic information has limitations due to the scale, resolution, date and interpretation of the\noriginal source materials.                                                                             \nCitation ' NRSC (2023) - Flood Inundated areas in Part of Tamilnadu State (as on 07.12.2023)' ,  Map no :2023/CY/TN/01a/07122023, NRSC/ISRO,Hyderabad\nLocation Map\nMap\nDate of Issue: \n 2023/CY/TN/01a/07122023\n 7.12.2023\nSatellite Data Used\nReference Data Used\nHeavy rains  are witnessed during \nMichaung Cyclone (05.12.2023) and \naffected Coastal parts of Tamil Nadu \nState \n(Source: CWC, News Media)         \nThis map highlights the areas of flood\ninundation / Standing water due to\nrains just after the cyclone event\n0 20 4010\nKilometers\nDistrict Boundary\nFlood / Standing Water due to Rains\n"
+      },
+      {
+        "page": 2,
+        "media_box_points": [
+          0.0,
+          0.0,
+          1190.2394,
+          842.2582
+        ],
+        "geospatial_viewports": [
+          {
+            "name": "Layers",
+            "bbox_pdf_points": [
+              17.281,
+              765.5899,
+              987.5389,
+              126.6866
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              11.1697,
+              78.6554,
+              12.4051,
+              78.6554,
+              12.4051,
+              80.5311,
+              11.1697,
+              80.5311
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/GEOGCS",
+            "gcs_wkt_prefix": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"
+          },
+          {
+            "name": "India",
+            "bbox_pdf_points": [
+              11.5207,
+              118.048,
+              140.0484,
+              15.1035
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              5.2446,
+              61.9864,
+              38.5942,
+              61.9864,
+              38.5942,
+              103.6151,
+              5.2446,
+              103.6151
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/GEOGCS",
+            "gcs_wkt_prefix": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"
+          },
+          {
+            "name": "State",
+            "bbox_pdf_points": [
+              128.1676,
+              114.8084,
+              257.0553,
+              11.864
+            ],
+            "measure_subtype": "/GEO",
+            "gpts_lat_lon": [
+              7.8034,
+              74.5122,
+              13.839,
+              74.5122,
+              13.839,
+              82.0673,
+              7.8034,
+              82.0673
+            ],
+            "lpts": [
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "gcs_type": "/GEOGCS",
+            "gcs_wkt_prefix": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"
+          }
+        ],
+        "embedded_images": [
+          {
+            "name": "Image_3.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_3.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 12748,
+            "sha256": "f411432494f2fc48f8982122cf671a371d8879b46a356e8b0eb95c5759bbc9da"
+          },
+          {
+            "name": "Image_5.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_5.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 12671,
+            "sha256": "74b4bcd45bebf5cfe15c3247d328693cedf982aabc67ac83e1712addeba37f29"
+          },
+          {
+            "name": "Image_7.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_7.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 9295,
+            "sha256": "83bab8bc1439c48c91d8b5a578eeb1871031957b3d7dc164cd9969bc2aaf3d42"
+          },
+          {
+            "name": "Image_9.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_9.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 5582,
+            "sha256": "2704531ac27fdfab1fbfac69f8a5e2d75f9cb0f20f9c234ee84608cf43033c6f"
+          },
+          {
+            "name": "Image_11.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_11.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 7083,
+            "sha256": "9c1b93339186e7421bad939e1c919a79b5d740c06ec6b38c5a4e4266975e1a84"
+          },
+          {
+            "name": "Image_13.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_13.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 6145,
+            "sha256": "155db65d88f15fd0e5e598d19119bb24ed11c8082aaa783ad9ed353e6e2854c8"
+          },
+          {
+            "name": "Image_15.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_15.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 17906,
+            "sha256": "41df22137fc309a68e56b5220cd94cdc1ecd2c59273cfa39a800539fdabd3a7a"
+          },
+          {
+            "name": "Image_17.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_17.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 18249,
+            "sha256": "1da7f3f13aa70c060577ef056cc255883d0675af17fb2cae596159dfffad3b30"
+          },
+          {
+            "name": "Image_19.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_19.png",
+            "width_px": 2695,
+            "height_px": 195,
+            "mode": "RGB",
+            "size_bytes": 5501,
+            "sha256": "997d704bec945791502ea6834eb79d3131fce8f4494cd17ba957b2777844f060"
+          },
+          {
+            "name": "Image_21.png",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_21.png",
+            "width_px": 2695,
+            "height_px": 30,
+            "mode": "RGB",
+            "size_bytes": 578,
+            "sha256": "c8ba0981f2528311f7669e29c340dfb5e29af92a661b8bb364bb20bdaca0a646"
+          },
+          {
+            "name": "Image_23.jpg",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_23.jpg",
+            "width_px": 401,
+            "height_px": 371,
+            "mode": "RGB",
+            "size_bytes": 50921,
+            "sha256": "f8eb9e878eed3199b0258d19235740c1f7bdbfa727e8f0045a9d65a40a83e1f7"
+          },
+          {
+            "name": "Image_25.jpg",
+            "path": "data/processed/pdf_maps/extracted_images/tncyclone50dsc07122023_0600hrs_map/page002_Image_25.jpg",
+            "width_px": 158,
+            "height_px": 152,
+            "mode": "RGB",
+            "size_bytes": 33420,
+            "sha256": "334fd728fa3b7dafcbd6c98b25ebd5c2e280b599b7059696d05bfd383f628f4a"
+          }
+        ],
+        "selectable_text_lines_with_coordinate_hints": [
+          "Hyderabad- 500 037",
+          "Based on the analysis of RISAT-1A MRS SAR Satellite Image of 7-12-2023 (0600 Hrs IST)",
+          "Satellite: RISAT-1A - MRS",
+          "Date of Pass:05-11-2023",
+          "Satellite: RISAT1A-MRS-SAR",
+          "Date of Pass: 07-12-2023",
+          "of 2018-2019, Bhuvan Geospatial",
+          "Citation ' NRSC (2023) - Flood Inundated areas in Part of Tamilnadu State (as on 07.12.2023)' ,  Map no :2023/CY/TN/01b/07122023, NRSC/ISRO,Hyderabad",
+          "2023/CY/TN/01b/07122023",
+          "Michaung Cyclone (05.12.2023) and"
+        ],
+        "legend_text_excerpt": [
+          "E-Mail: flood@nrsc.gov.in",
+          "Flood / Rain affected areas during Michaung Cyclone in Parts of TAMILNADU State",
+          "Pre Flood Data",
+          "Post Flood Data",
+          "Flood inundation may include rain water accumulation / flood water in low lying areas / paddy  fields  with standing water. No ground verification is done.",
+          "Citation ' NRSC (2023) - Flood Inundated areas in Part of Tamilnadu State (as on 07.12.2023)' ,  Map no :2023/CY/TN/01b/07122023, NRSC/ISRO,Hyderabad",
+          "affected Coastal parts of Tamil Nadu",
+          "This map highlights the areas of flood",
+          "inundation / Standing water due to",
+          "Flood / Standing Water due to Rains"
+        ],
+        "text_excerpt": "CUDDALORE\nVILLUPURAM\nKALLAKKURICHI\nTIRUVANNAMALAI\nPERAMBALUR\nARIYALUR\nSALEM\nCHENGALPATTU\nNAGAPATTINAM\nDHARMAPURI\nTIRUPPATTUR\nTIRUCHIRAPALLI\nSALEM\nKRISHNAGIRI\nTHANJAVUR\nDisaster Management Support Group (DMSG)\nNational Remote Sensing Centre, ISRO \nDept. of Space, Govt. of India\nHyderabad- 500 037\nE-Mail: flood@nrsc.gov.in\nwww.nrsc.gov.in\nnrsc\nFor Official Use\nFlood / Rain affected areas during Michaung Cyclone in Parts of TAMILNADU State\nBased on the analysis of RISAT-1A MRS SAR Satellite Image of 7-12-2023 (0600 Hrs IST)\nAbout the Event\nID:\nSatellite Observations:\nPre Flood Data\nSatellite: RISAT-1A - MRS\nDate of Pass:05-11-2023\nPost Flood Data\nSatellite: RISAT1A-MRS-SAR\nDate of Pass: 07-12-2023\nNRSC Landuse/Landcover Data\nof 2018-2019, Bhuvan Geospatial \nLegacy Data\n±\nDisclaimer : This Map  is prepared on rapid mapping mode for immediate use and sharing amongst official agencies. This provides preliminary results.\nFlood inundation may include rain water accumulation / flood water in low lying areas / paddy  fields  with standing water. No ground verification is done.\nMap extent is  limited to the available satellite coverage. All geographic information has limitations due to the scale, resolution, date and interpretation of the\noriginal source materials.                                                                             \nCitation ' NRSC (2023) - Flood Inundated areas in Part of Tamilnadu State (as on 07.12.2023)' ,  Map no :2023/CY/TN/01b/07122023, NRSC/ISRO,Hyderabad\nLocation Map\nMap\nDate of Issue: \n 2023/CY/TN/01b/07122023\n 7.12.2023\nSatellite Data Used\nReference Data Used\nHeavy rains  are witnessed during \nMichaung Cyclone (05.12.2023) and \naffected Coastal parts of Tamil Nadu \nState \n(Source: CWC, News Media)         \nThis map highlights the areas of flood\ninundation / Standing water due to\nrains just after the cyclone event\n0 20 4010\nKilometers\nDistrict Boundary\nFlood / Standing Water due to Rains"
+      }
+    ],
+    "geopdf_embedded_georeferencing": true
+  },
+  {
+    "source": "data/raw/historical_floods/2015/december_maps",
+    "status": "folder absent; December maps not provided"
+  }
+]

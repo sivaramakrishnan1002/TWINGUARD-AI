@@ -1,6 +1,6 @@
-# Phase 10 risk map — blocked pending an independent accepted label
+# Phase 10 risk map — prior status and CR-003 pilot update
 
-**Status: BLOCKED; no risk classes, risk GeoTIFF, static risk map, or zonal summaries were generated.** Producing a visually complete map from the current model and calling it calibrated would violate the required held-out-date/event and uncertainty checks.
+**Historical status:** the earlier task was blocked because independent-event validation was unavailable. The following sections preserve that original rationale. A CR-003 apparent, single-event pilot has since been generated as a separate product; it does not satisfy independent-event validation and is not a forecast.
 
 ## Why this is blocked
 
@@ -23,3 +23,11 @@ The full-grid Phase 9 5th–95th percentile rasters are from a 20-fit bootstrap 
 5. Only after those checks, define and document risk-class cut points, generate population/facility/road-length summaries, and make the map. Preserve WorldPop NoData as unknown and use 3 km blocks; the repository has no ward boundaries.
 
 **Plain-language limit:** the existing model can rank some 2015 locations as more susceptible than others within this one mapped event. It has not shown that its probabilities or risk classes transfer to another flood, year, or live forecast.
+
+## CR-003 update (2026-10-25)
+
+The user approved a bounded Phase 10 pilot that explicitly leaves out-of-event validation pending. Two apparent class maps were generated from the Phase 9B v2 full-data probabilities and Phase 9C radar-observable probabilities, using fixed descriptive cut-points `<0.05`, `0.05–<0.10`, `0.10–<0.25`, and `>=0.25`. These are not operational alert thresholds. Phase 9C cells outside its radar-observability mask remain not assessed; its physical complement is kept separate from probability maps.
+
+The machine-readable details, class-by-block zonal statistics, uncertainty layers, OpenCity point cross-check, and limitations are in [the CR-003 report](PHASE10_RISK_MAP_CR003_V3.md), [the summary JSON](PHASE10_RISK_MAP_CR003_V3.json), and [the lineage note](PHASE10_RISK_MAP_LINEAGE_CR003.md). The PNG is [phase10_risk_map_cr003_v3.png](figures/phase10_risk_map_cr003_v3.png). The 120 m generalized MVT tiles are under `data/processed/tiles/phase10_cr003_v3/`; 30 m analysis GeoTIFFs are under `data/features/predictions/phase10_cr003_v3/`.
+
+The point cross-check remains weak: 111 of 945 approximate, undated OpenCity points had usable map scores; 0/111 fell in the top 1% or 5%, 1/111 in the top 10%, and 3/111 in the top 20% of the Phase 9C composite ordinal rank. This is not date-matched validation. Road length by zone uses whole-edge midpoint allocation and is approximate. Phase 9B's nominal 90% band under-covered (85.8%) in within-event blocked validation; Phase 9C reported 93.4%, also not independent-event coverage. No model or map is accepted for future-event or operational use. Digitised independent maps remain the next evidence needed.

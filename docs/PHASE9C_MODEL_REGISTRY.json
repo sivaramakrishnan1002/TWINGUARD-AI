@@ -1,0 +1,275 @@
+{
+  "registry_version": 1,
+  "status": "PILOT, SINGLE 2015 TARGET; SAR-DERIVED; NOT FIELD VALIDATED",
+  "model": "simple_average_tuned_tree_ensemble",
+  "parameters_by_outer_fold": {
+    "1": {
+      "random_forest": {
+        "n_estimators": 90,
+        "max_depth": null,
+        "min_samples_leaf": 4,
+        "max_features": "sqrt",
+        "max_samples": 1.0,
+        "bootstrap": true
+      },
+      "xgboost": {
+        "n_estimators": 90,
+        "max_depth": 6,
+        "learning_rate": 0.08,
+        "subsample": 0.85,
+        "colsample_bytree": 0.8,
+        "reg_lambda": 1.0,
+        "tree_method": "hist"
+      },
+      "lightgbm": {
+        "n_estimators": 120,
+        "num_leaves": 31,
+        "learning_rate": 0.12,
+        "subsample": 0.85,
+        "colsample_bytree": 0.6,
+        "reg_lambda": 3.0,
+        "min_child_samples": 40
+      }
+    },
+    "2": {
+      "random_forest": {
+        "n_estimators": 120,
+        "max_depth": 10,
+        "min_samples_leaf": 4,
+        "max_features": "sqrt",
+        "max_samples": 1.0,
+        "bootstrap": true
+      },
+      "xgboost": {
+        "n_estimators": 120,
+        "max_depth": 4,
+        "learning_rate": 0.08,
+        "subsample": 1.0,
+        "colsample_bytree": 0.8,
+        "reg_lambda": 1.0,
+        "tree_method": "hist"
+      },
+      "lightgbm": {
+        "n_estimators": 120,
+        "num_leaves": 63,
+        "learning_rate": 0.03,
+        "subsample": 0.7,
+        "colsample_bytree": 0.6,
+        "reg_lambda": 1.0,
+        "min_child_samples": 40
+      }
+    },
+    "3": {
+      "random_forest": {
+        "n_estimators": 120,
+        "max_depth": 24,
+        "min_samples_leaf": 8,
+        "max_features": "sqrt",
+        "max_samples": 0.6,
+        "bootstrap": true
+      },
+      "xgboost": {
+        "n_estimators": 90,
+        "max_depth": 3,
+        "learning_rate": 0.08,
+        "subsample": 0.7,
+        "colsample_bytree": 0.8,
+        "reg_lambda": 1.0,
+        "tree_method": "hist"
+      },
+      "lightgbm": {
+        "n_estimators": 120,
+        "num_leaves": 15,
+        "learning_rate": 0.08,
+        "subsample": 0.85,
+        "colsample_bytree": 0.6,
+        "reg_lambda": 1.0,
+        "min_child_samples": 20
+      }
+    },
+    "4": {
+      "random_forest": {
+        "n_estimators": 90,
+        "max_depth": 10,
+        "min_samples_leaf": 8,
+        "max_features": 0.5,
+        "max_samples": 0.6,
+        "bootstrap": true
+      },
+      "xgboost": {
+        "n_estimators": 120,
+        "max_depth": 8,
+        "learning_rate": 0.12,
+        "subsample": 1.0,
+        "colsample_bytree": 1.0,
+        "reg_lambda": 1.0,
+        "tree_method": "hist"
+      },
+      "lightgbm": {
+        "n_estimators": 60,
+        "num_leaves": 15,
+        "learning_rate": 0.12,
+        "subsample": 0.7,
+        "colsample_bytree": 1.0,
+        "reg_lambda": 8.0,
+        "min_child_samples": 40
+      }
+    },
+    "5": {
+      "random_forest": {
+        "n_estimators": 120,
+        "max_depth": 24,
+        "min_samples_leaf": 8,
+        "max_features": "sqrt",
+        "max_samples": 0.8,
+        "bootstrap": true
+      },
+      "xgboost": {
+        "n_estimators": 120,
+        "max_depth": 3,
+        "learning_rate": 0.08,
+        "subsample": 0.7,
+        "colsample_bytree": 0.6,
+        "reg_lambda": 8.0,
+        "tree_method": "hist"
+      },
+      "lightgbm": {
+        "n_estimators": 60,
+        "num_leaves": 63,
+        "learning_rate": 0.03,
+        "subsample": 0.7,
+        "colsample_bytree": 0.8,
+        "reg_lambda": 1.0,
+        "min_child_samples": 40
+      }
+    }
+  },
+  "seed": 20261025,
+  "features": [
+    "elevation_m",
+    "slope_deg",
+    "twi_d8_proxy",
+    "flow_accumulation_cells_d8",
+    "hand_d8_accum100_m",
+    "relative_elevation_5cells_m",
+    "relative_elevation_15cells_m",
+    "relative_elevation_33cells_m",
+    "local_depression_depth_m",
+    "plan_curvature_per_m",
+    "profile_curvature_per_m",
+    "distance_to_all_available_water_m",
+    "distance_to_coast_or_sea_m",
+    "d8_flow_length_to_stream_25cells_m",
+    "d8_flow_length_to_stream_100cells_m",
+    "d8_flow_length_to_stream_250cells_m",
+    "d8_flow_length_to_stream_500cells_m",
+    "upslope_area_km2",
+    "upslope_area_ge_25cells_km2",
+    "upslope_area_ge_100cells_km2",
+    "upslope_area_ge_250cells_km2",
+    "upslope_area_ge_500cells_km2",
+    "built_up_fraction",
+    "tree_fraction",
+    "crop_fraction",
+    "grass_fraction",
+    "bare_fraction",
+    "building_density_per_km2",
+    "distance_to_nearest_road_node_m",
+    "distance_to_exact_named_waterway_m",
+    "worldpop_2021"
+  ],
+  "label": "unchanged Phase 9 target_union_minus_baseline",
+  "feature_sha256": "c54c21d8145adde7600d817169b80ebe2d936ce7edae59e2248e40a8280dbf86",
+  "label_sha256": "f580f02a7626c2dbad329420d08176d8d19cd126e231846d2fa2c1b690b78052",
+  "metrics": {
+    "n": 481244,
+    "prevalence_true": 0.04979178961192243,
+    "roc_auc": 0.753826512115272,
+    "pr_auc": 0.16047425381592154,
+    "threshold": 0.07386119814871545,
+    "f1": 0.1931925622439332,
+    "iou": 0.1069248212105355,
+    "precision": 0.11777245114542927,
+    "recall": 0.5372256072114181,
+    "brier": 0.044837028530281896,
+    "brier_skill_vs_train_prevalence": 0.05232306996213931,
+    "calibration": {
+      "ece_10_equal_width": 0.007066214520509912,
+      "bins": [
+        {
+          "low": 0.0,
+          "high": 0.1,
+          "mean_probability": 0.030873046103359583,
+          "observed_fraction": 0.033841635050789375,
+          "count": 408550
+        },
+        {
+          "low": 0.1,
+          "high": 0.2,
+          "mean_probability": 0.13781024791694474,
+          "observed_fraction": 0.10688638334778838,
+          "count": 57650
+        },
+        {
+          "low": 0.2,
+          "high": 0.30000000000000004,
+          "mean_probability": 0.23528547682114928,
+          "observed_fraction": 0.24016108365367014,
+          "count": 10926
+        },
+        {
+          "low": 0.30000000000000004,
+          "high": 0.4,
+          "mean_probability": 0.34048913742499376,
+          "observed_fraction": 0.28327228327228327,
+          "count": 2457
+        },
+        {
+          "low": 0.4,
+          "high": 0.5,
+          "mean_probability": 0.4409055021521884,
+          "observed_fraction": 0.3167259786476868,
+          "count": 843
+        },
+        {
+          "low": 0.5,
+          "high": 0.6000000000000001,
+          "mean_probability": 0.5446317135071268,
+          "observed_fraction": 0.4126984126984127,
+          "count": 441
+        },
+        {
+          "low": 0.6000000000000001,
+          "high": 0.7000000000000001,
+          "mean_probability": 0.6439185598831036,
+          "observed_fraction": 0.575091575091575,
+          "count": 273
+        },
+        {
+          "low": 0.7000000000000001,
+          "high": 0.8,
+          "mean_probability": 0.7371601418902477,
+          "observed_fraction": 0.46875,
+          "count": 96
+        },
+        {
+          "low": 0.8,
+          "high": 0.9,
+          "mean_probability": 0.8399723097681999,
+          "observed_fraction": 0.375,
+          "count": 8
+        }
+      ]
+    }
+  },
+  "pr_auc_block_bootstrap_ci_95": {
+    "method": "resample entire 3 km blocks with replacement",
+    "replicates_requested": 200,
+    "replicates_valid": 200,
+    "ci_95_percentile": [
+      0.12118667062309145,
+      0.20579803611728487
+    ]
+  },
+  "reproducible_command": ".venv\\Scripts\\python.exe pipelines\\phase9c\\urban_censoring.py --configs 30 --bootstrap-reps 200"
+}

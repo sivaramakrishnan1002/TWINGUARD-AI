@@ -20,6 +20,18 @@ def digest(path: Path) -> str:
 
 def provenance(path: Path) -> tuple[str, str]:
     rel = path.relative_to(ROOT).as_posix()
+    if rel == "data/features/static/cell_table_phase9b_v1.parquet" or rel == "data/features/static/cell_table_phase9b_v1.json":
+        return ("data/features/static/cell_table.parquet; data/processed/terrain_cleaned/cleaned_elevation_m.tif; data/processed/terrain_cleaned/slope_deg_edge_safe.tif; data/processed/terrain_cleaned/twi_d8_proxy_edge_safe.tif; data/processed/terrain_cleaned/flow_accumulation_cells_d8.tif; data/features/landcover/worldcover_2021_class.tif; data/features/osm/chennai_osm_features.gpkg; data/processed/grid/cma_mask.tif; data/processed/terrain_cleaned/flow_direction_d8.tif",
+                "pipelines/phase9b/feature_build.py")
+    if rel == "data/features/static/cell_table_phase9b_v2.parquet" or rel == "data/features/static/cell_table_phase9b_v2.json":
+        return ("data/features/static/cell_table.parquet; data/processed/terrain_cleaned/cleaned_elevation_m.tif; data/processed/terrain_cleaned/slope_deg_edge_safe.tif; data/processed/terrain_cleaned/twi_d8_proxy_edge_safe.tif; data/processed/terrain_cleaned/flow_accumulation_cells_d8.tif; data/features/landcover/worldcover_2021_area_fractions_30m.tif; data/features/osm/chennai_osm_features.gpkg; data/raw/roads/southern-zone-latest.osm.pbf; data/processed/grid/cma_mask.tif; data/processed/terrain_cleaned/flow_direction_d8.tif; data/processed/terrain_cleaned/depression_fill_depth_m_valid_only.tif",
+                "pipelines/phase9b/feature_build.py")
+    if rel.startswith("data/features/predictions/phase9b_v"):
+        return ("data/features/static/cell_table_phase9b_v1.parquet; data/features/predictions/labels_nov2015.parquet; data/processed/alignment/spatial_blocks.tif; data/processed/grid/cma_mask.tif",
+                "pipelines/phase9b/model_upgrade.py")
+    if rel.startswith("data/processed/sar_work/phase9b_osm_water_cache"):
+        return ("data/raw/roads/southern-zone-latest.osm.pbf; data/features/osm/chennai_osm_features.gpkg; data/processed/grid/cma_mask.tif",
+                "pipelines/phase9b/feature_build.py")
     if rel.startswith("data/processed/sar_work/hand_d8_100cells_"):
         return ("data/processed/terrain_cleaned/cleaned_elevation_m.tif; data/processed/terrain_cleaned/flow_direction_d8.tif; data/processed/terrain_cleaned/flow_accumulation_cells_d8.tif",
                 "pipelines/phase8/flood_rule_v2.py")

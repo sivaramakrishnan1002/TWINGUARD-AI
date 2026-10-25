@@ -1,0 +1,1 @@
+# Lane A status (integrator snapshot)`n`nRead `docs/PROGRESS_BOARD.md` for the authoritative live board. Snapshot: T1/T2 done, T3 doing, T4 preregistered/todo; T5-T8 todo. This file is a gate-merge target, not a replacement for the lane board.

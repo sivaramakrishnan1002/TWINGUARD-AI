@@ -1,0 +1,119 @@
+{
+  "status": "DERIVED scenario calibration proxies; not measured depth, calibrated prediction or routing input",
+  "random_seed": 20261025,
+  "spatial_correlation": {
+    "filter": "Gaussian-smoothed white noise",
+    "sigma_cells": 10,
+    "approximate_range_m": 300
+  },
+  "depth_classes_m": [
+    "<0.15",
+    "0.15 to <0.30",
+    "0.30 to <0.50",
+    ">=0.50"
+  ],
+  "events": [
+    {
+      "event_date": "2015-11-12",
+      "source_rasterized_cells": 94195,
+      "covered_depth_cells": 30235,
+      "coverage_fraction": 0.32098306704177504,
+      "components_in_covered_extent": 3464,
+      "draws": 100,
+      "common_absolute_bias_test": {
+        "offset_m": 4.0,
+        "maximum_depth_difference_m": 0.0,
+        "interpretation": "a spatially uniform DEM offset cancels exactly because both edge water-surface estimate and cell DEM receive the same offset"
+      },
+      "scenario_parameters": {
+        "relative_20pct": {
+          "interpretation": "depth multiplied by max(0,1+spatial_error); assumed q95 fractional magnitude 20%",
+          "correlation_sigma_cells": 10,
+          "correlation_approx_m": 300
+        },
+        "absolute_dem_pm4m": {
+          "interpretation": "spatial DEM error normalized to +/-4m q95 absolute magnitude; water-surface edge median recomputed per component",
+          "correlation_sigma_cells": 10,
+          "correlation_approx_m": 300
+        }
+      },
+      "scenarios": {
+        "relative_20pct": {
+          "class_cell_mean_probability": {
+            "lt_0p15m": 0.8279778361320496,
+            "0p15_to_0p30m": 0.07826559245586395,
+            "0p30_to_0p50m": 0.04646899178624153,
+            "gte_0p50m": 0.047287579625844955
+          },
+          "class_probability_sum_min": 1.0,
+          "class_probability_sum_max": 1.0,
+          "ensemble_depth_p05_m": 0.08025223761796951,
+          "ensemble_depth_p95_m": 0.111641064286232
+        },
+        "absolute_dem_pm4m": {
+          "class_cell_mean_probability": {
+            "lt_0p15m": 0.6613137125968933,
+            "0p15_to_0p30m": 0.08167587220668793,
+            "0p30_to_0p50m": 0.07114899903535843,
+            "gte_0p50m": 0.18586140871047974
+          },
+          "class_probability_sum_min": 0.9999998807907104,
+          "class_probability_sum_max": 1.0000001192092896,
+          "ensemble_depth_p05_m": 0.01814492605626583,
+          "ensemble_depth_p95_m": 1.0620667934417725
+        }
+      }
+    },
+    {
+      "event_date": "2015-11-24",
+      "source_rasterized_cells": 109067,
+      "covered_depth_cells": 32627,
+      "coverage_fraction": 0.2991463962518452,
+      "components_in_covered_extent": 2056,
+      "draws": 100,
+      "common_absolute_bias_test": {
+        "offset_m": 4.0,
+        "maximum_depth_difference_m": 0.0,
+        "interpretation": "a spatially uniform DEM offset cancels exactly because both edge water-surface estimate and cell DEM receive the same offset"
+      },
+      "scenario_parameters": {
+        "relative_20pct": {
+          "interpretation": "depth multiplied by max(0,1+spatial_error); assumed q95 fractional magnitude 20%",
+          "correlation_sigma_cells": 10,
+          "correlation_approx_m": 300
+        },
+        "absolute_dem_pm4m": {
+          "interpretation": "spatial DEM error normalized to +/-4m q95 absolute magnitude; water-surface edge median recomputed per component",
+          "correlation_sigma_cells": 10,
+          "correlation_approx_m": 300
+        }
+      },
+      "scenarios": {
+        "relative_20pct": {
+          "class_cell_mean_probability": {
+            "lt_0p15m": 0.7905066609382629,
+            "0p15_to_0p30m": 0.09300702065229416,
+            "0p30_to_0p50m": 0.055675357580184937,
+            "gte_0p50m": 0.060810983180999756
+          },
+          "class_probability_sum_min": 1.0,
+          "class_probability_sum_max": 1.0,
+          "ensemble_depth_p05_m": 0.10471227020025253,
+          "ensemble_depth_p95_m": 0.14530201256275177
+        },
+        "absolute_dem_pm4m": {
+          "class_cell_mean_probability": {
+            "lt_0p15m": 0.6326922178268433,
+            "0p15_to_0p30m": 0.08020750433206558,
+            "0p30_to_0p50m": 0.07150978595018387,
+            "gte_0p50m": 0.2155904769897461
+          },
+          "class_probability_sum_min": 0.9999998807907104,
+          "class_probability_sum_max": 1.0000001192092896,
+          "ensemble_depth_p05_m": 0.011437364853918552,
+          "ensemble_depth_p95_m": 1.2506985664367676
+        }
+      }
+    }
+  ]
+}

@@ -157,7 +157,7 @@ def ensure_topics(admin:Any,timeout:float=15)->None:
 
 class KafkaJSONProducer:
     def __init__(self,producer:Any):
-        self.producer=producer; self._delivery_errors=[]
+        self.producer=producer; self._delivery_errors=[]; self.delivered_count=0
     def send(self,event:dict[str,Any])->None:
         self.send_payload(topic_for_event(event),event,event_key(event))
     def send_payload(self,topic:str,event:dict[str,Any],key:str|bytes)->None:
@@ -165,6 +165,7 @@ class KafkaJSONProducer:
         key=key.encode('utf-8') if isinstance(key,str) else key
         def delivered(error:Any,_message:Any)->None:
             if error is not None:self._delivery_errors.append(True)
+            else:self.delivered_count+=1
         while True:
             try:
                 self.producer.produce(topic,key=key,value=payload,on_delivery=delivered)
@@ -197,7 +198,7 @@ class TrackBPersistenceAdapter:
         return write_reservoir_state(self.connection,self.run_id,event)
 
 
-def make_replay_events(repo_root:Path,start:str,end:str)->Iterable[dict[str,Any]]:
+def make_replay_events(repo_root:Path,start:str,end:str,run_id:str|None=None)->Iterable[dict[str,Any]]:
     """Yield source-backed replay messages in reservoir-key/event-time order."""
     if end<start:raise ValueError('end must not precede start')
     df,_,_=load_observations(repo_root)
@@ -210,11 +211,13 @@ def make_replay_events(repo_root:Path,start:str,end:str)->Iterable[dict[str,Any]
         provenance={'source_id':'Kaggle Chennai Water Management','source_file':'data/raw/reservoirs/kaggle_chennai_water_management/archive.zip',
                     'source_sha256':digest,'date_timezone':'Asia/Kolkata','timezone_status':'DEFAULT, to confirm',
                     'rainfall_unit_status':'INFERRED; original unit unspecified'}
+        if run_id is not None:provenance['replay_run_id']=run_id
         reservoir=row.reservoir.upper()
-        yield {'schema':'trackb.rain_update.v1','event_id':f'replay:{reservoir}:rain:{row.date:%Y-%m-%d}',
+        suffix=f':run:{run_id}' if run_id is not None else ''
+        yield {'schema':'trackb.rain_update.v1','event_id':f'replay:{reservoir}:rain:{row.date:%Y-%m-%d}{suffix}',
                'observed_at':observed,'received_at':received,'source':'replay','provenance':provenance,
                'location_key':reservoir,'value':float(row.rain_kaggle_raw),'unit':'mm/day','period_seconds':86400,'qc_flags':[]}
-        yield {'schema':'trackb.reservoir_update.v1','event_id':f'replay:{reservoir}:storage:{row.date:%Y-%m-%d}',
+        yield {'schema':'trackb.reservoir_update.v1','event_id':f'replay:{reservoir}:storage:{row.date:%Y-%m-%d}{suffix}',
                'observed_at':observed,'received_at':received,'source':'replay','provenance':provenance,
                'reservoir_key':reservoir,'storage_value':float(row.storage_mcft),'storage_unit':'mcft',
                'capacity_value':float(row.capacity_mcft),'capacity_unit':'mcft','release_value':None,'release_unit':'cusecs',
@@ -360,7 +363,14 @@ def process_message(message:Any,consumer:Any,producer:KafkaJSONProducer,processo
         except (ValueError,TypeError):metrics.record_rule_error('invalid_received_at')
     # Producer output (notably generated alerts) must be acknowledged before the
     # source offset is committed, otherwise a crash could lose the alert.
-    producer.flush()
+    try:
+        producer.flush()
+    except Exception:
+        # Redis state updates are idempotent; remove the event marker so a
+        # Kafka redelivery can retry an alert whose broker delivery failed.
+        processor.redis.delete(f"trackb:processed:{event['event_id']}")
+        metrics.record_rule_error('delivery')
+        raise
     consumer.commit(message=message,asynchronous=False)
     return processed
 
@@ -368,22 +378,32 @@ def process_message(message:Any,consumer:Any,producer:KafkaJSONProducer,processo
 def update_consumer_lag(consumer:Any,metrics:TrackBMetrics,group_id:str='trackb-rule-engine')->None:
     for assignment in consumer.assignment():
         try:
-            _,high=consumer.get_watermark_offsets(assignment,timeout=1)
+            # Cached watermarks are refreshed as the consumer fetches records.
+            # Broker queries here would block once per partition between polls,
+            # starving the consumer on multi-partition topics.
+            watermarks=consumer.get_watermark_offsets(assignment,cached=True)
+            if watermarks is None:continue
+            _,high=watermarks
             position=consumer.position([assignment])[0].offset
+            if position<0 or high<0:continue
             # Keep the Prometheus group label fixed even when a one-off replay
             # uses a fresh Kafka group to avoid consuming pre-existing offsets.
             metrics.set_consumer_lag('trackb-rule-engine',assignment.topic,max(0,high-position))
         except Exception:metrics.record_rule_error('lag_probe')
 
 
-def run_replay(start:str,end:str,bootstrap:str='localhost:9092',repo_root:Path|None=None)->int:
+def run_replay(start:str,end:str,bootstrap:str='localhost:9092',repo_root:Path|None=None,run_id:str|None=None)->dict[str,int]:
     from confluent_kafka import Producer
     root=repo_root or Path(__file__).resolve().parents[2]
     producer=KafkaJSONProducer(Producer({'bootstrap.servers':bootstrap,'enable.idempotence':True,'acks':'all'}))
     count=0
-    for event in make_replay_events(root,start,end):producer.send(event); count+=1
+    for event in make_replay_events(root,start,end,run_id):
+        event['received_at']=datetime.now().astimezone().isoformat()
+        producer.send(event); count+=1
     producer.flush()
-    return count
+    if producer.delivered_count!=count:
+        raise RuntimeError(f'Kafka delivery count mismatch: produced={count}, acknowledged={producer.delivered_count}')
+    return {'produced':count,'acknowledged':producer.delivered_count}
 
 
 def consumer_config(bootstrap:str,group_id:str='trackb-rule-engine',auto_offset_reset:str='earliest')->dict[str,Any]:
@@ -423,13 +443,15 @@ def main()->None:
     import argparse,os
     parser=argparse.ArgumentParser(description=__doc__); sub=parser.add_subparsers(dest='command',required=True)
     sub.add_parser('topics')
-    replay=sub.add_parser('replay'); replay.add_argument('--start',required=True); replay.add_argument('--end',required=True)
+    replay=sub.add_parser('replay'); replay.add_argument('--start',required=True); replay.add_argument('--end',required=True); replay.add_argument('--run-id')
     consumer=sub.add_parser('consume'); consumer.add_argument('--metrics-port',type=int,default=8000)
     args=parser.parse_args(); bootstrap=os.getenv('TRACKB_KAFKA_BOOTSTRAP_SERVERS','localhost:9092')
     if args.command=='topics':
         from confluent_kafka.admin import AdminClient
         ensure_topics(AdminClient({'bootstrap.servers':bootstrap})); print('Track B topics verified/created')
-    elif args.command=='replay':print(f"events produced: {run_replay(args.start,args.end,bootstrap)}; source=replay")
+    elif args.command=='replay':
+        result=run_replay(args.start,args.end,bootstrap,run_id=args.run_id)
+        print(f"events produced: {result['produced']}; acknowledged: {result['acknowledged']}; source=replay; run_id={args.run_id or 'stable'}")
     elif args.command=='consume':consume_forever(
         bootstrap,os.getenv('TRACKB_REDIS_URL','redis://127.0.0.1:6380/0'),args.metrics_port,
         os.getenv('TRACKB_CONSUMER_GROUP','trackb-rule-engine'),os.getenv('TRACKB_AUTO_OFFSET_RESET','earliest'))

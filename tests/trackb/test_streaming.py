@@ -16,6 +16,7 @@ from pipelines.trackb.streaming import (
     ensure_topics,
     process_message,
     topic_for_event,
+    update_consumer_lag,
     validate_event,
 )
 
@@ -33,12 +34,16 @@ class FakeRedis:
     def exists(self, key):
         return key in self.values
 
+    def delete(self, key):
+        return self.values.pop(key, None) is not None
+
 
 class FakeKafkaProducer:
-    def __init__(self, order=None):
+    def __init__(self, order=None, fail_delivery=False):
         self.records = []
         self.callbacks = []
         self.order = order if order is not None else []
+        self.fail_delivery = fail_delivery
 
     def produce(self, topic, key, value, on_delivery=None):
         self.records.append((topic, key, value))
@@ -50,7 +55,7 @@ class FakeKafkaProducer:
 
     def flush(self, timeout):
         while self.callbacks:
-            self.callbacks.pop(0)(None, None)
+            self.callbacks.pop(0)(RuntimeError('fixture delivery failure') if self.fail_delivery else None, None)
         self.order.append('flush')
         return 0
 
@@ -127,6 +132,54 @@ def test_consumer_can_isolate_a_fresh_replay_group_without_changing_defaults():
     assert isolated['auto.offset.reset'] == 'latest'
     with pytest.raises(ValueError, match='auto_offset_reset'):
         consumer_config('localhost:9092', 'trackb-b9-replay', 'unsafe')
+
+
+def test_lag_probe_uses_cached_watermarks_and_skips_invalid_uninitialized_positions():
+    metrics = TrackBMetrics()
+
+    class Consumer:
+        def __init__(self, offset):
+            self.offset = offset
+            self.cached_flags = []
+
+        def assignment(self):
+            return [SimpleNamespace(topic='trackb.rain.v1', partition=0)]
+
+        def get_watermark_offsets(self, assignment, cached=False, timeout=None):
+            self.cached_flags.append(cached)
+            return (0, 12)
+
+        def position(self, assignments):
+            return [SimpleNamespace(offset=self.offset)]
+
+    invalid = Consumer(-1001)
+    update_consumer_lag(invalid, metrics)
+    assert invalid.cached_flags == [True]
+    assert 'trackb_consumer_lag{' not in metrics.exposition().decode()
+    valid = Consumer(9)
+    update_consumer_lag(valid, metrics)
+    exposition = metrics.exposition().decode()
+    assert valid.cached_flags == [True]
+    assert 'trackb_consumer_lag{group="trackb-rule-engine",topic="trackb.rain.v1"} 3.0' in exposition
+
+
+def test_failed_alert_delivery_clears_dedupe_marker_and_never_commits_offset():
+    raw = json.dumps(reservoir_event()).encode()
+    redis = FakeRedis()
+    fake_producer = FakeKafkaProducer(fail_delivery=True)
+    producer = KafkaJSONProducer(fake_producer)
+    metrics = TrackBMetrics()
+    processor = TrackBEventProcessor(
+        redis, producer, {'POONDI': {'rise_1d_pct': 1, 'rise_3d_pct': 2,
+                                    'rain_3d_p75_mm': 10, 'rain_3d_p90_mm': 20}}, metrics,
+    )
+    consumer = FakeConsumer()
+    message = FakeMessage('trackb.reservoir.v1', raw)
+    with pytest.raises(RuntimeError, match='delivery'):
+        process_message(message, consumer, producer, processor, metrics)
+    assert not consumer.commits
+    assert not redis.exists('trackb:processed:' + reservoir_event()['event_id'])
+    assert 'trackb_rule_engine_errors_total{kind="delivery"} 1.0' in metrics.exposition().decode()
 
 
 def test_topic_setup_is_idempotent_and_checks_partition_retention():
@@ -257,6 +310,42 @@ def test_metrics_labels_are_bounded_and_unknown_errors_are_collapsed():
     metrics.record_rule_error('exception-instance-123456')
     assert 'trackb_rule_engine_errors_total{kind="other"} 1.0' in metrics.exposition().decode()
     assert 'exception-instance-123456' not in metrics.exposition().decode()
+
+
+def test_replay_run_id_is_embedded_in_event_identity_and_provenance(tmp_path, monkeypatch):
+    import pandas as pd
+    import pipelines.trackb.streaming as streaming
+
+    archive = tmp_path / 'data/raw/reservoirs/kaggle_chennai_water_management/archive.zip'
+    archive.parent.mkdir(parents=True)
+    archive.write_bytes(b'fixture source fingerprint')
+    frame = pd.DataFrame([{
+        'date': pd.Timestamp('2015-12-01'), 'reservoir': 'POONDI',
+        'rain_kaggle_raw': 1.0, 'storage_mcft': 100.0, 'capacity_mcft': 3231.0,
+        'rain_3d_mm': 3.0, 'rise_1d_pct': 1.0, 'rise_3d_pct': 2.0,
+    }])
+    monkeypatch.setattr(streaming, 'load_observations', lambda _root: (frame, None, None))
+    events = list(streaming.make_replay_events(tmp_path, '2015-12-01', '2015-12-01', 'run-abc'))
+    assert len(events) == 2
+    assert all(e['source'] == 'replay' for e in events)
+    assert all(e['provenance']['replay_run_id'] == 'run-abc' for e in events)
+    assert all(':run:run-abc' in e['event_id'] for e in events)
+
+
+def test_producer_counts_delivery_acknowledgements_and_raises_on_failed_ack():
+    fake = FakeKafkaProducer()
+    producer = KafkaJSONProducer(fake)
+    event = reservoir_event()
+    producer.send(event)
+    producer.flush()
+    assert producer.delivered_count == 1
+
+    failed = FakeKafkaProducer(fail_delivery=True)
+    failed_producer = KafkaJSONProducer(failed)
+    failed_producer.send(event)
+    with pytest.raises(RuntimeError, match='delivery'):
+        failed_producer.flush()
+    assert failed_producer.delivered_count == 0
 
 
 def test_metrics_endpoint_serves_prometheus_format_on_loopback():

@@ -35,16 +35,18 @@ Ports published by the overlay are loopback-only: Redis 6380, Kafka 9092, Promet
 In a separate terminal, use a fresh replay consumer group and an isolated Redis logical database for the B9 run. `latest` starts this new group at the current topic end, avoiding pre-existing retained records. The consumer still reads generated alerts produced after the replay begins.
 
 ```powershell
-$env:TRACKB_CONSUMER_GROUP = 'trackb-b9-replay'
+$runId = [guid]::NewGuid().ToString('N')
+$env:TRACKB_KAFKA_BOOTSTRAP_SERVERS = '127.0.0.1:9092'
+$env:TRACKB_CONSUMER_GROUP = "trackb-b9-$runId"
 $env:TRACKB_AUTO_OFFSET_RESET = 'latest'
-$env:TRACKB_REDIS_URL = 'redis://127.0.0.1:6380/1'
+$env:TRACKB_REDIS_URL = 'redis://127.0.0.1:6380/3'
 .\.venv\Scripts\python.exe -m pipelines.trackb.streaming consume
 ```
 
 In another terminal, produce the historical replay window at full speed; records are marked `source: replay`:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pipelines.trackb.streaming replay --start 2015-11-20 --end 2015-12-04
+.\.venv\Scripts\python.exe -m pipelines.trackb.streaming replay --start 2015-11-20 --end 2015-12-04 --run-id $runId
 ```
 
 Inspect local metrics at `http://127.0.0.1:8000/metrics`, Prometheus at `http://127.0.0.1:9090`, and Grafana at `http://127.0.0.1:3001`. Record actual topic counts, consumed messages, alert counts, errors, latency and Prometheus target health. These are REPLAY results, never live data.
@@ -53,13 +55,15 @@ Inspect local metrics at `http://127.0.0.1:8000/metrics`, Prometheus at `http://
 
 Do not apply migration 100 or write to the shared project database. The default consumer has no database connection. DB persistence remains blocked unless an already-approved isolated Track B test database is available and migration 100 is applied there under that approval.
 
-## Runtime attempt — 2026-10-25
+## Runtime attempt and verified data plane — 2026-10-25
 
-- Quiet Compose validation passed. Redis, Kafka, Prometheus and Grafana all reached healthy after the Grafana healthcheck was changed to use the image's existing `curl` executable.
-- The replay producer reported 120 events for 2015-11-20–2015-12-04. A fresh `trackb-b9-replay` consumer group processed 31 before being stopped. Metrics showed zero alerts and zero rule errors; observed topic lag remained 4,079. Redis DB 1 contained processed markers but no reservoir-state or current-alert keys. B9 is incomplete and blocked pending consumer/topic assignment and throughput diagnosis.
-- Prometheus target was `up` while the consumer's loopback metrics endpoint ran. It became `down` after consumer shutdown. The sampled latency mean of 65.8237 seconds across 31 observations is delayed/stale backlog timing, not accepted as representative replay latency.
-- Migration 100 remained unapplied; no DB writes were attempted.
-- B10 stop-only returned success. All four Track B services are exited; all four named volumes remain present.
+The first B9 run was stopped before draining: the consumer did synchronous per-partition Kafka watermark requests after every poll, and invalid uninitialized offsets inflated the reported lag. The code now uses cached watermarks and skips invalid positions. Use a fresh unique consumer group, Redis DB 3, and a unique replay run ID as shown above.
+
+Verified run `e38099ac743d47ccb69980c9b7cea0ef`: producer sent/acknowledged 120 events (60 rain + 60 reservoir); consumer processed 170 total (60 rain + 60 reservoir + 50 alert events); zero rule errors; 50 alerts (31 Warning, 16 Watch, 3 Critical). Redis DB 3 had 120 input markers, four reservoir states, four current-alert keys and four latest-rain keys. Five non-empty Kafka partitions committed to their log ends with zero lag; three empty partitions had no committed offset. Prometheus target was up during the consumer run. Metrics recorded 170 latency observations, 175.269548 seconds total (mean 1.030997 seconds), and zero active-partition lag. All records are REPLAY.
+
+B9 database persistence remains unverified because no authorized isolated database was identified. Migration 100 remains unapplied; no DB writes were attempted. B9 must remain blocked until this integration evidence is available.
+
+B10 stop-only returned success. All four Track B containers are exited and all four named volumes remain present.
 
 ## Stop and preserve volumes
 

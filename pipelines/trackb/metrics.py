@@ -13,7 +13,7 @@ METRIC_ERROR_KINDS=frozenset({
     'invalid_confidence','invalid_validity','invalid_alert_payload','invalid_rain',
     'invalid_rain_metadata','invalid_qc_flags','invalid_storage','invalid_reservoir_value',
     'invalid_capacity','invalid_twin_reference','invalid_numeric_field','topic_schema_mismatch',
-    'kafka_read','processing','invalid_received_at','lag_probe','invalid_json','other',
+    'kafka_read','processing','invalid_received_at','lag_probe','invalid_json','delivery','other',
 })
 
 class TrackBMetrics:

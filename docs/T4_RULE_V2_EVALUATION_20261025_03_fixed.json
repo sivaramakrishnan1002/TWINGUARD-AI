@@ -1,0 +1,319 @@
+{
+  "status": "fixed-rule evaluation; no threshold or mask retuning",
+  "preregistration": "docs/LABEL_ACCEPTANCE.md; recorded 2026-10-25T09:42:35.367+05:30 before this run",
+  "event": "2015-11-24",
+  "run_id": "20261025_03",
+  "candidate": "data\\features\\labels\\label_2015-11-24_rule_v2_20261025_03_DERIVED.tif",
+  "reference_source": "labels.v_usable_flood_labels, tier A official UNOSAT event_flood, rasterized at pixel centres",
+  "reference_source_stats": {
+    "feature_count": 3710,
+    "dissolved_area_km2": 98.31374783746263
+  },
+  "comparison": {
+    "cma_cells": 1319380,
+    "numeric_sar_cells": 1319255,
+    "valid_flag_cells": 1319255,
+    "reference_rasterized_area_cma_km2": 98.16029999999999,
+    "reference_rasterized_area_comparison_km2": 98.1576,
+    "known_source_area_km2": 98.16,
+    "comparison_area_km2": 1187.3295,
+    "rule_eligible_cells": 13533,
+    "rule_eligible_reference_area_km2": 0.1602,
+    "rule_positive_before_mmu_cells": 268,
+    "excluded_numeric_cells_with_reference_flood": 108886
+  },
+  "primary_full_observable_comparison": {
+    "tp": 146,
+    "fp": 96,
+    "fn": 108918,
+    "tn": 1210095,
+    "precision": 0.6033057851239669,
+    "recall": 0.0013386635370057948,
+    "f1": 0.0026713995572063744,
+    "iou": 0.0013374862587028215,
+    "predicted_area_km2": 0.2178,
+    "reference_rasterized_area_km2": 98.1576,
+    "eligible_conditional": {
+      "tp": 146,
+      "fp": 96,
+      "fn": 32,
+      "tn": 13259,
+      "precision": 0.6033057851239669,
+      "recall": 0.8202247191011236,
+      "f1": 0.6952380952380952,
+      "iou": 0.5328467153284672,
+      "predicted_area_km2": 0.2178,
+      "reference_rasterized_area_km2": 0.1602
+    }
+  },
+  "mmu": {
+    "components_before": 24,
+    "components_after": 14,
+    "pixels_removed": 26
+  },
+  "candidate_reproduction_check": {
+    "metrics_recomputed_from_frozen_rule": {
+      "components_before": 24,
+      "components_after": 14,
+      "pixels_removed": 26
+    },
+    "mismatch_reasons": {
+      "candidate_pixels_failing_numeric_or_cma": 0,
+      "common_valid_data_and_layover_shadow": 0,
+      "permanent_water_exclusion": 0,
+      "slope_at_most_5deg": 0,
+      "HAND_at_most_5m": 0,
+      "dense_urban_exclusion_builtup_at_most_0.5": 0,
+      "pixels_reproduced_different_after_sieve": 0,
+      "candidate_pixels_not_reproduced": 0,
+      "reproduced_pixels_missing_from_candidate": 0
+    }
+  },
+  "tier": "D",
+  "acceptance": "B requires IoU>=0.40 and predicted area 49.08-147.24 km2; C requires 0.25<=IoU<0.40; otherwise D.",
+  "mask_ablations": [
+    {
+      "mask_removed": "common_valid_data_and_layover_shadow",
+      "tp": 146,
+      "fp": 96,
+      "fn": 108918,
+      "tn": 1210095,
+      "precision": 0.6033057851239669,
+      "recall": 0.0013386635370057948,
+      "f1": 0.0026713995572063744,
+      "iou": 0.0013374862587028215,
+      "predicted_area_km2": 0.2178,
+      "reference_rasterized_area_km2": 98.1576
+    },
+    {
+      "mask_removed": "permanent_water_exclusion",
+      "tp": 161,
+      "fp": 113,
+      "fn": 108903,
+      "tn": 1210078,
+      "precision": 0.5875912408759124,
+      "recall": 0.0014761974620406367,
+      "f1": 0.002944996250160054,
+      "iou": 0.0014746695732617675,
+      "predicted_area_km2": 0.24659999999999999,
+      "reference_rasterized_area_km2": 98.1576
+    },
+    {
+      "mask_removed": "slope_at_most_5deg",
+      "tp": 183,
+      "fp": 110,
+      "fn": 108881,
+      "tn": 1210081,
+      "precision": 0.6245733788395904,
+      "recall": 0.0016779138854250714,
+      "f1": 0.0033468365079510226,
+      "iou": 0.0016762232766043196,
+      "predicted_area_km2": 0.2637,
+      "reference_rasterized_area_km2": 98.1576
+    },
+    {
+      "mask_removed": "HAND_at_most_5m",
+      "tp": 21028,
+      "fp": 17758,
+      "fn": 88036,
+      "tn": 1192433,
+      "precision": 0.5421543856030526,
+      "recall": 0.19280422504217706,
+      "f1": 0.28445045654379436,
+      "iou": 0.16580719433536767,
+      "predicted_area_km2": 34.907399999999996,
+      "reference_rasterized_area_km2": 98.1576
+    },
+    {
+      "mask_removed": "dense_urban_exclusion_builtup_at_most_0.5",
+      "tp": 146,
+      "fp": 99,
+      "fn": 108918,
+      "tn": 1210092,
+      "precision": 0.5959183673469388,
+      "recall": 0.0013386635370057948,
+      "f1": 0.002671326240291284,
+      "iou": 0.001337449502120682,
+      "predicted_area_km2": 0.2205,
+      "reference_rasterized_area_km2": 98.1576
+    },
+    {
+      "mask_removed": "minimum_mapping_unit_5_cells",
+      "tp": 158,
+      "fp": 110,
+      "fn": 108906,
+      "tn": 1210081,
+      "precision": 0.5895522388059702,
+      "recall": 0.0014486906770336684,
+      "f1": 0.0028902791497457288,
+      "iou": 0.0014472310257020902,
+      "predicted_area_km2": 0.2412,
+      "reference_rasterized_area_km2": 98.1576
+    }
+  ],
+  "reference_pixels_excluded_by_each_single_mask": {
+    "common_valid_data_and_layover_shadow": 0,
+    "permanent_water_exclusion": 63899,
+    "slope_at_most_5deg": 81244,
+    "HAND_at_most_5m": 108825,
+    "dense_urban_exclusion_builtup_at_most_0.5": 595
+  },
+  "false_errors_by_worldcover": [
+    {
+      "class_code": 10,
+      "class": "tree",
+      "cells": 314864,
+      "reference_flood_cells": 5348,
+      "false_negatives": 5331,
+      "false_positives": 8,
+      "recall": 0.0031787584143605084
+    },
+    {
+      "class_code": 20,
+      "class": "shrub",
+      "cells": 13109,
+      "reference_flood_cells": 5118,
+      "false_negatives": 5113,
+      "false_positives": 0,
+      "recall": 0.0009769441187964048
+    },
+    {
+      "class_code": 30,
+      "class": "grass",
+      "cells": 91845,
+      "reference_flood_cells": 11044,
+      "false_negatives": 10985,
+      "false_positives": 23,
+      "recall": 0.005342267294458529
+    },
+    {
+      "class_code": 40,
+      "class": "cropland",
+      "cells": 261447,
+      "reference_flood_cells": 22277,
+      "false_negatives": 22215,
+      "false_positives": 60,
+      "recall": 0.002783139560982179
+    },
+    {
+      "class_code": 50,
+      "class": "built-up",
+      "cells": 535357,
+      "reference_flood_cells": 639,
+      "false_negatives": 639,
+      "false_positives": 0,
+      "recall": 0.0
+    },
+    {
+      "class_code": 60,
+      "class": "bare",
+      "cells": 20495,
+      "reference_flood_cells": 2546,
+      "false_negatives": 2544,
+      "false_positives": 5,
+      "recall": 0.0007855459544383347
+    },
+    {
+      "class_code": 80,
+      "class": "water",
+      "cells": 68676,
+      "reference_flood_cells": 54082,
+      "false_negatives": 54082,
+      "false_positives": 0,
+      "recall": 0.0
+    },
+    {
+      "class_code": 90,
+      "class": "wetland",
+      "cells": 13462,
+      "reference_flood_cells": 8010,
+      "false_negatives": 8009,
+      "false_positives": 0,
+      "recall": 0.00012484394506866417
+    }
+  ],
+  "spatial_block_check": {
+    "method": "descriptive per 3 km spatial block; no CV split",
+    "blocks_with_reference_flood": 154,
+    "top_10_by_false_negatives": [
+      {
+        "block_id": 157,
+        "reference_flood_cells": 7447,
+        "false_negatives": 7447,
+        "false_positives": 0,
+        "iou": 0.0
+      },
+      {
+        "block_id": 77,
+        "reference_flood_cells": 6087,
+        "false_negatives": 6082,
+        "false_positives": 0,
+        "iou": 0.000821422704123542
+      },
+      {
+        "block_id": 143,
+        "reference_flood_cells": 5255,
+        "false_negatives": 5255,
+        "false_positives": 0,
+        "iou": 0.0
+      },
+      {
+        "block_id": 48,
+        "reference_flood_cells": 4443,
+        "false_negatives": 4441,
+        "false_positives": 3,
+        "iou": 0.000449842555105713
+      },
+      {
+        "block_id": 78,
+        "reference_flood_cells": 3993,
+        "false_negatives": 3993,
+        "false_positives": 0,
+        "iou": 0.0
+      },
+      {
+        "block_id": 63,
+        "reference_flood_cells": 3433,
+        "false_negatives": 3433,
+        "false_positives": 0,
+        "iou": 0.0
+      },
+      {
+        "block_id": 54,
+        "reference_flood_cells": 3286,
+        "false_negatives": 3286,
+        "false_positives": 0,
+        "iou": 0.0
+      },
+      {
+        "block_id": 158,
+        "reference_flood_cells": 2821,
+        "false_negatives": 2821,
+        "false_positives": 0,
+        "iou": 0.0
+      },
+      {
+        "block_id": 91,
+        "reference_flood_cells": 2798,
+        "false_negatives": 2798,
+        "false_positives": 0,
+        "iou": 0.0
+      },
+      {
+        "block_id": 144,
+        "reference_flood_cells": 2224,
+        "false_negatives": 2224,
+        "false_positives": 0,
+        "iou": 0.0
+      }
+    ],
+    "top_block_fn_share": 0.06837253713803045,
+    "top_5_fn_share": 0.24989441598266585
+  },
+  "limitations": [
+    "UNOSAT may use the same 24 Nov SAR scene; comparison tests pipeline/map agreement, not independent physics validation",
+    "binary threshold rule has no calibrated probability: ROC/PR AUC, Brier, ECE, calibration and uncertainty coverage are not applicable",
+    "descriptive block summaries do not constitute held-out cross-validation",
+    "the 30 m rasterized reference area is distinct from vector dissolved area"
+  ]
+}

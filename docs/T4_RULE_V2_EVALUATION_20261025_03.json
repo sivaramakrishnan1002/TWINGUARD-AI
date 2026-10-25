@@ -1,0 +1,6 @@
+{
+  "status": "SUPERSEDED; do not use for acceptance",
+  "reason": "This preliminary run used an un-clipped dissolved-reference area (features extend outside the CMA). The confusion scores were reproduced, but its source area statistic is invalid.",
+  "corrected_evaluation": "T4_RULE_V2_EVALUATION_20261025_03_fixed.json",
+  "candidate_run": "20261025_03"
+}

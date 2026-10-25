@@ -3,9 +3,9 @@
 | Task | Status | Commit | Notes |
 |---|---|---|---|
 | S0 Spec loading and dependency reconciliation | done | — | Specs/dependencies registered; protocol checks pending. |
-| A04c / S1 Urban physical layer | complete, closure pending | — | 1,175,660 CMA cells scored; 927 points scored; OpenCity hit share exceeded matched chance at tested rank shares, but points are undated/approximate. |
-| A03d / S2 GeoPDF labels and 2023 out-of-event evaluation | complete with caveats, closure pending | — | 2023 WGS84 GeoPDF red class extracted/polygonised; preliminary only because exact OSM control-point RMS is not available. 2021 UTM45/GPTS CRS conflict is manual-needed; Dec 2015 maps absent. |
-| A04d / S3 Calibrated SAR labels | not started | — | Tier C only at held-out IoU >= 0.25; otherwise tier D and stop. |
+| A04c / S1 Urban physical layer | done_with_caveats | e357478 | 1,175,660 CMA cells scored; 927 points scored; OpenCity points are undated/approximate. |
+| A03d / S2 GeoPDF labels and 2023 out-of-event evaluation | done_with_caveats | b55ccb3 | 2023 WGS84 GeoPDF red class extracted/polygonised; preliminary only because exact OSM control-point RMS is not available. 2021 UTM45/GPTS CRS conflict is manual-needed; Dec 2015 maps absent. |
+| A04d / S3 Calibrated SAR labels | done_with_caveats | pending commit | Pooled buffered OOF IoU 0.5977 permits a Tier C map-reproduction candidate only. VV-only slightly outperforms full features. The same-scene UNOSAT comparison may be circular; applied outputs are Tier D. v2 enforces eligibility; v1 preserved but superseded. |
 | A06 / S4 2D simulation | blocked | — | Depends on A04c and A03d. |
 | A05 / Forecast and hindcast wrapper | blocked | — | Depends on A06. |
 | A07 / Impact | blocked | — | Depends on A05 and A06. |

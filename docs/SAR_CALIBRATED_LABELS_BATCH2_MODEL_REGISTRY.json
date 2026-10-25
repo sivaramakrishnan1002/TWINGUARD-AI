@@ -1,0 +1,1448 @@
+{
+  "model": "LogisticRegression, spatially buffered inner OOF threshold selection",
+  "parameters": {
+    "C": 1.0,
+    "max_iter": 300,
+    "solver": "lbfgs",
+    "imputer": "median plus missing indicator",
+    "negative_to_positive_sample_ratio": 3,
+    "seed": 20261025,
+    "outer_folds": 5,
+    "inner_folds": 3,
+    "spatial_buffer": "one adjacent 3 km block band"
+  },
+  "feature_names": [
+    "event_vv_db",
+    "event_vh_db",
+    "vv_change_db",
+    "vh_change_db",
+    "hand_d8_100cells_m",
+    "slope_deg",
+    "tree_fraction",
+    "crop_fraction",
+    "grass_fraction",
+    "bare_fraction",
+    "built_up_fraction",
+    "water_fraction"
+  ],
+  "data_hashes": {
+    "data/features/static/cell_table_phase9b_v2.parquet": "c54c21d8145adde7600d817169b80ebe2d936ce7edae59e2248e40a8280dbf86",
+    "data/features/predictions/labels_nov2015.parquet": "f580f02a7626c2dbad329420d08176d8d19cd126e231846d2fa2c1b690b78052",
+    "data/features/terrain/elevation_m.tif": "938c2b9cd4c5cd59a0d559ed5d767db409a47b01cb55b9d29bb161848544f609",
+    "data/processed/alignment/spatial_blocks.tif": "0c845d48c1bf2c6207b4034fb478ccdf111105f8dcb37b0a7e62db5f5cc962f0",
+    "data/processed/sar_work/hand_d8_100cells_20261025_03_DEFAULT.tif": "ff851039029663e58c916def259e117a5367e5bfa3f4926a2b0c172faa03d2f8",
+    "data/processed/sar_work/run_20261025_002401/rtc_aligned/2015-11-24_VV_dB_lee5.tif": "8364403a87d2b7e03e0ed1598fccd503c8a66364ca3af68d23ea41f5a84c40f7",
+    "data/processed/sar_work/run_20261025_002401/rtc_aligned/2015-11-24_VH_dB_lee5.tif": "35701cbf2d503bb7227d64c17e2995cf5121f8d6754cd322afa84afbb13bb09d",
+    "data/processed/sar_work/run_20261025_002401/rtc_aligned/2015-10-19_VV_dB_lee5.tif": "02d17ed7896f2aecad37bdc654c88191dd517fbd8ab6bbf0d3e086f9ac25ee2b",
+    "data/processed/sar_work/run_20261025_002401/rtc_aligned/2015-10-19_VH_dB_lee5.tif": "494c3a095a01b65648370b499f6ec8d6c5ac57828545897650e85ab0feb13d13",
+    "data/processed/sar_work/run_20261025_002401/rtc_aligned/2015-12-06_VV_dB_lee5.tif": "d7f536efd3296ce58cbef4a06be2c4229106da696e12921b88ea7fd8fdfb6d17",
+    "data/processed/sar_work/run_20261025_002401/rtc_aligned/2015-12-06_VH_dB_lee5.tif": "21148e80a952dd6f21bd28e209eac4f4a7932ade9dec700f0134810be01b7f30",
+    "data/processed/sar_work/run_20261025_002401/rtc_aligned/2021-11-16_VV_dB_lee5.tif": "d3e443702b109b7ed525d2ff2f1d7402ff00bacb20d6db53b6b8938d1ff2a564",
+    "data/processed/sar_work/run_20261025_002401/rtc_aligned/2021-11-16_VH_dB_lee5.tif": "e0c30f70dc52fb823f123b66fbfaa9eaa2f315c26da1c04c9d7125196ac78f57",
+    "data/processed/sar_work/run_20261025_002401/rtc_aligned/2021-11-04_VV_dB_lee5.tif": "cce15a3af8c8d3ccee68ea11b02b52beb13cc511131a6a0b89ea32027a89a098",
+    "data/processed/sar_work/run_20261025_002401/rtc_aligned/2021-11-04_VH_dB_lee5.tif": "d35e5f5e23ea460c17a0401bb9f0619a44247c024f64bd18d15528b61f1fdc77",
+    "data/features/labels/sar_calibrated_batch2/applied_v2/2015-12-06_sar_candidate_class_DERIVED_TIER_D.tif": "af7c08aa593b09c2401d675814545c63a2bc03026e920eb1eca0a056268eb0d2",
+    "data/features/labels/sar_calibrated_batch2/applied_v2/2015-12-06_sar_candidate_probability_DERIVED_TIER_D.tif": "f96c39eaea992fd177b46e45b905b75081132736972b184eecc6e8497dfb461f",
+    "data/features/labels/sar_calibrated_batch2/applied_v2/2021-11-16_sar_candidate_class_DERIVED_TIER_D.tif": "c1141b62584a3377b834ca13dcfd1430223226afa313b3f9fdafa5303773bbdc",
+    "data/features/labels/sar_calibrated_batch2/applied_v2/2021-11-16_sar_candidate_probability_DERIVED_TIER_D.tif": "5d7bf10059a2cde2b613ec43508d0f4f5368b9135d816470b36a87150d2f866a"
+  },
+  "pooled_oof_metrics": {
+    "sar_full": {
+      "n": 1072291,
+      "prevalence": 0.023562633650753388,
+      "threshold": 0.4,
+      "roc_auc": 0.9920609204490052,
+      "pr_auc": 0.8353015818723531,
+      "f1": 0.7482376833102263,
+      "iou": 0.5977474104580057,
+      "precision": 0.738446714203122,
+      "recall": 0.7582917755085886,
+      "brier": 0.00836978480219841,
+      "ece_10_bin": 0.0007465415179943558,
+      "confusion_matrix": {
+        "tn": 1040239,
+        "fp": 6786,
+        "fn": 6107,
+        "tp": 19159
+      }
+    },
+    "vv_only": {
+      "n": 1072291,
+      "prevalence": 0.023562633650753388,
+      "threshold": 0.39,
+      "roc_auc": 0.9921279350609162,
+      "pr_auc": 0.8389634065763242,
+      "f1": 0.7509863077280111,
+      "iou": 0.6012634708286883,
+      "precision": 0.7342863626049467,
+      "recall": 0.7684635478508668,
+      "brier": 0.00828122440725565,
+      "ece_10_bin": 0.0008033798568836936,
+      "confusion_matrix": {
+        "tn": 1039999,
+        "fp": 7026,
+        "fn": 5850,
+        "tp": 19416
+      }
+    },
+    "elevation_only": {
+      "n": 1072291,
+      "prevalence": 0.023562633650753388,
+      "threshold": 0.09999999999999999,
+      "roc_auc": 0.48676238669792915,
+      "pr_auc": 0.06692977617040677,
+      "f1": 0.0,
+      "iou": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "brier": 0.023435791954398155,
+      "ece_10_bin": 0.0033052440412307885,
+      "confusion_matrix": {
+        "tn": 1047025,
+        "fp": 0,
+        "fn": 25266,
+        "tp": 0
+      }
+    },
+    "waterway_distance_only": {
+      "n": 1072291,
+      "prevalence": 0.023562633650753388,
+      "threshold": 0.010177816301584243,
+      "roc_auc": 0.38714561315826723,
+      "pr_auc": 0.024151131226689895,
+      "f1": 0.04604043343534778,
+      "iou": 0.023562633650753388,
+      "precision": 0.023562633650753388,
+      "recall": 1.0,
+      "brier": 0.023232055827975273,
+      "ece_10_bin": 0.003121458707001319,
+      "confusion_matrix": {
+        "tn": 0,
+        "fp": 1047025,
+        "fn": 0,
+        "tp": 25266
+      }
+    },
+    "random": {
+      "n": 1072291,
+      "prevalence": 0.023562633650753388,
+      "threshold": 0.9764303396511884,
+      "roc_auc": 0.4987112156099658,
+      "pr_auc": 0.023570919617572086,
+      "f1": 0.02425972172672137,
+      "iou": 0.012278801011195377,
+      "precision": 0.02429728442115293,
+      "recall": 0.024222274994063167,
+      "brier": 0.3338082432746887,
+      "ece_10_bin": 0.47691861662295243,
+      "confusion_matrix": {
+        "tn": 1022449,
+        "fp": 24576,
+        "fn": 24654,
+        "tp": 612
+      }
+    }
+  },
+  "fold_metrics": [
+    {
+      "fold": 1,
+      "train_cells_after_buffer": 856909,
+      "test_cells": 114917,
+      "buffered_blocks": 14,
+      "metrics": {
+        "sar_full": {
+          "n": 114917,
+          "prevalence": 0.062392857453640455,
+          "threshold": 0.37,
+          "roc_auc": 0.9888025345908532,
+          "pr_auc": 0.8886600757100014,
+          "f1": 0.7922691059309531,
+          "iou": 0.65599804544344,
+          "precision": 0.840901973066082,
+          "recall": 0.7489539748953975,
+          "brier": 0.018950030207633972,
+          "ece_10_bin": 0.011807995180019844,
+          "confusion_matrix": {
+            "tn": 106731,
+            "fp": 1016,
+            "fn": 1800,
+            "tp": 5370
+          }
+        },
+        "vv_only": {
+          "n": 114917,
+          "prevalence": 0.062392857453640455,
+          "threshold": 0.39,
+          "roc_auc": 0.9888022012773634,
+          "pr_auc": 0.8892154918687568,
+          "f1": 0.7909781152300134,
+          "iou": 0.6542297746582934,
+          "precision": 0.8481800766283525,
+          "recall": 0.7410041841004185,
+          "brier": 0.018821733072400093,
+          "ece_10_bin": 0.011135986655466655,
+          "confusion_matrix": {
+            "tn": 106796,
+            "fp": 951,
+            "fn": 1857,
+            "tp": 5313
+          }
+        },
+        "elevation_only": {
+          "n": 114917,
+          "prevalence": 0.062392857453640455,
+          "threshold": 0.08,
+          "roc_auc": 0.7401610187634267,
+          "pr_auc": 0.13708341932125367,
+          "f1": 0.0,
+          "iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "brier": 0.0622391551733017,
+          "ece_10_bin": 0.06168407603804385,
+          "confusion_matrix": {
+            "tn": 107747,
+            "fp": 0,
+            "fn": 7170,
+            "tp": 0
+          }
+        },
+        "waterway_distance_only": {
+          "n": 114917,
+          "prevalence": 0.062392857453640455,
+          "threshold": 0.024331632778048513,
+          "roc_auc": 0.4547812713389399,
+          "pr_auc": 0.05418642362025551,
+          "f1": 0.0,
+          "iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "brier": 0.060531433671712875,
+          "ece_10_bin": 0.04435293801766252,
+          "confusion_matrix": {
+            "tn": 107747,
+            "fp": 0,
+            "fn": 7170,
+            "tp": 0
+          }
+        },
+        "random": {
+          "n": 114917,
+          "prevalence": 0.062392857453640455,
+          "threshold": 0.9850649252137624,
+          "roc_auc": 0.5004379409179252,
+          "pr_auc": 0.06275288494449774,
+          "f1": 0.023433979269941414,
+          "iou": 0.011855905152758778,
+          "precision": 0.06096131301289566,
+          "recall": 0.014504881450488146,
+          "brier": 0.3329026997089386,
+          "ece_10_bin": 0.4397657318784137,
+          "confusion_matrix": {
+            "tn": 106145,
+            "fp": 1602,
+            "fn": 7066,
+            "tp": 104
+          }
+        }
+      }
+    },
+    {
+      "fold": 2,
+      "train_cells_after_buffer": 552743,
+      "test_cells": 333569,
+      "buffered_blocks": 30,
+      "metrics": {
+        "sar_full": {
+          "n": 333569,
+          "prevalence": 0.02248410373865677,
+          "threshold": 0.45,
+          "roc_auc": 0.9927407704095349,
+          "pr_auc": 0.8624399550516374,
+          "f1": 0.7652865563525317,
+          "iou": 0.6198090417577361,
+          "precision": 0.8187205591855341,
+          "recall": 0.7184,
+          "brier": 0.007260147947818041,
+          "ece_10_bin": 0.0011501573979852053,
+          "confusion_matrix": {
+            "tn": 324876,
+            "fp": 1193,
+            "fn": 2112,
+            "tp": 5388
+          }
+        },
+        "vv_only": {
+          "n": 333569,
+          "prevalence": 0.02248410373865677,
+          "threshold": 0.39,
+          "roc_auc": 0.9928839460359618,
+          "pr_auc": 0.8638286679052345,
+          "f1": 0.7733829688227082,
+          "iou": 0.6305007587253414,
+          "precision": 0.7711785761633302,
+          "recall": 0.7756,
+          "brier": 0.0071989670395851135,
+          "ece_10_bin": 0.0008919977120596465,
+          "confusion_matrix": {
+            "tn": 324343,
+            "fp": 1726,
+            "fn": 1683,
+            "tp": 5817
+          }
+        },
+        "elevation_only": {
+          "n": 333569,
+          "prevalence": 0.02248410373865677,
+          "threshold": 0.07480226457118988,
+          "roc_auc": 0.7852907726074337,
+          "pr_auc": 0.07434413789814086,
+          "f1": 0.0,
+          "iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "brier": 0.021964723244309425,
+          "ece_10_bin": 0.010846955291322003,
+          "confusion_matrix": {
+            "tn": 326069,
+            "fp": 0,
+            "fn": 7500,
+            "tp": 0
+          }
+        },
+        "waterway_distance_only": {
+          "n": 333569,
+          "prevalence": 0.02248410373865677,
+          "threshold": 0.05254984155297279,
+          "roc_auc": 0.34647828199961767,
+          "pr_auc": 0.02243767255609925,
+          "f1": 0.0,
+          "iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "brier": 0.02216266095638275,
+          "ece_10_bin": 0.0008478337520272834,
+          "confusion_matrix": {
+            "tn": 326069,
+            "fp": 0,
+            "fn": 7500,
+            "tp": 0
+          }
+        },
+        "random": {
+          "n": 333569,
+          "prevalence": 0.02248410373865677,
+          "threshold": 0.9788165566999492,
+          "roc_auc": 0.49564649649818493,
+          "pr_auc": 0.02231737566466268,
+          "f1": 0.022096433199208895,
+          "iou": 0.011171643334942418,
+          "precision": 0.022616222253245846,
+          "recall": 0.0216,
+          "brier": 0.3336714506149292,
+          "ece_10_bin": 0.47781699744919115,
+          "confusion_matrix": {
+            "tn": 319068,
+            "fp": 7001,
+            "fn": 7338,
+            "tp": 162
+          }
+        }
+      }
+    },
+    {
+      "fold": 3,
+      "train_cells_after_buffer": 464597,
+      "test_cells": 364879,
+      "buffered_blocks": 33,
+      "metrics": {
+        "sar_full": {
+          "n": 364879,
+          "prevalence": 0.017263257134556936,
+          "threshold": 0.4,
+          "roc_auc": 0.9934636080769137,
+          "pr_auc": 0.7960972053492538,
+          "f1": 0.7044158039298543,
+          "iou": 0.5437051532941944,
+          "precision": 0.6330379746835443,
+          "recall": 0.7939355453246547,
+          "brier": 0.007327220868319273,
+          "ece_10_bin": 0.003809109499362849,
+          "confusion_matrix": {
+            "tn": 355681,
+            "fp": 2899,
+            "fn": 1298,
+            "tp": 5001
+          }
+        },
+        "vv_only": {
+          "n": 364879,
+          "prevalence": 0.017263257134556936,
+          "threshold": 0.37,
+          "roc_auc": 0.9932636915693573,
+          "pr_auc": 0.7974693378287728,
+          "f1": 0.7000691085003455,
+          "iou": 0.5385433280170122,
+          "precision": 0.6198751682780566,
+          "recall": 0.804095888236228,
+          "brier": 0.007259257137775421,
+          "ece_10_bin": 0.003673142460133726,
+          "confusion_matrix": {
+            "tn": 355474,
+            "fp": 3106,
+            "fn": 1234,
+            "tp": 5065
+          }
+        },
+        "elevation_only": {
+          "n": 364879,
+          "prevalence": 0.017263257134556936,
+          "threshold": 0.21000000000000002,
+          "roc_auc": 0.8474877197032613,
+          "pr_auc": 0.16193244559912498,
+          "f1": 0.0,
+          "iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "brier": 0.01734626106917858,
+          "ece_10_bin": 0.02364694587528689,
+          "confusion_matrix": {
+            "tn": 358580,
+            "fp": 0,
+            "fn": 6299,
+            "tp": 0
+          }
+        },
+        "waterway_distance_only": {
+          "n": 364879,
+          "prevalence": 0.017263257134556936,
+          "threshold": 0.0036100046243518593,
+          "roc_auc": 0.6100435653249785,
+          "pr_auc": 0.03427664245861855,
+          "f1": 0.033940589151296684,
+          "iou": 0.017263257134556936,
+          "precision": 0.017263257134556936,
+          "recall": 1.0,
+          "brier": 0.017299778759479523,
+          "ece_10_bin": 0.01866490281760676,
+          "confusion_matrix": {
+            "tn": 0,
+            "fp": 358580,
+            "fn": 0,
+            "tp": 6299
+          }
+        },
+        "random": {
+          "n": 364879,
+          "prevalence": 0.017263257134556936,
+          "threshold": 0.9641624892110797,
+          "roc_auc": 0.49970778751568024,
+          "pr_auc": 0.017183011394405943,
+          "f1": 0.02147175317907025,
+          "iou": 0.010852386471393952,
+          "precision": 0.015982620839475523,
+          "recall": 0.032703603746626446,
+          "brier": 0.3337363600730896,
+          "ece_10_bin": 0.48316589642617624,
+          "confusion_matrix": {
+            "tn": 345897,
+            "fp": 12683,
+            "fn": 6093,
+            "tp": 206
+          }
+        }
+      }
+    },
+    {
+      "fold": 4,
+      "train_cells_after_buffer": 693097,
+      "test_cells": 210612,
+      "buffered_blocks": 24,
+      "metrics": {
+        "sar_full": {
+          "n": 210612,
+          "prevalence": 0.012506409891174292,
+          "threshold": 0.39,
+          "roc_auc": 0.992890746438903,
+          "pr_auc": 0.7886266131907584,
+          "f1": 0.7061928219563688,
+          "iou": 0.5458254011422355,
+          "precision": 0.6580327868852459,
+          "recall": 0.7619589977220956,
+          "brier": 0.005245641339570284,
+          "ece_10_bin": 0.0018983769216807677,
+          "confusion_matrix": {
+            "tn": 206935,
+            "fp": 1043,
+            "fn": 627,
+            "tp": 2007
+          }
+        },
+        "vv_only": {
+          "n": 210612,
+          "prevalence": 0.012506409891174292,
+          "threshold": 0.4,
+          "roc_auc": 0.9926142885798046,
+          "pr_auc": 0.7952892947869914,
+          "f1": 0.7126940639269407,
+          "iou": 0.5536322360953462,
+          "precision": 0.6867300246392115,
+          "recall": 0.7406985573272589,
+          "brier": 0.005096468608826399,
+          "ece_10_bin": 0.0014051970565423298,
+          "confusion_matrix": {
+            "tn": 207088,
+            "fp": 890,
+            "fn": 683,
+            "tp": 1951
+          }
+        },
+        "elevation_only": {
+          "n": 210612,
+          "prevalence": 0.012506409891174292,
+          "threshold": 0.33,
+          "roc_auc": 0.8850353942727998,
+          "pr_auc": 0.1772609929851901,
+          "f1": 0.0,
+          "iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "brier": 0.012942410074174404,
+          "ece_10_bin": 0.027129863045885112,
+          "confusion_matrix": {
+            "tn": 207978,
+            "fp": 0,
+            "fn": 2634,
+            "tp": 0
+          }
+        },
+        "waterway_distance_only": {
+          "n": 210612,
+          "prevalence": 0.012506409891174292,
+          "threshold": 0.010177816301584243,
+          "roc_auc": 0.4593008724062449,
+          "pr_auc": 0.013364714093990735,
+          "f1": 0.024703863143974564,
+          "iou": 0.012506409891174292,
+          "precision": 0.012506409891174292,
+          "recall": 1.0,
+          "brier": 0.012506322003901005,
+          "ece_10_bin": 0.012496598653270746,
+          "confusion_matrix": {
+            "tn": 0,
+            "fp": 207978,
+            "fn": 0,
+            "tp": 2634
+          }
+        },
+        "random": {
+          "n": 210612,
+          "prevalence": 0.012506409891174292,
+          "threshold": 0.9744711057759592,
+          "roc_auc": 0.4990177844141902,
+          "pr_auc": 0.012730495355706644,
+          "f1": 0.019517077442762418,
+          "iou": 0.009854706253948199,
+          "precision": 0.014554954282515395,
+          "recall": 0.029612756264236904,
+          "brier": 0.33464810252189636,
+          "ece_10_bin": 0.4889228652795587,
+          "confusion_matrix": {
+            "tn": 202697,
+            "fp": 5281,
+            "fn": 2556,
+            "tp": 78
+          }
+        }
+      }
+    },
+    {
+      "fold": 5,
+      "train_cells_after_buffer": 946471,
+      "test_cells": 48314,
+      "buffered_blocks": 10,
+      "metrics": {
+        "sar_full": {
+          "n": 48314,
+          "prevalence": 0.0344206648176512,
+          "threshold": 0.41000000000000003,
+          "roc_auc": 0.9834409274389208,
+          "pr_auc": 0.8325788587584985,
+          "f1": 0.7554410080183276,
+          "iou": 0.606994937873907,
+          "precision": 0.7211591033351559,
+          "recall": 0.7931449188214071,
+          "brier": 0.012357885017991066,
+          "ece_10_bin": 0.004672636158421088,
+          "confusion_matrix": {
+            "tn": 46141,
+            "fp": 510,
+            "fn": 344,
+            "tp": 1319
+          }
+        },
+        "vv_only": {
+          "n": 48314,
+          "prevalence": 0.0344206648176512,
+          "threshold": 0.43,
+          "roc_auc": 0.9834589667395384,
+          "pr_auc": 0.8327722365555362,
+          "f1": 0.7518485655131618,
+          "iou": 0.6023696682464454,
+          "precision": 0.739813736903376,
+          "recall": 0.7642814191220686,
+          "brier": 0.01228352077305317,
+          "ece_10_bin": 0.004176561514526876,
+          "confusion_matrix": {
+            "tn": 46204,
+            "fp": 447,
+            "fn": 392,
+            "tp": 1271
+          }
+        },
+        "elevation_only": {
+          "n": 48314,
+          "prevalence": 0.0344206648176512,
+          "threshold": 0.09999999999999999,
+          "roc_auc": 0.9164878795170128,
+          "pr_auc": 0.2540507929420211,
+          "f1": 0.0,
+          "iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "brier": 0.033029500395059586,
+          "ece_10_bin": 0.0018878014987310648,
+          "confusion_matrix": {
+            "tn": 46651,
+            "fp": 0,
+            "fn": 1663,
+            "tp": 0
+          }
+        },
+        "waterway_distance_only": {
+          "n": 48314,
+          "prevalence": 0.0344206648176512,
+          "threshold": 0.01,
+          "roc_auc": 0.5144740091187472,
+          "pr_auc": 0.034244826691064406,
+          "f1": 0.06655061328210977,
+          "iou": 0.0344206648176512,
+          "precision": 0.0344206648176512,
+          "recall": 1.0,
+          "brier": 0.03345504775643349,
+          "ece_10_bin": 0.014810125738938737,
+          "confusion_matrix": {
+            "tn": 0,
+            "fp": 46651,
+            "fn": 0,
+            "tp": 1663
+          }
+        },
+        "random": {
+          "n": 48314,
+          "prevalence": 0.0344206648176512,
+          "threshold": 0.9764303396511884,
+          "roc_auc": 0.5054209870705714,
+          "pr_auc": 0.035532992043233916,
+          "f1": 0.029989289539450195,
+          "iou": 0.015222906850308082,
+          "precision": 0.03690685413005272,
+          "recall": 0.025255562236921228,
+          "brier": 0.3337884843349457,
+          "ece_10_bin": 0.46638015142750716,
+          "confusion_matrix": {
+            "tn": 45555,
+            "fp": 1096,
+            "fn": 1621,
+            "tp": 42
+          }
+        }
+      }
+    }
+  ],
+  "application_metrics": {
+    "status": "DERIVED SAR candidate; Tier D pending independent validation; not ground truth",
+    "model_source": "spatial-block 24-Nov 2015 model trained on UNOSAT map; unchanged coefficients and OOF threshold",
+    "threshold": 0.4,
+    "results": {
+      "2015-12-06": {
+        "event_scene": "2015-12-06",
+        "reference_scene_used_for_model_feature": "2015-10-19",
+        "other_reference_scene_checked_not_used": "2015-11-24",
+        "threshold": 0.4,
+        "valid_CMA_cells": 1072286,
+        "predicted_positive_cells": 19263,
+        "predicted_area_km2_30m_grid_approx": 17.3367,
+        "opencity_point_hits": {
+          "1": {
+            "n": 877,
+            "observed_share": 0.0,
+            "observed_ci_95": [
+              0.0,
+              0.0
+            ],
+            "matched_chance_share": 0.000860318200022891,
+            "matched_chance_ci_95": [
+              0.0,
+              0.0033978950135088643
+            ],
+            "matched_chance_n": 877,
+            "by_built_up_bin": {
+              "0_to_0.1": {
+                "point_n": 31,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.012802344542802758,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.06896551724137931
+                ],
+                "matched_chance_n": 31,
+                "top_cell_share_within_bin": 0.021669286890642167
+              },
+              "0.1_to_0.3": {
+                "point_n": 27,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.00011598440545808966,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_n": 27,
+                "top_cell_share_within_bin": 0.0009454077322283461
+              },
+              "0.3_to_0.5": {
+                "point_n": 41,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.0004855117952928908,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_n": 41,
+                "top_cell_share_within_bin": 0.0009790483649892304
+              },
+              "0.5_to_0.75": {
+                "point_n": 68,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.0005392317770213992,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.012658227848101266
+                ],
+                "matched_chance_n": 68,
+                "top_cell_share_within_bin": 0.00045553400340915773
+              },
+              "0.75_to_1": {
+                "point_n": 710,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.00041651716751683063,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.0025102074328924055
+                ],
+                "matched_chance_n": 710,
+                "top_cell_share_within_bin": 0.0003887169063754256
+              }
+            },
+            "method": "3 km point-block cluster bootstrap; matched chance draws one random valid risk cell per point with the same built-up-fraction bin and dominant class among tree/crop/grass/bare/built-up/water fractions; 2000 replicates"
+          },
+          "5": {
+            "n": 877,
+            "observed_share": 0.0011402508551881414,
+            "observed_ci_95": [
+              0.0,
+              0.003994806924101198
+            ],
+            "matched_chance_share": 0.006131241281143021,
+            "matched_chance_ci_95": [
+              0.0012768562975896019,
+              0.011921718683950965
+            ],
+            "matched_chance_n": 877,
+            "by_built_up_bin": {
+              "0_to_0.1": {
+                "point_n": 31,
+                "observed_share": 0.03225806451612903,
+                "observed_ci_95": [
+                  0.0,
+                  0.12
+                ],
+                "matched_chance_share": 0.07019045981331419,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.17857142857142858
+                ],
+                "matched_chance_n": 31,
+                "top_cell_share_within_bin": 0.10511078666946341
+              },
+              "0.1_to_0.3": {
+                "point_n": 27,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.0033874584156555667,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.041666666666666664
+                ],
+                "matched_chance_n": 27,
+                "top_cell_share_within_bin": 0.013115017902401738
+              },
+              "0.3_to_0.5": {
+                "point_n": 41,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.0047668799334195195,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.03571428571428571
+                ],
+                "matched_chance_n": 41,
+                "top_cell_share_within_bin": 0.009812240280225398
+              },
+              "0.5_to_0.75": {
+                "point_n": 68,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.006741413939030268,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.03280054644808742
+                ],
+                "matched_chance_n": 68,
+                "top_cell_share_within_bin": 0.006730147534238524
+              },
+              "0.75_to_1": {
+                "point_n": 710,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.003445667087262387,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.008299619640387274
+                ],
+                "matched_chance_n": 710,
+                "top_cell_share_within_bin": 0.003376685415622673
+              }
+            },
+            "method": "3 km point-block cluster bootstrap; matched chance draws one random valid risk cell per point with the same built-up-fraction bin and dominant class among tree/crop/grass/bare/built-up/water fractions; 2000 replicates"
+          },
+          "10": {
+            "n": 877,
+            "observed_share": 0.002280501710376283,
+            "observed_ci_95": [
+              0.0,
+              0.006150061500615006
+            ],
+            "matched_chance_share": 0.014580169646471164,
+            "matched_chance_ci_95": [
+              0.00725265145697642,
+              0.023068527312930295
+            ],
+            "matched_chance_n": 877,
+            "by_built_up_bin": {
+              "0_to_0.1": {
+                "point_n": 31,
+                "observed_share": 0.06451612903225806,
+                "observed_ci_95": [
+                  0.0,
+                  0.16
+                ],
+                "matched_chance_share": 0.14416957138130188,
+                "matched_chance_ci_95": [
+                  0.03333333333333333,
+                  0.2759655172413792
+                ],
+                "matched_chance_n": 31,
+                "top_cell_share_within_bin": 0.20496935687865905
+              },
+              "0.1_to_0.3": {
+                "point_n": 27,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.014885277402822503,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.07407407407407407
+                ],
+                "matched_chance_n": 27,
+                "top_cell_share_within_bin": 0.04340829544997385
+              },
+              "0.3_to_0.5": {
+                "point_n": 41,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.013905885569221869,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.06060606060606061
+                ],
+                "matched_chance_n": 41,
+                "top_cell_share_within_bin": 0.030916171703326587
+              },
+              "0.5_to_0.75": {
+                "point_n": 68,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.022746764738883395,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.06454257006874667
+                ],
+                "matched_chance_n": 68,
+                "top_cell_share_within_bin": 0.022673837653559042
+              },
+              "0.75_to_1": {
+                "point_n": 710,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.00814629897973,
+                "matched_chance_ci_95": [
+                  0.002698513351652223,
+                  0.01549423483908633
+                ],
+                "matched_chance_n": 710,
+                "top_cell_share_within_bin": 0.007989771593692482
+              }
+            },
+            "method": "3 km point-block cluster bootstrap; matched chance draws one random valid risk cell per point with the same built-up-fraction bin and dominant class among tree/crop/grass/bare/built-up/water fractions; 2000 replicates"
+          },
+          "20": {
+            "n": 877,
+            "observed_share": 0.010262257696693273,
+            "observed_ci_95": [
+              0.004456030897207368,
+              0.017732778597008635
+            ],
+            "matched_chance_share": 0.032736920904010744,
+            "matched_chance_ci_95": [
+              0.02144348778801375,
+              0.045306375923104686
+            ],
+            "matched_chance_n": 877,
+            "by_built_up_bin": {
+              "0_to_0.1": {
+                "point_n": 31,
+                "observed_share": 0.1935483870967742,
+                "observed_ci_95": [
+                  0.06666666666666667,
+                  0.3333333333333333
+                ],
+                "matched_chance_share": 0.29946990789287553,
+                "matched_chance_ci_95": [
+                  0.14285714285714285,
+                  0.4737468671679197
+                ],
+                "matched_chance_n": 31,
+                "top_cell_share_within_bin": 0.40169591141220035
+              },
+              "0.1_to_0.3": {
+                "point_n": 27,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.06026340918104684,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.16678571428571418
+                ],
+                "matched_chance_n": 27,
+                "top_cell_share_within_bin": 0.12193748239932413
+              },
+              "0.3_to_0.5": {
+                "point_n": 41,
+                "observed_share": 0.024390243902439025,
+                "observed_ci_95": [
+                  0.0,
+                  0.08695652173913043
+                ],
+                "matched_chance_share": 0.04717345483824674,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.125
+                ],
+                "matched_chance_n": 41,
+                "top_cell_share_within_bin": 0.08326262428475077
+              },
+              "0.5_to_0.75": {
+                "point_n": 68,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.05867162760560038,
+                "matched_chance_ci_95": [
+                  0.013324675324675326,
+                  0.12001724137931033
+                ],
+                "matched_chance_n": 68,
+                "top_cell_share_within_bin": 0.05860224534179745
+              },
+              "0.75_to_1": {
+                "point_n": 710,
+                "observed_share": 0.0028169014084507044,
+                "observed_ci_95": [
+                  0.0,
+                  0.0070756387300229834
+                ],
+                "matched_chance_share": 0.016788242394502773,
+                "matched_chance_ci_95": [
+                  0.008156606851549755,
+                  0.027190574018126887
+                ],
+                "matched_chance_n": 710,
+                "top_cell_share_within_bin": 0.016766343672578597
+              }
+            },
+            "method": "3 km point-block cluster bootstrap; matched chance draws one random valid risk cell per point with the same built-up-fraction bin and dominant class among tree/crop/grass/bare/built-up/water fractions; 2000 replicates"
+          }
+        },
+        "probability_raster": "data/features/labels/sar_calibrated_batch2/applied_v2/2015-12-06_sar_candidate_probability_DERIVED_TIER_D.tif",
+        "class_raster": "data/features/labels/sar_calibrated_batch2/applied_v2/2015-12-06_sar_candidate_class_DERIVED_TIER_D.tif"
+      },
+      "2021-11-16": {
+        "event_scene": "2021-11-16",
+        "reference_scene_used_for_model_feature": "2021-11-04",
+        "other_reference_scene_checked_not_used": "2021-10-23",
+        "threshold": 0.4,
+        "valid_CMA_cells": 1072293,
+        "predicted_positive_cells": 8448,
+        "predicted_area_km2_30m_grid_approx": 7.6032,
+        "opencity_point_hits": {
+          "1": {
+            "n": 877,
+            "observed_share": 0.0,
+            "observed_ci_95": [
+              0.0,
+              0.0
+            ],
+            "matched_chance_share": 0.001419475403472173,
+            "matched_chance_ci_95": [
+              0.0,
+              0.004646804224738675
+            ],
+            "matched_chance_n": 877,
+            "by_built_up_bin": {
+              "0_to_0.1": {
+                "point_n": 31,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.010381989673560344,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.058823529411764705
+                ],
+                "matched_chance_n": 31,
+                "top_cell_share_within_bin": 0.020942060437905877
+              },
+              "0.1_to_0.3": {
+                "point_n": 27,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 5.421245421245422e-05,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_n": 27,
+                "top_cell_share_within_bin": 0.0005229915114454681
+              },
+              "0.3_to_0.5": {
+                "point_n": 41,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.0002481374402319164,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_n": 41,
+                "top_cell_share_within_bin": 0.0005656723886604442
+              },
+              "0.5_to_0.75": {
+                "point_n": 68,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.0006533022811272054,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.013518141429100329
+                ],
+                "matched_chance_n": 68,
+                "top_cell_share_within_bin": 0.0006612687543166155
+              },
+              "0.75_to_1": {
+                "point_n": 710,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.001215849155599277,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.004518756845564073
+                ],
+                "matched_chance_n": 710,
+                "top_cell_share_within_bin": 0.0012691841159968716
+              }
+            },
+            "method": "3 km point-block cluster bootstrap; matched chance draws one random valid risk cell per point with the same built-up-fraction bin and dominant class among tree/crop/grass/bare/built-up/water fractions; 2000 replicates"
+          },
+          "5": {
+            "n": 877,
+            "observed_share": 0.0,
+            "observed_ci_95": [
+              0.0,
+              0.0
+            ],
+            "matched_chance_share": 0.00892695307857478,
+            "matched_chance_ci_95": [
+              0.0031477479198960237,
+              0.015338308837888549
+            ],
+            "matched_chance_n": 877,
+            "by_built_up_bin": {
+              "0_to_0.1": {
+                "point_n": 31,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.060494269641332934,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.1600322580645161
+                ],
+                "matched_chance_n": 31,
+                "top_cell_share_within_bin": 0.1006066219609195
+              },
+              "0.1_to_0.3": {
+                "point_n": 27,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.005775304740683939,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.045508658008657964
+                ],
+                "matched_chance_n": 27,
+                "top_cell_share_within_bin": 0.01904896005149455
+              },
+              "0.3_to_0.5": {
+                "point_n": 41,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.00559931104120558,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.03571428571428571
+                ],
+                "matched_chance_n": 41,
+                "top_cell_share_within_bin": 0.013489110806518287
+              },
+              "0.5_to_0.75": {
+                "point_n": 68,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.011798132595796361,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.042872670807453404
+                ],
+                "matched_chance_n": 68,
+                "top_cell_share_within_bin": 0.01143260201907393
+              },
+              "0.75_to_1": {
+                "point_n": 710,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.006708534725573537,
+                "matched_chance_ci_95": [
+                  0.0013697228503616215,
+                  0.013176732155312716
+                ],
+                "matched_chance_n": 710,
+                "top_cell_share_within_bin": 0.006617554080825016
+              }
+            },
+            "method": "3 km point-block cluster bootstrap; matched chance draws one random valid risk cell per point with the same built-up-fraction bin and dominant class among tree/crop/grass/bare/built-up/water fractions; 2000 replicates"
+          },
+          "10": {
+            "n": 877,
+            "observed_share": 0.0011402508551881414,
+            "observed_ci_95": [
+              0.0,
+              0.0036856170158753184
+            ],
+            "matched_chance_share": 0.016599016827694393,
+            "matched_chance_ci_95": [
+              0.008890246862214827,
+              0.025838663613681187
+            ],
+            "matched_chance_n": 877,
+            "by_built_up_bin": {
+              "0_to_0.1": {
+                "point_n": 31,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.12347354035865996,
+                "matched_chance_ci_95": [
+                  0.027741228070175438,
+                  0.25806451612903225
+                ],
+                "matched_chance_n": 31,
+                "top_cell_share_within_bin": 0.2014562249880067
+              },
+              "0.1_to_0.3": {
+                "point_n": 27,
+                "observed_share": 0.037037037037037035,
+                "observed_ci_95": [
+                  0.0,
+                  0.125
+                ],
+                "matched_chance_share": 0.020783669483037663,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.09523809523809523
+                ],
+                "matched_chance_n": 27,
+                "top_cell_share_within_bin": 0.046767510158104354
+              },
+              "0.3_to_0.5": {
+                "point_n": 41,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.01643286643348712,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.06451612903225806
+                ],
+                "matched_chance_n": 41,
+                "top_cell_share_within_bin": 0.03222156952331223
+              },
+              "0.5_to_0.75": {
+                "point_n": 68,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.02573598044346268,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.06850495984884268
+                ],
+                "matched_chance_n": 68,
+                "top_cell_share_within_bin": 0.026656478229563123
+              },
+              "0.75_to_1": {
+                "point_n": 710,
+                "observed_share": 0.0,
+                "observed_ci_95": [
+                  0.0,
+                  0.0
+                ],
+                "matched_chance_share": 0.010905194293777069,
+                "matched_chance_ci_95": [
+                  0.004091938702608702,
+                  0.019531651877572016
+                ],
+                "matched_chance_n": 710,
+                "top_cell_share_within_bin": 0.010783381649752018
+              }
+            },
+            "method": "3 km point-block cluster bootstrap; matched chance draws one random valid risk cell per point with the same built-up-fraction bin and dominant class among tree/crop/grass/bare/built-up/water fractions; 2000 replicates"
+          },
+          "20": {
+            "n": 877,
+            "observed_share": 0.011402508551881414,
+            "observed_ci_95": [
+              0.0048396012222412495,
+              0.01923250904704463
+            ],
+            "matched_chance_share": 0.03639571949535156,
+            "matched_chance_ci_95": [
+              0.023618744385139778,
+              0.04931119756510639
+            ],
+            "matched_chance_n": 877,
+            "by_built_up_bin": {
+              "0_to_0.1": {
+                "point_n": 31,
+                "observed_share": 0.06451612903225806,
+                "observed_ci_95": [
+                  0.0,
+                  0.1853174603174602
+                ],
+                "matched_chance_share": 0.2843258327150068,
+                "matched_chance_ci_95": [
+                  0.125,
+                  0.46153846153846156
+                ],
+                "matched_chance_n": 31,
+                "top_cell_share_within_bin": 0.3983747266463006
+              },
+              "0.1_to_0.3": {
+                "point_n": 27,
+                "observed_share": 0.07407407407407407,
+                "observed_ci_95": [
+                  0.0,
+                  0.18518518518518517
+                ],
+                "matched_chance_share": 0.08112008574583329,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.20833333333333334
+                ],
+                "matched_chance_n": 27,
+                "top_cell_share_within_bin": 0.12014724222553003
+              },
+              "0.3_to_0.5": {
+                "point_n": 41,
+                "observed_share": 0.024390243902439025,
+                "observed_ci_95": [
+                  0.0,
+                  0.0789736842105263
+                ],
+                "matched_chance_share": 0.05564868729606786,
+                "matched_chance_ci_95": [
+                  0.0,
+                  0.13513513513513514
+                ],
+                "matched_chance_n": 41,
+                "top_cell_share_within_bin": 0.08184844331309966
+              },
+              "0.5_to_0.75": {
+                "point_n": 68,
+                "observed_share": 0.014705882352941176,
+                "observed_ci_95": [
+                  0.0,
+                  0.04617187499999999
+                ],
+                "matched_chance_share": 0.06045224369614917,
+                "matched_chance_ci_95": [
+                  0.013685111751982696,
+                  0.125
+                ],
+                "matched_chance_n": 68,
+                "top_cell_share_within_bin": 0.06163024790230856
+              },
+              "0.75_to_1": {
+                "point_n": 710,
+                "observed_share": 0.005633802816901409,
+                "observed_ci_95": [
+                  0.0,
+                  0.013233266309988818
+                ],
+                "matched_chance_share": 0.02042838008502318,
+                "matched_chance_ci_95": [
+                  0.010151962581948492,
+                  0.031566076042820225
+                ],
+                "matched_chance_n": 710,
+                "top_cell_share_within_bin": 0.020384220903602892
+              }
+            },
+            "method": "3 km point-block cluster bootstrap; matched chance draws one random valid risk cell per point with the same built-up-fraction bin and dominant class among tree/crop/grass/bare/built-up/water fractions; 2000 replicates"
+          }
+        },
+        "probability_raster": "data/features/labels/sar_calibrated_batch2/applied_v2/2021-11-16_sar_candidate_probability_DERIVED_TIER_D.tif",
+        "class_raster": "data/features/labels/sar_calibrated_batch2/applied_v2/2021-11-16_sar_candidate_class_DERIVED_TIER_D.tif"
+      }
+    },
+    "GFD_comparison": {
+      "event": "GFD 4309, coarse, ends 2015-12-04",
+      "published_reference_area_km2": 65.43,
+      "local_raster_found": false,
+      "spatial_comparison": "not computed; area-only context is temporally mismatched and not directly comparable"
+    },
+    "2021_NRSC_comparison": "not computed; available NRSC PDF GeoPDF CRS mismatch remains unresolved/manual-needed (see GEO_PDF_LABELS_BATCH2.md).",
+    "OpenCity_limit": "945 observed points have unclear dates/approximate locations; spatial ranking is not date-matched validation.",
+    "reference_handling": "For Dec 6 the model-compatible dB changes use Oct 19; Nov 24 is retained as a prior-scene context only. For Nov 16 2021 the model-compatible baseline is Nov 4; Oct 23 was checked as an older reference context but not added as an untrained feature.",
+    "caveats": [
+      "The 24 Nov target may be derived from the same SAR scene, so acceptance only establishes map reproduction.",
+      "2015 training and 2021 application have different event-reference time gaps; 2021 comparison is diagnostic.",
+      "GFD raster not present locally; no spatial GFD comparison or label-schema load.",
+      "The 2021 PDF is unresolved for georeferencing, so it was not used for validation."
+    ]
+  },
+  "acceptance": "Tier C map-reproduction candidate only; not independent flood validation"
+}

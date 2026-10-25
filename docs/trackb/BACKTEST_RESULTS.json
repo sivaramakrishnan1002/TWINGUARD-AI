@@ -1,0 +1,2996 @@
+{
+  "provenance": {
+    "class": "DERIVED",
+    "target": "future storage fraction threshold; not flood occurrence or release decision",
+    "train": "2004-01-07 through 2014-12-24 (features available; 7-day label purge)",
+    "calibration": "2015-01-01 through 2017-12-24 (7-day label purge before test)",
+    "test": "2018-01-01 through 2020-11-26 (7-day future target observable through 2020-12-03)",
+    "seed": 29,
+    "bootstrap_reps": 300,
+    "compute": "CPU (scikit-learn; GPU runtime not used)",
+    "capacity_assumption": "Current published TN Smart values; historical capacity not verified",
+    "source_units": {
+      "storage": "mcft, source-described",
+      "kaggle_rainfall": "unit unspecified; scale INFERRED only"
+    },
+    "bootstrap_unit": "test calendar year; only three year clusters"
+  },
+  "rainfall_comparison": {
+    "n_days": 2164,
+    "start": "2015-01-01",
+    "end": "2020-12-03",
+    "kaggle_raw_mean": 3.6855013863216266,
+    "kaggle_raw_p95": 22.0,
+    "kaggle_raw_max": 319.35,
+    "era5_mean_mm_day": 2.730329636475662,
+    "nasa_power_mean_mm_day": 3.4515593551037176,
+    "corr_kaggle_era5": 0.5596815326138503,
+    "corr_kaggle_nasa_power": 0.5111601472468469,
+    "unit_interpretation": "INFERRED: daily rainfall values are on a depth-like scale comparable in order to mm/day products; source unit is unspecified; correlations and disagreement do not establish gauge truth."
+  },
+  "sensitivity": [
+    {
+      "entity": "POONDI",
+      "horizon_days": 3,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6179,
+      "target_prevalence": 0.1882181582780385,
+      "test_n": 1065,
+      "test_prevalence": 0.005633802816901409,
+      "rule_test": {
+        "tp": 6,
+        "fp": 44,
+        "fn": 0,
+        "tn": 1015,
+        "pod": 1.0,
+        "false_alarm_ratio": 0.88,
+        "csi": 0.12
+      },
+      "persistence_test": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 3,
+        "tn": 1059,
+        "pod": 0.5,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.5
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.5013927576601667,
+        "rise_3d_pct": 1.2689569792633861,
+        "rain_3d_p75_mm": 8.4,
+        "rain_3d_p90_mm": 34.0
+      }
+    },
+    {
+      "entity": "POONDI",
+      "horizon_days": 3,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6179,
+      "target_prevalence": 0.12882343421265577,
+      "test_n": 1065,
+      "test_prevalence": 0.005633802816901409,
+      "rule_test": {
+        "tp": 6,
+        "fp": 44,
+        "fn": 0,
+        "tn": 1015,
+        "pod": 1.0,
+        "false_alarm_ratio": 0.88,
+        "csi": 0.12
+      },
+      "persistence_test": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 3,
+        "tn": 1059,
+        "pod": 0.5,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.5
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.5013927576601667,
+        "rise_3d_pct": 1.2689569792633861,
+        "rain_3d_p75_mm": 8.4,
+        "rain_3d_p90_mm": 34.0
+      }
+    },
+    {
+      "entity": "POONDI",
+      "horizon_days": 3,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6179,
+      "target_prevalence": 0.07298915682149215,
+      "test_n": 1065,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 50,
+        "fn": 0,
+        "tn": 1015,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1065,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.5013927576601667,
+        "rise_3d_pct": 1.2689569792633861,
+        "rain_3d_p75_mm": 8.4,
+        "rain_3d_p90_mm": 34.0
+      }
+    },
+    {
+      "entity": "POONDI",
+      "horizon_days": 7,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6175,
+      "target_prevalence": 0.1962753036437247,
+      "test_n": 1061,
+      "test_prevalence": 0.005655042412818096,
+      "rule_test": {
+        "tp": 2,
+        "fp": 44,
+        "fn": 4,
+        "tn": 1011,
+        "pod": 0.3333333333333333,
+        "false_alarm_ratio": 0.9565217391304348,
+        "csi": 0.04
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 6,
+        "tn": 1055,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.5106778087279487,
+        "rise_3d_pct": 1.2689569792633861,
+        "rain_3d_p75_mm": 8.4,
+        "rain_3d_p90_mm": 34.0
+      }
+    },
+    {
+      "entity": "POONDI",
+      "horizon_days": 7,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6175,
+      "target_prevalence": 0.13619433198380568,
+      "test_n": 1061,
+      "test_prevalence": 0.005655042412818096,
+      "rule_test": {
+        "tp": 2,
+        "fp": 44,
+        "fn": 4,
+        "tn": 1011,
+        "pod": 0.3333333333333333,
+        "false_alarm_ratio": 0.9565217391304348,
+        "csi": 0.04
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 6,
+        "tn": 1055,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.5106778087279487,
+        "rise_3d_pct": 1.2689569792633861,
+        "rain_3d_p75_mm": 8.4,
+        "rain_3d_p90_mm": 34.0
+      }
+    },
+    {
+      "entity": "POONDI",
+      "horizon_days": 7,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6175,
+      "target_prevalence": 0.08097165991902834,
+      "test_n": 1061,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 46,
+        "fn": 0,
+        "tn": 1015,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.5106778087279487,
+        "rise_3d_pct": 1.2689569792633861,
+        "rain_3d_p75_mm": 8.4,
+        "rain_3d_p90_mm": 34.0
+      }
+    },
+    {
+      "entity": "POONDI",
+      "horizon_days": 14,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6168,
+      "target_prevalence": 0.20963035019455253,
+      "test_n": 1054,
+      "test_prevalence": 0.0056925996204933585,
+      "rule_test": {
+        "tp": 4,
+        "fp": 40,
+        "fn": 2,
+        "tn": 1008,
+        "pod": 0.6666666666666666,
+        "false_alarm_ratio": 0.9090909090909091,
+        "csi": 0.08695652173913043
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 6,
+        "tn": 1048,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.5261528938409157,
+        "rise_3d_pct": 1.2999071494893144,
+        "rain_3d_p75_mm": 8.55,
+        "rain_3d_p90_mm": 34.0
+      }
+    },
+    {
+      "entity": "POONDI",
+      "horizon_days": 14,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6168,
+      "target_prevalence": 0.14883268482490272,
+      "test_n": 1054,
+      "test_prevalence": 0.0056925996204933585,
+      "rule_test": {
+        "tp": 4,
+        "fp": 40,
+        "fn": 2,
+        "tn": 1008,
+        "pod": 0.6666666666666666,
+        "false_alarm_ratio": 0.9090909090909091,
+        "csi": 0.08695652173913043
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 6,
+        "tn": 1048,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.5261528938409157,
+        "rise_3d_pct": 1.2999071494893144,
+        "rain_3d_p75_mm": 8.55,
+        "rain_3d_p90_mm": 34.0
+      }
+    },
+    {
+      "entity": "POONDI",
+      "horizon_days": 14,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6168,
+      "target_prevalence": 0.0946822308690013,
+      "test_n": 1054,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 44,
+        "fn": 0,
+        "tn": 1010,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1054,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.5261528938409157,
+        "rise_3d_pct": 1.2999071494893144,
+        "rain_3d_p75_mm": 8.55,
+        "rain_3d_p90_mm": 34.0
+      }
+    },
+    {
+      "entity": "CHOLAVARAM",
+      "horizon_days": 3,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6179,
+      "target_prevalence": 0.06845767923612235,
+      "test_n": 1065,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 30,
+        "fn": 0,
+        "tn": 1035,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1065,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.46253469010175685,
+        "rise_3d_pct": 1.0175763182238668,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 37.0
+      }
+    },
+    {
+      "entity": "CHOLAVARAM",
+      "horizon_days": 3,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6179,
+      "target_prevalence": 0.02686518854183525,
+      "test_n": 1065,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 30,
+        "fn": 0,
+        "tn": 1035,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1065,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.46253469010175685,
+        "rise_3d_pct": 1.0175763182238668,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 37.0
+      }
+    },
+    {
+      "entity": "CHOLAVARAM",
+      "horizon_days": 3,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6179,
+      "target_prevalence": 0.0,
+      "test_n": 1065,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 30,
+        "fn": 0,
+        "tn": 1035,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1065,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.46253469010175685,
+        "rise_3d_pct": 1.0175763182238668,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 37.0
+      }
+    },
+    {
+      "entity": "CHOLAVARAM",
+      "horizon_days": 7,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6175,
+      "target_prevalence": 0.07400809716599191,
+      "test_n": 1061,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 26,
+        "fn": 0,
+        "tn": 1035,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.46253469010175685,
+        "rise_3d_pct": 1.0175763182238668,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 37.0
+      }
+    },
+    {
+      "entity": "CHOLAVARAM",
+      "horizon_days": 7,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6175,
+      "target_prevalence": 0.033846153846153845,
+      "test_n": 1061,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 26,
+        "fn": 0,
+        "tn": 1035,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.46253469010175685,
+        "rise_3d_pct": 1.0175763182238668,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 37.0
+      }
+    },
+    {
+      "entity": "CHOLAVARAM",
+      "horizon_days": 7,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6175,
+      "target_prevalence": 0.0,
+      "test_n": 1061,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 26,
+        "fn": 0,
+        "tn": 1035,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.46253469010175685,
+        "rise_3d_pct": 1.0175763182238668,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 37.0
+      }
+    },
+    {
+      "entity": "CHOLAVARAM",
+      "horizon_days": 14,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6168,
+      "target_prevalence": 0.08317120622568093,
+      "test_n": 1054,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 24,
+        "fn": 0,
+        "tn": 1030,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1054,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.46253469010175685,
+        "rise_3d_pct": 1.0175763182238668,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 37.0
+      }
+    },
+    {
+      "entity": "CHOLAVARAM",
+      "horizon_days": 14,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6168,
+      "target_prevalence": 0.043936446173800256,
+      "test_n": 1054,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 24,
+        "fn": 0,
+        "tn": 1030,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1054,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.46253469010175685,
+        "rise_3d_pct": 1.0175763182238668,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 37.0
+      }
+    },
+    {
+      "entity": "CHOLAVARAM",
+      "horizon_days": 14,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6168,
+      "target_prevalence": 0.0,
+      "test_n": 1054,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 24,
+        "fn": 0,
+        "tn": 1030,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1054,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.46253469010175685,
+        "rise_3d_pct": 1.0175763182238668,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 37.0
+      }
+    },
+    {
+      "entity": "REDHILLS",
+      "horizon_days": 3,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6179,
+      "target_prevalence": 0.2571613529697362,
+      "test_n": 1065,
+      "test_prevalence": 0.26384976525821596,
+      "rule_test": {
+        "tp": 278,
+        "fp": 65,
+        "fn": 3,
+        "tn": 719,
+        "pod": 0.9893238434163701,
+        "false_alarm_ratio": 0.18950437317784258,
+        "csi": 0.8034682080924855
+      },
+      "persistence_test": {
+        "tp": 274,
+        "fp": 1,
+        "fn": 7,
+        "tn": 783,
+        "pod": 0.9750889679715302,
+        "false_alarm_ratio": 0.0036363636363636364,
+        "csi": 0.9716312056737588
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.30303030303030454,
+        "rise_3d_pct": 0.9090909090909065,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 35.52000000000016
+      }
+    },
+    {
+      "entity": "REDHILLS",
+      "horizon_days": 3,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6179,
+      "target_prevalence": 0.15698333063602524,
+      "test_n": 1065,
+      "test_prevalence": 0.17089201877934274,
+      "rule_test": {
+        "tp": 181,
+        "fp": 162,
+        "fn": 1,
+        "tn": 721,
+        "pod": 0.9945054945054945,
+        "false_alarm_ratio": 0.47230320699708456,
+        "csi": 0.5261627906976745
+      },
+      "persistence_test": {
+        "tp": 172,
+        "fp": 2,
+        "fn": 10,
+        "tn": 881,
+        "pod": 0.945054945054945,
+        "false_alarm_ratio": 0.011494252873563218,
+        "csi": 0.9347826086956522
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.30303030303030454,
+        "rise_3d_pct": 0.9090909090909065,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 35.52000000000016
+      }
+    },
+    {
+      "entity": "REDHILLS",
+      "horizon_days": 3,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6179,
+      "target_prevalence": 0.05405405405405406,
+      "test_n": 1065,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 343,
+        "fn": 0,
+        "tn": 722,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1065,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.30303030303030454,
+        "rise_3d_pct": 0.9090909090909065,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 35.52000000000016
+      }
+    },
+    {
+      "entity": "REDHILLS",
+      "horizon_days": 7,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6175,
+      "target_prevalence": 0.26607287449392714,
+      "test_n": 1061,
+      "test_prevalence": 0.26861451460885954,
+      "rule_test": {
+        "tp": 277,
+        "fp": 62,
+        "fn": 8,
+        "tn": 714,
+        "pod": 0.9719298245614035,
+        "false_alarm_ratio": 0.18289085545722714,
+        "csi": 0.7982708933717579
+      },
+      "persistence_test": {
+        "tp": 270,
+        "fp": 1,
+        "fn": 15,
+        "tn": 775,
+        "pod": 0.9473684210526315,
+        "false_alarm_ratio": 0.0036900369003690036,
+        "csi": 0.9440559440559441
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.30303030303030454,
+        "rise_3d_pct": 0.9090909090909101,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 35.75999999999995
+      }
+    },
+    {
+      "entity": "REDHILLS",
+      "horizon_days": 7,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6175,
+      "target_prevalence": 0.16615384615384615,
+      "test_n": 1061,
+      "test_prevalence": 0.17907634307257306,
+      "rule_test": {
+        "tp": 189,
+        "fp": 150,
+        "fn": 1,
+        "tn": 721,
+        "pod": 0.9947368421052631,
+        "false_alarm_ratio": 0.4424778761061947,
+        "csi": 0.5558823529411765
+      },
+      "persistence_test": {
+        "tp": 168,
+        "fp": 2,
+        "fn": 22,
+        "tn": 869,
+        "pod": 0.8842105263157894,
+        "false_alarm_ratio": 0.011764705882352941,
+        "csi": 0.875
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.30303030303030454,
+        "rise_3d_pct": 0.9090909090909101,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 35.75999999999995
+      }
+    },
+    {
+      "entity": "REDHILLS",
+      "horizon_days": 7,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6175,
+      "target_prevalence": 0.06072874493927125,
+      "test_n": 1061,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 339,
+        "fn": 0,
+        "tn": 722,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.30303030303030454,
+        "rise_3d_pct": 0.9090909090909101,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 35.75999999999995
+      }
+    },
+    {
+      "entity": "REDHILLS",
+      "horizon_days": 14,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6168,
+      "target_prevalence": 0.2809662775616083,
+      "test_n": 1054,
+      "test_prevalence": 0.27703984819734345,
+      "rule_test": {
+        "tp": 277,
+        "fp": 53,
+        "fn": 15,
+        "tn": 709,
+        "pod": 0.9486301369863014,
+        "false_alarm_ratio": 0.1606060606060606,
+        "csi": 0.8028985507246377
+      },
+      "persistence_test": {
+        "tp": 263,
+        "fp": 1,
+        "fn": 29,
+        "tn": 761,
+        "pod": 0.9006849315068494,
+        "false_alarm_ratio": 0.003787878787878788,
+        "csi": 0.8976109215017065
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.30303030303031164,
+        "rise_3d_pct": 0.9090909090909136,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 36.0
+      }
+    },
+    {
+      "entity": "REDHILLS",
+      "horizon_days": 14,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6168,
+      "target_prevalence": 0.1815823605706874,
+      "test_n": 1054,
+      "test_prevalence": 0.1935483870967742,
+      "rule_test": {
+        "tp": 202,
+        "fp": 128,
+        "fn": 2,
+        "tn": 722,
+        "pod": 0.9901960784313726,
+        "false_alarm_ratio": 0.3878787878787879,
+        "csi": 0.608433734939759
+      },
+      "persistence_test": {
+        "tp": 167,
+        "fp": 2,
+        "fn": 37,
+        "tn": 848,
+        "pod": 0.8186274509803921,
+        "false_alarm_ratio": 0.011834319526627219,
+        "csi": 0.8106796116504854
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.30303030303031164,
+        "rise_3d_pct": 0.9090909090909136,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 36.0
+      }
+    },
+    {
+      "entity": "REDHILLS",
+      "horizon_days": 14,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6168,
+      "target_prevalence": 0.07101167315175097,
+      "test_n": 1054,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 330,
+        "fn": 0,
+        "tn": 724,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1054,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.30303030303031164,
+        "rise_3d_pct": 0.9090909090909136,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 36.0
+      }
+    },
+    {
+      "entity": "CHEMBARAMBAKKAM",
+      "horizon_days": 3,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6179,
+      "target_prevalence": 0.14241786696876518,
+      "test_n": 1065,
+      "test_prevalence": 0.01971830985915493,
+      "rule_test": {
+        "tp": 19,
+        "fp": 39,
+        "fn": 2,
+        "tn": 1005,
+        "pod": 0.9047619047619048,
+        "false_alarm_ratio": 0.6724137931034483,
+        "csi": 0.31666666666666665
+      },
+      "persistence_test": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 3,
+        "tn": 1044,
+        "pod": 0.8571428571428571,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.8571428571428571
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.356652949245543,
+        "rise_3d_pct": 0.9876543209876552,
+        "rain_3d_p75_mm": 7.0,
+        "rain_3d_p90_mm": 38.20000000000027
+      }
+    },
+    {
+      "entity": "CHEMBARAMBAKKAM",
+      "horizon_days": 3,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6179,
+      "target_prevalence": 0.06036575497653342,
+      "test_n": 1065,
+      "test_prevalence": 0.014084507042253521,
+      "rule_test": {
+        "tp": 15,
+        "fp": 43,
+        "fn": 0,
+        "tn": 1007,
+        "pod": 1.0,
+        "false_alarm_ratio": 0.7413793103448276,
+        "csi": 0.25862068965517243
+      },
+      "persistence_test": {
+        "tp": 9,
+        "fp": 1,
+        "fn": 6,
+        "tn": 1049,
+        "pod": 0.6,
+        "false_alarm_ratio": 0.1,
+        "csi": 0.5625
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.356652949245543,
+        "rise_3d_pct": 0.9876543209876552,
+        "rain_3d_p75_mm": 7.0,
+        "rain_3d_p90_mm": 38.20000000000027
+      }
+    },
+    {
+      "entity": "CHEMBARAMBAKKAM",
+      "horizon_days": 3,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6179,
+      "target_prevalence": 0.0004855154555753358,
+      "test_n": 1065,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 58,
+        "fn": 0,
+        "tn": 1007,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1065,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.356652949245543,
+        "rise_3d_pct": 0.9876543209876552,
+        "rain_3d_p75_mm": 7.0,
+        "rain_3d_p90_mm": 38.20000000000027
+      }
+    },
+    {
+      "entity": "CHEMBARAMBAKKAM",
+      "horizon_days": 7,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6175,
+      "target_prevalence": 0.14834008097165993,
+      "test_n": 1061,
+      "test_prevalence": 0.019792648444863337,
+      "rule_test": {
+        "tp": 18,
+        "fp": 36,
+        "fn": 3,
+        "tn": 1004,
+        "pod": 0.8571428571428571,
+        "false_alarm_ratio": 0.6666666666666666,
+        "csi": 0.3157894736842105
+      },
+      "persistence_test": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 7,
+        "tn": 1040,
+        "pod": 0.6666666666666666,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.6666666666666666
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.356652949245543,
+        "rise_3d_pct": 0.9876543209876552,
+        "rain_3d_p75_mm": 7.0,
+        "rain_3d_p90_mm": 38.59999999999991
+      }
+    },
+    {
+      "entity": "CHEMBARAMBAKKAM",
+      "horizon_days": 7,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6175,
+      "target_prevalence": 0.06850202429149797,
+      "test_n": 1061,
+      "test_prevalence": 0.015080113100848256,
+      "rule_test": {
+        "tp": 14,
+        "fp": 40,
+        "fn": 2,
+        "tn": 1005,
+        "pod": 0.875,
+        "false_alarm_ratio": 0.7407407407407407,
+        "csi": 0.25
+      },
+      "persistence_test": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 10,
+        "tn": 1045,
+        "pod": 0.375,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.375
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.356652949245543,
+        "rise_3d_pct": 0.9876543209876552,
+        "rain_3d_p75_mm": 7.0,
+        "rain_3d_p90_mm": 38.59999999999991
+      }
+    },
+    {
+      "entity": "CHEMBARAMBAKKAM",
+      "horizon_days": 7,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6175,
+      "target_prevalence": 0.0011336032388663967,
+      "test_n": 1061,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 54,
+        "fn": 0,
+        "tn": 1007,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.356652949245543,
+        "rise_3d_pct": 0.9876543209876552,
+        "rain_3d_p75_mm": 7.0,
+        "rain_3d_p90_mm": 38.59999999999991
+      }
+    },
+    {
+      "entity": "CHEMBARAMBAKKAM",
+      "horizon_days": 14,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6168,
+      "target_prevalence": 0.15856031128404668,
+      "test_n": 1054,
+      "test_prevalence": 0.019924098671726755,
+      "rule_test": {
+        "tp": 14,
+        "fp": 29,
+        "fn": 7,
+        "tn": 1004,
+        "pod": 0.6666666666666666,
+        "false_alarm_ratio": 0.6744186046511628,
+        "csi": 0.28
+      },
+      "persistence_test": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 14,
+        "tn": 1033,
+        "pod": 0.3333333333333333,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.3333333333333333
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.356652949245543,
+        "rise_3d_pct": 0.9876543209876552,
+        "rain_3d_p75_mm": 7.375,
+        "rain_3d_p90_mm": 39.0
+      }
+    },
+    {
+      "entity": "CHEMBARAMBAKKAM",
+      "horizon_days": 14,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6168,
+      "target_prevalence": 0.07992866407263294,
+      "test_n": 1054,
+      "test_prevalence": 0.015180265654648957,
+      "rule_test": {
+        "tp": 11,
+        "fp": 32,
+        "fn": 5,
+        "tn": 1006,
+        "pod": 0.6875,
+        "false_alarm_ratio": 0.7441860465116279,
+        "csi": 0.22916666666666666
+      },
+      "persistence_test": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 14,
+        "tn": 1038,
+        "pod": 0.125,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.125
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.356652949245543,
+        "rise_3d_pct": 0.9876543209876552,
+        "rain_3d_p75_mm": 7.375,
+        "rain_3d_p90_mm": 39.0
+      }
+    },
+    {
+      "entity": "CHEMBARAMBAKKAM",
+      "horizon_days": 14,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6168,
+      "target_prevalence": 0.002269779507133593,
+      "test_n": 1054,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 43,
+        "fn": 0,
+        "tn": 1011,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1054,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.356652949245543,
+        "rise_3d_pct": 0.9876543209876552,
+        "rain_3d_p75_mm": 7.375,
+        "rain_3d_p90_mm": 39.0
+      }
+    },
+    {
+      "entity": "COMBINED",
+      "horizon_days": 3,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6179,
+      "target_prevalence": 0.15957274639909372,
+      "test_n": 1065,
+      "test_prevalence": 0.007511737089201878,
+      "rule_test": {
+        "tp": 7,
+        "fp": 78,
+        "fn": 1,
+        "tn": 979,
+        "pod": 0.875,
+        "false_alarm_ratio": 0.9176470588235294,
+        "csi": 0.08139534883720931
+      },
+      "persistence_test": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 3,
+        "tn": 1057,
+        "pod": 0.625,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.625
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.1954339522075088,
+        "rise_3d_pct": 0.5774184951585681,
+        "rain_3d_p75_mm": 9.25,
+        "rain_3d_p90_mm": 33.55000000000007
+      }
+    },
+    {
+      "entity": "COMBINED",
+      "horizon_days": 3,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6179,
+      "target_prevalence": 0.0763877650105195,
+      "test_n": 1065,
+      "test_prevalence": 0.005633802816901409,
+      "rule_test": {
+        "tp": 6,
+        "fp": 79,
+        "fn": 0,
+        "tn": 980,
+        "pod": 1.0,
+        "false_alarm_ratio": 0.9294117647058824,
+        "csi": 0.07058823529411765
+      },
+      "persistence_test": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 3,
+        "tn": 1059,
+        "pod": 0.5,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.5
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.1954339522075088,
+        "rise_3d_pct": 0.5774184951585681,
+        "rain_3d_p75_mm": 9.25,
+        "rain_3d_p90_mm": 33.55000000000007
+      }
+    },
+    {
+      "entity": "COMBINED",
+      "horizon_days": 3,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6179,
+      "target_prevalence": 0.018773264282246318,
+      "test_n": 1065,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 85,
+        "fn": 0,
+        "tn": 980,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1065,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.1954339522075088,
+        "rise_3d_pct": 0.5774184951585681,
+        "rain_3d_p75_mm": 9.25,
+        "rain_3d_p90_mm": 33.55000000000007
+      }
+    },
+    {
+      "entity": "COMBINED",
+      "horizon_days": 7,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6175,
+      "target_prevalence": 0.16680161943319838,
+      "test_n": 1061,
+      "test_prevalence": 0.007540056550424128,
+      "rule_test": {
+        "tp": 4,
+        "fp": 76,
+        "fn": 4,
+        "tn": 977,
+        "pod": 0.5,
+        "false_alarm_ratio": 0.95,
+        "csi": 0.047619047619047616
+      },
+      "persistence_test": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 7,
+        "tn": 1053,
+        "pod": 0.125,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.125
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.19543395220751592,
+        "rise_3d_pct": 0.5774184951585681,
+        "rain_3d_p75_mm": 9.25,
+        "rain_3d_p90_mm": 33.64999999999998
+      }
+    },
+    {
+      "entity": "COMBINED",
+      "horizon_days": 7,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6175,
+      "target_prevalence": 0.08323886639676113,
+      "test_n": 1061,
+      "test_prevalence": 0.005655042412818096,
+      "rule_test": {
+        "tp": 3,
+        "fp": 77,
+        "fn": 3,
+        "tn": 978,
+        "pod": 0.5,
+        "false_alarm_ratio": 0.9625,
+        "csi": 0.03614457831325301
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 6,
+        "tn": 1055,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.19543395220751592,
+        "rise_3d_pct": 0.5774184951585681,
+        "rain_3d_p75_mm": 9.25,
+        "rain_3d_p90_mm": 33.64999999999998
+      }
+    },
+    {
+      "entity": "COMBINED",
+      "horizon_days": 7,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6175,
+      "target_prevalence": 0.022024291497975707,
+      "test_n": 1061,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 80,
+        "fn": 0,
+        "tn": 981,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.19543395220751592,
+        "rise_3d_pct": 0.5774184951585681,
+        "rain_3d_p75_mm": 9.25,
+        "rain_3d_p90_mm": 33.64999999999998
+      }
+    },
+    {
+      "entity": "COMBINED",
+      "horizon_days": 14,
+      "capacity_fraction": 0.7,
+      "n_labeled": 6168,
+      "target_prevalence": 0.17833981841763943,
+      "test_n": 1054,
+      "test_prevalence": 0.007590132827324478,
+      "rule_test": {
+        "tp": 7,
+        "fp": 70,
+        "fn": 1,
+        "tn": 976,
+        "pod": 0.875,
+        "false_alarm_ratio": 0.9090909090909091,
+        "csi": 0.08974358974358974
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 8,
+        "tn": 1046,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.19543395220751592,
+        "rise_3d_pct": 0.5863018566225477,
+        "rain_3d_p75_mm": 9.299999999999994,
+        "rain_3d_p90_mm": 33.81000000000004
+      }
+    },
+    {
+      "entity": "COMBINED",
+      "horizon_days": 14,
+      "capacity_fraction": 0.8,
+      "n_labeled": 6168,
+      "target_prevalence": 0.0946822308690013,
+      "test_n": 1054,
+      "test_prevalence": 0.0056925996204933585,
+      "rule_test": {
+        "tp": 6,
+        "fp": 71,
+        "fn": 0,
+        "tn": 977,
+        "pod": 1.0,
+        "false_alarm_ratio": 0.922077922077922,
+        "csi": 0.07792207792207792
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 6,
+        "tn": 1048,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.19543395220751592,
+        "rise_3d_pct": 0.5863018566225477,
+        "rain_3d_p75_mm": 9.299999999999994,
+        "rain_3d_p90_mm": 33.81000000000004
+      }
+    },
+    {
+      "entity": "COMBINED",
+      "horizon_days": 14,
+      "capacity_fraction": 0.9,
+      "n_labeled": 6168,
+      "target_prevalence": 0.02772373540856031,
+      "test_n": 1054,
+      "test_prevalence": 0.0,
+      "rule_test": {
+        "tp": 0,
+        "fp": 77,
+        "fn": 0,
+        "tn": 977,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "persistence_test": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1054,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "rule_thresholds": {
+        "rise_1d_pct": 0.19543395220751592,
+        "rise_3d_pct": 0.5863018566225477,
+        "rain_3d_p75_mm": 9.299999999999994,
+        "rain_3d_p90_mm": 33.81000000000004
+      }
+    }
+  ],
+  "per_reservoir": {
+    "POONDI": {
+      "n": 1061,
+      "train_start": "2004-01-07",
+      "train_end": "2014-12-24",
+      "calibration_start": "2015-01-01",
+      "calibration_end": "2017-12-24",
+      "test_start": "2018-01-01",
+      "test_end": "2020-11-26",
+      "prevalence": 0.005655042412818096,
+      "rule_thresholds": {
+        "rise_1d_pct": 0.5106778087279487,
+        "rise_3d_pct": 1.2689569792633861,
+        "rain_3d_p75_mm": 8.4,
+        "rain_3d_p90_mm": 34.0
+      },
+      "rule": {
+        "tp": 2,
+        "fp": 44,
+        "fn": 4,
+        "tn": 1011,
+        "pod": 0.3333333333333333,
+        "false_alarm_ratio": 0.9565217391304348,
+        "csi": 0.04
+      },
+      "rule_confidence_semantics": "fraction of four transparent rule indicators; not a calibrated probability",
+      "persistence_baseline": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 6,
+        "tn": 1055,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0
+      },
+      "bootstrap_ci": {
+        "rule": {
+          "pod": [
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "false_alarm_ratio": [
+            0.8461538461538461,
+            1.0
+          ],
+          "csi": [
+            0.0,
+            0.11764705882352941
+          ]
+        },
+        "persistence_baseline": {
+          "pod": [
+            0.0,
+            0.0
+          ],
+          "false_alarm_ratio": null,
+          "csi": [
+            0.0,
+            0.0
+          ]
+        },
+        "rainfall_only": {
+          "pod": [
+            0.0,
+            0.0
+          ],
+          "false_alarm_ratio": [
+            1.0,
+            1.0
+          ],
+          "csi": [
+            0.0,
+            0.0
+          ]
+        },
+        "logistic": {
+          "pod": [
+            0.0,
+            0.0
+          ],
+          "false_alarm_ratio": null,
+          "csi": [
+            0.0,
+            0.0
+          ]
+        },
+        "gradient_boosting": {
+          "pod": [
+            0.0,
+            0.0
+          ],
+          "false_alarm_ratio": null,
+          "csi": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "event_lead_days": {
+        "rule": {
+          "observed_threshold_crossings": 0,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        },
+        "persistence_baseline": {
+          "observed_threshold_crossings": 0,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        },
+        "rainfall_only": {
+          "observed_threshold_crossings": 0,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        },
+        "logistic": {
+          "observed_threshold_crossings": 0,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        },
+        "gradient_boosting": {
+          "observed_threshold_crossings": 0,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        }
+      },
+      "rainfall_only": {
+        "tp": 0,
+        "fp": 4,
+        "fn": 6,
+        "tn": 1051,
+        "pod": 0.0,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0,
+        "brier": 0.011951870642006517,
+        "log_loss": 0.08692071562316137,
+        "roc_auc": 0.8486571879936808,
+        "pr_auc": 0.0281262732910397,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 928,
+            "mean_probability": 0.05535834792452781,
+            "observed_frequency": 0.003232758620689655
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "n": 109,
+            "mean_probability": 0.13864385682009436,
+            "observed_frequency": 0.027522935779816515
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "n": 11,
+            "mean_probability": 0.22242346640765095,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "n": 8,
+            "mean_probability": 0.3410162243781981,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.4,
+            "bin_high": 0.5,
+            "n": 1,
+            "mean_probability": 0.429371363026762,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.5,
+            "bin_high": 0.6000000000000001,
+            "n": 3,
+            "mean_probability": 0.5455270025736914,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.6000000000000001,
+            "bin_high": 0.7000000000000001,
+            "n": 1,
+            "mean_probability": 0.6101591774674641,
+            "observed_frequency": 0.0
+          }
+        ],
+        "platt_calibration_applied": true
+      },
+      "logistic": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 6,
+        "tn": 1055,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0,
+        "brier": 0.006818903528545533,
+        "log_loss": 0.041175364066193654,
+        "roc_auc": 0.9753554502369669,
+        "pr_auc": 0.2674630007916682,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 946,
+            "mean_probability": 0.01679703218075876,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "n": 96,
+            "mean_probability": 0.13250729805611408,
+            "observed_frequency": 0.041666666666666664
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "n": 18,
+            "mean_probability": 0.23633565788588795,
+            "observed_frequency": 0.05555555555555555
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "n": 1,
+            "mean_probability": 0.39926093513262256,
+            "observed_frequency": 1.0
+          }
+        ],
+        "platt_calibration_applied": true
+      },
+      "gradient_boosting": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 6,
+        "tn": 1055,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0,
+        "brier": 0.00689253469409977,
+        "log_loss": 0.03765130165393824,
+        "roc_auc": 0.932701421800948,
+        "pr_auc": 0.046704764063254633,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 1035,
+            "mean_probability": 0.012193755707118654,
+            "observed_frequency": 0.005797101449275362
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "n": 12,
+            "mean_probability": 0.11960493065675488,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "n": 11,
+            "mean_probability": 0.28895236883862296,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "n": 3,
+            "mean_probability": 0.3611475093644853,
+            "observed_frequency": 0.0
+          }
+        ],
+        "platt_calibration_applied": true
+      }
+    },
+    "CHOLAVARAM": {
+      "n": 1061,
+      "train_start": "2004-01-07",
+      "train_end": "2014-12-24",
+      "calibration_start": "2015-01-01",
+      "calibration_end": "2017-12-24",
+      "test_start": "2018-01-01",
+      "test_end": "2020-11-26",
+      "prevalence": 0.0,
+      "rule_thresholds": {
+        "rise_1d_pct": 0.46253469010175685,
+        "rise_3d_pct": 1.0175763182238668,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 37.0
+      },
+      "rule": {
+        "tp": 0,
+        "fp": 26,
+        "fn": 0,
+        "tn": 1035,
+        "pod": null,
+        "false_alarm_ratio": 1.0,
+        "csi": 0.0
+      },
+      "rule_confidence_semantics": "fraction of four transparent rule indicators; not a calibrated probability",
+      "persistence_baseline": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null
+      },
+      "bootstrap_ci": {
+        "rule": {
+          "pod": null,
+          "false_alarm_ratio": [
+            1.0,
+            1.0
+          ],
+          "csi": [
+            0.0,
+            0.0
+          ]
+        },
+        "persistence_baseline": {
+          "pod": null,
+          "false_alarm_ratio": null,
+          "csi": null
+        },
+        "rainfall_only": {
+          "pod": null,
+          "false_alarm_ratio": null,
+          "csi": null
+        },
+        "logistic": {
+          "pod": null,
+          "false_alarm_ratio": null,
+          "csi": null
+        },
+        "gradient_boosting": {
+          "pod": null,
+          "false_alarm_ratio": null,
+          "csi": null
+        }
+      },
+      "event_lead_days": {
+        "rule": {
+          "observed_threshold_crossings": 0,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        },
+        "persistence_baseline": {
+          "observed_threshold_crossings": 0,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        },
+        "rainfall_only": {
+          "observed_threshold_crossings": 0,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        },
+        "logistic": {
+          "observed_threshold_crossings": 0,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        },
+        "gradient_boosting": {
+          "observed_threshold_crossings": 0,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        }
+      },
+      "rainfall_only": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null,
+        "brier": 3.856026349637313e-05,
+        "log_loss": 0.005289935123965292,
+        "roc_auc": null,
+        "pr_auc": null,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 1061,
+            "mean_probability": 0.005270502305860581,
+            "observed_frequency": 0.0
+          }
+        ],
+        "platt_calibration_applied": true
+      },
+      "logistic": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null,
+        "brier": 3.7313999901749667e-06,
+        "log_loss": 0.0008518857761022265,
+        "roc_auc": null,
+        "pr_auc": null,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 1061,
+            "mean_probability": 0.000850007593462944,
+            "observed_frequency": 0.0
+          }
+        ],
+        "platt_calibration_applied": true
+      },
+      "gradient_boosting": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1061,
+        "pod": null,
+        "false_alarm_ratio": null,
+        "csi": null,
+        "brier": 0.0002780631923003972,
+        "log_loss": 0.0040856744897148954,
+        "roc_auc": null,
+        "pr_auc": null,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 1058,
+            "mean_probability": 0.003140632642603855,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "n": 1,
+            "mean_probability": 0.1609851024247086,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "n": 1,
+            "mean_probability": 0.2904806584441131,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "n": 1,
+            "mean_probability": 0.3753520562925716,
+            "observed_frequency": 0.0
+          }
+        ],
+        "platt_calibration_applied": true
+      }
+    },
+    "REDHILLS": {
+      "n": 1061,
+      "train_start": "2004-01-07",
+      "train_end": "2014-12-24",
+      "calibration_start": "2015-01-01",
+      "calibration_end": "2017-12-24",
+      "test_start": "2018-01-01",
+      "test_end": "2020-11-26",
+      "prevalence": 0.17907634307257306,
+      "rule_thresholds": {
+        "rise_1d_pct": 0.30303030303030454,
+        "rise_3d_pct": 0.9090909090909101,
+        "rain_3d_p75_mm": 6.0,
+        "rain_3d_p90_mm": 35.75999999999995
+      },
+      "rule": {
+        "tp": 189,
+        "fp": 150,
+        "fn": 1,
+        "tn": 721,
+        "pod": 0.9947368421052631,
+        "false_alarm_ratio": 0.4424778761061947,
+        "csi": 0.5558823529411765
+      },
+      "rule_confidence_semantics": "fraction of four transparent rule indicators; not a calibrated probability",
+      "persistence_baseline": {
+        "tp": 168,
+        "fp": 2,
+        "fn": 22,
+        "tn": 869,
+        "pod": 0.8842105263157894,
+        "false_alarm_ratio": 0.011764705882352941,
+        "csi": 0.875
+      },
+      "bootstrap_ci": {
+        "rule": {
+          "pod": [
+            0.9947368421052631,
+            0.9947368421052631
+          ],
+          "false_alarm_ratio": [
+            0.2947761194029851,
+            1.0
+          ],
+          "csi": [
+            0.0,
+            0.7026022304832714
+          ]
+        },
+        "persistence_baseline": {
+          "pod": [
+            0.8842105263157894,
+            0.8842105263157894
+          ],
+          "false_alarm_ratio": [
+            0.011764705882352941,
+            0.011764705882352941
+          ],
+          "csi": [
+            0.875,
+            0.875
+          ]
+        },
+        "rainfall_only": {
+          "pod": [
+            0.0,
+            0.0
+          ],
+          "false_alarm_ratio": null,
+          "csi": [
+            0.0,
+            0.0
+          ]
+        },
+        "logistic": {
+          "pod": [
+            0.9789473684210527,
+            0.9789473684210527
+          ],
+          "false_alarm_ratio": [
+            0.23770491803278687,
+            1.0
+          ],
+          "csi": [
+            0.0,
+            0.75
+          ]
+        },
+        "gradient_boosting": {
+          "pod": [
+            0.9052631578947369,
+            0.9052631578947369
+          ],
+          "false_alarm_ratio": [
+            0.0,
+            0.0
+          ],
+          "csi": [
+            0.9052631578947369,
+            0.9052631578947369
+          ]
+        }
+      },
+      "event_lead_days": {
+        "rule": {
+          "observed_threshold_crossings": 4,
+          "detected_crossings": 4,
+          "median_lead_days": 7.0,
+          "lead_days": [
+            7,
+            7,
+            7,
+            7
+          ]
+        },
+        "persistence_baseline": {
+          "observed_threshold_crossings": 4,
+          "detected_crossings": 1,
+          "median_lead_days": 7.0,
+          "lead_days": [
+            7
+          ]
+        },
+        "rainfall_only": {
+          "observed_threshold_crossings": 4,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        },
+        "logistic": {
+          "observed_threshold_crossings": 4,
+          "detected_crossings": 4,
+          "median_lead_days": 7.0,
+          "lead_days": [
+            7,
+            7,
+            7,
+            7
+          ]
+        },
+        "gradient_boosting": {
+          "observed_threshold_crossings": 4,
+          "detected_crossings": 3,
+          "median_lead_days": 4.0,
+          "lead_days": [
+            4,
+            7,
+            1
+          ]
+        }
+      },
+      "rainfall_only": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 190,
+        "tn": 871,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0,
+        "brier": 0.15529511533424648,
+        "log_loss": 0.5095548559514098,
+        "roc_auc": 0.43043386307329745,
+        "pr_auc": 0.15408171251677416,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 782,
+            "mean_probability": 0.09288501722249322,
+            "observed_frequency": 0.21483375959079284
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "n": 273,
+            "mean_probability": 0.12345809008009967,
+            "observed_frequency": 0.07692307692307693
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "n": 6,
+            "mean_probability": 0.22561268365443576,
+            "observed_frequency": 0.16666666666666666
+          }
+        ],
+        "platt_calibration_applied": true
+      },
+      "logistic": {
+        "tp": 186,
+        "fp": 68,
+        "fn": 4,
+        "tn": 803,
+        "pod": 0.9789473684210527,
+        "false_alarm_ratio": 0.2677165354330709,
+        "csi": 0.7209302325581395,
+        "brier": 0.038742708527300475,
+        "log_loss": 0.12609077626203735,
+        "roc_auc": 0.9960541422442444,
+        "pr_auc": 0.9859990349853344,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 709,
+            "mean_probability": 0.003423426150548426,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "n": 33,
+            "mean_probability": 0.15104750190423824,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "n": 25,
+            "mean_probability": 0.24469223416400104,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "n": 21,
+            "mean_probability": 0.34550175988506376,
+            "observed_frequency": 0.09523809523809523
+          },
+          {
+            "bin_low": 0.4,
+            "bin_high": 0.5,
+            "n": 19,
+            "mean_probability": 0.45885710927585327,
+            "observed_frequency": 0.10526315789473684
+          },
+          {
+            "bin_low": 0.5,
+            "bin_high": 0.6000000000000001,
+            "n": 32,
+            "mean_probability": 0.5379770925141021,
+            "observed_frequency": 0.09375
+          },
+          {
+            "bin_low": 0.6000000000000001,
+            "bin_high": 0.7000000000000001,
+            "n": 32,
+            "mean_probability": 0.6555274363565551,
+            "observed_frequency": 0.125
+          },
+          {
+            "bin_low": 0.7000000000000001,
+            "bin_high": 0.8,
+            "n": 46,
+            "mean_probability": 0.7531509256441125,
+            "observed_frequency": 0.7608695652173914
+          },
+          {
+            "bin_low": 0.8,
+            "bin_high": 0.9,
+            "n": 71,
+            "mean_probability": 0.8476963702505728,
+            "observed_frequency": 1.0
+          },
+          {
+            "bin_low": 0.9,
+            "bin_high": 1.0,
+            "n": 73,
+            "mean_probability": 0.9316131942951092,
+            "observed_frequency": 1.0
+          }
+        ],
+        "platt_calibration_applied": true
+      },
+      "gradient_boosting": {
+        "tp": 172,
+        "fp": 0,
+        "fn": 18,
+        "tn": 871,
+        "pod": 0.9052631578947369,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.9052631578947369,
+        "brier": 0.015554453803360395,
+        "log_loss": 0.06394152635785313,
+        "roc_auc": 0.9920690071907668,
+        "pr_auc": 0.9802617101058622,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 808,
+            "mean_probability": 0.012834850530365663,
+            "observed_frequency": 0.007425742574257425
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "n": 28,
+            "mean_probability": 0.13732753859526498,
+            "observed_frequency": 0.03571428571428571
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "n": 28,
+            "mean_probability": 0.24340489819228792,
+            "observed_frequency": 0.17857142857142858
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "n": 15,
+            "mean_probability": 0.3517616269284243,
+            "observed_frequency": 0.3333333333333333
+          },
+          {
+            "bin_low": 0.4,
+            "bin_high": 0.5,
+            "n": 10,
+            "mean_probability": 0.451088939239646,
+            "observed_frequency": 0.1
+          },
+          {
+            "bin_low": 0.8,
+            "bin_high": 0.9,
+            "n": 5,
+            "mean_probability": 0.8520788903618379,
+            "observed_frequency": 1.0
+          },
+          {
+            "bin_low": 0.9,
+            "bin_high": 1.0,
+            "n": 167,
+            "mean_probability": 0.9896828124481958,
+            "observed_frequency": 1.0
+          }
+        ],
+        "platt_calibration_applied": true
+      }
+    },
+    "CHEMBARAMBAKKAM": {
+      "n": 1061,
+      "train_start": "2004-01-07",
+      "train_end": "2014-12-24",
+      "calibration_start": "2015-01-01",
+      "calibration_end": "2017-12-24",
+      "test_start": "2018-01-01",
+      "test_end": "2020-11-26",
+      "prevalence": 0.015080113100848256,
+      "rule_thresholds": {
+        "rise_1d_pct": 0.356652949245543,
+        "rise_3d_pct": 0.9876543209876552,
+        "rain_3d_p75_mm": 7.0,
+        "rain_3d_p90_mm": 38.59999999999991
+      },
+      "rule": {
+        "tp": 14,
+        "fp": 40,
+        "fn": 2,
+        "tn": 1005,
+        "pod": 0.875,
+        "false_alarm_ratio": 0.7407407407407407,
+        "csi": 0.25
+      },
+      "rule_confidence_semantics": "fraction of four transparent rule indicators; not a calibrated probability",
+      "persistence_baseline": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 10,
+        "tn": 1045,
+        "pod": 0.375,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.375
+      },
+      "bootstrap_ci": {
+        "rule": {
+          "pod": [
+            0.875,
+            0.875
+          ],
+          "false_alarm_ratio": [
+            0.5757575757575758,
+            1.0
+          ],
+          "csi": [
+            0.0,
+            0.4
+          ]
+        },
+        "persistence_baseline": {
+          "pod": [
+            0.375,
+            0.375
+          ],
+          "false_alarm_ratio": [
+            0.0,
+            0.0
+          ],
+          "csi": [
+            0.375,
+            0.375
+          ]
+        },
+        "rainfall_only": {
+          "pod": [
+            0.0,
+            0.0
+          ],
+          "false_alarm_ratio": null,
+          "csi": [
+            0.0,
+            0.0
+          ]
+        },
+        "logistic": {
+          "pod": [
+            0.875,
+            0.875
+          ],
+          "false_alarm_ratio": [
+            0.0,
+            0.0
+          ],
+          "csi": [
+            0.875,
+            0.875
+          ]
+        },
+        "gradient_boosting": {
+          "pod": [
+            0.625,
+            0.625
+          ],
+          "false_alarm_ratio": [
+            0.0,
+            0.0
+          ],
+          "csi": [
+            0.625,
+            0.625
+          ]
+        }
+      },
+      "event_lead_days": {
+        "rule": {
+          "observed_threshold_crossings": 2,
+          "detected_crossings": 2,
+          "median_lead_days": 6.0,
+          "lead_days": [
+            5,
+            7
+          ]
+        },
+        "persistence_baseline": {
+          "observed_threshold_crossings": 2,
+          "detected_crossings": 1,
+          "median_lead_days": 7.0,
+          "lead_days": [
+            7
+          ]
+        },
+        "rainfall_only": {
+          "observed_threshold_crossings": 2,
+          "detected_crossings": 0,
+          "median_lead_days": null,
+          "lead_days": []
+        },
+        "logistic": {
+          "observed_threshold_crossings": 2,
+          "detected_crossings": 2,
+          "median_lead_days": 6.0,
+          "lead_days": [
+            5,
+            7
+          ]
+        },
+        "gradient_boosting": {
+          "observed_threshold_crossings": 2,
+          "detected_crossings": 2,
+          "median_lead_days": 4.0,
+          "lead_days": [
+            1,
+            7
+          ]
+        }
+      },
+      "rainfall_only": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 16,
+        "tn": 1045,
+        "pod": 0.0,
+        "false_alarm_ratio": null,
+        "csi": 0.0,
+        "brier": 0.01965642975607328,
+        "log_loss": 0.1229542740047484,
+        "roc_auc": 0.8936004784688995,
+        "pr_auc": 0.16518229455558514,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 892,
+            "mean_probability": 0.08099097131173771,
+            "observed_frequency": 0.007847533632286996
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "n": 156,
+            "mean_probability": 0.12683284078399026,
+            "observed_frequency": 0.05128205128205128
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "n": 8,
+            "mean_probability": 0.2289756489522567,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "n": 5,
+            "mean_probability": 0.30748213837143246,
+            "observed_frequency": 0.2
+          }
+        ],
+        "platt_calibration_applied": true
+      },
+      "logistic": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 2,
+        "tn": 1045,
+        "pod": 0.875,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.875,
+        "brier": 0.003979176067438681,
+        "log_loss": 0.027402877015510977,
+        "roc_auc": 1.0,
+        "pr_auc": 1.0,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 985,
+            "mean_probability": 0.012477813810945235,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "n": 47,
+            "mean_probability": 0.12156798538227388,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "n": 5,
+            "mean_probability": 0.2428326968150789,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "n": 5,
+            "mean_probability": 0.33490835181892414,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.4,
+            "bin_high": 0.5,
+            "n": 5,
+            "mean_probability": 0.45165755746776826,
+            "observed_frequency": 0.4
+          },
+          {
+            "bin_low": 0.5,
+            "bin_high": 0.6000000000000001,
+            "n": 2,
+            "mean_probability": 0.5525012788552681,
+            "observed_frequency": 1.0
+          },
+          {
+            "bin_low": 0.6000000000000001,
+            "bin_high": 0.7000000000000001,
+            "n": 1,
+            "mean_probability": 0.6195057982570406,
+            "observed_frequency": 1.0
+          },
+          {
+            "bin_low": 0.7000000000000001,
+            "bin_high": 0.8,
+            "n": 3,
+            "mean_probability": 0.793744819754528,
+            "observed_frequency": 1.0
+          },
+          {
+            "bin_low": 0.8,
+            "bin_high": 0.9,
+            "n": 6,
+            "mean_probability": 0.8128879692741665,
+            "observed_frequency": 1.0
+          },
+          {
+            "bin_low": 0.9,
+            "bin_high": 1.0,
+            "n": 2,
+            "mean_probability": 0.9391047585366172,
+            "observed_frequency": 1.0
+          }
+        ],
+        "platt_calibration_applied": true
+      },
+      "gradient_boosting": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 6,
+        "tn": 1045,
+        "pod": 0.625,
+        "false_alarm_ratio": 0.0,
+        "csi": 0.625,
+        "brier": 0.0063234012480501015,
+        "log_loss": 0.034584614392840066,
+        "roc_auc": 0.9554425837320574,
+        "pr_auc": 0.7347441569819597,
+        "reliability": [
+          {
+            "bin_low": 0.0,
+            "bin_high": 0.1,
+            "n": 1037,
+            "mean_probability": 0.011358753610792712,
+            "observed_frequency": 0.0048216007714561235
+          },
+          {
+            "bin_low": 0.1,
+            "bin_high": 0.2,
+            "n": 4,
+            "mean_probability": 0.13792938881546557,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.2,
+            "bin_high": 0.30000000000000004,
+            "n": 3,
+            "mean_probability": 0.2629637821502718,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.30000000000000004,
+            "bin_high": 0.4,
+            "n": 6,
+            "mean_probability": 0.33255428452718566,
+            "observed_frequency": 0.0
+          },
+          {
+            "bin_low": 0.4,
+            "bin_high": 0.5,
+            "n": 1,
+            "mean_probability": 0.46557564078961006,
+            "observed_frequency": 1.0
+          },
+          {
+            "bin_low": 0.5,
+            "bin_high": 0.6000000000000001,
+            "n": 1,
+            "mean_probability": 0.5012670330229405,
+            "observed_frequency": 1.0
+          },
+          {
+            "bin_low": 0.6000000000000001,
+            "bin_high": 0.7000000000000001,
+            "n": 1,
+            "mean_probability": 0.6021386515372008,
+            "observed_frequency": 1.0
+          },
+          {
+            "bin_low": 0.8,
+            "bin_high": 0.9,
+            "n": 3,
+            "mean_probability": 0.8488938946133461,
+            "observed_frequency": 1.0
+          },
+          {
+            "bin_low": 0.9,
+            "bin_high": 1.0,
+            "n": 5,
+            "mean_probability": 0.961652276079785,
+            "observed_frequency": 1.0
+          }
+        ],
+        "platt_calibration_applied": true
+      }
+    }
+  },
+  "combined": {
+    "n": 1061,
+    "train_start": "2004-01-07",
+    "train_end": "2014-12-24",
+    "calibration_start": "2015-01-01",
+    "calibration_end": "2017-12-24",
+    "test_start": "2018-01-01",
+    "test_end": "2020-11-26",
+    "prevalence": 0.005655042412818096,
+    "rule_thresholds": {
+      "rise_1d_pct": 0.19543395220751592,
+      "rise_3d_pct": 0.5774184951585681,
+      "rain_3d_p75_mm": 9.25,
+      "rain_3d_p90_mm": 33.64999999999998
+    },
+    "rule": {
+      "tp": 3,
+      "fp": 77,
+      "fn": 3,
+      "tn": 978,
+      "pod": 0.5,
+      "false_alarm_ratio": 0.9625,
+      "csi": 0.03614457831325301
+    },
+    "rule_confidence_semantics": "fraction of four transparent rule indicators; not a calibrated probability",
+    "persistence_baseline": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "tn": 1055,
+      "pod": 0.0,
+      "false_alarm_ratio": null,
+      "csi": 0.0
+    },
+    "bootstrap_ci": {
+      "rule": {
+        "pod": [
+          0.5,
+          0.5
+        ],
+        "false_alarm_ratio": [
+          0.9142857142857143,
+          1.0
+        ],
+        "csi": [
+          0.0,
+          0.07894736842105263
+        ]
+      },
+      "persistence_baseline": {
+        "pod": [
+          0.0,
+          0.0
+        ],
+        "false_alarm_ratio": null,
+        "csi": [
+          0.0,
+          0.0
+        ]
+      },
+      "rainfall_only": {
+        "pod": [
+          0.0,
+          0.0
+        ],
+        "false_alarm_ratio": null,
+        "csi": [
+          0.0,
+          0.0
+        ]
+      },
+      "logistic": {
+        "pod": [
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "false_alarm_ratio": [
+          0.0,
+          0.0
+        ],
+        "csi": [
+          0.3333333333333333,
+          0.3333333333333333
+        ]
+      },
+      "gradient_boosting": {
+        "pod": [
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "false_alarm_ratio": [
+          0.0,
+          0.0
+        ],
+        "csi": [
+          0.3333333333333333,
+          0.3333333333333333
+        ]
+      }
+    },
+    "event_lead_days": {
+      "rule": {
+        "observed_threshold_crossings": 0,
+        "detected_crossings": 0,
+        "median_lead_days": null,
+        "lead_days": []
+      },
+      "persistence_baseline": {
+        "observed_threshold_crossings": 0,
+        "detected_crossings": 0,
+        "median_lead_days": null,
+        "lead_days": []
+      },
+      "rainfall_only": {
+        "observed_threshold_crossings": 0,
+        "detected_crossings": 0,
+        "median_lead_days": null,
+        "lead_days": []
+      },
+      "logistic": {
+        "observed_threshold_crossings": 0,
+        "detected_crossings": 0,
+        "median_lead_days": null,
+        "lead_days": []
+      },
+      "gradient_boosting": {
+        "observed_threshold_crossings": 0,
+        "detected_crossings": 0,
+        "median_lead_days": null,
+        "lead_days": []
+      }
+    },
+    "rainfall_only": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "tn": 1055,
+      "pod": 0.0,
+      "false_alarm_ratio": null,
+      "csi": 0.0,
+      "brier": 0.009142354563237936,
+      "log_loss": 0.0791865552031586,
+      "roc_auc": 0.8911532385466034,
+      "pr_auc": 0.19645901843590796,
+      "reliability": [
+        {
+          "bin_low": 0.0,
+          "bin_high": 0.1,
+          "n": 970,
+          "mean_probability": 0.05786357028363626,
+          "observed_frequency": 0.003092783505154639
+        },
+        {
+          "bin_low": 0.1,
+          "bin_high": 0.2,
+          "n": 82,
+          "mean_probability": 0.1309325732816768,
+          "observed_frequency": 0.024390243902439025
+        },
+        {
+          "bin_low": 0.2,
+          "bin_high": 0.30000000000000004,
+          "n": 8,
+          "mean_probability": 0.2309771686221352,
+          "observed_frequency": 0.0
+        },
+        {
+          "bin_low": 0.30000000000000004,
+          "bin_high": 0.4,
+          "n": 1,
+          "mean_probability": 0.3616598157737495,
+          "observed_frequency": 1.0
+        }
+      ],
+      "platt_calibration_applied": true
+    },
+    "logistic": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 4,
+      "tn": 1055,
+      "pod": 0.3333333333333333,
+      "false_alarm_ratio": 0.0,
+      "csi": 0.3333333333333333,
+      "brier": 0.003581440260548078,
+      "log_loss": 0.02247684359328266,
+      "roc_auc": 0.9984202211690363,
+      "pr_auc": 0.773611111111111,
+      "reliability": [
+        {
+          "bin_low": 0.0,
+          "bin_high": 0.1,
+          "n": 1007,
+          "mean_probability": 0.010835975063210093,
+          "observed_frequency": 0.0
+        },
+        {
+          "bin_low": 0.1,
+          "bin_high": 0.2,
+          "n": 43,
+          "mean_probability": 0.11263896457198799,
+          "observed_frequency": 0.0
+        },
+        {
+          "bin_low": 0.2,
+          "bin_high": 0.30000000000000004,
+          "n": 8,
+          "mean_probability": 0.25194219677991964,
+          "observed_frequency": 0.5
+        },
+        {
+          "bin_low": 0.30000000000000004,
+          "bin_high": 0.4,
+          "n": 1,
+          "mean_probability": 0.3091164720201369,
+          "observed_frequency": 0.0
+        },
+        {
+          "bin_low": 0.6000000000000001,
+          "bin_high": 0.7000000000000001,
+          "n": 1,
+          "mean_probability": 0.6413476830254008,
+          "observed_frequency": 1.0
+        },
+        {
+          "bin_low": 0.9,
+          "bin_high": 1.0,
+          "n": 1,
+          "mean_probability": 0.9312338917775989,
+          "observed_frequency": 1.0
+        }
+      ],
+      "platt_calibration_applied": true
+    },
+    "gradient_boosting": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 4,
+      "tn": 1055,
+      "pod": 0.3333333333333333,
+      "false_alarm_ratio": 0.0,
+      "csi": 0.3333333333333333,
+      "brier": 0.003145003080575528,
+      "log_loss": 0.019670958619646718,
+      "roc_auc": 0.9963665086887836,
+      "pr_auc": 0.6986111111111111,
+      "reliability": [
+        {
+          "bin_low": 0.0,
+          "bin_high": 0.1,
+          "n": 1039,
+          "mean_probability": 0.010464959073951388,
+          "observed_frequency": 0.0
+        },
+        {
+          "bin_low": 0.1,
+          "bin_high": 0.2,
+          "n": 10,
+          "mean_probability": 0.1380509530927056,
+          "observed_frequency": 0.1
+        },
+        {
+          "bin_low": 0.2,
+          "bin_high": 0.30000000000000004,
+          "n": 9,
+          "mean_probability": 0.27099782465854294,
+          "observed_frequency": 0.2222222222222222
+        },
+        {
+          "bin_low": 0.30000000000000004,
+          "bin_high": 0.4,
+          "n": 1,
+          "mean_probability": 0.3313254486167572,
+          "observed_frequency": 1.0
+        },
+        {
+          "bin_low": 0.7000000000000001,
+          "bin_high": 0.8,
+          "n": 1,
+          "mean_probability": 0.7636513256782936,
+          "observed_frequency": 1.0
+        },
+        {
+          "bin_low": 0.8,
+          "bin_high": 0.9,
+          "n": 1,
+          "mean_probability": 0.8298061256794618,
+          "observed_frequency": 1.0
+        }
+      ],
+      "platt_calibration_applied": true
+    }
+  },
+  "case_study_2015": {
+    "classification": "DERIVED, exploratory legacy screen; not held-out evaluation",
+    "flags": 11,
+    "target_window_flags": [
+      "2015-11-20",
+      "2015-11-21",
+      "2015-11-22",
+      "2015-11-23",
+      "2015-11-24"
+    ],
+    "lead_days_to_2015_12_01": 11,
+    "out_of_window_flags_not_validated_false_alarms": 6,
+    "warning": "exploratory retrospective screening only; outside-target alarms cannot be called validated false alarms because daily flood outcomes are unavailable across the full series; current capacities are not verified historical capacities; this is not a release model."
+  }
+}

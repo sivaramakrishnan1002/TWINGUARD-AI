@@ -1,0 +1,10 @@
+apiVersion: 1
+
+datasources:
+  - name: Track B Prometheus
+    uid: trackb-prometheus
+    type: prometheus
+    access: proxy
+    url: http://trackb-prometheus:9090
+    isDefault: true
+    editable: false

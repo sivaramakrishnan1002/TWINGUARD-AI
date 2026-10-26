@@ -6,7 +6,7 @@
 | A04c / S1 Urban physical layer | done_with_caveats | e357478 | 1,175,660 CMA cells scored; 927 points scored; OpenCity points are undated/approximate. |
 | A03d / S2 GeoPDF labels and 2023 out-of-event evaluation | done_with_caveats | b55ccb3 | 2023 WGS84 GeoPDF red class extracted/polygonised; preliminary only because exact OSM control-point RMS is not available. 2021 UTM45/GPTS CRS conflict is manual-needed; Dec 2015 maps absent. |
 | A04d / S3 Calibrated SAR labels | done_with_caveats | ee3f631 | Pooled buffered OOF IoU 0.5977 permits a Tier C map-reproduction candidate only. VV-only slightly outperforms full features. The same-scene UNOSAT comparison may be circular; applied outputs are Tier D. v2 enforces eligibility; v1 preserved but superseded. |
-| A06 / S4 2D simulation | blocked | — | Depends on A04c and A03d. |
+| A06 / S4 2D simulation | done_with_caveats | pending | 600 m NumPy local-inertial pilot; 20 members × 2 events, 68.03 s; maximum mass error 0.264%. Selected-member buffered block CV and calibrated metrics are in `PHASE12_SIMULATION.md`. GFD overlap is weak; OpenCity dates unclear; no hydraulic-accuracy claim. |
 | A05 / Forecast and hindcast wrapper | blocked | — | Depends on A06. |
 | A07 / Impact | blocked | — | Depends on A05 and A06. |
 | A08 / Time-dependent graph | blocked | — | Depends on A07. |

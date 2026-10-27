@@ -543,29 +543,7 @@ def run() -> dict:
                     })
                 primary = sensitivity[primary_ix]
                 cascade_members = member_vals[float(DEFAULT_THRESHOLD_M)]["access"].get("cascade", [])
-                access_loss_values = []
-                for cascade_member in cascade_members:
-                    assessed_core = sum(cascade_member[k]["baseline_core_count"]
-                                        for k in ("hospital", "shelter", "candidate_shelter"))
-                    reachable_core = sum(min(cascade_member[k]["reachable_count"],
-                                             cascade_member[k]["baseline_core_count"])
-                                         for k in ("hospital", "shelter", "candidate_shelter"))
-                    if assessed_core:
-                        access_loss_values.append(1.0 - reachable_core / assessed_core)
-                access_by_category = []
-                for category in ("hospital", "shelter", "candidate_shelter"):
-                    rows = [r[category] for r in cascade_members]
-                    n_total = int(facility_meta["mapped_counts_by_cascade_group"][category])
-                    reachable = [float(r["reachable_count"]) for r in rows]
-                    assessed = [float(r["assessed_count"]) for r in rows]
-                    access_by_category.append({
-                        "category": category, "facility_count": n_total,
-                        "reachable_count_distribution": member_distribution(reachable, "facilities"),
-                        "assessed_count_distribution": member_distribution(assessed, "facilities"),
-                        "unassessed_count": int(n_total - min(assessed) if assessed else n_total),
-                        "coverage_fraction_mean": (float(np.mean(assessed)) / n_total) if n_total else None,
-                        "interpretation": "coarse graph connected-component proxy; not route travel/access safety or facility operational status",
-                    })
+                access_by_category = primary["facility_access_by_category"]
                 primary["facility_access_loss_fraction"]["status"] = (
                     "PARTIAL" if facility_meta["unassessed_target_facility_count"] > 0 else
                     primary["facility_access_loss_fraction"]["status"]

@@ -16,7 +16,7 @@
 | A12 / Explainability | done_with_caveats | 46d325d | Grouped permutation importance and marginal PDP on a held-out spatial fold for the Phase 9C default RF; single-event SAR label is not independent validation. Summarized existing 20-member simulation sensitivity per event; no simulation rerun. See `EXPLAINABILITY_BATCH2.md`; CPU only because CUDA was unavailable. |
 | A13 / Decision lab | blocked | — | Depends on A05, A09, A10, A11 and A12. |
 | A18 / C1 T6 metadata conformance | done_with_caveats | 2ed3abc | Six tagged copies preserve original pixel arrays and masks; acquisition time remains unknown/null. Four focused tests and 21 Phase 8 tests passed; raw audit 157/157. Does not freeze C1 or authorize routing. See `DEPTH_METADATA_REPAIR.md`. |
-| A19 / C2 accepted-label GeoJSON export | done_with_caveats | pending | Read-only export of the 10,419-row accepted view; 8,414 event-flood and 2,005 baseline-water features, zero rejected rows. 16 label tests passed; raw audit 157/157. Exact hashes/counts in `LABEL_GEOJSON_EXPORT.md`; no DB writes. |
+| A19 / C2 accepted-label GeoJSON export | done_with_caveats | e4b6024 | Read-only export of the 10,419-row accepted view; 8,414 event-flood and 2,005 baseline-water features, zero rejected rows. 16 label tests passed; raw audit 157/157. Exact hashes/counts in `LABEL_GEOJSON_EXPORT.md`; no DB writes. |
 
 ## Defaults and scope notes
 

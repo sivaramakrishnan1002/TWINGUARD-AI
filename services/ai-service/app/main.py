@@ -1,10 +1,10 @@
 """FastAPI scaffold for TwinGuard AI."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Literal
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AnyUrl, BaseModel, ConfigDict, Field, field_serializer, field_validator, model_validator
 
 from app.database import get_layer_records
 
@@ -15,15 +15,77 @@ class Health(BaseModel):
     database: Literal["ok", "unavailable", "not_checked"]
 
 
+class ZoomRange(BaseModel):
+    min: int = Field(ge=0, le=22)
+    max: int = Field(ge=0, le=22)
+
+    @model_validator(mode="after")
+    def validate_order(self):
+        if self.min > self.max:
+            raise ValueError("zoom minimum cannot exceed maximum")
+        return self
+
+
+class LayerProvenance(BaseModel):
+    source_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    source_url: AnyUrl | None = None
+
+
+class RouteProvenance(BaseModel):
+    source: Literal["replay", "live", "simulated"]
+    source_id: str = Field(min_length=1, max_length=128)
+    schema_version: str = Field(min_length=1, max_length=32, pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+    source_file: str | None = Field(default=None, max_length=512)
+    source_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    run_id: str | None = Field(default=None, max_length=128)
+
+
 class Layer(BaseModel):
     layer_key: str
     source_layer: str
+    source_crs: str | None
     target_srid: int
     loaded_row_count: int = Field(ge=0)
+    units: dict[str, str]
+    zoom: ZoomRange | None
+    attribution: str | None
+    vintage: str | None
+    provenance: LayerProvenance
+    nodata: str
+    tile_endpoint_available: Literal[False]
 
 
-class ForecastRequest(BaseModel):
+class UTCRequestModel(BaseModel):
     model_config = ConfigDict(extra="allow")
+
+    @field_validator("*", mode="after")
+    @classmethod
+    def require_aware_datetimes(cls, value):
+        if isinstance(value, datetime):
+            if value.tzinfo is None or value.utcoffset() is None:
+                raise ValueError("timestamp must include an explicit UTC offset")
+            return value.astimezone(timezone.utc)
+        return value
+
+    @field_serializer("*", when_used="json")
+    @classmethod
+    def serialize_datetimes_as_utc(cls, value):
+        if isinstance(value, datetime):
+            return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+        return value
+
+
+class RouteResponse(BaseModel):
+    # `reachable` means a topological path exists; probability is the separate
+    # flood-accessibility assessment and may be unknown.
+    reachable: bool
+    edge_ids: list[int]
+    travel_time_minutes: float | None = Field(default=None, ge=0)
+    route_accessibility_probability: float | None = Field(default=None, ge=0, le=1)
+    provenance: RouteProvenance
+
+
+class ForecastRequest(UTCRequestModel):
     event_key: str
     issued_at: datetime
     horizon_hours: int = Field(ge=1)
@@ -31,15 +93,13 @@ class ForecastRequest(BaseModel):
     input_source_ids: list[str] | None = None
 
 
-class RunTimeRequest(BaseModel):
-    model_config = ConfigDict(extra="allow")
+class RunTimeRequest(UTCRequestModel):
     run_id: int
     valid_at: datetime
     zone_ids: list[str] | None = None
 
 
-class RouteRequest(BaseModel):
-    model_config = ConfigDict(extra="allow")
+class RouteRequest(UTCRequestModel):
     run_id: int
     departure_at: datetime
     origin: str
@@ -105,7 +165,7 @@ def impact(request: RunTimeRequest) -> None:
     _not_implemented("impact")
 
 
-@app.post("/route", operation_id="planRoute", response_model=None)
+@app.post("/route", operation_id="planRoute", response_model=RouteResponse)
 def route(request: RouteRequest) -> None:
     _not_implemented("route")
 

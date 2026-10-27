@@ -6,6 +6,7 @@ from pathlib import Path
 
 import httpx
 import pytest
+from pydantic import ValidationError
 from fastapi.testclient import TestClient
 
 
@@ -34,8 +35,16 @@ def test_layers_returns_mocked_read_only_catalogue(monkeypatch: pytest.MonkeyPat
         {
             "layer_key": "roads",
             "source_layer": "road_edges",
+            "source_crs": "EPSG:4326",
             "target_srid": 32644,
             "loaded_row_count": 42,
+            "units": {"length_m": "m"},
+            "zoom": {"min": 0, "max": 22},
+            "attribution": "OpenStreetMap attribution",
+            "vintage": None,
+            "provenance": {"source_sha256": "a" * 64, "source_url": None},
+            "nodata": "not_declared_in_catalogue",
+            "tile_endpoint_available": False,
         }
     ]
     monkeypatch.setattr(main, "get_layer_records", lambda: rows)
@@ -99,3 +108,77 @@ def test_generated_openapi_matches_contract_routes_and_operation_ids() -> None:
 def test_test_client_uses_httpx() -> None:
     assert isinstance(client, TestClient)
     assert httpx.__version__ == "0.28.1"
+
+
+def test_route_request_requires_timezone_and_serializes_as_utc() -> None:
+    request = main.RouteRequest.model_validate({
+        "run_id": 7,
+        "departure_at": "2026-10-25T08:00:00+05:30",
+        "origin": "A",
+        "destination": "B",
+        "mode": "walking",
+        "minimum_accessibility_probability": 0.7,
+    })
+    assert request.model_dump(mode="json")["departure_at"] == "2026-10-25T02:30:00Z"
+    assert request.minimum_accessibility_probability == 0.7
+
+    with pytest.raises(ValidationError, match="explicit UTC offset"):
+        main.RouteRequest.model_validate({
+            "run_id": 7,
+            "departure_at": "2026-10-25T08:00:00",
+            "origin": "A",
+            "destination": "B",
+        })
+
+
+def test_route_response_has_typed_provenance_and_preserves_null_vs_zero() -> None:
+    response = main.RouteResponse.model_validate({
+        "reachable": True,
+        "edge_ids": [1, 2],
+        "travel_time_minutes": None,
+        "route_accessibility_probability": 0,
+        "provenance": {
+            "source": "replay",
+            "source_id": "fixture-run",
+            "schema_version": "trackb.v1",
+            "source_sha256": "f" * 64,
+        },
+    })
+    serialized = response.model_dump(mode="json")
+    assert serialized["reachable"] is True  # graph connectivity, separate from passability
+    assert serialized["travel_time_minutes"] is None
+    assert serialized["route_accessibility_probability"] == 0
+    assert serialized["provenance"]["source"] == "replay"
+    assert "source_sha256" in serialized["provenance"]
+
+    with pytest.raises(ValidationError):
+        main.RouteResponse.model_validate({
+            "reachable": True,
+            "edge_ids": [],
+            "provenance": {"source": "production", "source_id": "x", "schema_version": "v1"},
+        })
+    with pytest.raises(ValidationError):
+        main.RouteResponse.model_validate({
+            "reachable": True,
+            "edge_ids": [],
+            "route_accessibility_probability": 1.1,
+            "provenance": {"source": "replay", "source_id": "x", "schema_version": "v1"},
+        })
+    with pytest.raises(ValidationError):
+        main.RouteResponse.model_validate({
+            "reachable": True,
+            "edge_ids": [],
+            "provenance": {
+                "source": "replay", "source_id": "x" * 129, "schema_version": "v1"
+            },
+        })
+
+
+def test_route_endpoint_stays_501_until_implemented() -> None:
+    response = client.post("/route", json={
+        "run_id": 7,
+        "departure_at": "2026-10-25T08:00:00+05:30",
+        "origin": "A",
+        "destination": "B",
+    })
+    assert response.status_code == 501

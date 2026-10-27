@@ -45,3 +45,22 @@ Selected outputs: `{'2015-11-24_change': 'data/features/labels/label_2015-11-24_
 Master-grid rasters are 30 m EPSG:32644 UInt8 (255 means excluded/NoData); polygons are simplified by 30 m and clipped to the CMA. The separate PostGIS `labels.derived_flood_polygons` table contains 45,096 Stage 8 rows with DERIVED status and provenance.
 
 No 2023 SAR flood label was created because all available RTC scenes precede the Michaung peak. The 2021 NRSC and 2023 NDEM PDFs, and any future December 2015 reference maps, need manual QGIS georeferencing/digitising; those steps are validation work only.
+
+## Accepted label row and serialization (G0 C2 repair proposal)
+
+This is a Lane A proposal for consumers of the existing `labels.v_usable_flood_labels` view. It does not change the view or freeze the shared C2 contract.
+
+| JSON Feature property / view column | Type and rule |
+|---|---|
+| `label_key` | Required string; official rows are keyed `official:<feature_id>`, derived rows retain their stable `label_key`. |
+| `event_date` | Required SQL `date`, JSON `YYYY-MM-DD`. It is the source map/reference date, not an exact onset time. For `reference_role=baseline_water`, it is the baseline observation date and must not be counted as a flood event. Do not synthesize a midnight timestamp. |
+| `method` | Required string; source layer/method identifier as returned by the view. |
+| `reference_role` | Required enum `event_flood` or `baseline_water`; baseline water is a reference mask, not a positive flood label. |
+| `tier` | Required enum `A`, `B`, `C`; the accepted view excludes tier D and any non-`ACCEPTED` derived row. |
+| `is_derived`, `is_valid`, `in_cma` | Required booleans. Each accepted feature has `is_valid=true` and `in_cma=true`; neither means field validation. |
+| `geom` | Required non-null valid polygonal geometry in the database at SRID 32644. JSON/API serialization is a GeoJSON Feature with RFC 7946 WGS84 longitude/latitude coordinates (transform at export); preserve original geometry, which may extend outside the CMA. Clip/intersect for CMA-only analysis explicitly. |
+| `source_id`, `source_sha256`, `loader`, `load_time` | Required provenance keys. SHA-256 is 64 lowercase hex when present. `load_time` is a timezone-aware processing/load instant serialized as ISO-8601 UTC with `Z`. The current SQL columns permit null metadata; preserve null explicitly and report provenance as incomplete rather than inventing values or omitting the keys. |
+
+**Null rules:** a null, empty, invalid, or non-polygonal geometry cannot be serialized as an accepted row; exclude it from the accepted feature collection and retain its rejection reason in QA evidence. Do not emit `geometry: null` for a row claimed to be accepted. Nullable provenance values remain JSON `null` and make provenance incomplete. `source_properties` is not exposed by the current accepted view and must not be implied to be present. No source acquisition-time field exists in this view; `event_date` must remain date-only. A consumer needing a timestamp must use a separate, documented acquisition field from source evidence, or leave it unknown.
+
+The current migration evidence is `database/migrations/014_stage8_label_hygiene.sql`: it selects repaired geometry when available, restricts derived labels to accepted tiers A/B/C, valid and in-CMA rows, and excludes Tier D/rejected candidates. It also preserves `source_id`, `source_sha256`, `loader`, and `load_time`. `twinguard.flood_references` stores `event_date` as SQL `date`; `load_time` is `timestamptz`.

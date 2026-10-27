@@ -1,7 +1,8 @@
 # Lane A G0 repairs — proposed field-level changes
 
-**Date:** 2026-10-27  
-**Status:** Lane A documentation repair evidence only. G0 remains not ready; no shared contract is frozen. No task was claimed or marked complete. The current `next_task.py --lane A` selector reports no ready Lane A task, and A07/A08 remain `blocked_prerequisite`. These proposals do not bypass that task state or authorize implementation/data work.
+**Date:** 2026-10-27
+
+**Status:** Lane A documentation repair evidence only. G0 remains not ready; no shared contract is frozen. No task was claimed or marked complete. At first check the `next_task.py --lane A` selector reported no ready task; later in this turn it reported A07 ready, but A07's acceptance requires an approved impact schema, which G0 still records as unresolved. A07/A08 status is not changed here. These proposals do not bypass task state or authorize implementation/data work.
 
 ## Ownership and evidence reviewed
 

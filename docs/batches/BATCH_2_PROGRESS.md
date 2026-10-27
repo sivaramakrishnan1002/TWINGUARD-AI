@@ -13,7 +13,7 @@
 | A09 / Routing | blocked | — | Depends on A05 and A08. |
 | A10 / Shelter allocation | blocked | — | Depends on A07, A08 and A09. |
 | A11 / Priority zones | blocked | — | Depends on A07 and A10. |
-| A12 / Explainability | blocked | — | Depends on A04, A04d and A06. |
+| A12 / Explainability | done_with_caveats | 46d325d | Grouped permutation importance and marginal PDP on a held-out spatial fold for the Phase 9C default RF; single-event SAR label is not independent validation. Summarized existing 20-member simulation sensitivity per event; no simulation rerun. See `EXPLAINABILITY_BATCH2.md`; CPU only because CUDA was unavailable. |
 | A13 / Decision lab | blocked | — | Depends on A05, A09, A10, A11 and A12. |
 
 ## Defaults and scope notes

@@ -7,7 +7,8 @@
 - Estimate road-edge passability from each saved A05 event/scenario/horizon ensemble, using 0.30 m as the default assumed blocking threshold and sensitivity at 0.15–0.50 m.
 - Keep population NoData unknown and report exposure distributions, mapped facility exposure, and hospital/shelter access cascades.
 - Write only new, versioned products under `data/features/impact/`; retain prior products.
-- The first run wrote `batch2_v1`. Review found its coverage status did not carry all source geometry outside the solver footprint; preserve it unchanged, and write the corrected coverage version to `batch2_v2_coverage/`.
+- The first run wrote `batch2_v1`. Review found its coverage status did not carry all source geometry outside the solver footprint; preserve it unchanged.
+- The first coverage-fix attempt left partial files in `batch2_v2_coverage/` before its C7 validator caught a cascade-field defect. Preserve those files and write the corrected complete run to `batch2_v3_coverage/`.
 
 ## Inputs and interpretation
 

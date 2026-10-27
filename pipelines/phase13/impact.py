@@ -23,8 +23,8 @@ import shapely
 from pipelines.phase12 import simulate as a06
 
 ROOT = Path(__file__).resolve().parents[2]
-OUTPUT = ROOT / "data/features/impact/batch2_v2_coverage"
-REPORT = ROOT / "docs/PHASE13_IMPACT_BATCH2_V2.md"
+OUTPUT = ROOT / "data/features/impact/batch2_v3_coverage"
+REPORT = ROOT / "docs/PHASE13_IMPACT_BATCH2_V3.md"
 GPKG = ROOT / "data/features/osm/chennai_osm_features.gpkg"
 CELL_TABLE = ROOT / "data/features/static/cell_table.parquet"
 FORECAST = ROOT / "data/features/forecast/batch2_v1"
@@ -641,7 +641,7 @@ def run() -> dict:
     input_hashes = {str(p.relative_to(ROOT)): sha256(p) for p in input_files if p.exists()}
     run_summary = {
         "task": "A07 Phase 13 ensemble impact analysis", "status": "DERIVED_SIMULATED_IMPACT_NOT_LIVE",
-        "output_revision": "batch2_v2_coverage; batch2_v1 preserved as first-run artifact and superseded for coverage status metadata",
+        "output_revision": "batch2_v3_coverage; batch2_v1 preserved as first-run artifact and v2 partial attempt preserved after C7 validation caught an implementation defect",
         "schema_id": SCHEMA_ID, "schema_version": SCHEMA_VERSION,
         "schema_status": "Lane A proposal only; G0 not ready; no shared contract freeze or API integration",
         "generated_at_utc": generated_at, "run_time_seconds": time.perf_counter() - start,
@@ -678,7 +678,7 @@ def make_report(summary: dict, results: list[dict]) -> str:
         "## Method",
         "",
         f"- Input ensemble: {summary['event_scenario_horizon_combinations']} event × scenario × horizon cases; {summary['member_time_records']} member-threshold rows; {summary['grid']['eligible_cells']} eligible cells on a {summary['grid']['resolution_m']} m {summary['grid']['crs']} grid.",
-        "- This is the coverage-metadata correction run; the first `batch2_v1` outputs are preserved unchanged.",
+        "- This is the corrected coverage-metadata run; the first `batch2_v1` outputs and failed partial `batch2_v2_coverage` attempt are preserved unchanged.",
         f"- Edge depth is the simulated depth at each road segment midpoint on the 600 m grid. Each edge can join to its cell probability in `data/features/impact/batch2_v1/road_edge_grid_index.parquet` → `cell_impact.parquet`.",
         "- Blocked when depth is at or above 0.30 m; sensitivity screens are 0.15 and 0.50 m. These are assumptions, not locally validated closure/exposure thresholds.",
         "- Each horizon is an instantaneous simulated state at event-window UTC start plus lead hours. No temporal aggregation interval is claimed.",
@@ -719,7 +719,7 @@ def make_report(summary: dict, results: list[dict]) -> str:
         "",
         "## Reproduction",
         "",
-        "`.venv/Scripts/python.exe -m pipelines.phase13.impact` (writes `batch2_v2_coverage`; the script refuses to overwrite existing outputs).",
+        "`.venv/Scripts/python.exe -m pipelines.phase13.impact` (writes `batch2_v3_coverage`; the script refuses to overwrite existing outputs).",
     ]
     return "\n".join(lines) + "\n"
 

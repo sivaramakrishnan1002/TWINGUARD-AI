@@ -31,7 +31,7 @@ Use `docs/LABEL_DATASET.md`'s row contract:
 
 ### C7 — impact result
 
-Use `docs/IMPACT_RESULT_SCHEMA.md` as the proposed JSON wire/storage shape. It defines an aggregate keyed by run × event × scenario × valid time; UTC event/valid/aggregation/processing semantics; metrics in people, facilities, metres, fractions and probabilities; ensemble descriptive distributions; exact population/facility/road coverage; null versus zero; typed source/hash/model provenance; and QC flags. It preserves WorldPop NoData and does not call a modeled population estimate a census count.
+Use `docs/IMPACT_RESULT_SCHEMA.md` as the proposed JSON wire/storage shape. It defines an aggregate keyed by run × event × scenario × valid time; UTC event/valid/aggregation/processing semantics; metrics in people, facilities, metres, fractions and probabilities; ensemble descriptive distributions; hospital/shelter/candidate-shelter network-access cascade counts; exact population/facility/road coverage; null versus zero; typed source/hash/model provenance; and QC flags. It preserves WorldPop NoData and does not call a modeled population estimate a census count. Facility accessibility is not facility operational status or a population allocation.
 
 API/UI reconciliation for owners I/B: current AI `ImpactResponse` requires non-null scalar `exposure_people`/`affected_facilities` and open-ended provenance; current UI `ImpactSummary` allows null and also expects affected roads/unit, provenance and uncertainty. Recommend nullable values plus `status`, coverage, units, intervals, uncertainty and typed provenance in the AI projection; map to UI camelCase in the adapter. Backend has no impact response today. Lane A did not edit these shared schemas or UI files.
 

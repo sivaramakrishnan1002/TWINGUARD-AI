@@ -22,6 +22,7 @@ All `*_utc` timestamp fields are RFC 3339 date-times with an explicit UTC offset
 | `metrics.affected_facilities_count` | distribution object or null | Count of mapped facilities meeting the explicitly named facility exposure criterion; unit facilities. It is not an operational availability count. |
 | `metrics.affected_road_length_m` | distribution object or null | Sum of affected graph-edge length; unit metres. Only measured over reported edge coverage. |
 | `metrics.facility_access_loss_fraction` | distribution object or null | Fraction of target facilities whose graph access criterion fails; dimensionless `[0,1]`. Denominator is the reported assessed facility count. |
+| `facility_access_by_category` | array | One record per `hospital`, `shelter`, and `candidate_shelter` (candidate status must remain distinct): integer `facility_count`, `reachable_count`, `unreachable_count`, `unassessed_count`, nullable `access_loss_fraction`, and `coverage_fraction`. Counts are network accessibility only; they do not mean the facility is open, staffed, safe, or has known capacity. This is the per-service cascade summary requested by A07. It does not assign people to facilities; that is a later shelter-allocation task. |
 | Each distribution | `{status,unit,mean,p05,p50,p95}` | `status` is `AVAILABLE`, `PARTIAL`, or `UNAVAILABLE`; numeric values are nullable. `p05/p50/p95` describe empirical ensemble-member distribution only when at least two valid members exist; they are not calibrated coverage intervals. `mean` is the member mean. A null summary is not zero. |
 | `coverage` | object | Separate population, facility, and road coverage records: integer `assessed_count`, integer `eligible_count`, integer `nodata_count`, nullable `fraction_assessed`. Fraction is null for a zero denominator. Never count NoData as dry, unexposed, unaffected, or passable. |
 | `uncertainty` | object | Required `method`, `ensemble_id` (nullable if deterministic), `member_count`, and `interpretation`. Distinguish ensemble spread from calibrated uncertainty. |
@@ -52,6 +53,7 @@ This is a shape example only; null values deliberately indicate unavailable metr
     "affected_road_length_m": null,
     "facility_access_loss_fraction": null
   },
+  "facility_access_by_category": [],
   "coverage": {
     "population": {"assessed_count": 0, "eligible_count": 0, "nodata_count": 0, "fraction_assessed": null},
     "facilities": {"assessed_count": 0, "eligible_count": 0, "nodata_count": 0, "fraction_assessed": null},

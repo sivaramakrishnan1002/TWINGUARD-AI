@@ -198,6 +198,55 @@ class TrackBPersistenceAdapter:
         return write_reservoir_state(self.connection,self.run_id,event)
 
 
+def isolated_replay_persistence_adapter(run_id:str,start:str='2015-11-20',end:str='2015-12-04'):
+    """Open a run-scoped adapter only after guarding the fixed isolated DB target."""
+    import re
+    import psycopg
+    from datetime import datetime,timezone
+    from pipelines.stage5.db_common import read_env
+    if not re.fullmatch(r'[0-9a-f]{32}',run_id):
+        raise ValueError('replay run ID must be a 32-character lowercase hexadecimal token')
+    values=read_env()
+    values['POSTGRES_DB']='twinguard_trackb_test'
+    connection=psycopg.connect(host=values.get('POSTGRES_HOST') or 'localhost',
+        port=int(values.get('POSTGRES_PORT') or '5432'),dbname=values['POSTGRES_DB'],
+        user=values['POSTGRES_USER'],password=values['POSTGRES_PASSWORD'])
+    try:
+        actual=connection.execute('SELECT current_database()').fetchone()[0]
+        if actual!='twinguard_trackb_test':
+            raise RuntimeError('isolated database target guard failed')
+        ready=connection.execute("""SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname='postgis')
+            AND EXISTS(SELECT 1 FROM twinguard.schema_migrations
+                       WHERE version='100_trackb_twin_link.sql')
+            AND to_regclass('trackb.alert_events') IS NOT NULL
+            AND to_regclass('twin.trackb_recompute_markers') IS NOT NULL""").fetchone()[0]
+        if not ready:
+            raise RuntimeError('isolated Track B database prerequisites are missing')
+        keys=('chembarambakkam','cholavaram','poondi','redhills')
+        found=connection.execute('SELECT reservoir_key FROM twin.reservoirs WHERE reservoir_key=ANY(%s)',(list(keys),)).fetchall()
+        if {row[0] for row in found}!=set(keys):
+            raise RuntimeError('isolated replay reservoir fixtures are incomplete')
+        connection.commit()
+        version_key='trackb-replay-'+run_id
+        with connection.transaction():
+            connection.execute("""INSERT INTO twin.model_versions(version_key,component,provenance)
+                VALUES (%s,'trackb','{"source":"replay"}'::jsonb)""",(version_key,))
+            replay_id=connection.execute('SELECT replay_id FROM twin.event_replays WHERE event_year=2015').fetchone()
+            if replay_id is None:
+                raise RuntimeError('2015 replay reference is missing in isolated database')
+            run_db_id=connection.execute("""INSERT INTO twin.state_runs
+                (replay_id,run_kind,version_key,issued_at,valid_from,valid_to_exclusive,step_interval,input_provenance)
+                VALUES (%s,'REPLAY',%s,%s,%s,%s,interval '1 day',%s::jsonb) RETURNING run_id""",
+                (replay_id[0],version_key,datetime.now(timezone.utc),
+                 datetime.fromisoformat(start).replace(tzinfo=timezone.utc),
+                 (datetime.fromisoformat(end)+timedelta(days=1)).replace(tzinfo=timezone.utc),
+                 json.dumps({'source':'replay','replay_run_id':run_id}))).fetchone()[0]
+        return TrackBPersistenceAdapter(connection,run_db_id),connection
+    except Exception:
+        connection.close()
+        raise
+
+
 def make_replay_events(repo_root:Path,start:str,end:str,run_id:str|None=None)->Iterable[dict[str,Any]]:
     """Yield source-backed replay messages in reservoir-key/event-time order."""
     if end<start:raise ValueError('end must not precede start')
@@ -303,7 +352,11 @@ class TrackBEventProcessor:
                'release_value':event.get('release_value'),'qc_flags':event.get('qc_flags',[]),'provenance':event['provenance']}
         if self.state_writer is not None:self.state_writer(event)
         self.redis.set(f'trackb:reservoir:{key}:state',json.dumps(state,separators=(',',':')),ex=14*86400)
-        alert={'schema':'trackb.alert.v1','event_id':f"alert:{key}:{observed}:trackb-rule-v1",'observed_at':observed,
+        alert_id=f"alert:{key}:{observed}:trackb-rule-v1"
+        replay_id=event.get('provenance',{}).get('replay_run_id')
+        if event.get('source')=='replay' and replay_id:
+            alert_id+=f':run:{replay_id}'
+        alert={'schema':'trackb.alert.v1','event_id':alert_id,'observed_at':observed,
                'received_at':datetime.now().astimezone().isoformat(),'source':event['source'],'provenance':event['provenance'],
                'reservoir_key':key,'level':'Normal','confidence':0.0,'valid_from':observed,
                'valid_to':(datetime.fromisoformat(observed.replace('Z','+00:00'))+timedelta(days=1)).isoformat(),
@@ -414,7 +467,8 @@ def consumer_config(bootstrap:str,group_id:str='trackb-rule-engine',auto_offset_
 
 
 def consume_forever(bootstrap:str='localhost:9092',redis_url:str='redis://127.0.0.1:6380/0',metrics_port:int=8000,
-                    group_id:str='trackb-rule-engine',auto_offset_reset:str='earliest')->None:
+                    group_id:str='trackb-rule-engine',auto_offset_reset:str='earliest',
+                    persistence_adapter:TrackBPersistenceAdapter|None=None)->None:
     from confluent_kafka import Consumer,Producer
     from confluent_kafka.admin import AdminClient
     import redis
@@ -426,7 +480,9 @@ def consume_forever(bootstrap:str='localhost:9092',redis_url:str='redis://127.0.
     results=json.loads((root/'docs/trackb/BACKTEST_RESULTS.json').read_text(encoding='utf-8'))
     thresholds={key:value['rule_thresholds'] for key,value in results['per_reservoir'].items()}
     metrics=TrackBMetrics(); metrics.serve(metrics_port,'127.0.0.1')
-    processor=TrackBEventProcessor(redis_client,producer,thresholds,metrics)
+    processor=TrackBEventProcessor(redis_client,producer,thresholds,metrics,
+        alert_writer=persistence_adapter.write_alert if persistence_adapter else None,
+        state_writer=persistence_adapter.write_state if persistence_adapter else None)
     consumer=Consumer(consumer_config(bootstrap,group_id,auto_offset_reset))
     consumer.subscribe(list(PRIMARY_TOPICS))
     try:
@@ -445,6 +501,9 @@ def main()->None:
     sub.add_parser('topics')
     replay=sub.add_parser('replay'); replay.add_argument('--start',required=True); replay.add_argument('--end',required=True); replay.add_argument('--run-id')
     consumer=sub.add_parser('consume'); consumer.add_argument('--metrics-port',type=int,default=8000)
+    consumer.add_argument('--persist-isolated-db',action='store_true',
+        help='opt in to the fixed Track B isolated test database')
+    consumer.add_argument('--replay-run-id',help='required 32-character replay ID when isolated persistence is enabled')
     args=parser.parse_args(); bootstrap=os.getenv('TRACKB_KAFKA_BOOTSTRAP_SERVERS','localhost:9092')
     if args.command=='topics':
         from confluent_kafka.admin import AdminClient
@@ -452,8 +511,17 @@ def main()->None:
     elif args.command=='replay':
         result=run_replay(args.start,args.end,bootstrap,run_id=args.run_id)
         print(f"events produced: {result['produced']}; acknowledged: {result['acknowledged']}; source=replay; run_id={args.run_id or 'stable'}")
-    elif args.command=='consume':consume_forever(
-        bootstrap,os.getenv('TRACKB_REDIS_URL','redis://127.0.0.1:6380/0'),args.metrics_port,
-        os.getenv('TRACKB_CONSUMER_GROUP','trackb-rule-engine'),os.getenv('TRACKB_AUTO_OFFSET_RESET','earliest'))
+    elif args.command=='consume':
+        adapter=connection=None
+        if args.persist_isolated_db:
+            if not args.replay_run_id:parser.error('--replay-run-id is required with --persist-isolated-db')
+            adapter,connection=isolated_replay_persistence_adapter(args.replay_run_id)
+        elif args.replay_run_id:
+            parser.error('--replay-run-id requires --persist-isolated-db')
+        try:
+            consume_forever(bootstrap,os.getenv('TRACKB_REDIS_URL','redis://127.0.0.1:6380/0'),args.metrics_port,
+                os.getenv('TRACKB_CONSUMER_GROUP','trackb-rule-engine'),os.getenv('TRACKB_AUTO_OFFSET_RESET','earliest'),adapter)
+        finally:
+            if connection is not None: connection.close()
 
 if __name__=='__main__':main()

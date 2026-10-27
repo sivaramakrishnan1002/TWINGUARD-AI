@@ -332,6 +332,21 @@ def test_replay_run_id_is_embedded_in_event_identity_and_provenance(tmp_path, mo
     assert all(':run:run-abc' in e['event_id'] for e in events)
 
 
+def test_generated_replay_alert_identity_is_run_scoped():
+    generated=[]
+    thresholds={'POONDI': {'rise_1d_pct': 1, 'rise_3d_pct': 2,
+                           'rain_3d_p75_mm': 10, 'rain_3d_p90_mm': 20}}
+    for run_id in ('run-a','run-b'):
+        event=reservoir_event()
+        event['provenance']={**event.get('provenance',{}),'replay_run_id':run_id}
+        producer=KafkaJSONProducer(FakeKafkaProducer())
+        processor=TrackBEventProcessor(FakeRedis(),producer,thresholds,TrackBMetrics())
+        processor.process(event)
+        generated.append(json.loads(producer.producer.records[0][2]))
+    assert generated[0]['event_id'] != generated[1]['event_id']
+    assert all(f":run:{e['provenance']['replay_run_id']}" in e['event_id'] for e in generated)
+
+
 def test_producer_counts_delivery_acknowledgements_and_raises_on_failed_ack():
     fake = FakeKafkaProducer()
     producer = KafkaJSONProducer(fake)

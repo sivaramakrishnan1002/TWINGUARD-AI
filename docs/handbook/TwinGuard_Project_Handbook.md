@@ -2,7 +2,7 @@
 
 **TwinGuard AI: An Intelligent Digital Twin for Urban Flood Management and Emergency Decision Support**
 
-Prepared 16 October 2026 from the repository and the user-supplied project brief. Important statements identify their source. Unknown details remain visible placeholders.
+Originally prepared 16 October 2026 from the repository and the user-supplied project brief; Track B chapter refreshed 27 October 2026 from verified repository evidence. Important statements identify their source. Unknown details remain visible placeholders.
 
 \pagebreak
 
@@ -590,26 +590,32 @@ Counts by on-disk year folder: 2015 **3**, 2021 **6**, 2023 **4**. The repositor
 
 # Reservoir data and Track B
 
-## Why reservoirs are in the project
+## Purpose and operating boundary
 
-Reservoir operations may be relevant to flood decisions alongside extreme rainfall. The team wants reservoir data as an input, not as a predetermined explanation of the 2015 flood. Project notes say sources discuss the roles of rainfall and Chembarambakkam releases differently; the project should report evidence without taking a side. [user]
+Track B is the project's reservoir-and-rainfall early-warning research stream. It evaluates historical storage and rainfall observations, produces explicitly labelled REPLAY events, and tests a bounded rule engine and streaming path. It is not a live reservoir feed, flood warning service, release model, or operational decision system. Replay and simulated results must remain visibly distinct from observed source data and from live operation. [repo: `docs/trackb/TRACKB.md`, `docs/trackb/PROGRESS_BOARD.md`]
 
-## What data exist
+## Available evidence and limits
 
-- Kaggle “Chennai Water Management” contains daily storage for Poondi, Cholavaram, Red Hills/Puzhal and Chembarambakkam, plus a rainfall table. The feature table has **24,728 reservoir-day rows**, dates **1 Jan 2004–3 Dec 2020** overall. Individual per-reservoir coverage has not been reported here. [repo: `docs/PHASE3_LOG.md`, `docs/FEATURE_DICTIONARY.md`]
-- Six OpenCity lake CSVs provide monthly storage (page description says mcft), including Kannankottai. The feature output has **1,164 monthly values** total. Monthly cadence is not suitable for determining event-day releases. [repo: `docs/PHASE3_LOG.md`]
-- A CWC advisory PDF is a single snapshot, not a time series. A CAG 2017 executive summary is present; it is not the full report. It records Chembarambakkam discharge as **20,960–29,000 cusecs** and **29,000 cusecs for 21 hours** on 1–2 Dec 2015, per the repository notes. These limited findings are not continuous reservoir data. [repo: `docs/MANUAL_TODO.md`]
-- No complete historical outflow/release series was collected for the four named Chennai reservoirs. A storage increase or decrease is not a measured release. [repo: `docs/PHASE3_PLAN.md`, `docs/MANUAL_TODO.md`]
+- The Kaggle Chennai Water Management archive contains daily storage and a rainfall table for Poondi, Cholavaram, Red Hills/Puzhal and Chembarambakkam. The daily series ends **3 December 2020**. The archive describes storage in mcft; its rainfall unit is not documented and remains **INFERRED** in Track B processing. The date-only source does not establish the historical observation timezone. [repo: `docs/trackb/AUDIT_AND_BACKTEST.md`, `docs/trackb/MESSAGES.md`]
+- OpenCity provides monthly lake storage, which cannot establish event-day release timing. Published capacities changed over time; current published capacity figures are not validated historical denominators. [repo: `docs/trackb/AUDIT_AND_BACKTEST.md`]
+- No complete historical release/outflow or gate-operation series was collected for these reservoirs. A storage change is not a release measurement. The CAG executive-summary figures for 1–2 December 2015 are limited annotations, not a continuous series or a release model. [repo: `docs/trackb/AUDIT_AND_BACKTEST.md`, `docs/MANUAL_TODO.md`]
+- Track B's B1–B4 evaluation targets whether daily storage reaches a future threshold under stated capacity assumptions. Its backtest/model metrics evaluate that **DERIVED storage target**, not flood occurrence, release decisions, or operational warning skill. Capacity, rainfall-unit and coverage caveats remain attached to the results. [repo: `docs/trackb/BACKTEST_REPORT.md`, `docs/trackb/AUDIT_AND_BACKTEST.md`]
 
-## Illustrative Track B screen
+## Streaming and verified REPLAY behavior
 
-The retrospective rule flags a day only when combined storage is at least **80%** of present-day published combined capacity, storage is above its value **three days earlier**, and the **three-day average ERA5 rainfall** exceeds a pre-event 2015 **90th percentile (23.4689 mm)**. Current capacities total **11,257 mcft**; historical capacity changes are unverified. [repo: `data/features/reservoirs/illustrative_track_b_backtest.json`]
+Track B defines versioned UTF-8 JSON Lines messages for rainfall, reservoir state, twin references and alerts. Events carry `source` (`replay`, `live` or `simulated`), event and receipt timestamps, provenance, unit-bearing fields and explicit nulls for unavailable measurements. The source timezone remains **unconfirmed**: replay assigns Asia/Kolkata midnight only as a provisional encoding default and retains `timezone_status: "DEFAULT, to confirm"`. Consumers preserve the encoded offset and source-calendar date; this does not confirm the source's historical timezone. [repo: `docs/trackb/MESSAGES.md`, `docs/trackb/REALTIME_DESIGN.md`]
 
-Across **2,162** overlapping storage/rainfall dates, it flags **11 days**. Five are **20–24 Nov 2015**; the earliest is **11 days before 1 Dec**. Six flags occur outside that target window. A false-alarm rate is **not computed**: complete daily flood outcomes are unavailable, so the six cannot be labelled false alarms. This is exploratory screening, not a validated warning model or release model. [repo: same JSON]
+A fresh accelerated 2015 REPLAY was verified on 27 October 2026: two producer passes acknowledged 120 events each; Kafka contained 60 unique rainfall IDs, 60 unique reservoir IDs, and 50 alert IDs; the consumer processed 170 unique messages. The isolated test database `twinguard_trackb_test` recorded 60 reservoir states, 60 recompute markers and 50 alert events/links/twin alerts; the duplicate pass did not increase persisted counts. Redis state, offsets/lag and the Prometheus scrape were checked, then Track B services were stopped with named volumes retained. These are **historical REPLAY integration results only**; they do not demonstrate a live source, live ingestion, live warning or live operational service. [repo: `docs/trackb/RUNBOOK.md`, `docs/trackb/TRACKB_REPORT.md`]
 
-## Next evidence needed
+Migration 100 and Track B persistence are verified only against the isolated test database. The shared project database `twinguard` was checked read-only; it remains without migration 100 or Track B migration tables. Never run Track B writes or migrations against the shared database. [repo: `docs/trackb/G0_REPAIR_EVIDENCE.md`, `docs/trackb/RUNBOOK.md`]
 
-Verify rainfall units and historical storage capacities. The user must obtain or request dated storage, inflow, release/outflow and gate-operation records for the event windows, with units, timezone and station identity. Do not send emails or records requests from an assistant. If reliable releases remain unavailable, keep them explicitly missing and avoid claiming Track B models releases. [repo: `docs/MANUAL_TODO.md`; user]
+## Interfaces and current availability
+
+The Track B FastAPI router contains separate read-only reservoir, alert, backtest and rule-parameter endpoints; the host application has not mounted this router. AI forecasting, impact and route operations remain unimplemented stubs. The backend's Track B adapter reports not-configured until integration is implemented. The AI layer catalogue can report recorded metadata and explicit unavailable fields, but no HTTP tile-serving endpoint is implemented. The frontend redesign uses deterministic local mock/demo data and keeps real API/database integration disabled; demo values are not live measurements. G0 remains not ready, so no contract freeze or operational decision use is implied. [repo: `services/trackb/router.py`, `services/ai-service/app/main.py`, `services/backend/src/main/java/org/twinguard/backend/adapter/notconfigured/NotConfiguredTrackBAdapter.java`, `docs/trackb/G0_REPAIR_EVIDENCE.md`, `docs/ui/PROFESSIONAL_UI_REDESIGN.md`]
+
+## Work still requiring evidence or review
+
+Obtain authoritative documentation for the reservoir date/time convention before treating event instants as historically confirmed. Verify rainfall units and historical capacity series. Continue seeking dated release/outflow and gate records; until obtained, preserve release as unavailable. Integrator review is required for proposed API contract changes and G0 evidence; do not claim G0 ready or contracts frozen. [repo: `docs/trackb/G0_REPAIR_EVIDENCE.md`, `docs/MANUAL_TODO.md`, `docs/master/GATE_G0_REPORT.md`]
 
 # Engineering work in Phases 2 and 3
 
@@ -1110,3 +1116,4 @@ Important project claims in this handbook end with `[repo: <path>]`, `[user]`, o
 | Date | Change |
 |---|---|
 | 16 Oct 2026 | First handbook draft assembled from current repository and user-supplied project context; export and quality checks recorded in the final report. |
+| 27 Oct 2026 | Refreshed the Reservoirs and Track B chapter with B6–B10 REPLAY evidence, isolated-database boundary, unresolved source timezone, API/UI availability, and current research limitations. |

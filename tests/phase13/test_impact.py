@@ -47,7 +47,7 @@ def test_distribution_is_descriptive_and_empty_is_null():
 def test_c7_proposal_validator_checks_time_units_coverage_and_cascade_fields():
     record = {
         "schema_id": "twinguard.impact_result", "schema_version": "0.1-draft",
-        "result_id": "test", "run_id": "test", "run_version": "batch2_v2",
+        "result_id": "test", "run_id": 7, "run_version": "batch2_v2",
         "source_mode": "SIMULATED", "event": {"time_basis": "UTC"},
         "valid_at_utc": "2026-01-01T00:00:00Z", "aggregation_interval": None,
         "generated_at_utc": "2026-01-01T00:00:00Z", "scenario_key": "test",

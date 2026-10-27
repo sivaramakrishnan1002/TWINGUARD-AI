@@ -23,8 +23,8 @@ import shapely
 from pipelines.phase12 import simulate as a06
 
 ROOT = Path(__file__).resolve().parents[2]
-OUTPUT = ROOT / "data/features/impact/batch2_v3_coverage"
-REPORT = ROOT / "docs/PHASE13_IMPACT_BATCH2_V3.md"
+OUTPUT = ROOT / "data/features/impact/batch2_v4_contract"
+REPORT = ROOT / "docs/PHASE13_IMPACT_BATCH2_V4.md"
 GPKG = ROOT / "data/features/osm/chennai_osm_features.gpkg"
 CELL_TABLE = ROOT / "data/features/static/cell_table.parquet"
 FORECAST = ROOT / "data/features/forecast/batch2_v1"
@@ -331,6 +331,8 @@ def validate_impact_result(record: dict) -> None:
     missing = required - record.keys()
     if missing:
         raise ValueError(f"impact result missing C7 draft fields: {sorted(missing)}")
+    if not isinstance(record["run_id"], int):
+        raise ValueError("run_id must be an integer under the C7 draft")
     if record["source_mode"] != "SIMULATED" or record["event"].get("time_basis") != "UTC":
         raise ValueError("impact result must be simulated and explicitly UTC-based")
     threshold = record["thresholds"].get("road_block_depth_m")
@@ -579,8 +581,8 @@ def run() -> dict:
                 ]
                 result = {
                     "schema_id": SCHEMA_ID, "schema_version": SCHEMA_VERSION,
-                    "result_id": f"a07-batch2-v1-{event_key}-{scenario_key}-lead{int(horizon):02d}h",
-                    "run_id": "a07-batch2-v1", "run_version": "batch2_v1",
+                    "result_id": f"a07-batch2-v4-{event_key}-{scenario_key}-lead{int(horizon):02d}h",
+                    "run_id": 7004, "run_version": "batch2_v4_contract",
                     "source_mode": "SIMULATED",
                     "event": {"event_key": event_key, "event_start_utc": event_start.isoformat().replace("+00:00", "Z"),
                               "event_end_utc": event_end.isoformat().replace("+00:00", "Z"), "time_basis": "UTC"},
@@ -609,7 +611,7 @@ def run() -> dict:
                                     "ensemble_id": f"{event_key}:{scenario_key}", "member_count": int(len(member_ids)),
                                     "interpretation": "Descriptive scenario/member spread only, not calibrated statistical uncertainty."},
                     "provenance": {"sources": refs, "algorithm": "600m cell exposure and collapsed OSM road-cell connectivity",
-                                   "algorithm_version": "A07-batch2-v2-coverage-fix",
+                                   "algorithm_version": "A07-batch2-v4-contract",
                                    "code_commit": subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
                                                                   check=True, capture_output=True, text=True).stdout.strip(),
                                    "parameters": {"road_and_exposure_thresholds_m": list(THRESHOLDS_M),
@@ -641,7 +643,7 @@ def run() -> dict:
     input_hashes = {str(p.relative_to(ROOT)): sha256(p) for p in input_files if p.exists()}
     run_summary = {
         "task": "A07 Phase 13 ensemble impact analysis", "status": "DERIVED_SIMULATED_IMPACT_NOT_LIVE",
-        "output_revision": "batch2_v3_coverage; batch2_v1 preserved as first-run artifact and v2 partial attempt preserved after C7 validation caught an implementation defect",
+        "output_revision": "batch2_v4_contract; batch2_v1 preserved; batch2_v2 partial and batch2_v3 complete-but-superseded attempts preserved after contract validation fixes",
         "schema_id": SCHEMA_ID, "schema_version": SCHEMA_VERSION,
         "schema_status": "Lane A proposal only; G0 not ready; no shared contract freeze or API integration",
         "generated_at_utc": generated_at, "run_time_seconds": time.perf_counter() - start,
@@ -678,7 +680,7 @@ def make_report(summary: dict, results: list[dict]) -> str:
         "## Method",
         "",
         f"- Input ensemble: {summary['event_scenario_horizon_combinations']} event × scenario × horizon cases; {summary['member_time_records']} member-threshold rows; {summary['grid']['eligible_cells']} eligible cells on a {summary['grid']['resolution_m']} m {summary['grid']['crs']} grid.",
-        "- This is the corrected coverage-metadata run; the first `batch2_v1` outputs and failed partial `batch2_v2_coverage` attempt are preserved unchanged.",
+        "- This run aligns `run_id` to the C7 proposal's integer type and carries complete per-category cascade fields; earlier v1-v3 outputs are preserved unchanged.",
         f"- Edge depth is the simulated depth at each road segment midpoint on the 600 m grid. Each edge can join to its cell probability in `data/features/impact/batch2_v1/road_edge_grid_index.parquet` → `cell_impact.parquet`.",
         "- Blocked when depth is at or above 0.30 m; sensitivity screens are 0.15 and 0.50 m. These are assumptions, not locally validated closure/exposure thresholds.",
         "- Each horizon is an instantaneous simulated state at event-window UTC start plus lead hours. No temporal aggregation interval is claimed.",
@@ -719,7 +721,7 @@ def make_report(summary: dict, results: list[dict]) -> str:
         "",
         "## Reproduction",
         "",
-        "`.venv/Scripts/python.exe -m pipelines.phase13.impact` (writes `batch2_v3_coverage`; the script refuses to overwrite existing outputs).",
+        "`.venv/Scripts/python.exe -m pipelines.phase13.impact` (writes `batch2_v4_contract`; the script refuses to overwrite existing outputs).",
     ]
     return "\n".join(lines) + "\n"
 

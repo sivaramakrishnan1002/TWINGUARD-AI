@@ -1,0 +1,23 @@
+{
+  "artifact_path": "smoke/synthetic_smoke.json",
+  "artifact_readback_matches": true,
+  "artifact_sha256": "13a679093d831c3c44c41e40fa5d946458070dae2e07203362323c865c326329",
+  "experiment_id": "197856590113366366",
+  "experiment_name": "TwinGuard_A16_synthetic_smoke_4e744a9f3cd6",
+  "metrics_read_back": {
+    "mae_synthetic": 0.1333333333333334,
+    "rmse_synthetic": 0.16329931618554525
+  },
+  "mlflow_version": "3.17.2",
+  "parameters_read_back": {
+    "method": "synthetic_linear_smoke",
+    "sample_count": "3",
+    "seed": "1601"
+  },
+  "run_id": "78c59f9aba5e4039a3c81e560064ea9d",
+  "status": "SMOKE_PASSED_LOCAL_FILE_TRACKING",
+  "synthetic_only": true,
+  "task": "A16",
+  "tracking_uri": "file:///D:/TIWNGUARD/experiments/mlflow/smoke_20261028T075935Z_4e744a9f3cd6/tracking_store",
+  "tracking_uri_scheme": "file"
+}

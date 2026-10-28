@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/TIWNGUARD/experiments/mlflow/smoke_20261028T075935Z_4e744a9f3cd6/tracking_store/197856590113366366/78c59f9aba5e4039a3c81e560064ea9d/artifacts
+end_time: 1793174375954
+entry_point_name: ''
+experiment_id: '197856590113366366'
+lifecycle_stage: active
+run_id: 78c59f9aba5e4039a3c81e560064ea9d
+run_name: synthetic-smoke-4e744a9f3cd6
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1793174375837
+status: 3
+tags: []
+user_id: msk10

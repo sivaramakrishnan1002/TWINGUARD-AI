@@ -1,0 +1,9 @@
+artifact_location: file:///D:/TIWNGUARD/experiments/mlflow/smoke_20261028T075935Z_4e744a9f3cd6/tracking_store/197856590113366366
+creation_time: 1793174375499
+effective_trace_archival_retention: null
+experiment_id: '197856590113366366'
+last_update_time: 1793174375499
+lifecycle_stage: active
+name: TwinGuard_A16_synthetic_smoke_4e744a9f3cd6
+trace_location: null
+workspace: default

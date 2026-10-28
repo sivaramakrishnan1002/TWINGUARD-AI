@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "twinguard-flood-scenario-manifest-v1",
+  "title": "TwinGuard offline scenario visualization manifest",
+  "type": "object",
+  "required": ["schema_version", "status", "grid", "depth_units", "nodata", "time_basis", "scenario_series", "context_layers", "provenance", "presentation_policy", "limitations"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "status": {"const": "DERIVED_ASSUMPTION_BASED_RESEARCH_SCENARIO"},
+    "grid": {"type": "object", "required": ["crs", "width", "height", "pixel_size_m", "affine_transform"], "properties": {"crs": {"const": "EPSG:32644"}, "width": {"const": 69}, "height": {"const": 88}, "pixel_size_m": {"const": [600.0, 600.0]}, "affine_transform": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"type": "number"}}}},
+    "depth_units": {"type": "object", "required": ["value", "metadata_note"], "properties": {"value": {"const": "m"}, "metadata_note": {"type": "string"}}},
+    "nodata": {"type": "object", "required": ["value", "meaning", "valid_cells_per_forecast_raster"], "properties": {"value": {"const": -9999.0}, "meaning": {"type": "string"}, "valid_cells_per_forecast_raster": {"const": 2430}}},
+    "time_basis": {"type": "object", "required": ["timezone", "valid_time_rule"], "properties": {"timezone": {"const": "UTC"}, "valid_time_rule": {"type": "string"}}},
+    "scenario_series": {"type": "array", "minItems": 3, "maxItems": 3},
+    "context_layers": {"type": "array", "minItems": 4, "maxItems": 4},
+    "provenance": {"type": "object", "required": ["forecast_summary", "simulation_summary", "declared_input_hashes", "source_hash_status"], "properties": {"forecast_summary": {"type": "object"}, "simulation_summary": {"type": "object"}, "declared_input_hashes": {"type": "array"}, "source_hash_status": {"const": "all_declared_A05_A06_input_hashes_match_current_files"}}},
+    "presentation_policy": {"type": "string"},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

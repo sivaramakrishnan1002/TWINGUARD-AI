@@ -1,0 +1,1573 @@
+{
+  "a10_capacity_factor_case_count": 540,
+  "a10_capacity_factor_values": [
+    0.5,
+    1.0,
+    2.0
+  ],
+  "bridge_closure": {
+    "counterfactual_interpretation": "If this edge were unavailable, listed saved paths would be invalidated. No alternative route is inferred because the saved A09 artifacts do not include bridge-closure reruns.",
+    "edge_id": 64052,
+    "saved_route_records_containing_edge": [
+      {
+        "horizon_seconds": 21600,
+        "method": "static",
+        "result_id": "A09-2015-12-02-06h-static-od03",
+        "saved_path_contains_closed_bridge": true,
+        "scenario_key": "2015-12-02/perfect_foresight_imerg"
+      },
+      {
+        "horizon_seconds": 86400,
+        "method": "static",
+        "result_id": "A09-2015-12-02-24h-static-od03",
+        "saved_path_contains_closed_bridge": true,
+        "scenario_key": "2015-12-02/perfect_foresight_imerg"
+      },
+      {
+        "horizon_seconds": 259200,
+        "method": "static",
+        "result_id": "A09-2015-12-02-72h-static-od03",
+        "saved_path_contains_closed_bridge": true,
+        "scenario_key": "2015-12-02/perfect_foresight_imerg"
+      },
+      {
+        "horizon_seconds": 21600,
+        "method": "static",
+        "result_id": "A09-2021-11-13-06h-static-od03",
+        "saved_path_contains_closed_bridge": true,
+        "scenario_key": "2021-11-13/perfect_foresight_imerg"
+      },
+      {
+        "horizon_seconds": 86400,
+        "method": "static",
+        "result_id": "A09-2021-11-13-24h-static-od03",
+        "saved_path_contains_closed_bridge": true,
+        "scenario_key": "2021-11-13/perfect_foresight_imerg"
+      },
+      {
+        "horizon_seconds": 259200,
+        "method": "static",
+        "result_id": "A09-2021-11-13-72h-static-od03",
+        "saved_path_contains_closed_bridge": true,
+        "scenario_key": "2021-11-13/perfect_foresight_imerg"
+      },
+      {
+        "horizon_seconds": 21600,
+        "method": "static",
+        "result_id": "A09-2023-12-04-06h-static-od03",
+        "saved_path_contains_closed_bridge": true,
+        "scenario_key": "2023-12-04/perfect_foresight_imerg"
+      },
+      {
+        "horizon_seconds": 86400,
+        "method": "static",
+        "result_id": "A09-2023-12-04-24h-static-od03",
+        "saved_path_contains_closed_bridge": true,
+        "scenario_key": "2023-12-04/perfect_foresight_imerg"
+      },
+      {
+        "horizon_seconds": 259200,
+        "method": "static",
+        "result_id": "A09-2023-12-04-72h-static-od03",
+        "saved_path_contains_closed_bridge": true,
+        "scenario_key": "2023-12-04/perfect_foresight_imerg"
+      }
+    ],
+    "saved_static_path_use_count": 9,
+    "selection_rule": "most frequent bridge-flagged edge in saved static A09 route paths; tie-break smallest stable edge_id",
+    "source_graph_status": "bridges are UNASSESSED_STRUCTURE in A08; closure is a hypothetical explicit scenario, not observed condition",
+    "status": "SAVED_PATH_INVALIDATION_ONLY_NO_REROUTE"
+  },
+  "departure_shift": {
+    "exact_shift_snapshot_available": false,
+    "reason": "A09 contains saved routes at registered event/scenario/horizon cases; A08 snapshots are at 6, 12, 24, 48 and 72 hours. No exact +/-1-hour snapshot or rerouted result is present; no interpolation or new route search was performed.",
+    "requested": [
+      "departure one hour earlier",
+      "departure one hour later"
+    ],
+    "saved_snapshot_times_utc": [
+      "2015-11-30T06:00:00Z",
+      "2015-11-30T12:00:00Z",
+      "2015-12-01T00:00:00Z",
+      "2015-12-02T00:00:00Z",
+      "2015-12-03T00:00:00Z",
+      "2021-11-11T06:00:00Z",
+      "2021-11-11T12:00:00Z",
+      "2021-11-12T00:00:00Z",
+      "2021-11-13T00:00:00Z",
+      "2021-11-14T00:00:00Z",
+      "2023-12-02T06:00:00Z",
+      "2023-12-02T12:00:00Z",
+      "2023-12-03T00:00:00Z",
+      "2023-12-04T00:00:00Z",
+      "2023-12-05T00:00:00Z"
+    ],
+    "status": "UNAVAILABLE_FROM_REGISTERED_ARTIFACTS"
+  },
+  "limitations": [
+    "No real bridge closure or shelter availability observations",
+    "no rerouting or reallocation performed",
+    "allocation values are model estimates under assumed capacities and coarse weak-component screening"
+  ],
+  "shelter_unavailability": {
+    "candidate_osm_id": 28275720,
+    "candidate_record": {
+      "assumed_capacity_people": 100.0,
+      "candidate_id": "osm:28275720",
+      "category": "shelter",
+      "facility_type": "shelter",
+      "name": null,
+      "osmid": 28275720,
+      "snap_distance_m": 20.30615333408053,
+      "snapped_node_osmid": 10187877328
+    },
+    "capacity_factor": "not available in allocation_detail rows; not inferred",
+    "counterfactual_interpretation": "Withdraw this candidate's saved allocation only; other assignments are not rebalanced. The 100-person shelter capacity and all A10 capacities are assumptions, not verified availability.",
+    "cumulative_allocated_people_model_estimate": 63000.0,
+    "removed_allocations_by_event_scenario_horizon_member": [
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 1,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 2,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 3,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 4,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 5,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 6,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 7,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 8,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 9,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 10,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 11,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 12,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 13,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 14,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 15,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 16,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 17,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 18,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 19,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 6,
+        "member_id": 20,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-11-30T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 1,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 2,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 3,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 4,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 5,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 6,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 7,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 8,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 9,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 10,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 11,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 12,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 13,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 14,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 15,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 16,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 17,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 18,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 19,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 24,
+        "member_id": 20,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-01T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 1,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 2,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 3,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 4,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 5,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 6,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 7,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 8,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 9,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 10,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 11,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 12,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 13,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 14,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 15,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 16,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 17,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 18,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 19,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2015-12-02",
+        "horizon_hours": 72,
+        "member_id": 20,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2015-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 1,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 2,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 3,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 4,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 5,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 6,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 7,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 8,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 9,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 10,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 11,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 12,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 13,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 14,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 15,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 16,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 17,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 18,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 19,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 6,
+        "member_id": 20,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-11T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 1,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 2,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 3,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 4,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 5,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 6,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 7,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 8,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 9,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 10,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 11,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 12,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 13,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 14,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 15,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 16,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 17,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 18,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 19,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 24,
+        "member_id": 20,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-12T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 1,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 2,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 3,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 4,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 5,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 6,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 7,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 8,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 9,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 10,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 11,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 12,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 13,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 14,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 15,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 16,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 17,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 18,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 19,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2021-11-13",
+        "horizon_hours": 72,
+        "member_id": 20,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2021-11-14T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 1,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 2,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 3,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 4,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 5,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 6,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 7,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 8,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 9,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 10,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 11,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 12,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 13,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 14,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 15,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 16,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 17,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 18,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 19,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 6,
+        "member_id": 20,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-02T06:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 1,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 2,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 3,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 4,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 5,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 6,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 7,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 8,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 9,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 10,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 11,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 12,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 13,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 14,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 15,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 16,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 17,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 18,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 19,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 24,
+        "member_id": 20,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-03T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 1,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 2,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 3,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 4,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 5,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 6,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 7,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 8,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 9,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 10,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 11,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 12,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 13,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 14,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 15,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 16,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 17,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 18,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 19,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      },
+      {
+        "event_key": "2023-12-04",
+        "horizon_hours": 72,
+        "member_id": 20,
+        "scenario_key": "perfect_foresight_imerg",
+        "valid_at_utc": "2023-12-05T00:00:00Z",
+        "withdrawn_allocation_people_model_estimate": 350.0
+      }
+    ],
+    "selection_rule": "shelter category with greatest cumulative saved allocation; tie-break smallest numeric OSM ID",
+    "status": "ALLOCATION_WITHDRAWAL_WITHOUT_REALLOCATION"
+  },
+  "status": "PARTIALLY_SUPPORTED_COUNTERFACTUALS; ALL_SIMULATED"
+}

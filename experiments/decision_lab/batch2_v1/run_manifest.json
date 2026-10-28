@@ -1,0 +1,83 @@
+{
+  "analysis_code_sha256": "aa791e944bd47586675393477e2a886f7205867abb9b9415298368c28d8d3beb",
+  "analysis_plan_sha256": "5d11b60f66e4a66aaf9047a520594add81f77b59bcc4c6b5a9251ce96bd2610e",
+  "bootstrap_replicates": 5000,
+  "generated_at_utc": "2026-10-28T07:43:06Z",
+  "input_hashes": {
+    "a05_summary": {
+      "path": "data/features/forecast/batch2_v1/forecast_summary.json",
+      "sha256": "0bc0e322041c0d264a214d995912fd648fbda3534616f3e4588122e292e94dba",
+      "size_bytes": 231233
+    },
+    "a09_routes": {
+      "path": "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl",
+      "sha256": "ee4e33b45268ba869cfc0f3f48eee1c10ac2c5ae83837b1d82165c6ca6c2ea7f",
+      "size_bytes": 11349907
+    },
+    "a09_summary": {
+      "path": "data/features/routing/results/batch2_v1/revision_3/summary.json",
+      "sha256": "3d0784a481aaaf451456e9e9f1bb1291461bb0a3680b6cc7019335d0501adc3b",
+      "size_bytes": 3503
+    },
+    "a10_candidates": {
+      "path": "data/features/decision/shelters/batch2_v3/candidate_facilities.parquet",
+      "sha256": "7af8330922a5f0b8e14722f3dd426f1b0290104805e3ff59b7d861e0f1b58171",
+      "size_bytes": 42331
+    },
+    "a10_cases": {
+      "path": "data/features/decision/shelters/batch2_v3/allocation_cases.parquet",
+      "sha256": "3c204884af00ea0fb713b9f72c04f36f21647c7aa9b5b710bc6c98f03220276d",
+      "size_bytes": 22491
+    },
+    "a10_detail": {
+      "path": "data/features/decision/shelters/batch2_v3/allocation_detail.parquet",
+      "sha256": "7c9b5e263e6d0201933ae9e4033e345010178af03f1619b9fb66edf7f6925d97",
+      "size_bytes": 445353
+    },
+    "a10_summary": {
+      "path": "data/features/decision/shelters/batch2_v3/run_summary.json",
+      "sha256": "ed0f2a2773d26282644b1f4ae7e93c4f16cdc37975bc9f3990644a9f2c75563c",
+      "size_bytes": 2456
+    },
+    "a11_manifest": {
+      "path": "data/features/decision/priority_zones/batch2_v1/revision_2/run_manifest.json",
+      "sha256": "500763ec58afe6d1c9d1111bdb6bfdd81ea65f72a589eddbdf578cac2b71bb28",
+      "size_bytes": 20047
+    },
+    "a12_sensitivity": {
+      "path": "experiments/explainability/batch2_v1/results/explainability_sensitivity.json",
+      "sha256": "bb5bcecb676f8b55afef34e1866179707a6716471e9e9a3262047c980bc49209",
+      "size_bytes": 75379
+    }
+  },
+  "outputs": {
+    "analysis_plan.json": {
+      "sha256": "5d11b60f66e4a66aaf9047a520594add81f77b59bcc4c6b5a9251ce96bd2610e",
+      "size_bytes": 2981
+    },
+    "h2_synthetic_holdout_metrics.json": {
+      "sha256": "bdeec584ccbb2d85e560b640ab885a35a1bb6c24b1fa5591a785d8a1b9b42fdc",
+      "size_bytes": 57894
+    },
+    "h3_h4_route_comparisons.json": {
+      "sha256": "da6e2ff5de4b6b37ee39804925ef004a921005b15484daac0504d1f781d9c19f",
+      "size_bytes": 14540
+    },
+    "h5_counterfactuals.json": {
+      "sha256": "cbae5b20abcf5f182bea02bfcc3e45528992d14b61e96ed544d6588b31675756",
+      "size_bytes": 54382
+    },
+    "input_provenance.json": {
+      "sha256": "34b8d9707819947fe7185420efe0e4470a3200bc8f6cbd70419d644e7f2dadac",
+      "size_bytes": 21652
+    }
+  },
+  "runtime_seconds": 2.129496,
+  "schema_id": "twinguard.a13_decision_lab_manifest",
+  "schema_version": "1.0",
+  "seed": 20261028,
+  "source_mode": "SIMULATED",
+  "status": "SIMULATED_DESCRIPTIVE_RESEARCH_NOT_VALIDATED_NOT_OPERATIONAL",
+  "task_id": "A13",
+  "version": "batch2_v1"
+}

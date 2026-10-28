@@ -1,0 +1,418 @@
+{
+  "case_key_count": 54,
+  "comparisons": {
+    "H3": {
+      "arrival_outcomes": {
+        "arrival_time_delta_seconds_A_minus_B": {
+          "comparable_case_count": 15,
+          "counts": {
+            "incomparable": 0,
+            "losses": 0,
+            "missing": 0,
+            "ties": 12,
+            "wins": 3
+          },
+          "descriptive_case_fraction_A_better": 0.2,
+          "direction": "lower is better for option A",
+          "matched_case_count": 15,
+          "paired_A_minus_B": {
+            "ci95": [
+              -0.016830587387084962,
+              0.0
+            ],
+            "cluster_count": 3,
+            "cluster_means": {
+              "2015-12-02": 0.0,
+              "2021-11-13": -0.012985785802205404,
+              "2023-12-04": -0.016830587387084962
+            },
+            "interpretation": "descriptive simulation sensitivity only; few event clusters, not population inference",
+            "mean_difference": -0.009938791063096789,
+            "replicates": 5000,
+            "seed": 20261028
+          }
+        },
+        "definition": "arrival time only for paired ROUTE_FOUND cases; compare UTC arrival instants, no route or null arrival is missing",
+        "paired_found_count": 15
+      },
+      "event_clusters": [
+        "2015-12-02",
+        "2021-11-13",
+        "2023-12-04"
+      ],
+      "limitations": [
+        "all outcomes are from simulated A09 route outputs",
+        "routes are not real-world safety evidence",
+        "route failures, travel time, exposure, and coverage are not collapsed into a score"
+      ],
+      "matched_case_count": 54,
+      "option_A": "uncertainty_aware",
+      "option_B": "current_flood_aware",
+      "outcomes": {
+        "assessed_edge_coverage_fraction": {
+          "comparable_case_count": 15,
+          "counts": {
+            "incomparable": 0,
+            "losses": 0,
+            "missing": 39,
+            "ties": 15,
+            "wins": 0
+          },
+          "descriptive_case_fraction_A_better": 0.0,
+          "direction": "higher is better for option A",
+          "matched_case_count": 54,
+          "paired_A_minus_B": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "cluster_count": 3,
+            "cluster_means": {
+              "2015-12-02": 0.0,
+              "2021-11-13": 0.0,
+              "2023-12-04": 0.0
+            },
+            "interpretation": "descriptive simulation sensitivity only; few event clusters, not population inference",
+            "mean_difference": 0.0,
+            "replicates": 5000,
+            "seed": 20261028
+          }
+        },
+        "depth_distance_exposure_m2": {
+          "comparable_case_count": 15,
+          "counts": {
+            "incomparable": 0,
+            "losses": 2,
+            "missing": 39,
+            "ties": 12,
+            "wins": 1
+          },
+          "descriptive_case_fraction_A_better": 0.06666666666666667,
+          "direction": "lower is better for option A",
+          "matched_case_count": 54,
+          "paired_A_minus_B": {
+            "ci95": [
+              -0.07619892180493366,
+              0.0013181999114711591
+            ],
+            "cluster_count": 3,
+            "cluster_means": {
+              "2015-12-02": 0.0,
+              "2021-11-13": 0.0013181999114711591,
+              "2023-12-04": -0.07619892180493366
+            },
+            "interpretation": "descriptive simulation sensitivity only; few event clusters, not population inference",
+            "mean_difference": -0.02496024063115417,
+            "replicates": 5000,
+            "seed": 20261028
+          }
+        },
+        "route_failure_fraction": {
+          "comparable_case_count": 15,
+          "counts": {
+            "incomparable": 0,
+            "losses": 0,
+            "missing": 39,
+            "ties": 15,
+            "wins": 0
+          },
+          "descriptive_case_fraction_A_better": 0.0,
+          "direction": "lower is better for option A",
+          "matched_case_count": 54,
+          "paired_A_minus_B": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "cluster_count": 3,
+            "cluster_means": {
+              "2015-12-02": 0.0,
+              "2021-11-13": 0.0,
+              "2023-12-04": 0.0
+            },
+            "interpretation": "descriptive simulation sensitivity only; few event clusters, not population inference",
+            "mean_difference": 0.0,
+            "replicates": 5000,
+            "seed": 20261028
+          }
+        },
+        "travel_time_seconds": {
+          "comparable_case_count": 15,
+          "counts": {
+            "incomparable": 0,
+            "losses": 0,
+            "missing": 39,
+            "ties": 12,
+            "wins": 3
+          },
+          "descriptive_case_fraction_A_better": 0.2,
+          "direction": "lower is better for option A",
+          "matched_case_count": 54,
+          "paired_A_minus_B": {
+            "ci95": [
+              -0.016830736394013,
+              0.0
+            ],
+            "cluster_count": 3,
+            "cluster_means": {
+              "2015-12-02": 0.0,
+              "2021-11-13": -0.012985774694584507,
+              "2023-12-04": -0.016830736394013
+            },
+            "interpretation": "descriptive simulation sensitivity only; few event clusters, not population inference",
+            "mean_difference": -0.009938837029532502,
+            "replicates": 5000,
+            "seed": 20261028
+          }
+        }
+      },
+      "pair_key": [
+        "scenario_key",
+        "requested_horizon_seconds",
+        "origin_id",
+        "destination_id"
+      ],
+      "route_found_summaries_by_method": {
+        "current_flood_aware": {
+          "median_assessed_edge_coverage_fraction": 1.0,
+          "median_expected_depth_distance_exposure_m2": 33.45549272835543,
+          "median_route_failure_probability": 0.0,
+          "median_travel_time_seconds": 1032.3156027656655,
+          "route_found_count": 18
+        },
+        "uncertainty_aware": {
+          "median_assessed_edge_coverage_fraction": 1.0,
+          "median_expected_depth_distance_exposure_m2": 27.804115406894987,
+          "median_route_failure_probability": 0.0,
+          "median_travel_time_seconds": 1030.420725357574,
+          "route_found_count": 15
+        }
+      },
+      "status_counts_by_method": {
+        "current_flood_aware": {
+          "INSUFFICIENT_HAZARD_COVERAGE": 0,
+          "NO_TOPOLOGICAL_PATH": 36,
+          "ROUTE_FOUND": 18
+        },
+        "uncertainty_aware": {
+          "INSUFFICIENT_HAZARD_COVERAGE": 0,
+          "NO_TOPOLOGICAL_PATH": 39,
+          "ROUTE_FOUND": 15
+        }
+      }
+    },
+    "H4": {
+      "arrival_outcomes": {
+        "arrival_time_delta_seconds_A_minus_B": {
+          "comparable_case_count": 16,
+          "counts": {
+            "incomparable": 0,
+            "losses": 1,
+            "missing": 2,
+            "ties": 12,
+            "wins": 3
+          },
+          "descriptive_case_fraction_A_better": 0.1875,
+          "direction": "lower is better for option A",
+          "matched_case_count": 18,
+          "paired_A_minus_B": {
+            "ci95": [
+              -0.016830587387084962,
+              9.970414400100708
+            ],
+            "cluster_count": 3,
+            "cluster_means": {
+              "2015-12-02": 9.970414400100708,
+              "2021-11-13": -0.012985785802205404,
+              "2023-12-04": -0.016830587387084962
+            },
+            "interpretation": "descriptive simulation sensitivity only; few event clusters, not population inference",
+            "mean_difference": 3.313532675637139,
+            "replicates": 5000,
+            "seed": 20261028
+          }
+        },
+        "definition": "arrival time only for paired ROUTE_FOUND cases; compare UTC arrival instants, no route or null arrival is missing",
+        "paired_found_count": 16
+      },
+      "event_clusters": [
+        "2015-12-02",
+        "2021-11-13",
+        "2023-12-04"
+      ],
+      "limitations": [
+        "all outcomes are from simulated A09 route outputs",
+        "routes are not real-world safety evidence",
+        "route failures, travel time, exposure, and coverage are not collapsed into a score"
+      ],
+      "matched_case_count": 54,
+      "option_A": "horizon_aware",
+      "option_B": "current_flood_aware",
+      "outcomes": {
+        "assessed_edge_coverage_fraction": {
+          "comparable_case_count": 18,
+          "counts": {
+            "incomparable": 0,
+            "losses": 0,
+            "missing": 36,
+            "ties": 18,
+            "wins": 0
+          },
+          "descriptive_case_fraction_A_better": 0.0,
+          "direction": "higher is better for option A",
+          "matched_case_count": 54,
+          "paired_A_minus_B": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "cluster_count": 3,
+            "cluster_means": {
+              "2015-12-02": 0.0,
+              "2021-11-13": 0.0,
+              "2023-12-04": 0.0
+            },
+            "interpretation": "descriptive simulation sensitivity only; few event clusters, not population inference",
+            "mean_difference": 0.0,
+            "replicates": 5000,
+            "seed": 20261028
+          }
+        },
+        "depth_distance_exposure_m2": {
+          "comparable_case_count": 18,
+          "counts": {
+            "incomparable": 0,
+            "losses": 2,
+            "missing": 36,
+            "ties": 12,
+            "wins": 4
+          },
+          "descriptive_case_fraction_A_better": 0.2222222222222222,
+          "direction": "lower is better for option A",
+          "matched_case_count": 54,
+          "paired_A_minus_B": {
+            "ci95": [
+              -129.32710648769282,
+              0.0013181999114711591
+            ],
+            "cluster_count": 3,
+            "cluster_means": {
+              "2015-12-02": -129.32710648769282,
+              "2021-11-13": 0.0013181999114711591,
+              "2023-12-04": -89.81677941660676
+            },
+            "interpretation": "descriptive simulation sensitivity only; few event clusters, not population inference",
+            "mean_difference": -73.04752256812937,
+            "replicates": 5000,
+            "seed": 20261028
+          }
+        },
+        "route_failure_fraction": {
+          "comparable_case_count": 18,
+          "counts": {
+            "incomparable": 0,
+            "losses": 0,
+            "missing": 36,
+            "ties": 18,
+            "wins": 0
+          },
+          "descriptive_case_fraction_A_better": 0.0,
+          "direction": "lower is better for option A",
+          "matched_case_count": 54,
+          "paired_A_minus_B": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "cluster_count": 3,
+            "cluster_means": {
+              "2015-12-02": 0.0,
+              "2021-11-13": 0.0,
+              "2023-12-04": 0.0
+            },
+            "interpretation": "descriptive simulation sensitivity only; few event clusters, not population inference",
+            "mean_difference": 0.0,
+            "replicates": 5000,
+            "seed": 20261028
+          }
+        },
+        "travel_time_seconds": {
+          "comparable_case_count": 16,
+          "counts": {
+            "incomparable": 0,
+            "losses": 1,
+            "missing": 38,
+            "ties": 12,
+            "wins": 3
+          },
+          "descriptive_case_fraction_A_better": 0.1875,
+          "direction": "lower is better for option A",
+          "matched_case_count": 54,
+          "paired_A_minus_B": {
+            "ci95": [
+              -0.016830736394013,
+              9.970414422242083
+            ],
+            "cluster_count": 3,
+            "cluster_means": {
+              "2015-12-02": 9.970414422242083,
+              "2021-11-13": -0.012985774694584507,
+              "2023-12-04": -0.016830736394013
+            },
+            "interpretation": "descriptive simulation sensitivity only; few event clusters, not population inference",
+            "mean_difference": 3.313532637051162,
+            "replicates": 5000,
+            "seed": 20261028
+          }
+        }
+      },
+      "pair_key": [
+        "scenario_key",
+        "requested_horizon_seconds",
+        "origin_id",
+        "destination_id"
+      ],
+      "route_found_summaries_by_method": {
+        "current_flood_aware": {
+          "median_assessed_edge_coverage_fraction": 1.0,
+          "median_expected_depth_distance_exposure_m2": 33.45549272835543,
+          "median_route_failure_probability": 0.0,
+          "median_travel_time_seconds": 1032.3156027656655,
+          "route_found_count": 18
+        },
+        "horizon_aware": {
+          "median_assessed_edge_coverage_fraction": 1.0,
+          "median_expected_depth_distance_exposure_m2": 33.45549272835543,
+          "median_route_failure_probability": 0.0,
+          "median_travel_time_seconds": 1032.3156027656655,
+          "route_found_count": 18
+        }
+      },
+      "status_counts_by_method": {
+        "current_flood_aware": {
+          "INSUFFICIENT_HAZARD_COVERAGE": 0,
+          "NO_TOPOLOGICAL_PATH": 36,
+          "ROUTE_FOUND": 18
+        },
+        "horizon_aware": {
+          "INSUFFICIENT_HAZARD_COVERAGE": 0,
+          "NO_TOPOLOGICAL_PATH": 36,
+          "ROUTE_FOUND": 18
+        }
+      }
+    }
+  },
+  "departure_semantics": "A09 saved departure_at_utc; paired methods use the same case key and saved time snapshot",
+  "route_record_count": 216,
+  "run_id": "A09 revision_3",
+  "scenario": "perfect_foresight_imerg",
+  "status": "SIMULATED_DESCRIPTIVE_ROUTE_COMPARISONS_NOT_SAFETY_VALIDATION",
+  "thresholds": "A09 registered assumptions: ordinary edge blocks at >=0.30 m, tunnel proxy at >=0.15 m, bridges unassessed; sensitivity 0.15/0.30/0.50 m",
+  "units": {
+    "coverage": "assessed directed route edges / route edges",
+    "depth_distance_exposure": "m2",
+    "distance": "m",
+    "failure/accessibility": "ensemble fractions as stored by A09",
+    "travel_time": "seconds"
+  }
+}

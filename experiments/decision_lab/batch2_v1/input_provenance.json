@@ -1,0 +1,495 @@
+{
+  "a05_member_artifacts": [
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/perfect_foresight_imerg/depth_lead06h_p50_DERIVED.tif",
+      "d563c3780e5c7b611f2a8f13ada4945f1f692160e6b16beeff7b0e455917a1cd"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/perfect_foresight_imerg/depth_lead12h_p50_DERIVED.tif",
+      "3e3ee3d016b6cd6112c33f310736d0c8594d660adaf20cd12102ee28c5d4fa19"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/perfect_foresight_imerg/depth_lead24h_p50_DERIVED.tif",
+      "eb4092a789b2e82edd6dcc3e8dedb6872725bc89f8f7ff72a3fecf269cb31e28"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/perfect_foresight_imerg/depth_lead48h_p50_DERIVED.tif",
+      "2604ff7f01104aef49eb9b69b260c8a3c4ea74ab730c6201ebe9ef6c0943f4d5"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/perfect_foresight_imerg/depth_lead72h_p50_DERIVED.tif",
+      "f0035d444c5047edbf59919983064d2e35cc661df56ce21529d122d8661c3204"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/perfect_foresight_imerg/depth_members_by_horizon_DERIVED.npz",
+      "aec5b132b41635d26507f0b2263ca0d13fd0716c52a3d2549822e2bd9a33dda1"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/persistence_previous_day/depth_lead06h_p50_DERIVED.tif",
+      "40bd5f5206d41158ef9534efdab2a669a3f6d4c5141a647fbdcaaef1355f4558"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/persistence_previous_day/depth_lead12h_p50_DERIVED.tif",
+      "075704636f375bc3f28122edbf2ecb770f8c5575704170cc9bdc62e3f1a30e61"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/persistence_previous_day/depth_lead24h_p50_DERIVED.tif",
+      "712ca8a193b034344c652bbf6df60f4a5d1b8d1cb929bc68dcd644a1522b292d"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/persistence_previous_day/depth_lead48h_p50_DERIVED.tif",
+      "92608c8afffddeadc9383e38772ccd60f0d8f5a9e938966b2166d2e4c703cb21"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/persistence_previous_day/depth_lead72h_p50_DERIVED.tif",
+      "57ad86e8f1ba451ac0c92022a06c7ad50f92ad3343ad735280b35e50fcfac7f8"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/persistence_previous_day/depth_members_by_horizon_DERIVED.npz",
+      "79024792f9a9c9bb4ec4e6b3c6a4a9f50953f7d56141d76c9c482801aaa2adf5"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q10/depth_lead06h_p50_DERIVED.tif",
+      "308bfe129450e5b276738e221420ef68f8c04a56e136906b07fac694bee71faa"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q10/depth_lead12h_p50_DERIVED.tif",
+      "5cb66e051d320dc3268fd7e5176e93212d77517f12899bbb15c4fce357f967a7"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q10/depth_lead24h_p50_DERIVED.tif",
+      "9b2269f2d241f28f25be5430b97ad8b6182d48d6d7064b268603ac595f24333a"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q10/depth_lead48h_p50_DERIVED.tif",
+      "5a465daf66086b5a5884c8e3ddf51dc8b2f0dd631b485fb5bcdbba2a2d54e231"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q10/depth_lead72h_p50_DERIVED.tif",
+      "332adbd4c37387f0efe014d5a9447a0da19f0133eb71bdd6e11d05fe44be7579"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q10/depth_members_by_horizon_DERIVED.npz",
+      "d90b3a149285e430c256510e41cff51f28c38b77382f527c3b209293b3e062c4"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q50/depth_lead06h_p50_DERIVED.tif",
+      "ab07b462b1a94f831c6000677773bbb8ab051ca7d1519bffb04cfd57be770d38"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q50/depth_lead12h_p50_DERIVED.tif",
+      "31fd57c035cdfe90e91e97408c7d80f41db2e724559f00b3cb43dbbf1976ff0b"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q50/depth_lead24h_p50_DERIVED.tif",
+      "9c2ea25ae1af85229c1890ecc507fafc87560634ea709a56384c4ddbfe5bb907"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q50/depth_lead48h_p50_DERIVED.tif",
+      "9bf15ca860dffb2aab62487c98e92cb16287deb48c7aa241525e03ae0b6335aa"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q50/depth_lead72h_p50_DERIVED.tif",
+      "368fcf9decc19fadd6d6b974701377a48f414021e01f5c588612b47d144b7451"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q50/depth_members_by_horizon_DERIVED.npz",
+      "b3425f7a3fd7536db7f13c74b977c2b5342d2f9be3f5d9bd5a358923c16256e9"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q90/depth_lead06h_p50_DERIVED.tif",
+      "2f5179234ad1ed2c84b380f52acc0c3d1190d6085df5c25c8b111894ab4ef4a7"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q90/depth_lead12h_p50_DERIVED.tif",
+      "38e93cf7689a41d9fe80bc5a439c7684a729434e5bf552a70c236578ce1c3ff1"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q90/depth_lead24h_p50_DERIVED.tif",
+      "c8dec0606cd569a2653501fd3450e8ca5780efc899609137dd4ad884824e44be"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q90/depth_lead48h_p50_DERIVED.tif",
+      "ef9b73c51cd57e9d5a558ce024ff316eff890301567edb183c3ec89d3fadb308"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q90/depth_lead72h_p50_DERIVED.tif",
+      "abecdbb4bf901b11d3324c55f9000117d7d2d6802b417d5c9e40d338998ea464"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2015-12-02/rain_error_q90/depth_members_by_horizon_DERIVED.npz",
+      "4dc4591f6f6b49565d23c25c74e2e851a058fcc38514bc20d23488560c4b3591"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/perfect_foresight_imerg/depth_lead06h_p50_DERIVED.tif",
+      "6ffed3df36148b9e25e29d12d86fc0266ca2444df0aacaf8b4840635feebe06a"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/perfect_foresight_imerg/depth_lead12h_p50_DERIVED.tif",
+      "8164b9eb85e8af1edc480e3b0c32934059fe1dd00a1a9c5ca2782cd6146ad0fe"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/perfect_foresight_imerg/depth_lead24h_p50_DERIVED.tif",
+      "d0b701b36fb966c3e6c82e8eac1cf928f08e21043df093fdad9ecd88570d75c4"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/perfect_foresight_imerg/depth_lead48h_p50_DERIVED.tif",
+      "fc884e2e56ad7feb4a55a54d3f46e5dfcc00ac5d0b811a36aa55e87262f3a538"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/perfect_foresight_imerg/depth_lead72h_p50_DERIVED.tif",
+      "6815a31bf4f856a0db6107350842c8afd9e75b4d7df0fb4475bc9a5da54f97cb"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/perfect_foresight_imerg/depth_members_by_horizon_DERIVED.npz",
+      "7c05444cbd217832420096999ba1344f1107cb39b94f8fedea0cb90dc8554e37"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/persistence_previous_day/depth_lead06h_p50_DERIVED.tif",
+      "53bb63632e7ddfc226bec752f6031e1de05690cabbd07832edee756cfee3d7a1"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/persistence_previous_day/depth_lead12h_p50_DERIVED.tif",
+      "b575c6e90e47b3176d2c0ad87c45b0bfbb6d0423a83b5f7dbca2295fdc9a8dfb"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/persistence_previous_day/depth_lead24h_p50_DERIVED.tif",
+      "72090872eace4904393559a5422459d033e4e5de0511a13a75b6872cb6ff321b"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/persistence_previous_day/depth_lead48h_p50_DERIVED.tif",
+      "fb0188c043ef518f1c8174a49b1ae275ee9f8ce7bd6697297e07f8540684a623"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/persistence_previous_day/depth_lead72h_p50_DERIVED.tif",
+      "45904b6d5fa98743585f551e7a7f77b70dfeb6dd995f60c84c613288e04a82df"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/persistence_previous_day/depth_members_by_horizon_DERIVED.npz",
+      "caa0d92d3e4dc254a221afb7719e5212f5eb13a36e2d64e4e04aa13cc45bf8be"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q10/depth_lead06h_p50_DERIVED.tif",
+      "2f3d85313ec76cba87f23f31d66b34db50a340cfadd7198e01096f58e0ffdbb2"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q10/depth_lead12h_p50_DERIVED.tif",
+      "2f3d85313ec76cba87f23f31d66b34db50a340cfadd7198e01096f58e0ffdbb2"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q10/depth_lead24h_p50_DERIVED.tif",
+      "2f3d85313ec76cba87f23f31d66b34db50a340cfadd7198e01096f58e0ffdbb2"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q10/depth_lead48h_p50_DERIVED.tif",
+      "2f3d85313ec76cba87f23f31d66b34db50a340cfadd7198e01096f58e0ffdbb2"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q10/depth_lead72h_p50_DERIVED.tif",
+      "2f3d85313ec76cba87f23f31d66b34db50a340cfadd7198e01096f58e0ffdbb2"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q10/depth_members_by_horizon_DERIVED.npz",
+      "78902122a247cd9b2b44a3b4ca805c7dbde4ce48491f2c0be0a9a5d0450bdcfb"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q50/depth_lead06h_p50_DERIVED.tif",
+      "aade49bb48ba0f8615b8378448f86e001e36511186a67fa48e3b48ceef088512"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q50/depth_lead12h_p50_DERIVED.tif",
+      "fa8750c445a047d449a3194135500889e2e95c9bf4fcbfaed773bc858c1714b6"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q50/depth_lead24h_p50_DERIVED.tif",
+      "7907284a3d7b5e2cd3762a620021bfbca1e0f1c08908a20ed70c2e0eda870eb7"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q50/depth_lead48h_p50_DERIVED.tif",
+      "b5b795c327a12c4609e2a034458e16a7c1705ee8475ef367781b45b9cfda4f2c"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q50/depth_lead72h_p50_DERIVED.tif",
+      "247a489f6405e8646fef5e3682f2d2161be504858e57c7e1a5c8a2f7032aec2a"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q50/depth_members_by_horizon_DERIVED.npz",
+      "0c0151f4bb7f0941d6247d90cc69fb8dbdc32b6072c272092054ab00f1b5c11a"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q90/depth_lead06h_p50_DERIVED.tif",
+      "5045d593975c6e38e50cff17e4ed6c09521d4b99df3f9c39010d4f55bc9e5088"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q90/depth_lead12h_p50_DERIVED.tif",
+      "55682dcc930e492abdaa07e78287a2772866c395e6b33bc1f31b5dfe33be7def"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q90/depth_lead24h_p50_DERIVED.tif",
+      "38c14377c88932ad4d3fb9970aed9d23e8fbd64cc93c0c9cd7b705925b32cc1b"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q90/depth_lead48h_p50_DERIVED.tif",
+      "30a39341487eef41778577af70a4da7b1f2a88d98b646d6da0bf9e3ad73de170"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q90/depth_lead72h_p50_DERIVED.tif",
+      "9c29b537b87ae68815c1360cee7974e5217a7c784e5f43cadf78482bff935e60"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2021-11-13/rain_error_q90/depth_members_by_horizon_DERIVED.npz",
+      "2554e41203d39dfd71fc9a6658a885c94178429569632d719c027efc5ab1f624"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/perfect_foresight_imerg/depth_lead06h_p50_DERIVED.tif",
+      "611378bb01dafdc57ed1b21d14cd897cf5905bd2d96243a970278e09fccbf172"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/perfect_foresight_imerg/depth_lead12h_p50_DERIVED.tif",
+      "5bd6c489f4e86f42c859d66d6f1e3118218d78bf0a62102d8e1eb6b1b94ffc6d"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/perfect_foresight_imerg/depth_lead24h_p50_DERIVED.tif",
+      "92c5c8d2a8630e2c34f1b6280934120be8217cb94219da55c5f2b22d142c415e"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/perfect_foresight_imerg/depth_lead48h_p50_DERIVED.tif",
+      "c7da5fd40b7e3f5483d57112d29feb26c80ad620014fa92f1c2bb0891c1c2b6b"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/perfect_foresight_imerg/depth_lead72h_p50_DERIVED.tif",
+      "f498c3813d038366f25aae9c6707f5fc5922f86e0ff02240cf9fea5572b50bef"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/perfect_foresight_imerg/depth_members_by_horizon_DERIVED.npz",
+      "1190f2ba97d402af0768cbd3cb37e2e01aee7ef00282f53f77828c46f5a9ef56"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/persistence_previous_day/depth_lead06h_p50_DERIVED.tif",
+      "84973c498a01669e94d8ebc0adfe503186e20e169507c8415dcd610c15f5f210"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/persistence_previous_day/depth_lead12h_p50_DERIVED.tif",
+      "89bee6deac779d66b6733f5c7703cf074f74c01d440079d0861916204a7055a7"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/persistence_previous_day/depth_lead24h_p50_DERIVED.tif",
+      "8b3051685c0388389cffb258d69567c4012130266048833e39b86211702a894d"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/persistence_previous_day/depth_lead48h_p50_DERIVED.tif",
+      "6bb343a9da37c1485fdfc457244525c695d47c8009417c32b713bbe2b6cafe6a"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/persistence_previous_day/depth_lead72h_p50_DERIVED.tif",
+      "1d6bd8155aeda3257b1d4961bd27be6bd347684b138fbb0dbb0434084d63974d"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/persistence_previous_day/depth_members_by_horizon_DERIVED.npz",
+      "0049f906fcfd74e16c34c14fbc56cd5988a107528f60084af145f46fe999512b"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q10/depth_lead06h_p50_DERIVED.tif",
+      "2f3d85313ec76cba87f23f31d66b34db50a340cfadd7198e01096f58e0ffdbb2"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q10/depth_lead12h_p50_DERIVED.tif",
+      "2f3d85313ec76cba87f23f31d66b34db50a340cfadd7198e01096f58e0ffdbb2"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q10/depth_lead24h_p50_DERIVED.tif",
+      "2f3d85313ec76cba87f23f31d66b34db50a340cfadd7198e01096f58e0ffdbb2"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q10/depth_lead48h_p50_DERIVED.tif",
+      "e4c37d9a004c6332e7727e6b8424816fbe045a0a688ce1d3d498de58f20f6d52"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q10/depth_lead72h_p50_DERIVED.tif",
+      "fe14af6cfded8cdfdbb5674feab61130fe90817e73243a0a203ab01d712b1bf5"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q10/depth_members_by_horizon_DERIVED.npz",
+      "17aff2f578eecf4410be404e322a99e470c9523b7e5a3d4912052dc6d490cc5f"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q50/depth_lead06h_p50_DERIVED.tif",
+      "ad90663da868c2fad3c76ba7cff36038d75e16b45354c6cdec50d8b8017c1985"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q50/depth_lead12h_p50_DERIVED.tif",
+      "8af931bf6baa739001aab9f397aad827a6d955eb6956d3fa6cfca2303db25aec"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q50/depth_lead24h_p50_DERIVED.tif",
+      "063413cbb5193abfaeca4d17f442747e43c80ed450a90e466bbb1004e2868340"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q50/depth_lead48h_p50_DERIVED.tif",
+      "5dff48a7d410b49ae5a818be64f940f1a3e98bdedbf5900cc1f766b3e7c90239"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q50/depth_lead72h_p50_DERIVED.tif",
+      "656794cdf188d2f6f84b35425c8d942b6b98b2569823a44a3d5cbb89b0a2f3a2"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q50/depth_members_by_horizon_DERIVED.npz",
+      "1d353e60a4ff03fe08377d3e8ff3ff69000a93c697b0b295ee35442ca8cf915f"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q90/depth_lead06h_p50_DERIVED.tif",
+      "73dbcdfcddbc4cc1203205ee8d09d51f7579facd31f8a8c03a611f35ebb906f2"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q90/depth_lead12h_p50_DERIVED.tif",
+      "e6fb5b87aadf16e797776c6ff726058ff34e7f81b3d7912b33ce82a9e8366020"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q90/depth_lead24h_p50_DERIVED.tif",
+      "f41057d4bac7a4b02d84d76b0b65c40c62b6b3653476180151f6e7c547f4001e"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q90/depth_lead48h_p50_DERIVED.tif",
+      "651059e7156945282af0d6573b5566804d4f0d7ce18b52b1ffde6417ff678929"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q90/depth_lead72h_p50_DERIVED.tif",
+      "2c8b0f33280b5d102597e9d5820df9624da91faec67768f186fd172024797210"
+    ],
+    [
+      "data/features/forecast/batch2_v1/2023-12-04/rain_error_q90/depth_members_by_horizon_DERIVED.npz",
+      "34f8777471a26c7e76ec6870ec302cb369624574a8bb0e61ccc187778ee7f07f"
+    ]
+  ],
+  "a09_identity": {
+    "event_keys": [
+      "2015-12-02",
+      "2021-11-13",
+      "2023-12-04"
+    ],
+    "forecast_member_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "graph_counts": {
+      "directed_arcs": 1071656,
+      "largest_strongly_connected_component_nodes": 505042,
+      "nodes": 508854,
+      "unique_directed_node_pairs": 1071638
+    },
+    "hidden_truth_member_id": 20,
+    "horizons_hours": [
+      6,
+      24,
+      72
+    ],
+    "run_id": "2026-10-27T17:20:43.226385Z",
+    "scenario_key": "perfect_foresight_imerg",
+    "seed": 20261027
+  },
+  "a10_identity": {
+    "capacity_assumptions_people": {
+      "college": 500.0,
+      "school": 250.0,
+      "shelter": 100.0
+    },
+    "capacity_factors": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "generated_at_utc": "2026-10-28T05:16:38.765011+00:00",
+    "grid": {
+      "crs": "EPSG:32644",
+      "eligible_cell_count": 2430,
+      "resolution_m": 600
+    },
+    "seed": 20261028
+  },
+  "a11_indicators_kept_separate": {
+    "case_count": 75,
+    "indicator_categories": [
+      "hazard",
+      "population_exposure",
+      "facility_access_loss"
+    ],
+    "manifest_schema": "twinguard.a11_proxy_free_outputs",
+    "status": "DERIVED_SIMULATED_DESCRIPTIVE_NOT_LIVE_NOT_VULNERABILITY"
+  },
+  "a12_context_only": {
+    "model_claim": "The November 2015 radar-visible label is not independent of the SAR feature source; feature effects are descriptive and do not establish flood physics or out-of-event skill.",
+    "not_used_as_weight_or_score": true,
+    "status": "DIAGNOSTIC_ONLY_SINGLE_EVENT_NOT_FIELD_VALIDATED"
+  },
+  "input_hashes": {
+    "a05_summary": {
+      "path": "data/features/forecast/batch2_v1/forecast_summary.json",
+      "sha256": "0bc0e322041c0d264a214d995912fd648fbda3534616f3e4588122e292e94dba",
+      "size_bytes": 231233
+    },
+    "a09_routes": {
+      "path": "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl",
+      "sha256": "ee4e33b45268ba869cfc0f3f48eee1c10ac2c5ae83837b1d82165c6ca6c2ea7f",
+      "size_bytes": 11349907
+    },
+    "a09_summary": {
+      "path": "data/features/routing/results/batch2_v1/revision_3/summary.json",
+      "sha256": "3d0784a481aaaf451456e9e9f1bb1291461bb0a3680b6cc7019335d0501adc3b",
+      "size_bytes": 3503
+    },
+    "a10_candidates": {
+      "path": "data/features/decision/shelters/batch2_v3/candidate_facilities.parquet",
+      "sha256": "7af8330922a5f0b8e14722f3dd426f1b0290104805e3ff59b7d861e0f1b58171",
+      "size_bytes": 42331
+    },
+    "a10_cases": {
+      "path": "data/features/decision/shelters/batch2_v3/allocation_cases.parquet",
+      "sha256": "3c204884af00ea0fb713b9f72c04f36f21647c7aa9b5b710bc6c98f03220276d",
+      "size_bytes": 22491
+    },
+    "a10_detail": {
+      "path": "data/features/decision/shelters/batch2_v3/allocation_detail.parquet",
+      "sha256": "7c9b5e263e6d0201933ae9e4033e345010178af03f1619b9fb66edf7f6925d97",
+      "size_bytes": 445353
+    },
+    "a10_summary": {
+      "path": "data/features/decision/shelters/batch2_v3/run_summary.json",
+      "sha256": "ed0f2a2773d26282644b1f4ae7e93c4f16cdc37975bc9f3990644a9f2c75563c",
+      "size_bytes": 2456
+    },
+    "a11_manifest": {
+      "path": "data/features/decision/priority_zones/batch2_v1/revision_2/run_manifest.json",
+      "sha256": "500763ec58afe6d1c9d1111bdb6bfdd81ea65f72a589eddbdf578cac2b71bb28",
+      "size_bytes": 20047
+    },
+    "a12_sensitivity": {
+      "path": "experiments/explainability/batch2_v1/results/explainability_sensitivity.json",
+      "sha256": "bb5bcecb676f8b55afef34e1866179707a6716471e9e9a3262047c980bc49209",
+      "size_bytes": 75379
+    }
+  },
+  "reproducibility": {
+    "bootstrap_replicates": 5000,
+    "compute_device": "CPU NumPy/PyArrow; current A13 statistics are small, and copying these arrays to the available GPU would cost more than the calculations",
+    "no_source_data_modified": true,
+    "seed": 20261028
+  },
+  "status": "HASHED_FINAL_REGISTERED_INPUTS"
+}

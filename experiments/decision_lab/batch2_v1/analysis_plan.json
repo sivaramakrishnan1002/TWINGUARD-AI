@@ -1,0 +1,44 @@
+{
+  "task_id": "A13",
+  "version": "batch2_v1",
+  "status": "PREDECLARED_BEFORE_ANALYSIS",
+  "source_mode": "SIMULATED_RESEARCH_ONLY",
+  "random_seed": 20261028,
+  "bootstrap_replicates": 5000,
+  "bootstrap_unit": {
+    "H2": "event-scenario-horizon case, not raster cells; three event clusters only",
+    "H3_H4": "matched event-scenario-horizon-origin-destination route case",
+    "intervals_are": "descriptive simulation sensitivity, not population inference"
+  },
+  "predeclared_outcome_directions": {
+    "H2_point_MAE_m": "lower is better",
+    "H2_point_RMSE_m": "lower is better",
+    "H2_interval_coverage": "closer to nominal 0.90 is better; nominal coverage is diagnostic only",
+    "H2_interval_width_m": "narrower is preferable only alongside coverage; do not rank alone",
+    "H3_H4_route_failure_fraction": "lower is better among pairs with observed values",
+    "H3_H4_travel_time_seconds": "lower is better among pairs with both routes found",
+    "H3_H4_depth_distance_exposure_m2": "lower is better where both route outputs provide the same defined field",
+    "H3_H4_assessed_edge_coverage_fraction": "higher is better, but coverage is reported separately"
+  },
+  "H2_definition": {
+    "held_out_simulated_member": 20,
+    "forecast_members": "member IDs 1-19",
+    "deterministic_reference": "A05 member 12 (nominal Manning and infiltration multipliers 1.0/1.0), verified against its member metadata",
+    "uncertainty_aware_point": "cellwise median of A05 members 1-19",
+    "uncertainty_interval": "cellwise 5th to 95th percentiles of A05 members 1-19",
+    "valid_cells": "only cells valid in both the forecast ensemble and held-out member; NoData remains excluded and counted"
+  },
+  "H3_H4_pairing": {
+    "join_key": ["scenario_key", "requested_horizon_seconds", "origin_id", "destination_id"],
+    "H3_comparison": "current_flood_aware versus uncertainty_aware",
+    "H4_comparison": "current_flood_aware versus horizon_aware",
+    "event_key": "parsed from the registered scenario_key prefix; no synthetic event identifier"
+  },
+  "H5_counterfactual_selection": {
+    "departure_shift": "evaluate only if exact +/-1-hour graph snapshots and route outputs exist; never interpolate snapshots",
+    "bridge_edge": "among bridge-flagged edges in saved static A09 paths, choose greatest path-use count, tie-break by smallest stable edge_id; report saved-path invalidation only unless a registered rerouting result exists",
+    "shelter_candidate": "among A10 candidate_facilities with category shelter, choose greatest cumulative allocated_people_model_estimate, tie-break by smallest numeric OSM ID; remove its recorded allocation without redistribution; do not imply real availability"
+  },
+  "prohibited_outputs": ["vulnerability", "composite_score", "weighted_priority", "ranking", "official_priority_zone", "real_world_success_probability", "safe_route_claim"],
+  "separate_A11_indicators": ["hazard", "population_exposure", "facility_access_loss"]
+}

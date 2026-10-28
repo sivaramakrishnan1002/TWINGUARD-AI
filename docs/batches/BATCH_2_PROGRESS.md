@@ -12,7 +12,7 @@
 | A08 / Time-dependent graph | done_with_caveats | 5966dee | 1,500 compact 600 m member/time snapshots across 15 event/scenario cases; 508,854 nodes, 566,307 segments, 1,071,656 directed arcs. 768,688 arcs mapped to A07 cells; 302,968 unassessed/ambiguous. Ordinary 0.30 m, tunnel-proxy 0.15 m, bridges unassessed; speed factors are assumptions. 105 Lane A tests passed; raw audit 157/157. Simulated overlay only, no safe/operational routes. See `ROUTING_GRAPH_BATCH2.md`. |
 | A09 / Routing | done_with_caveats | b9b6ea4 | 216 versioned route results across 3 event windows, 3 snapshots and 6 graph-node OD probes; 19 forecast members vs hidden simulated member 20. Only 18/54 current and horizon paths and 15/54 uncertainty paths exist on assessed arcs; all 54 static paths have incomplete hazard coverage. Not live or validated guidance. See `ROUTING_BATCH2.md`. |
 | A10 / Shelter allocation | done_with_caveats | d0f4343 | 540 simulated cases; 293,374 allocation rows. Final corrected output is batch2_v3; v1/v2 preserved. 3 focused and 113 Lane A tests passed; raw audit 157/157. Candidate capacities are assumptions; weak components are not routing. |
-| A11 / Priority zones | blocked | — | A07/A10 dependencies complete. Lane A reviewed and acknowledged the owner-approved proxy-free scope and concrete separate-output schema on 2026-10-28; acknowledgment is recorded in `docs/A11_PROXY_FREE_SCOPE_ACK.md`. Waiting for the Integrator to clear the registered master prerequisite/status. No A11 outputs implemented. |
+| A11 / Proxy-free descriptive outputs | done_with_caveats | pending | Separate A07 hazard rasters/cells, WorldPop exposure summaries, and A07 facility access-loss categories; separate A10 allocation context. Versioned export is `data/features/decision/priority_zones/batch2_v1/revision_2/`. 127 Lane A tests passed; output verifier passed; raw audit 157/157. All outputs remain simulated/descriptive; no vulnerability or ranking. See `docs/PRIORITY_ZONES_BATCH2.md`. |
 | A12 / Explainability | done_with_caveats | 46d325d | Grouped permutation importance and marginal PDP on a held-out spatial fold for the Phase 9C default RF; single-event SAR label is not independent validation. Summarized existing 20-member simulation sensitivity per event; no simulation rerun. See `EXPLAINABILITY_BATCH2.md`; CPU only because CUDA was unavailable. |
 | A13 / Decision lab | blocked | — | Depends on A05, A09, A10, A11 and A12. |
 | A14 / Phases 19-21 experiments | done_with_caveats | 6cd52f9 | H1 not testable: accepted flood labels cover only the Nov 2015 episode; no independent held-out event labels. Feasibility/config only, no model fit or metrics; 3 focused tests passed and raw audit 157/157. |
@@ -28,6 +28,8 @@
 - The urban physical layer is not fitted to flood labels.
 - Physical simulation output is a calibration proxy, not hydraulic truth.
 - New work preserves all previous model, label and map artifacts.
+
+- A11 indicators remain separate. WorldPop is population exposure, not vulnerability; A07 access is a coarse component proxy; A10 capacities are hypothetical assumptions.
 
 ## A11 owner scope acknowledgment
 

@@ -12,11 +12,10 @@ import org.twinguard.backend.adapter.GatewayDependency;
 import org.twinguard.backend.adapter.GatewayResult;
 import org.twinguard.backend.config.UpstreamProperties;
 import org.twinguard.backend.dto.AlertRange;
+import org.twinguard.backend.dto.ImpactResponse;
 import org.twinguard.backend.dto.RouteMode;
-import org.twinguard.backend.dto.Provenance;
 import org.twinguard.backend.dto.RouteRequest;
 import org.twinguard.backend.dto.RouteResponse;
-import org.twinguard.backend.dto.SourceClass;
 import org.twinguard.backend.dto.ScenarioCreateRequest;
 import org.twinguard.backend.dto.ShelterQuery;
 import org.twinguard.backend.dto.ShelterResponse;
@@ -24,9 +23,8 @@ import org.twinguard.backend.dto.TwinStateQuery;
 import org.twinguard.backend.dto.TwinStateResponse;
 import org.twinguard.backend.service.TwinGuardGatewayService;
 
-import java.math.BigDecimal;
+import java.io.InputStream;
 import java.time.Instant;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -104,24 +102,59 @@ class GatewayContractTest {
     }
 
     @Test
-    void routeResponseUsesTypedProvenanceAndKeepsNullDistinctFromMeasuredZero() throws Exception {
-        Provenance provenance = new Provenance(SourceClass.REPLAY, "fixture-run", "trackb.v1",
-                null, null, "fixture-run");
-        RouteResponse route = new RouteResponse(true, List.of(10L), null, BigDecimal.ZERO, provenance);
+    void routeResponseRoundTripsOwnerProducedA09RecordsWithoutChangingUnitsOrUnknowns() throws Exception {
+        RouteResponse route = readFixture("a09_route_found.json", RouteResponse.class);
         JsonNode serialized = objectMapper.readTree(objectMapper.writeValueAsString(route));
 
-        assertThat(serialized.path("reachable").asBoolean()).isTrue();
-        assertThat(serialized.get("travel_time_minutes").isNull()).isTrue();
-        assertThat(serialized.path("route_accessibility_probability").decimalValue())
-                .isEqualByComparingTo(BigDecimal.ZERO);
-        assertThat(serialized.path("provenance").path("source").asText()).isEqualTo("replay");
-        assertThat(validator.validate(route)).isEmpty();
+        assertThat(route.sourceMode()).isEqualTo(RouteResponse.SourceMode.SIMULATED);
+        assertThat(route.status()).isEqualTo(RouteResponse.RouteStatus.ROUTE_FOUND);
+        assertThat(route.method()).isEqualTo(RouteResponse.RouteMethod.CURRENT_FLOOD_AWARE);
+        assertThat(route.topologicallyReachable()).isTrue();
+        assertThat(route.routeAccessibilityProbability()).isNotNull();
+        assertThat(serialized.path("departure_at_utc").asText()).endsWith("Z");
+        assertThat(serialized.has("distance_m")).isTrue();
+        assertThat(serialized.has("travel_time_seconds")).isTrue();
+        assertThat(serialized.has("travel_time_minutes")).isFalse();
+        assertThat(serialized.path("provenance").path("code_commit").asText())
+                .isEqualTo("b9b6ea40f13c4af4a411bcafdbc773882c7f6acc");
 
-        Provenance invalidProvenance = new Provenance(SourceClass.REPLAY, "x".repeat(129), "trackb.v1",
-                null, "invalid", null);
-        var violations = validator.validate(new RouteResponse(true, List.of(), null, null, invalidProvenance));
-        assertThat(violations).extracting(v -> v.getPropertyPath().toString())
-                .contains("provenance.sourceId", "provenance.sourceSha256");
+        RouteResponse noPath = readFixture("a09_no_topological_path.json", RouteResponse.class);
+        assertThat(noPath.topologicallyReachable()).isFalse();
+        assertThat(noPath.distanceM()).isNull();
+        assertThat(noPath.travelTimeSeconds()).isNull();
+        assertThat(noPath.routeAccessibilityProbability()).isNull();
+
+        RouteResponse unknownCoverage = readFixture("a09_insufficient_coverage.json", RouteResponse.class);
+        assertThat(unknownCoverage.topologicallyReachable()).isTrue();
+        assertThat(unknownCoverage.routeAccessibilityProbability()).isNull();
+        assertThat(unknownCoverage.edgeCoverage().unassessedEdgeCount()).isPositive();
+        assertThat(unknownCoverage.qcFlags()).isNotEmpty();
+    }
+
+    @Test
+    void impactResponseRoundTripsOwnerProducedA07NoDataAndInstantaneousSemantics() throws Exception {
+        ImpactResponse impact = readFixture("a07_impact_v4.json", ImpactResponse.class);
+        JsonNode serialized = objectMapper.readTree(objectMapper.writeValueAsString(impact));
+
+        assertThat(impact.sourceMode()).isEqualTo(RouteResponse.SourceMode.SIMULATED);
+        assertThat(impact.aggregationInterval()).isNull();
+        assertThat(impact.aggregationBasis()).contains("INSTANTANEOUS");
+        assertThat(impact.coverage().population().nodataCount()).isPositive();
+        assertThat(impact.metrics().populationExposedPeople().status())
+                .isEqualTo(ImpactResponse.DistributionStatus.PARTIAL);
+        assertThat(impact.facilityAccessByCategory().getFirst().category())
+                .isEqualTo(ImpactResponse.FacilityCategory.HOSPITAL);
+        assertThat(serialized.path("metrics").path("population_exposed_people").path("unit").asText())
+                .isEqualTo("people");
+        assertThat(serialized.path("qc_flags").toString()).contains("WORLDPOP_NOData_NOT_ZERO");
+        assertThat(impact.provenance().sources()).isNotEmpty();
+    }
+
+    private <T> T readFixture(String filename, Class<T> type) throws Exception {
+        try (InputStream input = getClass().getResourceAsStream("/owner-fixtures/" + filename)) {
+            if (input == null) throw new IllegalStateException("missing owner fixture " + filename);
+            return objectMapper.readValue(input, type);
+        }
     }
 
     @Test

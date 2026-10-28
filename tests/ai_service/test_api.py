@@ -131,47 +131,11 @@ def test_route_request_requires_timezone_and_serializes_as_utc() -> None:
         })
 
 
-def test_route_response_has_typed_provenance_and_preserves_null_vs_zero() -> None:
-    response = main.RouteResponse.model_validate({
-        "reachable": True,
-        "edge_ids": [1, 2],
-        "travel_time_minutes": None,
-        "route_accessibility_probability": 0,
-        "provenance": {
-            "source": "replay",
-            "source_id": "fixture-run",
-            "schema_version": "trackb.v1",
-            "source_sha256": "f" * 64,
-        },
-    })
-    serialized = response.model_dump(mode="json")
-    assert serialized["reachable"] is True  # graph connectivity, separate from passability
-    assert serialized["travel_time_minutes"] is None
-    assert serialized["route_accessibility_probability"] == 0
-    assert serialized["provenance"]["source"] == "replay"
-    assert "source_sha256" in serialized["provenance"]
-
+def test_route_response_rejects_unbounded_probability_in_owner_output_shape() -> None:
+    route = _owner_fixture("a09_route_found.json")
+    route["route_accessibility_probability"] = 1.1
     with pytest.raises(ValidationError):
-        main.RouteResponse.model_validate({
-            "reachable": True,
-            "edge_ids": [],
-            "provenance": {"source": "production", "source_id": "x", "schema_version": "v1"},
-        })
-    with pytest.raises(ValidationError):
-        main.RouteResponse.model_validate({
-            "reachable": True,
-            "edge_ids": [],
-            "route_accessibility_probability": 1.1,
-            "provenance": {"source": "replay", "source_id": "x", "schema_version": "v1"},
-        })
-    with pytest.raises(ValidationError):
-        main.RouteResponse.model_validate({
-            "reachable": True,
-            "edge_ids": [],
-            "provenance": {
-                "source": "replay", "source_id": "x" * 129, "schema_version": "v1"
-            },
-        })
+        main.RouteResponse.model_validate(route)
 
 
 def test_route_endpoint_stays_501_until_implemented() -> None:
@@ -182,3 +146,47 @@ def test_route_endpoint_stays_501_until_implemented() -> None:
         "destination": "B",
     })
     assert response.status_code == 501
+
+
+OWNER_FIXTURES = ROOT / "services" / "backend" / "src" / "test" / "resources" / "owner-fixtures"
+
+
+def _owner_fixture(name: str) -> dict[str, object]:
+    return json.loads((OWNER_FIXTURES / name).read_text(encoding="utf-8"))
+
+
+def test_a07_owner_impact_fixture_round_trips_instantaneous_simulated_result() -> None:
+    impact = main.ImpactResult.model_validate(_owner_fixture("a07_impact_v4.json"))
+    payload = impact.model_dump(mode="json")
+
+    assert payload["schema_id"] == "twinguard.impact_result"
+    assert payload["source_mode"] == "SIMULATED"
+    assert payload["aggregation_interval"] is None
+    assert "INSTANTANEOUS" in payload["aggregation_basis"]
+    assert payload["metrics"]["population_exposed_people"]["unit"] == "people"
+    assert payload["coverage"]["population"]["nodata_count"] > 0
+    assert "WORLDPOP_NOData_NOT_ZERO" in payload["qc_flags"]
+    assert payload["provenance"]["sources"]
+
+
+@pytest.mark.parametrize(
+    ("fixture", "status", "topological", "probability", "distance"),
+    [
+        ("a09_route_found.json", "ROUTE_FOUND", True, 1.0, True),
+        ("a09_no_topological_path.json", "NO_TOPOLOGICAL_PATH", False, None, False),
+        ("a09_insufficient_coverage.json", "INSUFFICIENT_HAZARD_COVERAGE", True, None, True),
+    ],
+)
+def test_a09_owner_route_fixtures_preserve_route_status_and_missingness(
+    fixture: str, status: str, topological: bool, probability: float | None, distance: bool
+) -> None:
+    route = main.RouteResponse.model_validate(_owner_fixture(fixture))
+    payload = route.model_dump(mode="json")
+
+    assert payload["status"] == status
+    assert payload["source_mode"] == "SIMULATED"
+    assert payload["topologically_reachable"] is topological
+    assert payload["route_accessibility_probability"] == probability
+    assert (payload["distance_m"] is not None) is distance
+    assert payload["edge_coverage"]["unassessed_edge_count"] >= 0
+    assert isinstance(payload["qc_flags"], list)

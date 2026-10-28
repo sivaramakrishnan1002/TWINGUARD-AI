@@ -20,6 +20,7 @@
 | A18 / C1 T6 metadata conformance | done_with_caveats | 2ed3abc | Six tagged copies preserve original pixel arrays and masks; acquisition time remains unknown/null. Four focused tests and 21 Phase 8 tests passed; raw audit 157/157. Does not freeze C1 or authorize routing. See `DEPTH_METADATA_REPAIR.md`. |
 | A19 / C2 accepted-label GeoJSON export | done_with_caveats | e4b6024 | Read-only export of the 10,419-row accepted view; 8,414 event-flood and 2,005 baseline-water features, zero rejected rows. 16 label tests passed; raw audit 157/157. Exact hashes/counts in `LABEL_GEOJSON_EXPORT.md`; no DB writes. |
 | A20 / 3D scenario data readiness | done_with_caveats | f0124f8 | Indexed 45 saved A05 raster references and four A06 context groups; exact saved times, 600 m grid and NoData preserved. Regional presentation only; no street-scale, hydraulic-validation, operational-forecast, or safety claim. 121 Lane A tests passed; raw audit 157/157. See `FLOOD_3D_SCENARIO_READINESS.md`. |
+| A17 / Paper and project report | done_with_caveats | e57847d | Wrote cited internal drafts `PAPER_DRAFT.md` and `FINAL_REPORT.md`; source evidence through A15, A20 described only as raster indexing. Drafts preserve blockers, unknowns, and model limits; 121 Lane A tests passed and raw audit 157/157. Awaiting authorized review. |
 
 ## Defaults and scope notes
 

@@ -1,0 +1,82 @@
+{
+  "task": "A14",
+  "claim": "H1 multiple modalities improve flood prediction on held-out events",
+  "status": "NOT_TESTABLE_WITH_CURRENT_ACCEPTED_INDEPENDENT_EVENT_LABELS",
+  "preregistered_at": "2026-10-28",
+  "seed": 20261028,
+  "target": {
+    "source": "labels.v_usable_flood_labels read-only GeoJSON export",
+    "role": "event_flood",
+    "tier": "A",
+    "event_dates": [
+      "2015-11-12",
+      "2015-11-24"
+    ],
+    "mask": "Use only valid accepted in-CMA Tier A event_flood features; exclude baseline_water from positive flood target and mask permanent water/sea. Do not infer dry from absent label features."
+  },
+  "modalities": [
+    {
+      "name": "weather_only",
+      "candidate_inputs": "A05 event weather/rainfall scenario inputs",
+      "status": "available_for_feasibility_only",
+      "scored": false
+    },
+    {
+      "name": "terrain_only",
+      "candidate_inputs": "Phase 9B v2 static terrain/hydrology feature table",
+      "status": "available_for_feasibility_only",
+      "scored": false
+    },
+    {
+      "name": "sar_only",
+      "candidate_inputs": "Phase 9B v2 Sentinel-1 features",
+      "status": "excluded_from_scored_comparison",
+      "scored": false,
+      "reason": "SAR-derived candidate labels are Tier D; the 24 Nov scene may be the source scene used to prepare the UNOSAT label, making same-scene evaluation potentially circular."
+    },
+    {
+      "name": "combined",
+      "candidate_inputs": "weather + terrain/hydrology + land cover; SAR only if independent and eligible",
+      "status": "available_for_feasibility_only",
+      "scored": false
+    }
+  ],
+  "split_plan": {
+    "required_for_h1": "Grouped whole independent flood event/date-year holdout, then 3 km spatial blocks (100 x 100 cells) with a one-block spatial buffer between training and validation blocks; no random pixel split. The one-block buffer is a provisional conservative design choice to verify before any future scored run.",
+    "current_independent_accepted_flood_event_years": [
+      2015
+    ],
+    "eligible_held_out_events": 0,
+    "decision": "No train/test split or model fit was run. Holding out 12 or 24 Nov is at most within-episode date transfer, not independent held-out-event validation."
+  },
+  "metrics": {
+    "planned": [
+      "precision",
+      "recall",
+      "F1",
+      "IoU",
+      "CSI",
+      "PR-AUC where probabilistic predictions are valid"
+    ],
+    "all_scored_metrics": null,
+    "reason": "H1 scoring is not supported without an independent accepted held-out flood event and consistent date/coverage alignment."
+  },
+  "input_sha256": {
+    "data/features/labels/usable_flood_labels_geojson_v0.geojson": "9362f2b2db68a8569629e07c9ef165de9c909250cdc8dfa81f3d1e365845b557",
+    "data/features/labels/sar_calibrated_batch2/metrics.json": "20d249dc0a2a6918a55642db60de005c67940f29f9fef9f1d391ffbf293565aa",
+    "data/features/labels/sar_calibrated_batch2/model_registry.json": "55390f6babceb833564455b4848f25447b1f901d3585957ddd71ed6c1313bc50",
+    "data/features/static/cell_table_phase9b_v2.parquet": "c54c21d8145adde7600d817169b80ebe2d936ce7edae59e2248e40a8280dbf86",
+    "data/features/forecast/batch2_v1/forecast_summary.json": "0bc0e322041c0d264a214d995912fd648fbda3534616f3e4588122e292e94dba",
+    "docs/LABEL_STRATEGY_V2.md": "b53dd2044cc4c8285e3fe7246c8f548c31974e62a12bc87c7571f302c5b5b4b1",
+    "docs/PHASE9B_SAR_DIAGNOSTIC.md": "ad09ef51e775d1e2671b32190c5a16e1e5055e134ec7b4d406d1661d38257bb5"
+  },
+  "model_hashes": null,
+  "model_fit": false,
+  "limitations": [
+    "The 2021 NRSC and 2023 NDEM flood maps are not accepted digitized label rasters.",
+    "The December 2015 peak has no accepted official vector layer.",
+    "OpenCity points have unclear dates and approximate locations; they are not event-specific raster targets.",
+    "SAR-derived candidate layers remain Tier D and are excluded from scoring.",
+    "This feasibility record is not a model evaluation or evidence that modalities improve skill."
+  ]
+}

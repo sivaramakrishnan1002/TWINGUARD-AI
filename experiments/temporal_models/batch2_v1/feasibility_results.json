@@ -1,0 +1,39 @@
+{
+  "task": "A14",
+  "status": "NOT_TESTABLE",
+  "conclusion": "H1 is not testable with current accepted independent event labels.",
+  "label_inventory": {
+    "accepted_export_feature_count": 10419,
+    "accepted_tier_a_event_flood_features": {
+      "2015-11-12": 4704,
+      "2015-11-24": 3710
+    },
+    "accepted_tier_a_baseline_water_features": {
+      "2015-09-01": 1360,
+      "2015-10-14": 645
+    },
+    "independent_accepted_flood_event_years": 1,
+    "eligible_held_out_events": 0
+  },
+  "modality_feasibility": {
+    "weather_only": "Weather/rainfall scenario artifacts exist, but no independent accepted event target is available for scored evaluation.",
+    "terrain_only": "Static terrain/hydrology feature artifacts exist, but one accepted flood episode cannot support held-out-event comparison.",
+    "sar_only": "Excluded: SAR candidates are Tier D, and the 24 Nov scene may have been used in UNOSAT mapping.",
+    "combined": "Feature sources can be inventoried, but no defensible same-target independent-event score can be computed."
+  },
+  "metrics": {
+    "precision": null,
+    "recall": null,
+    "f1": null,
+    "iou": null,
+    "csi": null,
+    "pr_auc": null,
+    "reason": "Not computed: no accepted independent held-out event labels."
+  },
+  "split_decision": "No fitting or scoring performed. Whole-event holdout cannot be formed from a single accepted flood-event year. Separating 12 Nov and 24 Nov would only test within-2015 episode/date transfer and would not establish H1.",
+  "next_evidence_needed": [
+    "QA-accepted, date-matched 2021 and/or 2023 official map digitizations, with georeferencing QA and explicit event extent semantics.",
+    "Alternatively, accepted official December 2015 event extent if evaluating the December peak."
+  ],
+  "interpretation": "This is a feasibility conclusion, not a negative model result. No modality has been shown to improve or fail to improve flood prediction."
+}

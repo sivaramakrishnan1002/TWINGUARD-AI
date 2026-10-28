@@ -28,6 +28,7 @@ import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
@@ -179,6 +180,12 @@ class GatewayContractTest {
         mockMvc.perform(get("/scenarios")).andExpect(status().isNotFound());
         mockMvc.perform(get("/alerts")).andExpect(status().isNotFound());
         mockMvc.perform(get("/shelters")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/route")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/impact")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/priority-zones")).andExpect(status().isNotFound());
+        mockMvc.perform(post("/route")).andExpect(status().isNotFound());
+        mockMvc.perform(post("/impact")).andExpect(status().isNotFound());
+        mockMvc.perform(post("/scenarios")).andExpect(status().isNotFound());
     }
 
     @Test

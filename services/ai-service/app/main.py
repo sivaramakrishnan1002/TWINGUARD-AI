@@ -8,6 +8,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import AnyUrl, BaseModel, ConfigDict, Field, field_serializer, field_validator, model_validator
 
 from app.database import get_layer_records
+from app.scenario_visualization.router import router as scenario_visualization_router
 
 
 class Health(BaseModel):
@@ -376,6 +377,7 @@ app = FastAPI(
     version="0.1.0",
     description="Scaffold following the TwinGuard AI service contract.",
 )
+app.include_router(scenario_visualization_router)
 
 
 @app.get("/health", operation_id="health", response_model=Health)

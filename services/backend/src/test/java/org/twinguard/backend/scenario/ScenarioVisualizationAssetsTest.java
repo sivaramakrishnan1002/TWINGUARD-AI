@@ -6,28 +6,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.file.Path;
 import java.nio.file.Files;
-import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 class ScenarioVisualizationAssetsTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private ScenarioVisualizationAssets assets;
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
@@ -90,11 +78,11 @@ class ScenarioVisualizationAssetsTest {
     @Test
     void invalidAndUnknownSelectorsFailWithoutFilesystemPathInterpretation() {
         assertThatThrownBy(() -> assets.asset("../2015-11-12", "perfect_foresight_imerg"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ScenarioVisualizationAssets.InvalidScenarioSelectorException.class);
         assertThatThrownBy(() -> assets.asset("2015-11-12", "../manifest"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ScenarioVisualizationAssets.InvalidScenarioSelectorException.class);
         assertThatThrownBy(() -> assets.asset("2015-11-12", "unknown"))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(ScenarioVisualizationAssets.ScenarioAssetNotFoundException.class);
     }
 
     @Test
@@ -107,14 +95,8 @@ class ScenarioVisualizationAssetsTest {
         Files.createDirectories(manifestCopy.getParent());
         mapper.writeValue(manifestCopy.toFile(), manifest);
         ScenarioVisualizationAssets invalid = new ScenarioVisualizationAssets(tempRoot, mapper);
-        assertThatThrownBy(invalid::catalog).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(invalid::catalog)
+                .isInstanceOf(ScenarioVisualizationAssets.ScenarioAssetUnavailableException.class);
     }
 
-    @Test
-    void c9HttpOperationsRemainUnexposedUntilApproval() throws Exception {
-        mockMvc.perform(get("/scenario-visualization-assets"))
-                .andExpect(status().isNotFound());
-        mockMvc.perform(get("/scenario-visualization-assets/2015-12-02/perfect_foresight_imerg"))
-                .andExpect(status().isNotFound());
-    }
 }

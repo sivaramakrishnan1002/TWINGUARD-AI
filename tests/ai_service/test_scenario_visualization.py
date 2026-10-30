@@ -21,6 +21,7 @@ from app.scenario_visualization import (
     ScenarioAssetNotFound,
     ScenarioAssetRepository,
     ScenarioAssetsUnavailable,
+    ScenarioIdentityConflict,
 )
 from test_scenario_visualization_contract import _resolved_schema, _validate_schema
 
@@ -167,12 +168,14 @@ def test_duplicate_manifest_identity_fails_closed(monkeypatch: pytest.MonkeyPatc
     duplicate = {"event_id": "2015-11-12", "scenario_id": "perfect_foresight_imerg"}
     manifest = {"scenario_series": [duplicate, duplicate]}
     monkeypatch.setattr(repository, "_validated_manifest", lambda: manifest)
-    with pytest.raises(ScenarioAssetsUnavailable):
+    with pytest.raises(ScenarioIdentityConflict):
         repository.asset("2015-11-12", "perfect_foresight_imerg")
 
 
-def test_c9_http_operations_remain_unexposed_pending_integrator_approval() -> None:
-    paths = {getattr(route, "path", None) for route in app.routes}
-    assert "/scenario-visualization-assets" not in paths
-    assert "/scenario-visualization-assets/{event_id}/{scenario_id}" not in paths
+def test_approved_c9_http_operations_are_mounted_as_get_routes_only() -> None:
+    paths = set(app.openapi()["paths"])
+    assert "/scenario-visualization-assets" in paths
+    assert "/scenario-visualization-assets/{event_id}/{scenario_id}" in paths
+    assert set(app.openapi()["paths"]["/scenario-visualization-assets"]) == {"get"}
+    assert set(app.openapi()["paths"]["/scenario-visualization-assets/{event_id}/{scenario_id}"]) == {"get"}
 

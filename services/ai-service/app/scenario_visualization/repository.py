@@ -49,6 +49,10 @@ class ScenarioAssetNotFound(LookupError):
     """No exact manifest identity matches the requested event and scenario."""
 
 
+class ScenarioIdentityConflict(RuntimeError):
+    """The validated manifest contains a duplicate or ambiguous identity."""
+
+
 class InvalidScenarioSelector(ValueError):
     """Selector values do not satisfy the bounded C9 path shape."""
 
@@ -86,7 +90,7 @@ class ScenarioAssetRepository:
         if not matches:
             raise ScenarioAssetNotFound("No exact saved scenario asset was found.")
         if len(matches) != 1:
-            raise ScenarioAssetsUnavailable("Scenario manifest contains an ambiguous identity.")
+            raise ScenarioIdentityConflict("Scenario manifest identity is ambiguous.")
         return {
             **{key: manifest[key] for key in _CATALOG_KEYS if key != "context_layers"},
             "series": matches[0],
@@ -109,7 +113,7 @@ class ScenarioAssetRepository:
             self._validate_manifest_shape(manifest)
             self._verify_raster_references(root, manifest)
             return manifest
-        except ScenarioAssetsUnavailable:
+        except (ScenarioAssetsUnavailable, ScenarioIdentityConflict):
             raise
         except (OSError, UnicodeError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
             # Do not expose local paths or low-level filesystem diagnostics.
@@ -136,7 +140,7 @@ class ScenarioAssetRepository:
             _validate_selector(item.get("event_id"), item.get("scenario_id"))
             identity = (item["event_id"], item["scenario_id"])
             if identity in identities:
-                raise ScenarioAssetsUnavailable("Scenario manifest identity is duplicated.")
+                raise ScenarioIdentityConflict("Scenario manifest identity is duplicated.")
             identities.add(identity)
             _validate_timestamp(item.get("window_start_utc"))
             _validate_timestamp(item.get("window_end_utc_inclusive"))

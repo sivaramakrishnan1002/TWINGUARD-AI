@@ -10,6 +10,7 @@ from .repository import (
     ScenarioAssetNotFound,
     ScenarioAssetRepository,
     ScenarioAssetsUnavailable,
+    ScenarioIdentityConflict,
 )
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     "ScenarioAssetNotFound",
     "ScenarioAssetRepository",
     "ScenarioAssetsUnavailable",
+    "ScenarioIdentityConflict",
 ]

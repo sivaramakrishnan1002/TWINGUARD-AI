@@ -1,0 +1,21 @@
+export type A20Raster = {
+  width: number;
+  height: number;
+  crs: string;
+  epsg: number;
+  transform: number[];
+  bounds: [number, number, number, number];
+  pixelSizeM: number[];
+  nodata: number;
+  values: Float32Array;
+  validMask: Uint8Array;
+  validCount: number;
+  nodataCount: number;
+  metadata: Record<string, unknown>;
+};
+export function parseA20Float32GeoTiff(input: ArrayBuffer | Uint8Array, expectedGrid: { width: number; height: number; epsg: number; transform: number[]; nodata: number }): Promise<A20Raster>;
+export function utm44ToWgs84(easting: number, northing: number): [number, number];
+export function rasterToFeatures(raster: A20Raster): FeatureCollection<Polygon, { depth_m: number; row: number; col: number }>;
+export function colorForDepth(value: number, min: number, max: number): string;
+export function summarizeValidValues(raster: A20Raster): { min: number | null; max: number | null };
+import type { FeatureCollection, Polygon } from 'geojson';

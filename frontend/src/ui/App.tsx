@@ -4,6 +4,7 @@ import { ReservoirAlertsPanel } from './ReservoirAlertsPanel';
 import { DecisionSupportPanel } from './DecisionSupportPanel';
 import type { DocumentedEventWindow } from './types';
 import { StatusBadge } from './components/StatusBadge';
+import { ScenarioRasterExplorer } from './scenario3d/ScenarioRasterExplorer';
 import researchFigure from './assets/phase12_parameter_sensitivity_batch2.png';
 
 const eventWindows: DocumentedEventWindow[] = [
@@ -197,7 +198,7 @@ function OverviewPage({ selectedWindow, onOpenEvidence, onOpenMap }: { selectedW
 
 const unavailableLayers = [
   ['Flood extent', 'No verified event layer'],
-  ['Flood depth', 'No UI raster source'],
+  ['Live flood depth layer', 'Unavailable · saved A20 raster is shown in the scenario view'],
   ['Risk classification', 'Research only · not operational'],
   ['Uncertainty / coverage', 'Coverage mask unavailable'],
   ['Terrain elevation', 'No terrain tiles'],
@@ -207,21 +208,21 @@ const unavailableLayers = [
 function MapExplorerPage({ selectedWindow }: { selectedWindow?: DocumentedEventWindow }) {
   return (
     <>
-      <PageHeading kicker="MAP & LAYERS" title="Spatial explorer" description="Map navigation is available; project layers and geographic tiles are not connected." trailing={<StatusBadge tone="neutral" label="EMPTY MAP STYLE" />} />
+      <PageHeading kicker="MAP & LAYERS" title="Spatial explorer" description="Review the approved saved scenario raster alongside layers that remain unavailable." trailing={<StatusBadge tone="derived" label="SAVED EVIDENCE" />} />
       <div className="map-explorer-grid">
         <aside className="map-layer-panel" aria-label="Map layer controls">
           <div className="section-heading compact-heading"><div><span className="overline">LAYER CATALOGUE</span><h2>Map layers</h2></div><span className="count-label">0 ACTIVE</span></div>
           <ul className="map-layer-list">{unavailableLayers.map(([name, reason]) => <li key={name}><span className="layer-state-icon" aria-hidden="true">□</span><span><strong>{name}</strong><small>{reason}</small></span><StatusBadge tone="neutral" label="UNAVAILABLE" /></li>)}</ul>
-          <div className="legend-panel"><span className="overline">LEGEND &amp; COVERAGE</span><div className="legend-row"><i className="legend-swatch legend-swatch--nodata" /><strong>NoData</strong><span>Transparent · unknown, not dry</span></div><div className="legend-row"><i className="legend-swatch legend-swatch--empty" /><strong>Flood result</strong><span>No layer loaded</span></div><p>Missing coverage is never interpreted as zero or dry.</p></div>
+          <div className="legend-panel"><span className="overline">LEGEND &amp; COVERAGE</span><div className="legend-row"><i className="legend-swatch legend-swatch--nodata" /><strong>NoData</strong><span>Transparent · unknown, not dry</span></div><div className="legend-row"><i className="legend-swatch legend-swatch--empty" /><strong>Live layer</strong><span>Unavailable · saved raster above</span></div><p>Missing coverage is never interpreted as zero or dry.</p></div>
         </aside>
         <div className="map-explorer-main">
-          <MapView />
-          <div className="map-time-context"><span className="overline">TIME CONTEXT</span><strong>{selectedWindow ? `${selectedWindow.shortLabel} · ${selectedWindow.startDate} — ${selectedWindow.endDate}` : 'No documented window selected'}</strong><span>No replay cursor · no data playback</span></div>
+          <ScenarioRasterExplorer />
+          <div className="map-time-context"><span className="overline">SELECTED APP WINDOW</span><strong>{selectedWindow ? `${selectedWindow.shortLabel} · ${selectedWindow.startDate} — ${selectedWindow.endDate}` : 'Not linked to saved scenario selectors'}</strong><span>Scenario view uses exact A20 saved UTC slices only.</span></div>
         </div>
         <aside className="map-provenance-panel" aria-label="Map source and provenance">
-          <span className="overline">MAP PROVENANCE</span><h2>Awaiting a verified source</h2>
-          <dl><div><dt>Basemap</dt><dd>Unavailable</dd></div><div><dt>Boundary</dt><dd>Provisional extent · not drawn</dd></div><div><dt>Terrain</dt><dd>No compatible tiles</dd></div><div><dt>Source / version</dt><dd>None connected</dd></div><div><dt>Attribution</dt><dd>Not available</dd></div></dl>
-          <div className="map-source-note"><strong>Not a geographic result</strong><p>The blank canvas is a neutral MapLibre shell. It does not depict flood extent, dry land, or the study boundary.</p></div>
+          <span className="overline">OTHER LAYERS</span><h2>Unavailable</h2>
+          <dl><div><dt>Basemap</dt><dd>Unavailable</dd></div><div><dt>Terrain / buildings</dt><dd>Unavailable · not inferred</dd></div><div><dt>Roads / waterways</dt><dd>No HTTP tile service</dd></div><div><dt>Live observations</dt><dd>Not connected</dd></div><div><dt>Attribution</dt><dd>Unavailable for these layers</dd></div></dl>
+          <div className="map-source-note"><strong>Saved raster only</strong><p>The 3D perspective visualizes original saved depth cells. It does not depict terrain, flow, or a validated flood extent.</p></div>
         </aside>
       </div>
     </>

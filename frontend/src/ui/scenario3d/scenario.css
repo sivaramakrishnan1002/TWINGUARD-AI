@@ -1,0 +1,43 @@
+.scenario-raster { min-width: 0; padding: 16px; border: 1px solid #dce6e7; border-radius: 14px; background: linear-gradient(145deg,#fbfcfa,#f4f7f4); color: #263f46; box-shadow: 0 8px 24px rgba(37,66,69,.06); }
+.scenario-raster__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+.scenario-raster__header h2 { margin: 5px 0 4px; color: #1c3d43; font: 600 20px/1.2 var(--font-display,inherit); }
+.scenario-raster__header p { margin: 0; color: #5e7478; font-size: 11px; line-height: 1.5; }
+.scenario-raster__evidence-tag { flex: 0 0 auto; padding: 6px 8px; border: 1px solid #bdd8cc; border-radius: 999px; background: #edf7f0; color: #35654c; font: 700 8px/1.2 var(--font-mono,monospace); letter-spacing: .06em; }
+.scenario-raster__notice { display: flex; flex-wrap: wrap; gap: 4px 9px; margin: 14px 0; padding: 10px 12px; border: 1px solid #eadbb8; border-radius: 9px; background: #fff9e9; color: #655329; font-size: 10px; line-height: 1.45; }
+.scenario-raster__notice strong { color: #684b11; }
+.scenario-raster__controls { display: grid; grid-template-columns: 1.4fr 1fr .6fr; gap: 10px; margin: 12px 0; }
+.scenario-raster__controls label { display: grid; gap: 5px; min-width: 0; color: #50676b; font-size: 9px; font-weight: 650; }
+.scenario-raster__controls select { min-width: 0; width: 100%; min-height: 37px; padding: 7px 9px; border: 1px solid #cfdbdc; border-radius: 7px; background: #fff; color: #29474d; font: 10px/1.4 var(--font-mono,monospace); }
+.scenario-raster__controls select:focus-visible,.scenario-raster button:focus-visible { outline: 3px solid #64aeb2; outline-offset: 2px; }
+.scenario-raster__state,.scenario-raster__error { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 54px; margin: 12px 0; padding: 11px 13px; border: 1px solid #d7e4e3; border-radius: 9px; background: #f5f9f7; color: #506a6d; font-size: 11px; }
+.scenario-raster__error { border-color: #edc9bb; background: #fff6f2; color: #764636; }
+.scenario-raster__error > div { display: grid; gap: 4px; }
+.scenario-raster__time-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: 10px 0; color: #607579; font-size: 9px; }
+.scenario-raster__secondary { min-height: 32px; padding: 6px 9px; border: 1px solid #cbd9d9; border-radius: 7px; background: #fff; color: #34555a; font-family: inherit; font-size: 9px; font-weight: 600; line-height: 1.3; cursor: pointer; }
+.scenario-raster__secondary:hover:not(:disabled) { background: #edf6f3; border-color: #9cbdb7; }
+.scenario-raster__secondary:disabled { cursor: not-allowed; opacity: .5; }
+.scenario-raster__reduced-motion { color: #657578; font-size: 9px; }
+.scenario-raster__view-toggle { display: flex; gap: 5px; margin: 12px 0 7px; }
+.scenario-raster__view-toggle button { min-height: 32px; padding: 6px 11px; border: 1px solid #cbd9d9; border-radius: 7px; background: #fff; color: #456267; font-family: inherit; font-size: 9px; font-weight: 650; line-height: 1.3; cursor: pointer; }
+.scenario-raster__view-toggle button[aria-pressed="true"] { border-color: #28777b; background: #e9f4f1; color: #1d565b; }
+.scenario-raster__map3d,.scenario-raster__fallback { width: 100%; height: clamp(300px,48vh,540px); min-height: 300px; overflow: hidden; border: 1px solid #d2dedc; border-radius: 10px; background: #eef2ef; }
+.scenario-raster__map3d canvas { outline: none; }
+.scenario-raster__fallback { height: auto; min-height: 0; padding: 12px; background: #f7f8f3; }
+.scenario-raster__fallback svg { display: block; width: min(100%,640px); height: auto; max-height: 530px; margin: 0 auto; }
+.scenario-raster__fallback p { margin: 8px 0 0; color: #627678; text-align: center; font-size: 9px; }
+.scenario-raster__map-error { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 8px; color: #754b3c; font-size: 10px; }
+.scenario-raster__legend { display: grid; gap: 5px; margin: 9px 0; color: #526a6e; font-size: 9px; }
+.scenario-raster__legend > div { display: flex; justify-content: space-between; font-family: var(--font-mono,monospace); }
+.scenario-raster__gradient { height: 9px; border-radius: 6px; background: linear-gradient(90deg,#e2f0e7,#4da8b6,#14538b); }
+.scenario-raster__legend small { color: #64777a; line-height: 1.45; }
+.scenario-raster__cell-readout { min-height: 18px; margin: 7px 0 12px; color: #45666b; font: 9px/1.5 var(--font-mono,monospace); }
+.scenario-raster__metadata { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 13px; margin: 12px 0; border-top: 1px solid #e1e9e7; }
+.scenario-raster__metadata > div { display: grid; gap: 4px; min-width: 0; padding: 9px 0; border-bottom: 1px solid #e6ecea; }
+.scenario-raster__metadata dt { color: #718386; font-size: 8px; text-transform: uppercase; letter-spacing: .05em; }
+.scenario-raster__metadata dd { margin: 0; overflow-wrap: anywhere; color: #314f54; font: 9px/1.5 var(--font-mono,monospace); }
+.scenario-raster__hash { font-size: 8px !important; }
+.scenario-raster__limitations { margin-top: 10px; padding: 10px 12px; border: 1px solid #dce6e4; border-radius: 8px; background: #f7f9f6; color: #5a7073; font-size: 9px; line-height: 1.6; }
+.scenario-raster__limitations summary { color: #35595d; font-weight: 700; cursor: pointer; }
+.scenario-raster__limitations ul { padding-left: 17px; }
+@media (max-width: 720px) { .scenario-raster { padding: 12px; }.scenario-raster__header { flex-direction: column; }.scenario-raster__controls { grid-template-columns: 1fr; }.scenario-raster__metadata { grid-template-columns: 1fr; }.scenario-raster__time-controls { justify-content: flex-start; }.scenario-raster__time-controls > span { flex-basis: 100%; order: -1; } }
+@media (prefers-reduced-motion: reduce) { .scenario-raster *, .scenario-raster *::before, .scenario-raster *::after { scroll-behavior: auto; animation: none; transition: none; } }

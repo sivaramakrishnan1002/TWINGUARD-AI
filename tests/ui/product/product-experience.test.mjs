@@ -17,18 +17,20 @@ test('all seven product sections render with reachable semantic navigation', asy
   try {
     const ui = await server.ssrLoadModule('/src/ui/product/ProductExperience.tsx');
     const expectations = [
-      ['overview', 'Situation overview', 'Scenario snapshot'],
+      ['overview', 'Situation overview', 'Scenario view'],
       ['twin', '3D Flood Twin', 'Illustrative flood scene'],
-      ['reservoirs', 'Reservoirs & alerts', 'Reservoir selector'],
-      ['impacts', 'Impacts', 'Hazard footprint'],
-      ['response', 'Emergency response', 'Route comparison'],
+      ['reservoirs', 'Reservoirs & alerts', 'FIXTURE INVENTORY'],
+      ['impacts', 'Impacts', 'Illustrative layer view'],
+      ['response', 'Emergency response', 'Candidate route comparison'],
       ['what-if', 'What-if lab', 'Adjust demo assumptions'],
-      ['system', 'Data & system', 'Data mode'],
+      ['system', 'Data & system', 'Source and run context'],
     ];
     for (const [section, heading, card] of expectations) {
       await context.test(`${heading} section`, () => {
         const markup = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: section }));
         assert.match(markup, new RegExp(`aria-label="Product sections"`));
+        assert.match(markup, /aria-label="Situation Overview"/);
+        assert.match(markup, /aria-label="3D Flood Twin"/);
         assert.equal((markup.match(/aria-current="page"/g) ?? []).length, 1);
         assert.ok(markup.includes(`<h1>${heading.replaceAll('&', '&amp;')}</h1>`), `${section} heading should render`);
         assert.ok(markup.includes(card), `${section} content should render`);
@@ -37,6 +39,11 @@ test('all seven product sections render with reachable semantic navigation', asy
       });
     }
     const twin = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'twin' }));
+    const overview = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'overview' }));
+    assert.match(overview, /aria-label="Overview display mode"/);
+    assert.match(overview, /aria-label="Select overview demo time step"/);
+    assert.match(overview, /Local vector illustration · no Chennai coordinates/);
+    assert.match(overview, /aria-label="Select demo scenario"/);
     assert.match(twin, /Play demo/);
     assert.match(twin, /Previous step/);
     assert.match(twin, /Next step/);
@@ -48,6 +55,8 @@ test('all seven product sections render with reachable semantic navigation', asy
     assert.match(twin, /Demo water shape/);
     assert.match(twin, /Illustrative roads/);
     assert.match(twin, /NoData is a missing-coverage state, never a dry classification/);
+    assert.match(twin, /SCHEMATIC BLOCKS/);
+    assert.match(twin, /not geographic or measured/i);
     const fallback = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'twin', initialViewMode: '2d' }));
     assert.match(fallback, /aria-pressed="true">2D fallback/);
     assert.match(fallback, /Top-down illustrative demo footprint/);
@@ -114,7 +123,7 @@ test('Demo and scenario state stays clearly named as synthetic, not historical o
     assert.match(dataPage, /Synthetic elapsed steps; no calendar date or observation time/);
     for (const state of ['Unknown', 'Unavailable', 'Known zero \\(0\\)', 'Explicit dry fixture', 'NoData']) assert.match(dataPage, new RegExp(state));
     const response = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'response' }));
-    assert.match(response, /Topological reachability does not establish flood access or safety/);
+    assert.match(response, /Reachability does not establish flood access or safety/);
     assert.match(response, /scope="col">Hazard assessment<\/th>/);
     assert.match(response, /<td>Unknown<\/td>/);
     assert.match(response, /No shelter is represented as open or operational/);
@@ -127,10 +136,15 @@ test('Demo and scenario state stays clearly named as synthetic, not historical o
 test('product shell retains responsive, keyboard, and reduced-motion styling with AA token contrast', async () => {
   const css = await readFile(path.join(frontendRoot, 'src/ui/product/product.css'), 'utf8');
   assert.match(css, /:focus-visible/);
-  assert.match(css, /max-width:\s*900px/);
-  assert.match(css, /max-width:\s*680px/);
+    assert.match(css, /max-width:\s*940px/);
+    assert.match(css, /max-width:\s*700px/);
+    assert.match(css, /max-width:\s*520px/);
+    assert.match(css, /grid-template-columns:\s*repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
-  assert.match(css, /\.tg-product small\s*\{[^}]*font-size:\s*11px/s);
+    assert.match(css, /\.tg-product__nav-text small\s*\{[^}]*font-size:\s*11px/s);
+    assert.match(css, /\.tg-product__metric > span\s*\{[^}]*font-size:\s*12px/s);
+    assert.match(css, /\.tg-product__overview-layout\s*\{[^}]*minmax\(0, 1fr\)[^}]*300px/s);
+    assert.match(css, /\.tg-product__reservoir-workspace\s*\{[^}]*265px/s);
 
   const token = (name) => {
     const match = css.match(new RegExp(`${name}:\\s*(#[0-9a-fA-F]{6})`));

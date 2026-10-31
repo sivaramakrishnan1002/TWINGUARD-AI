@@ -74,6 +74,8 @@ services:
     environment:
       SERVER_PORT: "8080"
       TWINGUARD_SCENARIO_PROJECT_ROOT: /app
+      TWINGUARD_B13_ENABLED: "true"
+      TWINGUARD_B13_AI_BASE_URL: http://ai-service:8000
     volumes:
       - type: bind
         source: ./data/features/visualization3d/batch2_v1

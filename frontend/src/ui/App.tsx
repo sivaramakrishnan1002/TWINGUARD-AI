@@ -5,6 +5,7 @@ import { DecisionSupportPanel } from './DecisionSupportPanel';
 import type { DocumentedEventWindow } from './types';
 import { StatusBadge } from './components/StatusBadge';
 import { ScenarioRasterExplorer } from './scenario3d/ScenarioRasterExplorer';
+import { B13ReplayView } from './replay/B13ReplayView';
 import researchFigure from './assets/phase12_parameter_sensitivity_batch2.png';
 
 const eventWindows: DocumentedEventWindow[] = [
@@ -30,7 +31,7 @@ const eventWindows: DocumentedEventWindow[] = [
     id: 'trackb-2015-replay', label: 'Chennai 2015 · Track B alert-candidate replay', shortLabel: 'Track B 2015 · alert-candidate replay',
     startDate: '20 Nov 2015', endDate: '04 Dec 2015', timeBasis: 'Runbook date filters · message times carry source timezone', status: 'HISTORICAL_REPLAY',
     source: 'docs/trackb/RUNBOOK.md · docs/trackb/replay_2015_alerts.jsonl',
-    limitations: ['Offline replay contains alert candidates, not validated flood outcomes.', 'Replay messages are not available through a UI endpoint.'],
+    limitations: ['B9 is an offline pipeline replay, not a validated flood outcome.', 'The separate B13 view exposes one bounded date-only source row and labels any output as derived.'],
   },
 ];
 
@@ -40,6 +41,7 @@ const navigation = [
   { id: 'reservoirs', label: 'Reservoirs & alerts', marker: '03', state: 'Track B unavailable' },
   { id: 'decisions', label: 'Impacts & decisions', marker: '04', state: 'Services unavailable' },
   { id: 'evidence', label: 'Research evidence', marker: '05', state: 'Static outputs' },
+  { id: 'trackb-replay', label: 'Historical replay input', marker: '06', state: 'One bounded source row' },
 ] as const;
 
 type PageId = typeof navigation[number]['id'];
@@ -58,7 +60,7 @@ export function gateStatusText(value: GateStatus): string {
 
 const unavailableFeeds = [
   ['Flood & terrain layers', 'No verified tile service'],
-  ['Reservoir observations', 'Track B API not mounted'],
+  ['Live reservoir observations', 'No live feed is connected; one historical replay row is available separately'],
   ['Impact & routing', 'Service outputs unavailable'],
   ['Shelters & scenarios', 'No connected results'],
 ];
@@ -126,7 +128,7 @@ function App() {
                 ))}
               </select>
             </label>
-            <div className="mode-indicator" aria-label="No live, replay, or simulated source is connected">
+            <div className="mode-indicator" aria-label="No live source is connected; a bounded historical replay is available separately">
               <span className="mode-indicator-mark" aria-hidden="true">—</span>
                 <span><strong>NO CONNECTED SOURCE</strong><small role="status" aria-label={`Gate G0: ${gateStatusText(gateStatus)}`} data-gate-status={gateStatus}>G0 {gateStatusText(gateStatus)}</small></span>
             </div>
@@ -139,6 +141,7 @@ function App() {
           {page === 'reservoirs' && <ReservoirAlertsPanel selectedWindow={selectedWindow} />}
           {page === 'decisions' && <DecisionSupportPanel />}
           {page === 'evidence' && <EvidencePage />}
+          {page === 'trackb-replay' && <B13ReplayView />}
           <footer className="global-footer"><span>TWIN GUARD · CHENNAI</span><span>No live data connected · research interface only</span><span aria-hidden="true">G0 <b data-gate-status={gateStatus}>{gateStatusText(gateStatus)}</b></span></footer>
         </main>
       </div>

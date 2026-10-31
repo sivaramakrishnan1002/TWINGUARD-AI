@@ -1,0 +1,119 @@
+{
+  "fixture_schema": "b13.source_observation.v1",
+  "selector": {
+    "event_id": "replay:POONDI:date:2015-12-01",
+    "archive_path": "data/raw/reservoirs/kaggle_chennai_water_management/archive.zip",
+    "archive_sha256": "7645febde7ccc21871200487139d1c8a84ea90a6dd2eccc93b7d1f06faf69197",
+    "member": "chennai_reservoir_levels.csv",
+    "member_sha256": "3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7",
+    "csv_physical_line": 4354,
+    "raw_date_field": "Date",
+    "raw_date_value": "01-12-2015",
+    "raw_reservoir_field": "POONDI",
+    "raw_storage_value": "2745.00",
+    "normalized_source_date": "2015-12-01"
+  },
+  "source_observation": {
+    "schema": "trackb.reservoir_update.v1",
+    "source": "replay",
+    "source_mode": "REPLAY",
+    "time_precision": "date",
+    "source_date": "2015-12-01",
+    "observed_at": null,
+    "observation_timezone": "unknown",
+    "reservoir_key": "POONDI",
+    "raw_source_row": {
+      "Date": "01-12-2015",
+      "POONDI": "2745.00"
+    },
+    "storage_value": 2745,
+    "storage_unit": "mcft",
+    "provenance": {
+      "source_id": "Kaggle Chennai Water Management",
+      "archive_path": "data/raw/reservoirs/kaggle_chennai_water_management/archive.zip",
+      "archive_sha256": "7645febde7ccc21871200487139d1c8a84ea90a6dd2eccc93b7d1f06faf69197",
+      "member": "chennai_reservoir_levels.csv",
+      "member_sha256": "3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7",
+      "csv_physical_line": 4354,
+      "raw_date_field": "Date",
+      "raw_storage_field": "POONDI",
+      "raw_storage_value": "2745.00",
+      "timezone_status": "unknown; source provides date only",
+      "rainfall_unit_status": "INFERRED; original unit unspecified"
+    }
+  },
+  "context_inputs": [
+    {
+      "source_date": "2015-11-28",
+      "reservoir_key": "POONDI",
+      "role": "rolling_feature_window_preceding_selected_source_row",
+      "level_member_sha256": "3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7",
+      "rainfall_member_sha256": "34a4f56d5f91cad4a3b71cef5e69485dffcdcb8ba3ea38d29e506f0624d73376",
+      "raw_source_rows": {
+        "levels": {
+          "Date": "28-11-2015",
+          "POONDI": "2715"
+        },
+        "rainfall": {
+          "Date": "28-11-2015",
+          "POONDI": "0"
+        }
+      }
+    },
+    {
+      "source_date": "2015-11-29",
+      "reservoir_key": "POONDI",
+      "role": "rolling_feature_window_preceding_selected_source_row",
+      "level_member_sha256": "3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7",
+      "rainfall_member_sha256": "34a4f56d5f91cad4a3b71cef5e69485dffcdcb8ba3ea38d29e506f0624d73376",
+      "raw_source_rows": {
+        "levels": {
+          "Date": "29-11-2015",
+          "POONDI": "2745.00"
+        },
+        "rainfall": {
+          "Date": "29-11-2015",
+          "POONDI": "0.1"
+        }
+      }
+    },
+    {
+      "source_date": "2015-11-30",
+      "reservoir_key": "POONDI",
+      "role": "rolling_feature_window_preceding_selected_source_row",
+      "level_member_sha256": "3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7",
+      "rainfall_member_sha256": "34a4f56d5f91cad4a3b71cef5e69485dffcdcb8ba3ea38d29e506f0624d73376",
+      "raw_source_rows": {
+        "levels": {
+          "Date": "30-11-2015",
+          "POONDI": "2681.00"
+        },
+        "rainfall": {
+          "Date": "30-11-2015",
+          "POONDI": "12"
+        }
+      }
+    }
+  ],
+  "effective_configuration": {
+    "algorithm_id": "trackb-rule-v1",
+    "capacity_mcft": 3231.0,
+    "rule_thresholds": {
+      "rise_1d_pct": 0.5106778087279487,
+      "rise_3d_pct": 1.2689569792633861,
+      "rain_3d_p75_mm": 8.4,
+      "rain_3d_p90_mm": 34.0
+    },
+    "target": {
+      "horizon_days": 7,
+      "capacity_fraction": 0.8,
+      "status": "DEFAULT, to confirm"
+    },
+    "rainfall_unit_status": "INFERRED; original unit unspecified"
+  },
+  "configuration_source": "docs/trackb/BACKTEST_RESULTS.json per_reservoir.POONDI.rule_thresholds; capacity/target and rainfall caveats from registered B19 processing",
+  "selected_rainfall_raw": {
+    "Date": "01-12-2015",
+    "POONDI": "74.6"
+  }
+}

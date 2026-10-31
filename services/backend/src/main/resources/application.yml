@@ -1,0 +1,4 @@
+twinguard:
+  b13:
+    enabled: ${TWINGUARD_B13_ENABLED:false}
+    ai-service-base-url: ${TWINGUARD_B13_AI_BASE_URL:http://127.0.0.1:8000}

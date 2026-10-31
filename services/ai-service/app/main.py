@@ -1,15 +1,28 @@
 """FastAPI scaffold for TwinGuard AI."""
 
-from datetime import datetime, timezone
+import json
+import hashlib
+import math
+import re
+from datetime import date, datetime, timezone
 from enum import Enum
+from functools import lru_cache
+from pathlib import Path
 from typing import Any, Literal
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Path as ApiPath, Request
+from fastapi.responses import JSONResponse
 from pydantic import AnyUrl, BaseModel, ConfigDict, Field, field_serializer, field_validator, model_validator
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import get_layer_records
 from app.scenario_visualization.router import router as scenario_visualization_router
+from app.scenario_visualization.raster_router import router as scenario_raster_router
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+MAX_IMPACT_ROWS = 500
+MAX_ROUTE_RESULT_ROWS = 500
 
 
 class _ExactAcceptCORSMiddleware(CORSMiddleware):
@@ -217,6 +230,16 @@ class ImpactResult(ResultModel):
     event_reference_note: str | None
 
 
+class ImpactArtifactRequest(UTCRequestModel):
+    """Exact C4 v1 selector for one saved A07 V4 result."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    run_id: int
+    valid_at: datetime
+    scenario_key: str = Field(min_length=1)
+
+
 class RouteStatus(str, Enum):
     ROUTE_FOUND = "ROUTE_FOUND"
     NO_TOPOLOGICAL_PATH = "NO_TOPOLOGICAL_PATH"
@@ -385,11 +408,304 @@ class ScenarioRequest(BaseModel):
     parameters: dict[str, Any]
 
 
+class ReplayLookupError(BaseModel):
+    status: Literal[400, 404, 409, 503]
+    code: Literal["invalid_selector", "not_found", "ambiguous_identity", "asset_unavailable"]
+    detail: str = Field(min_length=1)
+
+
+class ReplaySourceProvenance(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    source_id: Literal["Kaggle Chennai Water Management"]
+    archive_path: Literal["data/raw/reservoirs/kaggle_chennai_water_management/archive.zip"]
+    archive_sha256: Literal["7645febde7ccc21871200487139d1c8a84ea90a6dd2eccc93b7d1f06faf69197"]
+    member: Literal["chennai_reservoir_levels.csv"]
+    member_sha256: Literal["3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7"]
+    csv_physical_line: Literal[4354]
+    raw_date_field: Literal["Date"]
+    raw_storage_field: Literal["POONDI"]
+    raw_storage_value: Literal["2745.00"]
+    timezone_status: Literal["unknown; source provides date only"]
+    rainfall_unit_status: Literal["INFERRED; original unit unspecified"]
+
+
+class ReplayRawSourceRow(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    Date: Literal["01-12-2015"]
+    POONDI: Literal["2745.00"]
+
+
+class ReplaySourceObservation(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+    schema_: Literal["trackb.reservoir_update.v1"] = Field(alias="schema")
+    event_id: Literal["replay:POONDI:date:2015-12-01"]
+    source: Literal["replay"]
+    source_mode: Literal["REPLAY"]
+    time_precision: Literal["date"]
+    source_date: Literal["2015-12-01"]
+    observed_at: None
+    observation_timezone: Literal["unknown"]
+    received_at: datetime
+    reservoir_key: Literal["POONDI"]
+    raw_source_row: ReplayRawSourceRow
+    storage_value: Literal[2745]
+    storage_unit: Literal["mcft"]
+    provenance: ReplaySourceProvenance
+
+
+class ReplayContextInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    source_date: date
+    reservoir_key: str
+    role: str
+    source_member_sha256: Literal["3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7"]
+
+
+class ReplayRunIdentity(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    identity_version: Literal["b13-replay-identity-v1"]
+    replay_run_id: str = Field(pattern=r"^sha256:[a-f0-9]{64}$")
+    algorithm_id: Literal["trackb-rule-v1"]
+    configuration_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    normalized_input_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    context_inputs: list[ReplayContextInput]
+
+
+class ReplayTriggerInputs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    storage_pct: float
+    rise_1d_pct: float | None
+    rise_3d_pct: float | None
+    rain_3d_mm: float | None
+
+
+class ReplayTarget(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    horizon_days: Literal[7]
+    capacity_fraction: Literal[0.8]
+    status: Literal["DEFAULT, to confirm"]
+
+
+class ReplayDerivedAlert(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+    schema_: Literal["trackb.alert.v1"] = Field(alias="schema")
+    event_id: Literal["replay:POONDI:date:2015-12-01"]
+    source_date: Literal["2015-12-01"]
+    time_precision: Literal["date"]
+    observation_timezone: Literal["unknown"]
+    observed_at: None
+    received_at: datetime
+    source: Literal["replay"]
+    reservoir_key: Literal["POONDI"]
+    level: Literal["Normal", "Watch", "Warning", "Critical"]
+    confidence: float = Field(ge=0, le=1)
+    valid_from: None
+    valid_to: None
+    rule_version: Literal["trackb-rule-v1"]
+    trigger_inputs: ReplayTriggerInputs
+    target: ReplayTarget
+    provenance: ReplaySourceProvenance
+
+
+class ReplayDerivedOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    status: Literal["produced", "not_produced"]
+    alert: ReplayDerivedAlert | None
+    output_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+
+    @model_validator(mode="after")
+    def status_matches_payload(self):
+        if self.status == "produced" and (self.alert is None or self.output_sha256 is None):
+            raise ValueError("produced output requires an alert and hash")
+        if self.status == "not_produced" and (self.alert is not None or self.output_sha256 is not None):
+            raise ValueError("not_produced output must be null")
+        return self
+
+
+class ReplayObservationResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    contract_version: Literal["C4-v2"]
+    source_observation: ReplaySourceObservation
+    replay: ReplayRunIdentity
+    derived_output: ReplayDerivedOutput
+    limitations: list[str] = Field(min_length=1)
+
+
+class ReplayLookupFailure(Exception):
+    def __init__(self, status: int, code: str, detail: str):
+        self.status, self.code, self.detail = status, code, detail
+
+
+REPLAY_EVENT_ID = "replay:POONDI:date:2015-12-01"
+REPLAY_FIXTURE = Path(__file__).resolve().parent / "replay_results" / "b13_source_observation.json"
+REPLAY_FIXTURE_SHA256 = "dd5ea17cdf63853ffd1cdc3036b8c8282490daafd3e19715cd82445cb27ff2a8"
+REPLAY_CONFIG_SHA256 = "b2d4f49c2961a5f20d55302786230a3029c6f4863ffa785241d288f4e21f65fb"
+REPLAY_IDENTITY_VERSION = "b13-replay-identity-v1"
+REPLAY_ALGORITHM_ID = "trackb-rule-v1"
+REPLAY_SELECTOR_PATTERN = re.compile(r"^replay:[A-Z]+:date:[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+
+
+def _canonical_sha256(value: Any) -> str:
+    return hashlib.sha256(_canonical_json(value)).hexdigest()
+
+
+def _canonical_json(value: Any) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode("utf-8")
+
+
+def _load_b13_fixture() -> tuple[dict[str, Any], ...]:
+    """Load only the canonical packaged source fixture and verify its pinned bytes."""
+    try:
+        raw = REPLAY_FIXTURE.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != REPLAY_FIXTURE_SHA256:
+            raise ValueError("fixture hash mismatch")
+        document = json.loads(raw)
+        if document["fixture_schema"] != "b13.source_observation.v1":
+            raise ValueError("fixture schema mismatch")
+        if document["selector"]["event_id"] != REPLAY_EVENT_ID:
+            raise ValueError("fixture selector mismatch")
+        if document["selector"]["archive_sha256"] != "7645febde7ccc21871200487139d1c8a84ea90a6dd2eccc93b7d1f06faf69197":
+            raise ValueError("archive hash mismatch")
+        if document["selector"]["member_sha256"] != "3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7":
+            raise ValueError("member hash mismatch")
+        if _canonical_sha256(document["effective_configuration"]) != REPLAY_CONFIG_SHA256:
+            raise ValueError("configuration canonicalization mismatch")
+        return (document,)
+    except Exception:
+        raise ReplayLookupFailure(503, "asset_unavailable", "The approved replay input is unavailable or failed integrity verification.") from None
+
+
+def _finite_number(value: Any) -> float:
+    number = float(value)
+    if not math.isfinite(number):
+        raise ValueError("non-finite replay input")
+    return number
+
+
+def _evaluate_b13(document: dict[str, Any]) -> ReplayObservationResult:
+    """Run the registered B19 storage rule against the exact packaged observation/context."""
+    try:
+        selected = document["source_observation"]
+        context = document["context_inputs"]
+        config = document["effective_configuration"]
+        selector = document["selector"]
+        if len(context) != 3:
+            raise ValueError("unexpected context count")
+        previous = sorted(context, key=lambda row: row["raw_source_rows"]["levels"]["Date"])
+        expected_dates = ["28-11-2015", "29-11-2015", "30-11-2015"]
+        if [row["raw_source_rows"]["levels"]["Date"] for row in previous] != expected_dates:
+            raise ValueError("context identity mismatch")
+        if selected["raw_source_row"] != {"Date": "01-12-2015", "POONDI": "2745.00"}:
+            raise ValueError("selected source values mismatch")
+        storage = [_finite_number(row["raw_source_rows"]["levels"]["POONDI"]) for row in previous]
+        storage.append(_finite_number(selected["storage_value"]))
+        rainfall = [_finite_number(row["raw_source_rows"]["rainfall"]["POONDI"]) for row in previous]
+        rainfall.append(_finite_number(document["selected_rainfall_raw"]["POONDI"]))
+        capacity = _finite_number(config["capacity_mcft"])
+        storage_pct = [100.0 * value / capacity for value in storage]
+        rise_1d = storage_pct[-1] - storage_pct[-2]
+        rise_3d = storage_pct[-1] - storage_pct[-4]
+        rain_3d = sum(rainfall[-3:])
+        thresholds = config["rule_thresholds"]
+        rise_1_threshold = _finite_number(thresholds["rise_1d_pct"])
+        rise_3_threshold = _finite_number(thresholds["rise_3d_pct"])
+        rain_p75 = _finite_number(thresholds["rain_3d_p75_mm"])
+        rain_p90 = _finite_number(thresholds["rain_3d_p90_mm"])
+        critical = storage_pct[-1] >= 90
+        warning = storage_pct[-1] >= 80 and (rise_3d >= rise_3_threshold or rain_3d >= rain_p90)
+        watch = storage_pct[-1] >= 70 or (rise_1d >= rise_1_threshold and rain_3d >= rain_p75)
+        level = 3 if critical else 2 if warning else 1 if watch else 0
+        confidence = min(4.0, max(0.0, float(storage_pct[-1] >= 70) + float(rise_1d >= rise_1_threshold) + float(rise_3d >= rise_3_threshold) + float(rain_3d >= rain_p75))) / 4.0
+        feature_payload = {
+            "source_row": selected["raw_source_row"],
+            "selected_rainfall_feature_row": document["selected_rainfall_raw"],
+            "source_date": selected["source_date"],
+            "context_rows": [row["raw_source_rows"] for row in previous],
+            "normalized_features": {"storage_pct": storage_pct[-1], "rise_1d_pct": rise_1d, "rise_3d_pct": rise_3d, "rain_3d_source_units_unverified": rain_3d},
+        }
+        normalized_hash = _canonical_sha256(feature_payload)
+        config_hash = _canonical_sha256(config)
+        context_inputs = [
+            {"source_date": datetime.strptime(row["raw_source_rows"]["levels"]["Date"], "%d-%m-%Y").date(), "reservoir_key": "POONDI", "role": "rolling_feature_window_preceding_selected_source_row", "source_member_sha256": selector["member_sha256"]}
+            for row in previous
+        ]
+        run_identity = {
+            "identity_version": REPLAY_IDENTITY_VERSION,
+            "source_archive_sha256": selector["archive_sha256"],
+            "source_member_sha256": selector["member_sha256"],
+            "event_id": selector["event_id"],
+            "csv_physical_line": selector["csv_physical_line"],
+            "algorithm_id": REPLAY_ALGORITHM_ID,
+            "configuration_sha256": config_hash,
+            "normalized_input_sha256": normalized_hash,
+        }
+        replay_run_id = "sha256:" + _canonical_sha256(run_identity)
+        received_at = datetime.now(timezone.utc)
+        provenance = selected["provenance"]
+        source_observation = {**selected, "event_id": selector["event_id"], "received_at": received_at, "provenance": provenance}
+        if level:
+            alert = {
+                "schema": "trackb.alert.v1", "event_id": REPLAY_EVENT_ID, "source_date": "2015-12-01",
+                "time_precision": "date", "observation_timezone": "unknown", "observed_at": None,
+                "received_at": received_at, "source": "replay", "reservoir_key": "POONDI",
+                "level": ("Normal", "Watch", "Warning", "Critical")[level], "confidence": confidence,
+                "valid_from": None, "valid_to": None, "rule_version": "trackb-rule-v1",
+                "trigger_inputs": {"storage_pct": storage_pct[-1], "rise_1d_pct": rise_1d, "rise_3d_pct": rise_3d, "rain_3d_mm": rain_3d},
+                "target": config["target"], "provenance": provenance,
+            }
+            output_sha = _canonical_sha256(ReplayDerivedAlert.model_validate(alert).model_dump(mode="json", by_alias=True))
+            derived = {"status": "produced", "alert": alert, "output_sha256": output_sha}
+        else:
+            derived = {"status": "not_produced", "alert": None, "output_sha256": None}
+        return ReplayObservationResult.model_validate({
+            "contract_version": "C4-v2", "source_observation": source_observation,
+            "replay": {"identity_version": REPLAY_IDENTITY_VERSION, "replay_run_id": replay_run_id,
+                       "algorithm_id": REPLAY_ALGORITHM_ID, "configuration_sha256": config_hash,
+                       "normalized_input_sha256": normalized_hash, "context_inputs": context_inputs},
+            "derived_output": derived,
+            "limitations": [
+                "Historical observation time and timezone are unknown; source_date is date-only.",
+                "Any alert is derived replay output, not a historically observed event.",
+                "This is a storage-target rule only; no flood-depth result is produced.",
+                "Rainfall source units are undocumented and inferred; the legacy rule field is not verified millimetres.",
+                "Rule confidence is not calibrated probability; capacity and target settings require confirmation.",
+                "Research-only; not live, a validated forecast, warning, route, or safety guidance.",
+            ],
+        })
+    except ReplayLookupFailure:
+        raise
+    except Exception:
+        raise ReplayLookupFailure(503, "asset_unavailable", "The approved replay input, context, or configuration is unavailable or invalid.") from None
+
+
+def _b13_replay_projection(event_id: str) -> ReplayObservationResult:
+    if not REPLAY_SELECTOR_PATTERN.fullmatch(event_id):
+        raise ReplayLookupFailure(400, "invalid_selector", "event_id must be a date-only replay selector.")
+    try:
+        date.fromisoformat(event_id.rsplit(":", 1)[1])
+    except ValueError:
+        raise ReplayLookupFailure(400, "invalid_selector", "event_id must contain a valid calendar date.") from None
+    if event_id != REPLAY_EVENT_ID:
+        raise ReplayLookupFailure(404, "not_found", "No exact approved replay observation exists.")
+    rows = _load_b13_fixture()
+    matches = [row for row in rows if row.get("selector", {}).get("event_id") == event_id]
+    if not matches:
+        raise ReplayLookupFailure(404, "not_found", "No exact approved replay observation exists.")
+    if len(matches) != 1:
+        raise ReplayLookupFailure(409, "ambiguous_identity", "More than one source observation matches this selector.")
+    return _evaluate_b13(matches[0])
+
+
 app = FastAPI(
     title="TwinGuard AI Service",
     version="0.1.0",
-    description="Scaffold following the TwinGuard AI service contract.",
+    description=(
+        "Bounded C4 v1 artifact projections and the local test-scoped CR-012 date-only replay observation route are enabled. "
+        "The replay route separates the archived REPLAY input from optional derived rule output; no live operation is enabled."
+    ),
 )
+app.include_router(scenario_visualization_router)
+app.include_router(scenario_raster_router)
 app.add_middleware(
     _ExactAcceptCORSMiddleware,
     allow_origins=["http://127.0.0.1:8081"],
@@ -397,12 +713,110 @@ app.add_middleware(
     allow_headers=["Accept"],
     allow_credentials=False,
 )
-app.include_router(scenario_visualization_router)
+
+
+@app.exception_handler(ReplayLookupFailure)
+async def replay_lookup_error_handler(request: Request, exc: ReplayLookupFailure) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status,
+        content=ReplayLookupError(status=exc.status, code=exc.code, detail=exc.detail).model_dump(mode="json"),
+    )
+
+
+@lru_cache(maxsize=1)
+def _load_a07_impact_results() -> tuple[ImpactResult, ...]:
+    """Load only the registered, versioned A07 artifact; never query a database."""
+    path = (PROJECT_ROOT / "data/features/impact/batch2_v4_contract/impact_results.jsonl").resolve()
+    if not path.is_relative_to(PROJECT_ROOT) or not path.is_file() or path.stat().st_size > 16 * 1024 * 1024:
+        raise RuntimeError("registered impact artifact is unavailable")
+    results: list[ImpactResult] = []
+    with path.open(encoding="utf-8") as stream:
+        for line in stream:
+            if len(results) >= MAX_IMPACT_ROWS:
+                raise RuntimeError("registered impact artifact exceeds its row bound")
+            if not line.strip():
+                continue
+            results.append(ImpactResult.model_validate_json(line))
+    if not results:
+        raise RuntimeError("registered impact artifact is empty")
+    return tuple(results)
+
+
+@lru_cache(maxsize=1)
+def _load_a09_route_results() -> tuple[RouteResponse, ...]:
+    """Load only A09 revision 3; result IDs are scoped to this fixed artifact."""
+    path = (PROJECT_ROOT / "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl").resolve()
+    if not path.is_relative_to(PROJECT_ROOT) or not path.is_file() or path.stat().st_size > 32 * 1024 * 1024:
+        raise RuntimeError("registered route artifact is unavailable")
+    results: list[RouteResponse] = []
+    with path.open(encoding="utf-8") as stream:
+        for line in stream:
+            if len(results) >= MAX_ROUTE_RESULT_ROWS:
+                raise RuntimeError("registered route artifact exceeds its row bound")
+            if not line.strip():
+                continue
+            results.append(RouteResponse.model_validate_json(line))
+    if not results:
+        raise RuntimeError("registered route artifact is empty")
+    return tuple(results)
+
+
+def _saved_artifact_unavailable() -> HTTPException:
+    # Keep parser/duplicate details private and do not accidentally return a partial result.
+    return HTTPException(status_code=503, detail="Registered saved-result evidence is unavailable.")
+
+
+def _impact_projection(request: ImpactArtifactRequest) -> ImpactResult:
+    """Resolve the exact C4 v1 A07 tuple; duplicates fail closed."""
+    try:
+        rows = _load_a07_impact_results()
+    except Exception:
+        raise _saved_artifact_unavailable() from None
+    matches = [
+        row for row in rows
+        if row.run_id == request.run_id
+        and row.valid_at_utc == request.valid_at
+        and row.scenario_key == request.scenario_key
+    ]
+    if not matches:
+        raise HTTPException(status_code=404, detail="No exact saved impact result was found.")
+    if len(matches) != 1:
+        raise _saved_artifact_unavailable()
+    return matches[0]
+
+
+def _route_result_projection(result_id: str) -> RouteResponse:
+    """Resolve an identifier only within the registered A09 revision-3 artifact."""
+    try:
+        rows = _load_a09_route_results()
+    except Exception:
+        raise _saved_artifact_unavailable() from None
+    matches = [row for row in rows if row.result_id == result_id]
+    if not matches:
+        raise HTTPException(status_code=404, detail="No saved route result exists in A09 revision 3.")
+    if len(matches) != 1:
+        raise _saved_artifact_unavailable()
+    return matches[0]
 
 
 @app.get("/health", operation_id="health", response_model=Health)
 def health() -> Health:
     return Health(status="ok", service="twinguard-ai-service", database="not_checked")
+
+
+@app.get(
+    "/replay-alerts/{event_id}",
+    operation_id="getB13ReplayObservation",
+    response_model=ReplayObservationResult,
+    responses={
+        400: {"model": ReplayLookupError, "description": "Malformed or invalid selector/input."},
+        404: {"model": ReplayLookupError, "description": "No exact source observation/replay identity exists."},
+        409: {"model": ReplayLookupError, "description": "Duplicate or ambiguous source identity."},
+        503: {"model": ReplayLookupError, "description": "Source, context, configuration or result is unavailable or hash-invalid."},
+    },
+)
+def b13_replay_observation(event_id: str) -> ReplayObservationResult:
+    return _b13_replay_projection(event_id)
 
 
 @app.get(
@@ -438,9 +852,32 @@ def uncertainty(request: RunTimeRequest) -> None:
     _not_implemented("uncertainty")
 
 
-@app.post("/impact", operation_id="estimateImpact", response_model=None)
-def impact(request: RunTimeRequest) -> None:
-    _not_implemented("impact")
+@app.post(
+    "/impact",
+    operation_id="estimateImpact",
+    response_model=ImpactResult,
+    responses={
+        404: {"description": "No exact A07 artifact key exists; duplicate matches fail closed."},
+        501: {"description": "Saved-artifact lookup is unavailable until its selector is supported."},
+        503: {"description": "Registered read-only evidence is unavailable or ambiguous."},
+    },
+)
+def impact(request: ImpactArtifactRequest) -> ImpactResult:
+    return _impact_projection(request)
+
+
+@app.get(
+    "/route-results/{result_id}",
+    operation_id="getSavedRouteResult",
+    response_model=RouteResponse,
+    responses={
+        404: {"description": "No exact result_id exists in A09 revision 3; duplicate matches fail closed."},
+        501: {"description": "Saved-route retrieval is unavailable until its checks pass."},
+        503: {"description": "Registered read-only evidence is unavailable or ambiguous."},
+    },
+)
+def route_result(result_id: str = ApiPath(min_length=1)) -> RouteResponse:
+    return _route_result_projection(result_id)
 
 
 @app.post("/route", operation_id="planRoute", response_model=RouteResponse)

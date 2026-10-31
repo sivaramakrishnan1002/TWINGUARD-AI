@@ -71,7 +71,6 @@ def test_layers_hides_database_exception_details(monkeypatch: pytest.MonkeyPatch
             {"event_key": "test", "issued_at": "2026-10-24T00:00:00Z", "horizon_hours": 3, "step_minutes": 15},
         ),
         ("/uncertainty", {"run_id": 1, "valid_at": "2026-10-24T00:00:00Z"}),
-        ("/impact", {"run_id": 1, "valid_at": "2026-10-24T00:00:00Z"}),
         (
             "/route",
             {
@@ -95,6 +94,17 @@ def test_generated_openapi_matches_contract_routes_and_operation_ids() -> None:
     generated = main.app.openapi()
     assert generated["openapi"].startswith("3.1")
     for path, contract_item in contract["paths"].items():
+        if path not in generated["paths"]:
+            if path == "/replay-alerts/{event_id}":
+                assert all(
+                    operation.get("x-current-runtime-status") == "unexposed"
+                    for operation in contract_item.values()
+                )
+                continue
+            # I07's C9 asset/time-slice operations are a separate future scope;
+            # B08 must not mount or conflate them with frozen C4 /scenario.
+            assert path.startswith("/scenario-visualization-assets")
+            continue
         for method, contract_operation in contract_item.items():
             generated_operation = generated["paths"][path][method]
             assert generated_operation["operationId"] == contract_operation["operationId"]
@@ -103,6 +113,26 @@ def test_generated_openapi_matches_contract_routes_and_operation_ids() -> None:
                 contract_ref = contract_operation["requestBody"]["content"]["application/json"]["schema"]["$ref"].split("/")[-1]
                 generated_ref = generated_operation["requestBody"]["content"]["application/json"]["schema"]["$ref"].split("/")[-1]
                 assert generated_ref == contract_ref
+
+    replay_contract = contract["paths"]["/replay-alerts/{event_id}"]["get"]
+    replay_runtime = generated["paths"]["/replay-alerts/{event_id}"]["get"]
+    assert replay_runtime["operationId"] == replay_contract["operationId"] == "getB13ReplayObservation"
+    assert {"200", "400", "404", "409", "503"}.issubset(replay_runtime["responses"])
+
+
+def test_c4_v1_ai_models_match_the_approved_selector_projection() -> None:
+    contract = json.loads((ROOT / "docs/api/ai-service.yaml").read_text(encoding="utf-8"))
+    selector = contract["components"]["schemas"]["ImpactArtifactRequest"]
+    runtime = main.ImpactArtifactRequest.model_json_schema()
+    assert selector["required"] == runtime["required"] == ["run_id", "valid_at", "scenario_key"]
+    assert selector["additionalProperties"] is runtime["additionalProperties"] is False
+    assert selector["properties"]["run_id"]["type"] == runtime["properties"]["run_id"]["type"] == "integer"
+    assert selector["properties"]["valid_at"]["format"] == runtime["properties"]["valid_at"]["format"] == "date-time"
+    assert selector["properties"]["scenario_key"]["minLength"] == runtime["properties"]["scenario_key"]["minLength"] == 1
+    route_op = contract["paths"]["/route-results/{result_id}"]["get"]
+    assert route_op["operationId"] == main.app.openapi()["paths"]["/route-results/{result_id}"]["get"]["operationId"]
+    assert route_op["parameters"][0]["name"] == "result_id"
+    assert route_op["x-contract-version"] == "C4-v1"
 
 
 def test_test_client_uses_httpx() -> None:
@@ -146,6 +176,122 @@ def test_route_endpoint_stays_501_until_implemented() -> None:
         "destination": "B",
     })
     assert response.status_code == 501
+
+
+def test_impact_unknown_run_or_time_is_404() -> None:
+    response = client.post("/impact", json={
+        "run_id": 1, "valid_at": "2026-10-24T00:00:00Z", "scenario_key": "perfect_foresight_imerg",
+    })
+    assert response.status_code == 404
+    assert response.json()["detail"] == "No exact saved impact result was found."
+
+
+def test_impact_known_run_with_unknown_time_is_404() -> None:
+    response = client.post("/impact", json={
+        "run_id": 7004, "valid_at": "2015-11-29T00:00:00Z", "scenario_key": "perfect_foresight_imerg",
+    })
+    assert response.status_code == 404
+    assert response.json()["detail"] == "No exact saved impact result was found."
+
+
+def test_impact_exact_selector_returns_one_saved_a07_result() -> None:
+    response = client.post("/impact", json={
+        "run_id": 7004,
+        "valid_at": "2015-11-30T06:00:00+00:00",
+        "scenario_key": "perfect_foresight_imerg",
+    })
+    assert response.status_code == 200
+    body = main.ImpactResult.model_validate(response.json())
+    assert body.result_id == "a07-batch2-v4-2015-12-02-perfect_foresight_imerg-lead06h"
+    assert body.source_mode == "SIMULATED"
+    assert body.scenario_key == "perfect_foresight_imerg"
+    assert body.valid_at_utc.isoformat() == "2015-11-30T06:00:00+00:00"
+    assert body.aggregation_interval is None
+    assert body.provenance.sources and body.qc_flags
+
+
+def test_impact_projection_never_uses_database(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app import database
+
+    def forbidden_database_access():
+        raise AssertionError("impact projection must not access a database")
+
+    monkeypatch.setattr(database, "_connect_read_only", forbidden_database_access)
+    response = client.post("/impact", json={
+        "run_id": 7004,
+        "valid_at": "2015-11-30T06:00:00Z",
+        "scenario_key": "perfect_foresight_imerg",
+    })
+    assert response.status_code == 200
+    assert response.json()["source_mode"] == "SIMULATED"
+
+
+def test_impact_duplicate_exact_key_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    row = main._load_a07_impact_results()[0]
+    monkeypatch.setattr(main, "_load_a07_impact_results", lambda: (row, row))
+    response = client.post("/impact", json={
+        "run_id": row.run_id,
+        "valid_at": row.valid_at_utc.isoformat(),
+        "scenario_key": row.scenario_key,
+    })
+    assert response.status_code == 503
+    assert "duplicate" not in response.text.lower()
+
+
+def test_route_result_lookup_is_revision_scoped_exact_and_read_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app import database
+
+    def forbidden_database_access():
+        raise AssertionError("saved route lookup must not access a database")
+
+    monkeypatch.setattr(database, "_connect_read_only", forbidden_database_access)
+    saved = main._load_a09_route_results()[0]
+    response = client.get(f"/route-results/{saved.result_id}")
+    assert response.status_code == 200
+    body = main.RouteResponse.model_validate(response.json())
+    assert body.result_id == saved.result_id
+    assert body.run_id is None
+    assert body.source_mode == "SIMULATED"
+    assert body.distance_m == saved.distance_m
+    assert body.travel_time_seconds == saved.travel_time_seconds
+    assert body.topologically_reachable == saved.topologically_reachable
+    assert body.route_accessibility_probability == saved.route_accessibility_probability
+
+
+def test_route_result_unknown_id_is_404() -> None:
+    response = client.get("/route-results/not-in-a09-revision-3")
+    assert response.status_code == 404
+
+
+def test_route_result_duplicate_id_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    row = main._load_a09_route_results()[0]
+    monkeypatch.setattr(main, "_load_a09_route_results", lambda: (row, row))
+    response = client.get(f"/route-results/{row.result_id}")
+    assert response.status_code == 503
+    assert "duplicate" not in response.text.lower()
+
+
+def test_all_registered_a07_rows_conform_and_preserve_missing_values() -> None:
+    artifact = ROOT / "data/features/impact/batch2_v4_contract/impact_results.jsonl"
+    rows = [main.ImpactResult.model_validate_json(line) for line in artifact.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 75
+    assert {row.source_mode for row in rows} == {"SIMULATED"}
+    assert all(row.schema_id == "twinguard.impact_result" for row in rows)
+    assert all(row.metrics.population_exposed_people is None or row.metrics.population_exposed_people.unit == "people" for row in rows)
+    assert any(row.aggregation_interval is None for row in rows)
+    assert any(row.coverage.population.nodata_count > 0 for row in rows)
+    assert all(row.provenance.sources and row.qc_flags for row in rows)
+
+
+def test_all_registered_a09_rows_conform_without_implying_passability() -> None:
+    artifact = ROOT / "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl"
+    rows = [main.RouteResponse.model_validate_json(line) for line in artifact.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 216
+    assert {row.source_mode for row in rows} == {"SIMULATED"}
+    assert all(row.schema_id == "twinguard.route_result" for row in rows)
+    assert all(row.run_id is None for row in rows)
+    assert any(row.route_accessibility_probability is None for row in rows)
+    assert all(row.provenance and row.qc_flags for row in rows)
 
 
 OWNER_FIXTURES = ROOT / "services" / "backend" / "src" / "test" / "resources" / "owner-fixtures"

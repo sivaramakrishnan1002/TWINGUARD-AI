@@ -1,21 +1,3611 @@
 {
   "openapi": "3.1.0",
-  "info": {"title": "TwinGuard Backend API", "version": "0.1.0", "description": "Design-only contract for application-facing twin state, scenarios, routes, alerts and shelters. Not implemented yet."},
-  "paths": {
-    "/twin/state": {"get": {"operationId": "getTwinState", "summary": "Read the latest or requested twin state", "parameters": [{"name": "at", "in": "query", "required": false, "schema": {"type": "string", "format": "date-time"}}, {"name": "run_id", "in": "query", "required": false, "schema": {"type": "integer"}}], "responses": {"200": {"description": "Twin state reference and metadata", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TwinState"}}}}, "404": {"description": "State unavailable"}}}},
-    "/scenarios": {"get": {"operationId": "listScenarios", "summary": "List saved scenarios", "responses": {"200": {"description": "Scenario list", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Scenario"}}}}}}}, "post": {"operationId": "createScenario", "summary": "Create a scenario", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ScenarioCreate"}}}}, "responses": {"201": {"description": "Scenario created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Scenario"}}}}, "422": {"description": "Invalid scenario"}}}},
-    "/scenarios/{scenario_key}": {"get": {"operationId": "getScenario", "summary": "Read a saved scenario", "parameters": [{"name": "scenario_key", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Scenario", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Scenario"}}}}, "404": {"description": "Scenario not found"}}}},
-    "/routes": {"post": {"operationId": "requestRoute", "summary": "Request a route for a twin run", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RouteRequest"}}}}, "responses": {"200": {"description": "Route result", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RouteResult"}}}}, "422": {"description": "Invalid route request"}}}},
-    "/alerts": {"get": {"operationId": "listAlerts", "summary": "List alerts in a requested time range", "parameters": [{"name": "from", "in": "query", "required": true, "schema": {"type": "string", "format": "date-time"}}, {"name": "to", "in": "query", "required": true, "schema": {"type": "string", "format": "date-time"}}], "responses": {"200": {"description": "Alert list", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Alert"}}}}}}}},
-    "/shelters": {"get": {"operationId": "listShelters", "summary": "List shelter and candidate-shelter states", "parameters": [{"name": "at", "in": "query", "required": false, "schema": {"type": "string", "format": "date-time"}}, {"name": "run_id", "in": "query", "required": false, "schema": {"type": "integer"}}], "responses": {"200": {"description": "Shelters and candidate status", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Shelter"}}}}}}}}
+  "info": {
+    "title": "TwinGuard Backend API",
+    "version": "0.3.0",
+    "description": "C4 v0 remains the frozen G0 baseline; approved C4 v1 saved selectors are documented under CR-008. Health and the CR-009 C9 metadata catalog and detail GETs are mounted and verified only in the local B11 package. CR-010 raster delivery is AI-service-only and verified in the local B11 package; no backend raster operation is exposed. Other backend business routes remain unexposed. C9 remains proposed and unfrozen; schemas do not imply live integration. C4 v2 / CR-012 replay projection is documented but unexposed until B27 evidence passes."
   },
-  "components": {"schemas": {
-    "TwinState": {"type": "object", "required": ["run_id", "valid_at", "version_key", "state_artifacts"], "properties": {"run_id": {"type": "integer"}, "valid_at": {"type": "string", "format": "date-time"}, "version_key": {"type": "string"}, "state_artifacts": {"type": "array", "items": {"type": "string"}}, "provenance": {"type": "object", "additionalProperties": true}}},
-    "ScenarioCreate": {"type": "object", "required": ["scenario_key", "title", "base_run_id", "parameters"], "properties": {"scenario_key": {"type": "string"}, "title": {"type": "string"}, "base_run_id": {"type": "integer"}, "parameters": {"type": "object", "additionalProperties": true}}},
-    "Scenario": {"allOf": [{"$ref": "#/components/schemas/ScenarioCreate"}, {"type": "object", "properties": {"status": {"type": "string", "enum": ["DRAFT", "READY", "RUNNING", "COMPLETE", "FAILED"]}}}]},
-    "RouteRequest": {"type": "object", "required": ["run_id", "departure_at", "origin", "destination"], "properties": {"run_id": {"type": "integer"}, "departure_at": {"type": "string", "format": "date-time"}, "origin": {"type": "string"}, "destination": {"type": "string"}, "mode": {"type": "string", "enum": ["vehicle", "walking"]}}},
-    "RouteResult": {"type": "object", "required": ["reachable", "edge_ids", "provenance"], "properties": {"reachable": {"type": "boolean"}, "edge_ids": {"type": "array", "items": {"type": "integer"}}, "travel_time_minutes": {"type": "number", "minimum": 0}, "provenance": {"type": "object", "additionalProperties": true}}},
-    "Alert": {"type": "object", "required": ["alert_id", "severity", "issued_at", "valid_from", "valid_to"], "properties": {"alert_id": {"type": "integer"}, "severity": {"type": "string", "enum": ["INFO", "WATCH", "WARNING", "EMERGENCY"]}, "issued_at": {"type": "string", "format": "date-time"}, "valid_from": {"type": "string", "format": "date-time"}, "valid_to": {"type": "string", "format": "date-time"}, "provenance": {"type": "object", "additionalProperties": true}}},
-    "Shelter": {"type": "object", "required": ["facility_id", "category", "candidate_only"], "properties": {"facility_id": {"type": "integer"}, "name": {"type": "string"}, "category": {"type": "string"}, "candidate_only": {"type": "boolean"}, "capacity_people": {"type": ["integer", "null"], "minimum": 0}, "accessibility_probability": {"type": ["number", "null"], "minimum": 0, "maximum": 1}}
-  }}}
+  "paths": {
+    "/twin/state": {
+      "get": {
+        "operationId": "getTwinState",
+        "summary": "Read the latest or requested twin state",
+        "parameters": [
+          {
+            "name": "at",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Twin state reference and metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwinState"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "State unavailable"
+          }
+        },
+        "x-current-runtime-status": "unexposed"
+      }
+    },
+    "/scenarios": {
+      "get": {
+        "operationId": "listScenarios",
+        "summary": "List saved scenarios",
+        "responses": {
+          "200": {
+            "description": "Scenario list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Scenario"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-current-runtime-status": "unexposed"
+      },
+      "post": {
+        "operationId": "createScenario",
+        "summary": "Create a scenario",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScenarioCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Scenario created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Scenario"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid scenario"
+          }
+        },
+        "x-current-runtime-status": "unexposed"
+      }
+    },
+    "/scenarios/{scenario_key}": {
+      "get": {
+        "operationId": "getScenario",
+        "summary": "Read a saved scenario",
+        "parameters": [
+          {
+            "name": "scenario_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scenario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Scenario"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Scenario not found"
+          }
+        },
+        "x-current-runtime-status": "unexposed"
+      }
+    },
+    "/routes": {
+      "post": {
+        "operationId": "requestRoute",
+        "summary": "Request a route for a twin run",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "DTO projection only; this route is not currently exposed by the backend runtime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid route request"
+          },
+          "404": {
+            "description": "Current backend runtime does not expose this path."
+          }
+        },
+        "description": "DTO projection only. The backend route path is not currently exposed; the application has no mounted route controller. Configured internal gateway adapters remain unavailable until service setup.",
+        "x-current-runtime-status": "unexposed"
+      }
+    },
+    "/alerts": {
+      "get": {
+        "operationId": "listAlerts",
+        "summary": "List alerts in a requested time range",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Alert list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Alert"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-current-runtime-status": "unexposed"
+      }
+    },
+    "/shelters": {
+      "get": {
+        "operationId": "listShelters",
+        "summary": "List shelter and candidate-shelter states",
+        "parameters": [
+          {
+            "name": "at",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shelters and candidate status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Shelter"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-current-runtime-status": "unexposed"
+      }
+    },
+    "/scenario-visualization-assets": {
+      "get": {
+        "operationId": "listScenarioVisualizationAssets",
+        "summary": "List manifest-backed scenario visualization assets",
+        "description": "CR-009 authorizes this additive C9 read-only projection under approved change control. The operation reads only the validated A20 manifest and referenced saved research assets; it does not generate predictions or access live feeds or databases. B21 mounted and verified this operation in the local B11 app-tier package; no live, shared-database, or deployment-wide operation is implied.",
+        "x-runtime-availability": "available_in_local_B11_package",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Manifest-backed catalog ; verified by B21 in the local B11 package.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioVisualizationCatalog"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A duplicate or ambiguous scenario identity exists in the validated A20 manifest; no catalog result is returned."
+          },
+          "503": {
+            "description": "The manifest or a referenced asset is missing, unreadable, changed, or unavailable. No partial result is returned."
+          },
+          "501": {
+            "description": "Reserved; B21 mounted the approved operation in the local B11 package.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioVisualizationUnavailable"
+                }
+              }
+            }
+          }
+        },
+        "x-current-runtime-status": 200
+      }
+    },
+    "/scenario-visualization-assets/{event_id}/{scenario_id}": {
+      "get": {
+        "operationId": "getScenarioVisualizationAsset",
+        "summary": "Get one saved scenario visualization asset",
+        "description": "CR-009 authorizes this additive C9 read-only projection under approved change control. The operation reads only the validated A20 manifest and referenced saved research assets; it does not generate predictions or access live feeds or databases. B21 mounted and verified this operation in the local B11 app-tier package; no live, shared-database, or deployment-wide operation is implied.",
+        "x-runtime-availability": "available_in_local_B11_package",
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "description": "Source event date used as part of the stable manifest identity.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "description": "Scenario ID from the A20 manifest.",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exact manifest-backed scenario detail ; verified by B21 in the local B11 package.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioVisualizationAsset"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event_id or scenario_id selector; no saved result is returned."
+          },
+          "404": {
+            "description": "No exact event_id/scenario_id match exists in the validated A20 manifest."
+          },
+          "409": {
+            "description": "A duplicate or ambiguous scenario identity exists; no result is returned."
+          },
+          "503": {
+            "description": "The manifest or a referenced asset is missing, unreadable, changed, or unavailable. No partial result is returned."
+          },
+          "501": {
+            "description": "Reserved; B21 mounted the approved operation in the local B11 package.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioVisualizationUnavailable"
+                }
+              }
+            }
+          }
+        },
+        "x-current-runtime-status": 200
+      }
+    },
+    "/impact": {
+      "post": {
+        "operationId": "getSavedImpactResult",
+        "summary": "Read one saved A07 V4 impact result by its exact artifact key",
+        "description": "C4 v1 / CR-008. Exact read-only lookup by (run_id, valid_at, scenario_key); no default scenario, recomputation, live source, or database access. The response follows frozen C7. This backend operation is not exposed by the current runtime.",
+        "x-contract-version": "C4-v1",
+        "x-current-runtime-status": "unexposed",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImpactArtifactRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved A07 result; response follows frozen C7.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImpactResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No exact A07 artifact key exists; duplicate matches fail closed."
+          },
+          "422": {
+            "description": "Invalid selector."
+          }
+        }
+      }
+    },
+    "/route-results/{result_id}": {
+      "get": {
+        "operationId": "getSavedRouteResult",
+        "summary": "Read one saved A09 revision-3 route result",
+        "description": "C4 v1 / CR-008. Read-only retrieval from the registered A09 revision-3 artifact. result_id is unique only within that immutable artifact revision and is not a global identifier. This does not compute a route. The path is not exposed by the current backend runtime.",
+        "x-contract-version": "C4-v1",
+        "x-current-runtime-status": "unexposed",
+        "parameters": [
+          {
+            "name": "result_id",
+            "in": "path",
+            "required": true,
+            "description": "A09 revision-3-scoped saved result identifier; not globally unique.",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Saved simulated result; response follows frozen C8.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No exact result_id exists in the registered A09 revision-3 artifact; duplicate matches fail closed."
+          }
+        }
+      }
+    },
+    "/replay-alerts/{event_id}": {
+      "get": {
+        "operationId": "getB13ReplayObservation",
+        "summary": "Read the uniquely selected date-only POONDI replay observation and separate derived-output status",
+        "description": "C4 v2 / CR-012, conditional CR-011 route approval. This is a read-only, test-scoped exact lookup of the B28-identified source observation and the result of the approved B19 replay processing. It returns the source observation separately from an optional derived alert; a derived alert is replay-derived and not historically observed. Only the exact approved POONDI source selector is eligible. Historical measurement-time meaning and timezone remain unknown. No flood-depth result is produced by this Track B rule path. The route is not mounted by this projection review; current runtime status is unexposed until B27 passes.",
+        "x-contract-version": "C4-v2",
+        "x-change-request": "CR-012",
+        "x-current-runtime-status": "unexposed",
+        "x-source-mode": "REPLAY",
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "description": "Exact date-only event selector. The sole approved fixture is replay:POONDI:date:2015-12-01; a well-formed but absent selector returns 404.",
+            "schema": {
+              "type": "string",
+              "pattern": "^replay:[A-Z]+:date:[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exact source observation with C3 date-only semantics, deterministic replay identity, and an explicit produced/not_produced derived-output state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayObservationResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed or invalid selector/input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayLookupError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No exact matching source observation/replay identity exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayLookupError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "More than one record matches the exact identity; no result is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayLookupError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Source, context, configuration, or derived asset is missing, unreadable, unavailable, or fails SHA-256 verification; no partial result is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayLookupError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TwinState": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "valid_at",
+          "version_key",
+          "state_artifacts"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "integer"
+          },
+          "valid_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version_key": {
+            "type": "string"
+          },
+          "state_artifacts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "provenance": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "ScenarioCreate": {
+        "type": "object",
+        "required": [
+          "scenario_key",
+          "title",
+          "base_run_id",
+          "parameters"
+        ],
+        "properties": {
+          "scenario_key": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "base_run_id": {
+            "type": "integer"
+          },
+          "parameters": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "Scenario": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ScenarioCreate"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "READY",
+                  "RUNNING",
+                  "COMPLETE",
+                  "FAILED"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "RouteRequest": {
+        "additionalProperties": true,
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "integer"
+          },
+          "departure_at": {
+            "format": "date-time",
+            "title": "Departure At",
+            "type": "string"
+          },
+          "origin": {
+            "title": "Origin",
+            "type": "string"
+          },
+          "destination": {
+            "title": "Destination",
+            "type": "string"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "enum": [
+                  "vehicle",
+                  "walking"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Mode"
+          },
+          "minimum_accessibility_probability": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Minimum Accessibility Probability"
+          }
+        },
+        "required": [
+          "run_id",
+          "departure_at",
+          "origin",
+          "destination"
+        ],
+        "title": "RouteRequest",
+        "type": "object",
+        "description": "B15 Java DTO projection for the route request fields and optional probability threshold."
+      },
+      "RouteResult": {
+        "additionalProperties": true,
+        "properties": {
+          "schema_id": {
+            "const": "twinguard.route_result",
+            "title": "Schema Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "result_id": {
+            "title": "Result Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RouteRouteStatus"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "scenario_key": {
+            "title": "Scenario Key",
+            "type": "string"
+          },
+          "source_mode": {
+            "enum": [
+              "OBSERVED",
+              "DERIVED",
+              "SIMULATED",
+              "ASSUMPTION",
+              "REPLAY"
+            ],
+            "title": "Source Mode",
+            "type": "string"
+          },
+          "method": {
+            "enum": [
+              "static",
+              "current_flood_aware",
+              "horizon_aware",
+              "uncertainty_aware"
+            ],
+            "title": "Method",
+            "type": "string"
+          },
+          "origin_id": {
+            "title": "Origin Id",
+            "type": "string"
+          },
+          "destination_id": {
+            "title": "Destination Id",
+            "type": "string"
+          },
+          "travel_mode": {
+            "enum": [
+              "vehicle",
+              "walking"
+            ],
+            "title": "Travel Mode",
+            "type": "string"
+          },
+          "departure_at_utc": {
+            "format": "date-time",
+            "title": "Departure At Utc",
+            "type": "string"
+          },
+          "arrival_at_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrival At Utc"
+          },
+          "requested_horizon_seconds": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Requested Horizon Seconds"
+          },
+          "distance_m": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Distance M"
+          },
+          "travel_time_seconds": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Travel Time Seconds"
+          },
+          "topologically_reachable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topologically Reachable"
+          },
+          "route_accessibility_probability": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Route Accessibility Probability"
+          },
+          "route_failure_probability": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Route Failure Probability"
+          },
+          "minimum_accessibility_probability": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Minimum Accessibility Probability"
+          },
+          "route_geometry": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Geometry"
+          },
+          "node_path": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Node Path",
+            "type": "array"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/RouteRouteEdge"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "depth_thresholds": {
+            "$ref": "#/components/schemas/RouteRouteThresholds"
+          },
+          "edge_coverage": {
+            "$ref": "#/components/schemas/RouteRouteEdgeCoverage"
+          },
+          "graph": {
+            "$ref": "#/components/schemas/RouteRouteGraph"
+          },
+          "hazard_run": {
+            "$ref": "#/components/schemas/RouteRouteHazardRun"
+          },
+          "uncertainty": {
+            "$ref": "#/components/schemas/RouteRouteUncertainty"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/RouteRouteResultProvenance"
+          },
+          "qc_flags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Qc Flags",
+            "type": "array"
+          }
+        },
+        "required": [
+          "schema_id",
+          "schema_version",
+          "result_id",
+          "status",
+          "run_id",
+          "scenario_key",
+          "source_mode",
+          "method",
+          "origin_id",
+          "destination_id",
+          "travel_mode",
+          "departure_at_utc",
+          "arrival_at_utc",
+          "topologically_reachable",
+          "route_geometry",
+          "node_path",
+          "edges",
+          "depth_thresholds",
+          "edge_coverage",
+          "graph",
+          "hazard_run",
+          "uncertainty",
+          "provenance",
+          "qc_flags"
+        ],
+        "title": "RouteResponse",
+        "type": "object",
+        "description": "B15 Java DTO projection for A09 revision 3. Topological reachability is distinct from flood accessibility; no safety/live claim."
+      },
+      "Alert": {
+        "type": "object",
+        "required": [
+          "alert_id",
+          "severity",
+          "issued_at",
+          "valid_from",
+          "valid_to"
+        ],
+        "properties": {
+          "alert_id": {
+            "type": "integer"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "INFO",
+              "WATCH",
+              "WARNING",
+              "EMERGENCY"
+            ]
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valid_to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provenance": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "Shelter": {
+        "type": "object",
+        "required": [
+          "facility_id",
+          "category",
+          "candidate_only"
+        ],
+        "properties": {
+          "facility_id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "candidate_only": {
+            "type": "boolean"
+          },
+          "capacity_people": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "accessibility_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "ImpactResult": {
+        "additionalProperties": true,
+        "properties": {
+          "schema_id": {
+            "const": "twinguard.impact_result",
+            "title": "Schema Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "result_id": {
+            "title": "Result Id",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "integer"
+          },
+          "run_version": {
+            "title": "Run Version",
+            "type": "string"
+          },
+          "source_mode": {
+            "enum": [
+              "OBSERVED",
+              "DERIVED",
+              "SIMULATED",
+              "ASSUMPTION",
+              "REPLAY"
+            ],
+            "title": "Source Mode",
+            "type": "string"
+          },
+          "event": {
+            "$ref": "#/components/schemas/ImpactImpactEvent"
+          },
+          "valid_at_utc": {
+            "format": "date-time",
+            "title": "Valid At Utc",
+            "type": "string"
+          },
+          "aggregation_interval": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImpactAggregationInterval"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "aggregation_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aggregation Basis"
+          },
+          "generated_at_utc": {
+            "format": "date-time",
+            "title": "Generated At Utc",
+            "type": "string"
+          },
+          "scenario_key": {
+            "title": "Scenario Key",
+            "type": "string"
+          },
+          "thresholds": {
+            "$ref": "#/components/schemas/ImpactImpactThresholds"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/ImpactImpactMetrics"
+          },
+          "facility_access_by_category": {
+            "items": {
+              "$ref": "#/components/schemas/ImpactFacilityAccess"
+            },
+            "title": "Facility Access By Category",
+            "type": "array"
+          },
+          "sensitivity": {
+            "items": {
+              "$ref": "#/components/schemas/ImpactImpactSensitivity"
+            },
+            "title": "Sensitivity",
+            "type": "array"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/ImpactImpactCoverage"
+          },
+          "uncertainty": {
+            "$ref": "#/components/schemas/ImpactImpactUncertainty"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ImpactImpactProvenance"
+          },
+          "qc_flags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Qc Flags",
+            "type": "array"
+          },
+          "event_reference_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Reference Note"
+          }
+        },
+        "required": [
+          "schema_id",
+          "schema_version",
+          "result_id",
+          "run_id",
+          "run_version",
+          "source_mode",
+          "event",
+          "valid_at_utc",
+          "aggregation_interval",
+          "aggregation_basis",
+          "generated_at_utc",
+          "scenario_key",
+          "thresholds",
+          "metrics",
+          "facility_access_by_category",
+          "sensitivity",
+          "coverage",
+          "uncertainty",
+          "provenance",
+          "qc_flags",
+          "event_reference_note"
+        ],
+        "title": "ImpactResult",
+        "type": "object",
+        "description": "B15 Java DTO projection for A07 V4 owner output. Values are simulated; null/NoData are not zero."
+      },
+      "ImpactAggregationInterval": {
+        "additionalProperties": true,
+        "properties": {
+          "start_utc": {
+            "format": "date-time",
+            "title": "Start Utc",
+            "type": "string"
+          },
+          "end_utc": {
+            "format": "date-time",
+            "title": "End Utc",
+            "type": "string"
+          },
+          "convention": {
+            "const": "[start,end)",
+            "title": "Convention",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_utc",
+          "end_utc",
+          "convention"
+        ],
+        "title": "AggregationInterval",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactCoverageSlice": {
+        "additionalProperties": true,
+        "properties": {
+          "assessed_count": {
+            "minimum": 0,
+            "title": "Assessed Count",
+            "type": "integer"
+          },
+          "eligible_count": {
+            "minimum": 0,
+            "title": "Eligible Count",
+            "type": "integer"
+          },
+          "nodata_count": {
+            "minimum": 0,
+            "title": "Nodata Count",
+            "type": "integer"
+          },
+          "fraction_assessed": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fraction Assessed"
+          },
+          "coverage_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Coverage Basis"
+          }
+        },
+        "required": [
+          "assessed_count",
+          "eligible_count",
+          "nodata_count"
+        ],
+        "title": "CoverageSlice",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactFacilityAccess": {
+        "additionalProperties": true,
+        "properties": {
+          "category": {
+            "enum": [
+              "hospital",
+              "shelter",
+              "candidate_shelter"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "facility_count": {
+            "minimum": 0,
+            "title": "Facility Count",
+            "type": "integer"
+          },
+          "reachable_count": {
+            "minimum": 0,
+            "title": "Reachable Count",
+            "type": "integer"
+          },
+          "unreachable_count": {
+            "minimum": 0,
+            "title": "Unreachable Count",
+            "type": "integer"
+          },
+          "unassessed_count": {
+            "minimum": 0,
+            "title": "Unassessed Count",
+            "type": "integer"
+          },
+          "access_loss_fraction": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Access Loss Fraction"
+          },
+          "coverage_fraction": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Coverage Fraction"
+          },
+          "coverage_fraction_mean": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Coverage Fraction Mean"
+          },
+          "interpretation": {
+            "title": "Interpretation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "category",
+          "facility_count",
+          "reachable_count",
+          "unreachable_count",
+          "unassessed_count",
+          "interpretation"
+        ],
+        "title": "FacilityAccess",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactImpactCoverage": {
+        "additionalProperties": true,
+        "properties": {
+          "population": {
+            "$ref": "#/components/schemas/ImpactCoverageSlice"
+          },
+          "roads": {
+            "$ref": "#/components/schemas/ImpactCoverageSlice"
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/ImpactCoverageSlice"
+          },
+          "hazard_grid": {
+            "$ref": "#/components/schemas/ImpactCoverageSlice"
+          }
+        },
+        "required": [
+          "population",
+          "roads",
+          "facilities",
+          "hazard_grid"
+        ],
+        "title": "ImpactCoverage",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactImpactEvent": {
+        "additionalProperties": true,
+        "properties": {
+          "event_key": {
+            "title": "Event Key",
+            "type": "string"
+          },
+          "event_start_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Start Utc"
+          },
+          "event_end_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event End Utc"
+          },
+          "time_basis": {
+            "const": "UTC",
+            "title": "Time Basis",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_key",
+          "event_start_utc",
+          "event_end_utc",
+          "time_basis"
+        ],
+        "title": "ImpactEvent",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactImpactMetrics": {
+        "additionalProperties": true,
+        "properties": {
+          "population_exposed_people": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImpactMetricDistribution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "affected_road_length_m": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImpactMetricDistribution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "affected_facilities_count": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImpactMetricDistribution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "facility_access_loss_fraction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImpactMetricDistribution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "population_exposed_people",
+          "affected_road_length_m",
+          "affected_facilities_count",
+          "facility_access_loss_fraction"
+        ],
+        "title": "ImpactMetrics",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactImpactProvenance": {
+        "additionalProperties": true,
+        "properties": {
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/ImpactImpactSource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "algorithm": {
+            "title": "Algorithm",
+            "type": "string"
+          },
+          "algorithm_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Algorithm Version"
+          },
+          "code_commit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code Commit"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "title": "Parameters",
+            "type": "object"
+          },
+          "grid": {
+            "additionalProperties": true,
+            "title": "Grid",
+            "type": "object"
+          }
+        },
+        "required": [
+          "sources",
+          "algorithm",
+          "algorithm_version",
+          "code_commit",
+          "parameters",
+          "grid"
+        ],
+        "title": "ImpactProvenance",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactImpactSensitivity": {
+        "additionalProperties": true,
+        "properties": {
+          "threshold_m": {
+            "minimum": 0,
+            "title": "Threshold M",
+            "type": "number"
+          },
+          "population_exposed_known_people": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImpactMetricDistribution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "affected_road_length_m": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImpactMetricDistribution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mapped_facilities_exposed_count": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImpactMetricDistribution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "facility_access_loss_fraction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImpactMetricDistribution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "facility_access_by_category": {
+            "items": {
+              "$ref": "#/components/schemas/ImpactFacilityAccess"
+            },
+            "title": "Facility Access By Category",
+            "type": "array"
+          }
+        },
+        "required": [
+          "threshold_m",
+          "population_exposed_known_people",
+          "affected_road_length_m",
+          "mapped_facilities_exposed_count",
+          "facility_access_loss_fraction",
+          "facility_access_by_category"
+        ],
+        "title": "ImpactSensitivity",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactImpactSource": {
+        "additionalProperties": true,
+        "properties": {
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Source Sha256"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "version",
+          "role"
+        ],
+        "title": "ImpactSource",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactImpactThresholds": {
+        "additionalProperties": true,
+        "properties": {
+          "road_block_depth_m": {
+            "minimum": 0,
+            "title": "Road Block Depth M",
+            "type": "number"
+          },
+          "road_threshold_is_assumption": {
+            "title": "Road Threshold Is Assumption",
+            "type": "boolean"
+          },
+          "sensitivity_depth_thresholds_m": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Sensitivity Depth Thresholds M",
+            "type": "array"
+          },
+          "mapped_facility_exposure_threshold_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mapped Facility Exposure Threshold M"
+          },
+          "population_exposure_threshold_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Population Exposure Threshold M"
+          },
+          "exposure_thresholds_are_assumptions": {
+            "title": "Exposure Thresholds Are Assumptions",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "road_block_depth_m",
+          "road_threshold_is_assumption",
+          "sensitivity_depth_thresholds_m",
+          "mapped_facility_exposure_threshold_m",
+          "population_exposure_threshold_m",
+          "exposure_thresholds_are_assumptions"
+        ],
+        "title": "ImpactThresholds",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactImpactUncertainty": {
+        "additionalProperties": true,
+        "properties": {
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "ensemble_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ensemble Id"
+          },
+          "member_count": {
+            "minimum": 0,
+            "title": "Member Count",
+            "type": "integer"
+          },
+          "interpretation": {
+            "title": "Interpretation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "method",
+          "ensemble_id",
+          "member_count",
+          "interpretation"
+        ],
+        "title": "ImpactUncertainty",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "ImpactMetricDistribution": {
+        "additionalProperties": true,
+        "properties": {
+          "status": {
+            "enum": [
+              "AVAILABLE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean"
+          },
+          "p05": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P05"
+          },
+          "p50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P50"
+          },
+          "p95": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P95"
+          },
+          "member_count": {
+            "minimum": 0,
+            "title": "Member Count",
+            "type": "integer"
+          },
+          "interpretation": {
+            "title": "Interpretation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "unit",
+          "mean",
+          "p05",
+          "p50",
+          "p95",
+          "member_count",
+          "interpretation"
+        ],
+        "title": "MetricDistribution",
+        "type": "object",
+        "description": "Nested schema used by ImpactResult."
+      },
+      "RouteRouteEdge": {
+        "additionalProperties": true,
+        "properties": {
+          "edge_id": {
+            "title": "Edge Id",
+            "type": "integer"
+          },
+          "entry_at_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry At Utc"
+          },
+          "exit_at_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exit At Utc"
+          },
+          "distance_m": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance M"
+          },
+          "travel_time_seconds": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Travel Time Seconds"
+          },
+          "depth_max_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depth Max M"
+          },
+          "passable_probability": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Passable Probability"
+          },
+          "bridge": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bridge"
+          },
+          "tunnel": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tunnel"
+          },
+          "assessment_status": {
+            "title": "Assessment Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "edge_id",
+          "entry_at_utc",
+          "exit_at_utc",
+          "distance_m",
+          "depth_max_m",
+          "bridge",
+          "tunnel",
+          "assessment_status"
+        ],
+        "title": "RouteEdge",
+        "type": "object",
+        "description": "Nested schema used by RouteResult."
+      },
+      "RouteRouteEdgeCoverage": {
+        "additionalProperties": true,
+        "properties": {
+          "route_edge_count": {
+            "minimum": 0,
+            "title": "Route Edge Count",
+            "type": "integer"
+          },
+          "assessed_edge_count": {
+            "minimum": 0,
+            "title": "Assessed Edge Count",
+            "type": "integer"
+          },
+          "unassessed_edge_count": {
+            "minimum": 0,
+            "title": "Unassessed Edge Count",
+            "type": "integer"
+          },
+          "fraction_assessed": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fraction Assessed"
+          }
+        },
+        "required": [
+          "route_edge_count",
+          "assessed_edge_count",
+          "unassessed_edge_count"
+        ],
+        "title": "RouteEdgeCoverage",
+        "type": "object",
+        "description": "Nested schema used by RouteResult."
+      },
+      "RouteRouteGraph": {
+        "additionalProperties": true,
+        "properties": {
+          "graph_id": {
+            "title": "Graph Id",
+            "type": "string"
+          },
+          "graph_version": {
+            "title": "Graph Version",
+            "type": "string"
+          },
+          "graph_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Graph Sha256"
+          },
+          "crs": {
+            "title": "Crs",
+            "type": "string"
+          },
+          "edge_source_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Edge Source Ids",
+            "type": "array"
+          },
+          "build_algorithm": {
+            "title": "Build Algorithm",
+            "type": "string"
+          },
+          "build_version": {
+            "title": "Build Version",
+            "type": "string"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "graph_id",
+          "graph_version",
+          "crs",
+          "edge_source_ids",
+          "build_algorithm",
+          "build_version",
+          "assumptions"
+        ],
+        "title": "RouteGraph",
+        "type": "object",
+        "description": "Nested schema used by RouteResult."
+      },
+      "RouteRouteHazardRun": {
+        "additionalProperties": true,
+        "properties": {
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "issued_at_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued At Utc"
+          },
+          "valid_start_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Start Utc"
+          },
+          "valid_end_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid End Utc"
+          },
+          "depth_source_id": {
+            "title": "Depth Source Id",
+            "type": "string"
+          },
+          "depth_source_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Depth Source Sha256"
+          },
+          "ensemble_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ensemble Id"
+          }
+        },
+        "required": [
+          "run_id",
+          "version",
+          "issued_at_utc",
+          "valid_start_utc",
+          "valid_end_utc",
+          "depth_source_id",
+          "ensemble_id"
+        ],
+        "title": "RouteHazardRun",
+        "type": "object",
+        "description": "Nested schema used by RouteResult."
+      },
+      "RouteRouteResultProvenance": {
+        "additionalProperties": true,
+        "properties": {
+          "algorithm": {
+            "title": "Algorithm",
+            "type": "string"
+          },
+          "algorithm_version": {
+            "title": "Algorithm Version",
+            "type": "string"
+          },
+          "code_commit": {
+            "title": "Code Commit",
+            "type": "string"
+          },
+          "generated_at_utc": {
+            "format": "date-time",
+            "title": "Generated At Utc",
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "title": "Parameters",
+            "type": "object"
+          }
+        },
+        "required": [
+          "algorithm",
+          "algorithm_version",
+          "code_commit",
+          "generated_at_utc",
+          "parameters"
+        ],
+        "title": "RouteResultProvenance",
+        "type": "object",
+        "description": "Nested schema used by RouteResult."
+      },
+      "RouteRouteStatus": {
+        "enum": [
+          "ROUTE_FOUND",
+          "NO_TOPOLOGICAL_PATH",
+          "INSUFFICIENT_HAZARD_COVERAGE",
+          "BELOW_ACCESSIBILITY_CONSTRAINT",
+          "INPUT_UNAVAILABLE"
+        ],
+        "title": "RouteStatus",
+        "type": "string",
+        "description": "Nested schema used by RouteResult."
+      },
+      "RouteRouteThresholds": {
+        "additionalProperties": true,
+        "properties": {
+          "ordinary_block_at_or_above_m": {
+            "title": "Ordinary Block At Or Above M",
+            "type": "number"
+          },
+          "tunnel_proxy_block_at_or_above_m": {
+            "title": "Tunnel Proxy Block At Or Above M",
+            "type": "number"
+          },
+          "bridge_rule": {
+            "title": "Bridge Rule",
+            "type": "string"
+          },
+          "thresholds_are_assumptions": {
+            "title": "Thresholds Are Assumptions",
+            "type": "boolean"
+          },
+          "uncertainty_route_accessibility_minimum": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Uncertainty Route Accessibility Minimum"
+          },
+          "sensitivity_m": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Sensitivity M",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ordinary_block_at_or_above_m",
+          "tunnel_proxy_block_at_or_above_m",
+          "bridge_rule",
+          "thresholds_are_assumptions",
+          "sensitivity_m"
+        ],
+        "title": "RouteThresholds",
+        "type": "object",
+        "description": "Nested schema used by RouteResult."
+      },
+      "RouteRouteUncertainty": {
+        "additionalProperties": true,
+        "properties": {
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "ensemble_member_count": {
+            "minimum": 0,
+            "title": "Ensemble Member Count",
+            "type": "integer"
+          },
+          "travel_time_spread_seconds": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Travel Time Spread Seconds"
+          },
+          "failure_probability_constraint": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Failure Probability Constraint"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "method",
+          "ensemble_member_count",
+          "limitations"
+        ],
+        "title": "RouteUncertainty",
+        "type": "object",
+        "description": "Nested schema used by RouteResult."
+      },
+      "ScenarioVisualizationGrid": {
+        "type": "object",
+        "properties": {
+          "crs": {
+            "type": "string",
+            "const": "EPSG:32644"
+          },
+          "width": {
+            "type": "integer",
+            "const": 69
+          },
+          "height": {
+            "type": "integer",
+            "const": 88
+          },
+          "pixel_size_m": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number",
+                "const": 600.0
+              },
+              {
+                "type": "number",
+                "const": 600.0
+              }
+            ],
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "affine_transform": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number",
+                "const": 600.0
+              },
+              {
+                "type": "number",
+                "const": 0.0
+              },
+              {
+                "type": "number",
+                "const": 390000.0
+              },
+              {
+                "type": "number",
+                "const": 0.0
+              },
+              {
+                "type": "number",
+                "const": -600.0
+              },
+              {
+                "type": "number",
+                "const": 1471620.0
+              }
+            ],
+            "minItems": 6,
+            "maxItems": 6
+          }
+        },
+        "required": [
+          "crs",
+          "width",
+          "height",
+          "pixel_size_m",
+          "affine_transform"
+        ],
+        "additionalProperties": false,
+        "description": "Exact A20 grid; values are not reprojected or resampled."
+      },
+      "ScenarioVisualizationDepthUnits": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "const": "m"
+          },
+          "metadata_note": {
+            "type": "string",
+            "const": "Both source reports specify metres; inspected GeoTIFF band unit metadata is unset."
+          }
+        },
+        "required": [
+          "value",
+          "metadata_note"
+        ],
+        "additionalProperties": false,
+        "description": "Metres are evidenced by reports; GeoTIFF band unit tags are unset."
+      },
+      "ScenarioVisualizationNoData": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "const": -9999.0
+          },
+          "meaning": {
+            "type": "string",
+            "const": "outside assessed CMA or otherwise unmodelled; it is unknown coverage, not dry"
+          },
+          "source_raster_masks_preserved_by_reference": {
+            "type": "boolean",
+            "const": true
+          },
+          "valid_cells_per_forecast_raster": {
+            "type": "integer",
+            "const": 2430
+          }
+        },
+        "required": [
+          "value",
+          "meaning",
+          "source_raster_masks_preserved_by_reference",
+          "valid_cells_per_forecast_raster"
+        ],
+        "additionalProperties": false,
+        "description": "NoData is unknown coverage, not dry or zero."
+      },
+      "ScenarioVisualizationRasterReference": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Manifest-relative path; do not rewrite or resample the source raster."
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "grid": {
+            "$ref": "#/components/schemas/ScenarioVisualizationGrid"
+          },
+          "dtype": {
+            "const": "float32",
+            "type": "string"
+          },
+          "band_units_metadata": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Currently null in the source GeoTIFF; units are not raster-tag-confirmed."
+          },
+          "units": {
+            "const": "m",
+            "type": "string"
+          },
+          "units_basis": {
+            "type": "string",
+            "const": "Phase 11/12 reports describe these depth products in metres; source TIFF unit metadata is unset."
+          },
+          "nodata_value": {
+            "const": -9999.0,
+            "type": "number"
+          },
+          "nodata_meaning": {
+            "type": "string",
+            "enum": [
+              "outside assessed CMA; not dry"
+            ],
+            "description": "Preserve the raster-reference description verbatim; do not replace with dry/zero."
+          },
+          "valid_cell_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "nodata_cell_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "source_status_tag": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "size_bytes",
+          "grid",
+          "dtype",
+          "band_units_metadata",
+          "units",
+          "units_basis",
+          "nodata_value",
+          "nodata_meaning",
+          "valid_cell_count",
+          "nodata_cell_count",
+          "source_status_tag"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationBandSet": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "p05": {
+                "$ref": "#/components/schemas/ScenarioVisualizationRasterReference"
+              },
+              "p50": {
+                "$ref": "#/components/schemas/ScenarioVisualizationRasterReference"
+              },
+              "p95": {
+                "$ref": "#/components/schemas/ScenarioVisualizationRasterReference"
+              }
+            },
+            "required": [
+              "p05",
+              "p50",
+              "p95"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "mean": {
+                "$ref": "#/components/schemas/ScenarioVisualizationRasterReference"
+              },
+              "p05": {
+                "$ref": "#/components/schemas/ScenarioVisualizationRasterReference"
+              },
+              "p95": {
+                "$ref": "#/components/schemas/ScenarioVisualizationRasterReference"
+              }
+            },
+            "required": [
+              "mean",
+              "p05",
+              "p95"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ScenarioVisualizationSlice": {
+        "type": "object",
+        "properties": {
+          "lead_hours": {
+            "type": "integer",
+            "enum": [
+              6,
+              12,
+              24,
+              48,
+              72
+            ]
+          },
+          "valid_time_utc": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "valid_time_rule": {
+            "type": "string"
+          },
+          "bands": {
+            "$ref": "#/components/schemas/ScenarioVisualizationBandSet"
+          }
+        },
+        "required": [
+          "lead_hours",
+          "valid_time_utc",
+          "valid_time_rule",
+          "bands"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationMember": {
+        "type": "object",
+        "properties": {
+          "member_id": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "infiltration_multiplier": {
+            "type": "number"
+          },
+          "manning_multiplier": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "member_id",
+          "infiltration_multiplier",
+          "manning_multiplier"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationSeries": {
+        "type": "object",
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "date"
+          },
+          "scenario_id": {
+            "type": "string",
+            "const": "perfect_foresight_imerg"
+          },
+          "source_mode": {
+            "type": "string",
+            "const": "PERFECT_FORESIGHT_HINDCAST"
+          },
+          "window_start_utc": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "window_end_utc_inclusive": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "member_count": {
+            "type": "integer",
+            "const": 20
+          },
+          "members": {
+            "type": "array",
+            "minItems": 20,
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/ScenarioVisualizationMember"
+            }
+          },
+          "rainfall_semantics": {
+            "type": "string"
+          },
+          "band_semantics": {
+            "type": "string"
+          },
+          "slices": {
+            "type": "array",
+            "minItems": 5,
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/ScenarioVisualizationSlice"
+            }
+          }
+        },
+        "required": [
+          "event_id",
+          "scenario_id",
+          "source_mode",
+          "window_start_utc",
+          "window_end_utc_inclusive",
+          "member_count",
+          "members",
+          "rainfall_semantics",
+          "band_semantics",
+          "slices"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationSeriesSummary": {
+        "type": "object",
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "date"
+          },
+          "scenario_id": {
+            "type": "string"
+          },
+          "source_mode": {
+            "type": "string"
+          },
+          "window_start_utc": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "window_end_utc_inclusive": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "member_count": {
+            "type": "integer"
+          },
+          "rainfall_semantics": {
+            "type": "string"
+          },
+          "band_semantics": {
+            "type": "string"
+          },
+          "saved_times_utc": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            },
+            "minItems": 5,
+            "maxItems": 5
+          }
+        },
+        "required": [
+          "event_id",
+          "scenario_id",
+          "source_mode",
+          "window_start_utc",
+          "window_end_utc_inclusive",
+          "member_count",
+          "rainfall_semantics",
+          "band_semantics",
+          "saved_times_utc"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationContextLayer": {
+        "type": "object",
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "date"
+          },
+          "temporal_kind": {
+            "type": "string",
+            "enum": [
+              "selected_hour",
+              "per_cell_event_peak"
+            ]
+          },
+          "selected_hour_index_zero_based": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "valid_time_utc": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "Z$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null for per-cell event peaks because no single valid instant exists."
+          },
+          "window_start_utc": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "window_end_utc_inclusive": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "time_semantics": {
+            "type": "string"
+          },
+          "band_semantics": {
+            "type": "string"
+          },
+          "bands": {
+            "$ref": "#/components/schemas/ScenarioVisualizationBandSet"
+          }
+        },
+        "required": [
+          "event_id",
+          "temporal_kind",
+          "selected_hour_index_zero_based",
+          "valid_time_utc",
+          "window_start_utc",
+          "window_end_utc_inclusive",
+          "time_semantics",
+          "band_semantics",
+          "bands"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationDeclaredHash": {
+        "type": "object",
+        "properties": {
+          "task": {
+            "type": "string",
+            "enum": [
+              "A05",
+              "A06"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "expected_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "actual_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "status": {
+            "type": "string",
+            "const": "match"
+          }
+        },
+        "required": [
+          "task",
+          "path",
+          "expected_sha256",
+          "actual_sha256",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationSummaryProvenance": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "status": {
+            "type": "string"
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "device": {
+            "type": "string"
+          },
+          "runtime_seconds_total": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationProvenance": {
+        "type": "object",
+        "properties": {
+          "declared_input_hashes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScenarioVisualizationDeclaredHash"
+            }
+          },
+          "forecast_summary": {
+            "$ref": "#/components/schemas/ScenarioVisualizationSummaryProvenance"
+          },
+          "simulation_summary": {
+            "$ref": "#/components/schemas/ScenarioVisualizationSummaryProvenance"
+          },
+          "source_hash_status": {
+            "type": "string",
+            "const": "all_declared_A05_A06_input_hashes_match_current_files"
+          }
+        },
+        "required": [
+          "declared_input_hashes",
+          "forecast_summary",
+          "simulation_summary",
+          "source_hash_status"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationTimeBasis": {
+        "type": "object",
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "const": "UTC"
+          },
+          "valid_time_rule": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "timezone",
+          "valid_time_rule"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationCatalog": {
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0"
+          },
+          "artifact_version": {
+            "type": "string",
+            "const": "batch2_v1"
+          },
+          "status": {
+            "type": "string",
+            "const": "DERIVED_ASSUMPTION_BASED_RESEARCH_SCENARIO"
+          },
+          "grid": {
+            "$ref": "#/components/schemas/ScenarioVisualizationGrid"
+          },
+          "depth_units": {
+            "$ref": "#/components/schemas/ScenarioVisualizationDepthUnits"
+          },
+          "nodata": {
+            "$ref": "#/components/schemas/ScenarioVisualizationNoData"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ScenarioVisualizationProvenance"
+          },
+          "scenario_series": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "$ref": "#/components/schemas/ScenarioVisualizationSeriesSummary"
+            }
+          },
+          "context_layers": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": {
+              "$ref": "#/components/schemas/ScenarioVisualizationContextLayer"
+            }
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "presentation_policy": {
+            "type": "string"
+          },
+          "time_basis": {
+            "$ref": "#/components/schemas/ScenarioVisualizationTimeBasis"
+          }
+        },
+        "required": [
+          "schema_version",
+          "artifact_version",
+          "status",
+          "grid",
+          "depth_units",
+          "nodata",
+          "provenance",
+          "scenario_series",
+          "context_layers",
+          "limitations",
+          "presentation_policy",
+          "time_basis"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationAsset": {
+        "type": "object",
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0"
+          },
+          "artifact_version": {
+            "type": "string",
+            "const": "batch2_v1"
+          },
+          "status": {
+            "type": "string",
+            "const": "DERIVED_ASSUMPTION_BASED_RESEARCH_SCENARIO"
+          },
+          "grid": {
+            "$ref": "#/components/schemas/ScenarioVisualizationGrid"
+          },
+          "depth_units": {
+            "$ref": "#/components/schemas/ScenarioVisualizationDepthUnits"
+          },
+          "nodata": {
+            "$ref": "#/components/schemas/ScenarioVisualizationNoData"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ScenarioVisualizationProvenance"
+          },
+          "series": {
+            "$ref": "#/components/schemas/ScenarioVisualizationSeries"
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "presentation_policy": {
+            "type": "string"
+          },
+          "time_basis": {
+            "$ref": "#/components/schemas/ScenarioVisualizationTimeBasis"
+          }
+        },
+        "required": [
+          "schema_version",
+          "artifact_version",
+          "status",
+          "grid",
+          "depth_units",
+          "nodata",
+          "provenance",
+          "series",
+          "limitations",
+          "presentation_policy",
+          "time_basis"
+        ],
+        "additionalProperties": false
+      },
+      "ScenarioVisualizationUnavailable": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "const": "SCENARIO_VISUALIZATION_UNAVAILABLE"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "detail"
+        ],
+        "additionalProperties": false
+      },
+      "ImpactArtifactRequest": {
+        "type": "object",
+        "description": "Exact lookup of one saved A07 V4 impact result. valid_at identifies the UTC valid instant and must be offset-aware.",
+        "properties": {
+          "run_id": {
+            "type": "integer"
+          },
+          "valid_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Offset-aware timestamp identifying the UTC valid instant."
+          },
+          "scenario_key": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "run_id",
+          "valid_at",
+          "scenario_key"
+        ],
+        "additionalProperties": false
+      },
+      "ReplaySourceProvenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_id",
+          "archive_path",
+          "archive_sha256",
+          "member",
+          "member_sha256",
+          "csv_physical_line",
+          "raw_date_field",
+          "raw_storage_field",
+          "raw_storage_value",
+          "timezone_status",
+          "rainfall_unit_status"
+        ],
+        "properties": {
+          "source_id": {
+            "const": "Kaggle Chennai Water Management",
+            "type": "string"
+          },
+          "archive_path": {
+            "const": "data/raw/reservoirs/kaggle_chennai_water_management/archive.zip",
+            "type": "string"
+          },
+          "archive_sha256": {
+            "const": "7645febde7ccc21871200487139d1c8a84ea90a6dd2eccc93b7d1f06faf69197",
+            "type": "string"
+          },
+          "member": {
+            "const": "chennai_reservoir_levels.csv",
+            "type": "string"
+          },
+          "member_sha256": {
+            "const": "3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7",
+            "type": "string"
+          },
+          "csv_physical_line": {
+            "const": 4354,
+            "type": "integer"
+          },
+          "raw_date_field": {
+            "const": "Date",
+            "type": "string"
+          },
+          "raw_storage_field": {
+            "const": "POONDI",
+            "type": "string"
+          },
+          "raw_storage_value": {
+            "const": "2745.00",
+            "type": "string",
+            "description": "Exact CSV lexical value; retain trailing zeros."
+          },
+          "timezone_status": {
+            "const": "unknown; source provides date only",
+            "type": "string"
+          },
+          "rainfall_unit_status": {
+            "const": "INFERRED; original unit unspecified",
+            "type": "string",
+            "description": "The legacy Track B rainfall field is unit-uncertain; do not describe it as verified millimetres."
+          }
+        }
+      },
+      "ReplaySourceObservation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "event_id",
+          "source",
+          "source_mode",
+          "time_precision",
+          "source_date",
+          "observed_at",
+          "observation_timezone",
+          "received_at",
+          "reservoir_key",
+          "raw_source_row",
+          "storage_value",
+          "storage_unit",
+          "provenance"
+        ],
+        "properties": {
+          "schema": {
+            "const": "trackb.reservoir_update.v1",
+            "type": "string"
+          },
+          "event_id": {
+            "const": "replay:POONDI:date:2015-12-01",
+            "type": "string"
+          },
+          "source": {
+            "const": "replay",
+            "type": "string"
+          },
+          "source_mode": {
+            "const": "REPLAY",
+            "type": "string"
+          },
+          "time_precision": {
+            "const": "date",
+            "type": "string"
+          },
+          "source_date": {
+            "const": "2015-12-01",
+            "type": "string",
+            "format": "date"
+          },
+          "observed_at": {
+            "type": "null",
+            "description": "Historical observation instant is unknown; no midnight is synthesized."
+          },
+          "observation_timezone": {
+            "const": "unknown",
+            "type": "string"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Actual ingestion time, with supplied offset; separate from source_date."
+          },
+          "reservoir_key": {
+            "const": "POONDI",
+            "type": "string"
+          },
+          "raw_source_row": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "Date",
+              "POONDI"
+            ],
+            "properties": {
+              "Date": {
+                "const": "01-12-2015",
+                "type": "string"
+              },
+              "POONDI": {
+                "const": "2745.00",
+                "type": "string"
+              }
+            }
+          },
+          "storage_value": {
+            "const": 2745,
+            "type": "number",
+            "description": "Normalized numeric projection of the original raw lexical value."
+          },
+          "storage_unit": {
+            "const": "mcft",
+            "type": "string"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ReplaySourceProvenance"
+          }
+        }
+      },
+      "ReplayContextInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_date",
+          "reservoir_key",
+          "role",
+          "source_member_sha256"
+        ],
+        "properties": {
+          "source_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "reservoir_key": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "description": "Feature-window or threshold context used by the unchanged B19 replay path; must not be represented as the selected event."
+          },
+          "source_member_sha256": {
+            "const": "3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7",
+            "type": "string"
+          }
+        }
+      },
+      "ReplayRunIdentity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identity_version",
+          "replay_run_id",
+          "algorithm_id",
+          "configuration_sha256",
+          "normalized_input_sha256",
+          "context_inputs"
+        ],
+        "properties": {
+          "identity_version": {
+            "const": "b13-replay-identity-v1",
+            "type": "string"
+          },
+          "replay_run_id": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$",
+            "description": "SHA-256 over UTF-8 canonical JSON (sorted keys, compact separators) of identity_version, source archive/member hashes, exact event selector and physical line, algorithm_id, configuration_sha256, and normalized_input_sha256. Excludes received_at/wall-clock time."
+          },
+          "algorithm_id": {
+            "const": "trackb-rule-v1",
+            "type": "string"
+          },
+          "configuration_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "normalized_input_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "context_inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReplayContextInput"
+            },
+            "description": "All additional historical rows used for rolling features/threshold inputs, listed with date and provenance; empty only if the unchanged processing proves no context was used."
+          }
+        }
+      },
+      "ReplayDerivedAlert": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "event_id",
+          "source_date",
+          "time_precision",
+          "observation_timezone",
+          "observed_at",
+          "received_at",
+          "source",
+          "reservoir_key",
+          "level",
+          "confidence",
+          "valid_from",
+          "valid_to",
+          "rule_version",
+          "trigger_inputs",
+          "target",
+          "provenance"
+        ],
+        "properties": {
+          "schema": {
+            "const": "trackb.alert.v1",
+            "type": "string"
+          },
+          "event_id": {
+            "const": "replay:POONDI:date:2015-12-01",
+            "type": "string"
+          },
+          "source_date": {
+            "const": "2015-12-01",
+            "type": "string",
+            "format": "date"
+          },
+          "time_precision": {
+            "const": "date",
+            "type": "string"
+          },
+          "observation_timezone": {
+            "const": "unknown",
+            "type": "string"
+          },
+          "observed_at": {
+            "type": "null"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "source": {
+            "const": "replay",
+            "type": "string"
+          },
+          "reservoir_key": {
+            "const": "POONDI",
+            "type": "string"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "Normal",
+              "Watch",
+              "Warning",
+              "Critical"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Transparent rule-evidence score, not a calibrated probability."
+          },
+          "valid_from": {
+            "type": "null",
+            "description": "Date-only output has no exact validity start."
+          },
+          "valid_to": {
+            "type": "null",
+            "description": "Date-only output has no exact validity end."
+          },
+          "rule_version": {
+            "const": "trackb-rule-v1",
+            "type": "string"
+          },
+          "trigger_inputs": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "storage_pct",
+              "rise_1d_pct",
+              "rise_3d_pct",
+              "rain_3d_mm"
+            ],
+            "properties": {
+              "storage_pct": {
+                "type": "number",
+                "description": "Derived percentage using the existing capacity assumption; not a direct source measurement."
+              },
+              "rise_1d_pct": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "rise_3d_pct": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "rain_3d_mm": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Legacy field name; source rainfall units are undocumented/inferred. Do not present as verified mm."
+              }
+            }
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "horizon_days",
+              "capacity_fraction",
+              "status"
+            ],
+            "properties": {
+              "horizon_days": {
+                "const": 7,
+                "type": "integer"
+              },
+              "capacity_fraction": {
+                "const": 0.8,
+                "type": "number"
+              },
+              "status": {
+                "const": "DEFAULT, to confirm",
+                "type": "string"
+              }
+            }
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ReplaySourceProvenance"
+          }
+        }
+      },
+      "ReplayDerivedOutput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "alert",
+          "output_sha256"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "produced",
+              "not_produced"
+            ]
+          },
+          "alert": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReplayDerivedAlert"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "output_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "SHA-256 of the canonical derived alert JSON; null when no alert was produced."
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "status": {
+                "const": "produced"
+              },
+              "alert": {
+                "$ref": "#/components/schemas/ReplayDerivedAlert"
+              },
+              "output_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "const": "not_produced"
+              },
+              "alert": {
+                "type": "null"
+              },
+              "output_sha256": {
+                "type": "null"
+              }
+            }
+          }
+        ],
+        "description": "A missing alert is explicitly represented as not_produced; never fabricate one to fill the UI. Current approved B19 path produces a storage-rule alert only, not a flood-depth result."
+      },
+      "ReplayObservationResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contract_version",
+          "source_observation",
+          "replay",
+          "derived_output",
+          "limitations"
+        ],
+        "properties": {
+          "contract_version": {
+            "const": "C4-v2",
+            "type": "string"
+          },
+          "source_observation": {
+            "$ref": "#/components/schemas/ReplaySourceObservation"
+          },
+          "replay": {
+            "$ref": "#/components/schemas/ReplayRunIdentity"
+          },
+          "derived_output": {
+            "$ref": "#/components/schemas/ReplayDerivedOutput"
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "Must state historical time/timezone unknown; derived-only output; storage-rule scope; rainfall-unit limitation; not flood science, live warning, validated forecast, or safety guidance."
+          }
+        }
+      },
+      "ReplayLookupError": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "code",
+          "detail"
+        ],
+        "properties": {
+          "status": {
+            "type": "integer",
+            "enum": [
+              400,
+              404,
+              409,
+              503
+            ]
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "invalid_selector",
+              "not_found",
+              "ambiguous_identity",
+              "asset_unavailable"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "status": {
+                "const": 400
+              },
+              "code": {
+                "const": "invalid_selector"
+              }
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "const": 404
+              },
+              "code": {
+                "const": "not_found"
+              }
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "const": 409
+              },
+              "code": {
+                "const": "ambiguous_identity"
+              }
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "const": 503
+              },
+              "code": {
+                "const": "asset_unavailable"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
 }

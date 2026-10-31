@@ -44,6 +44,18 @@ const navigation = [
 
 type PageId = typeof navigation[number]['id'];
 
+export type GateStatus = 'ready' | 'not_ready' | 'unknown';
+
+export function normalizeGateStatus(value: unknown): GateStatus {
+  return value === 'ready' || value === 'not_ready' ? value : 'unknown';
+}
+
+export function gateStatusText(value: GateStatus): string {
+  if (value === 'ready') return 'READY';
+  if (value === 'not_ready') return 'NOT READY';
+  return 'STATUS UNKNOWN';
+}
+
 const unavailableFeeds = [
   ['Flood & terrain layers', 'No verified tile service'],
   ['Reservoir observations', 'Track B API not mounted'],
@@ -52,6 +64,7 @@ const unavailableFeeds = [
 ];
 
 function App() {
+  const gateStatus = normalizeGateStatus(import.meta.env.VITE_GATE_G0_STATUS);
   const [page, setPage] = useState<PageId>('overview');
   const [selectedWindowId, setSelectedWindowId] = useState('');
   const selectedWindow = eventWindows.find((window) => window.id === selectedWindowId);
@@ -92,7 +105,7 @@ function App() {
         <div className="sidebar-status">
           <span className="overline">SYSTEM MODE</span>
           <StatusBadge tone="warning" label="UNCONNECTED" />
-          <p>No source is authorized for live display. G0 remains not ready.</p>
+          <p>No source is authorized for live display.</p>
         </div>
 
         <div className="sidebar-footer"><span className="sidebar-version">UI FOUNDATION · 0.5</span><span>Evidence before action</span></div>
@@ -115,7 +128,7 @@ function App() {
             </label>
             <div className="mode-indicator" aria-label="No live, replay, or simulated source is connected">
               <span className="mode-indicator-mark" aria-hidden="true">—</span>
-              <span><strong>NO CONNECTED SOURCE</strong><small>G0 NOT READY</small></span>
+                <span><strong>NO CONNECTED SOURCE</strong><small role="status" aria-label={`Gate G0: ${gateStatusText(gateStatus)}`} data-gate-status={gateStatus}>G0 {gateStatusText(gateStatus)}</small></span>
             </div>
           </div>
         </header>
@@ -126,7 +139,7 @@ function App() {
           {page === 'reservoirs' && <ReservoirAlertsPanel selectedWindow={selectedWindow} />}
           {page === 'decisions' && <DecisionSupportPanel />}
           {page === 'evidence' && <EvidencePage />}
-          <footer className="global-footer"><span>TWIN GUARD · CHENNAI</span><span>No live data connected · research interface only</span><span>G0 <b>NOT READY</b></span></footer>
+          <footer className="global-footer"><span>TWIN GUARD · CHENNAI</span><span>No live data connected · research interface only</span><span aria-hidden="true">G0 <b data-gate-status={gateStatus}>{gateStatusText(gateStatus)}</b></span></footer>
         </main>
       </div>
     </div>

@@ -7,6 +7,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_GATE_G0_STATUS: ${TWINGUARD_G0_STATUS:-unknown}
     ports:
       - "127.0.0.1:8081:80"
     healthcheck:

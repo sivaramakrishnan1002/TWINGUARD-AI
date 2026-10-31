@@ -6,9 +6,22 @@ from typing import Any, Literal
 
 from fastapi import FastAPI, HTTPException
 from pydantic import AnyUrl, BaseModel, ConfigDict, Field, field_serializer, field_validator, model_validator
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import get_layer_records
 from app.scenario_visualization.router import router as scenario_visualization_router
+
+
+class _ExactAcceptCORSMiddleware(CORSMiddleware):
+    """Apply CR-010's one explicit request-header allowance."""
+
+    def __init__(self, app, **kwargs):
+        super().__init__(app, **kwargs)
+        # Starlette automatically includes browser safelisted headers. This
+        # package policy intentionally allows only the explicitly approved
+        # Accept header, including in the preflight response.
+        self.allow_headers = ["accept"]
+        self.preflight_headers["Access-Control-Allow-Headers"] = "Accept"
 
 
 class Health(BaseModel):
@@ -376,6 +389,13 @@ app = FastAPI(
     title="TwinGuard AI Service",
     version="0.1.0",
     description="Scaffold following the TwinGuard AI service contract.",
+)
+app.add_middleware(
+    _ExactAcceptCORSMiddleware,
+    allow_origins=["http://127.0.0.1:8081"],
+    allow_methods=["GET"],
+    allow_headers=["Accept"],
+    allow_credentials=False,
 )
 app.include_router(scenario_visualization_router)
 

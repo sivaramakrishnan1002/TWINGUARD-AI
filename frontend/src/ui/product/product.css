@@ -815,3 +815,17 @@
 @media (prefers-reduced-motion: reduce) {
   .tg-product__overview-tile:hover { transform: none; }
 }
+.tg-product__source-boundary { display: grid; gap: 10px; margin-top: 16px; padding: 13px; border: 1px solid var(--tg-line); border-radius: 8px; background: #0b1927; }
+.tg-product__source-boundary h3 { margin: 3px 0 0; font-size: 16px; }
+.tg-product__source-state { min-width: 0; padding: 12px; border: 1px solid #315667; border-radius: 6px; background: #102538; }
+.tg-product__source-state > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px; }
+.tg-product__source-state > div span { color: var(--tg-muted); }
+.tg-product__source-state > div strong { color: #a9e5d9; font-size: 12px; letter-spacing: .045em; }
+.tg-product__source-state p { margin: 7px 0 0; overflow-wrap: anywhere; color: #d2dee6; font-size: 12px; }
+.tg-product__source-state small { display: block; margin-top: 9px; color: #b5c6d1; font-size: 11px; }
+.tg-product__source-state--unavailable { border-color: #695a43; background: #211e1a; }
+.tg-product__source-state--unavailable > div strong { color: #f0d19a; }
+@media (max-width: 520px) {
+  .tg-product__source-boundary { padding: 10px; }
+  .tg-product__source-state { padding: 10px; }
+}

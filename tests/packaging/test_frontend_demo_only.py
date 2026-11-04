@@ -13,6 +13,7 @@ PRODUCT_ROOTS = [
     FRONTEND / "src/ui/App.tsx",
     FRONTEND / "src/ui/product",
     FRONTEND / "src/ui/demo",
+    FRONTEND / "src/ui/live-readiness",
 ]
 FORBIDDEN = [
     (re.compile(r"\bfetch\s*\(", re.I), "fetch call"),
@@ -59,7 +60,7 @@ class FrontendDemoOnlyTests(unittest.TestCase):
         assets = list((dist / "assets").glob("index-*.js")) if (dist / "assets").exists() else []
         self.assertTrue(assets, "Run the install-free frontend build before the packaged UI smoke check")
         bundle = "\n".join(asset.read_text(encoding="utf-8") for asset in assets)
-        for label in ("Situation Overview", "3D Flood Twin", "Reservoirs & Alerts", "Emergency Response", "What-if lab", "Data & system", "SIMULATED"):
+        for label in ("Situation Overview", "3D Flood Twin", "Reservoirs & Alerts", "Emergency Response", "What-if lab", "Data & system", "SIMULATED", "STALE", "UNAVAILABLE", "NoData", "Source and freshness state"):
             with self.subTest(label=label):
                 self.assertIn(label, bundle)
         for forbidden in ("127.0.0.1:8000", "127.0.0.1:8080", "/scenario-visualization", "/replay-alerts"):

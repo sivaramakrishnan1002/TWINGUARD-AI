@@ -1,9 +1,10 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { DemoFrame, DemoReservoir, DemoScenario, DemoStateKind, DemoWorkspace, ProductExperienceAdapter, WhatIfInputs } from '../demo/types';
 import { advanceDemoFrame, demoAdapter, defaultWhatIfInputs, setDemoShelterAvailability } from '../demo/adapter';
 import { DEMO_STATE_EXAMPLES } from '../demo/fixtures';
 import { SourceReadinessPanel } from '../live-readiness/SourceReadinessPanel';
 import { demoScenarioMetadata, unavailableLiveMetadata } from '../live-readiness/model';
+import { activateProfessorStep, activeProfessorStep, fixtureBarHeight, professorDemoFlow, type ProfessorDemoStepId } from './professor-refinement/guided-flow';
 import floodCityConcept from './assets/flood-city-concept-v1.webp';
 import './product.css';
 
@@ -31,6 +32,7 @@ const sectionTitles: Record<ProductSection, { eyebrow: string; title: string; de
 
 export function ProductExperience({ initialSection = 'overview', initialViewMode = '3d', adapter = demoAdapter }: { initialSection?: ProductSection; initialViewMode?: '3d' | '2d'; adapter?: ProductExperienceAdapter }) {
   const scenarios = adapter.listScenarios();
+  const scenarioSelectRef = useRef<HTMLSelectElement>(null);
   const [section, setSection] = useState<ProductSection>(initialSection);
   const [scenarioId, setScenarioId] = useState(scenarios[0].id);
   const [frameIndex, setFrameIndex] = useState(0);
@@ -103,7 +105,7 @@ export function ProductExperience({ initialSection = 'overview', initialViewMode
         <header className="tg-product__topbar">
           <div className="tg-product__crumb"><span>TWINGUARD</span><span aria-hidden="true">/</span><strong>{heading.title}</strong></div>
           <div className="tg-product__top-actions">
-            <label className="tg-product__scenario-select"><span>DEMO SCENARIO</span><select value={scenarioId} onChange={(event) => selectScenario(event.target.value)} aria-label="Select demo scenario">
+            <label className="tg-product__scenario-select"><span>DEMO SCENARIO</span><select ref={scenarioSelectRef} value={scenarioId} onChange={(event) => selectScenario(event.target.value)} aria-label="Select demo scenario">
               {scenarios.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
             </select></label>
             <DemoPill mode={scenario.provenance.sourceMode} />
@@ -115,6 +117,10 @@ export function ProductExperience({ initialSection = 'overview', initialViewMode
           <header className="tg-product__page-heading"><div><span className="tg-product__eyebrow">{heading.eyebrow}</span><h1>{heading.title}</h1><p>{heading.description}</p></div><div className="tg-product__heading-status"><DemoPill mode="DEMO" /><span>NOT AN OPERATIONAL SERVICE</span></div></header>
           <div className="tg-product__demo-banner" role="note"><strong>DEMO / SIMULATED</strong><span>Every changing value and water shape is a synthetic UI example. This workspace does not provide flood warnings, safe routes, or operational readiness.</span></div>
           <ScenarioContextBar scenario={scenario} frame={workspace.frame} frameIndex={workspace.frameIndex} onSection={navigateTo} />
+          <ProfessorDemoFlow section={section} onActivate={(stepId) => activateProfessorStep(stepId, {
+            navigate: (target) => navigateTo(target),
+            focusScenario: () => window.requestAnimationFrame(() => scenarioSelectRef.current?.focus()),
+          })} />
 
           {section === 'overview' && <OverviewSection scenario={scenario} frame={workspace.adjustedFrame} workspace={workspace} frameIndex={workspace.frameIndex} setFrameIndex={setFrameIndex} viewMode={viewMode} setViewMode={setViewMode} onSection={navigateTo} />}
           {section === 'twin' && <TwinSection scenario={scenario} frame={workspace.adjustedFrame} frameIndex={workspace.frameIndex} viewMode={viewMode} setViewMode={setViewMode} playing={playing} setPlaying={setPlaying} reducedMotion={reducedMotion} setFrameIndex={setFrameIndex} layers={layers} setLayers={setLayers} />}
@@ -129,6 +135,19 @@ export function ProductExperience({ initialSection = 'overview', initialViewMode
       </div>
     </div>
   );
+}
+
+function ProfessorDemoFlow({ section, onActivate }: { section: ProductSection; onActivate: (stepId: ProfessorDemoStepId) => void }) {
+  const active = activeProfessorStep(section);
+  return <nav className="tg-product__guided-flow" aria-label="Guided demo flow">
+    <div className="tg-product__guided-flow-heading"><span className="tg-product__eyebrow">FIVE-STEP WALKTHROUGH · LOCAL FIXTURES</span><span>{active ? `Step ${professorDemoFlow.findIndex((step) => step.id === active) + 1} of ${professorDemoFlow.length}` : 'Optional demo sections'}</span></div>
+    <ol>{professorDemoFlow.map((step, index) => <li key={step.id} className={active === step.id ? 'is-active' : ''}>
+      <button type="button" data-flow-step={step.id} aria-current={active === step.id ? 'step' : undefined} onClick={() => onActivate(step.id)}>
+        <span className="tg-product__guided-flow-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><span>{step.label}</span><span className="tg-product__guided-flow-arrow" aria-hidden="true">{index === professorDemoFlow.length - 1 ? '✓' : '→'}</span>
+      </button>
+    </li>)}</ol>
+    <p>Scenario, time steps, impacts, and response are local demo material. No model or live feed is queried.</p>
+  </nav>;
 }
 
 export type GateStatus = 'ready' | 'not_ready' | 'unknown';
@@ -333,8 +352,11 @@ function ReservoirDetail({ reservoir, frame, compact = false }: { reservoir: Dem
         <InfoLine label="Release" value={reservoir.releaseCusecs === null ? 'Unknown' : `${reservoir.releaseCusecs} cusecs · DEMO`} />
         <InfoLine label="Fixture time" value={frame.label} />
       </div>
-      <div className="tg-product__sparkline" role="img" aria-label={reservoir.history.length ? `Synthetic storage history: ${reservoir.history.join(', ')} mcft` : 'History unavailable; no fixture values supplied'}>
-        {reservoir.history.length ? reservoir.history.map((value, index) => <i key={`${index}-${value}`} style={{ height: `${Math.max(4, value / Math.max(...reservoir.history, 1) * 30)}px` }} />) : <span>History unavailable</span>}
+      <div className="tg-product__sparkline" role="img" aria-label={reservoir.history.length ? `Synthetic storage fixture sequence: ${reservoir.history.join(', ')} mcft; dates unavailable` : 'History unavailable; no fixture values supplied'}>
+        {reservoir.history.length ? <>
+          <div className="tg-product__spark-bars">{reservoir.history.map((value, index) => <span className="tg-product__spark-bar" key={`${index}-${value}`}><small>{value}</small><i style={{ height: fixtureBarHeight(value, reservoir.history) }} /></span>)}</div>
+          <div className="tg-product__spark-caption"><span>Fixture sequence · dates unavailable</span><strong>DEMO</strong></div>
+        </> : <span>History unavailable</span>}
       </div>
       <small className="tg-product__fine-print">DEMO values · no source date or operational status</small>
     </div>
@@ -373,7 +395,7 @@ function WhatIfSection({ workspace, inputs, onUpdate, onReset, onScenarioChange,
       <p className="tg-product__callout" role="note"><strong>Demo calculations only</strong><span>Changing inputs updates the local illustration and simple fixture arithmetic. No backend model runs.</span></p>
     </SectionCard>
     <SectionCard title="Baseline vs modified" eyebrow="DEMO COMPARISON"><div className="tg-product__comparison"><ComparisonColumn title="BASELINE · DEMO" population={workspace.baseline.populationExposure} facilities={workspace.baseline.facilities} roads={workspace.baseline.roadSegments} visual={workspace.frame.visualLevel} /><span className="tg-product__comparison-arrow" aria-hidden="true">→</span><ComparisonColumn title="MODIFIED · SIMULATED" population={impact.populationExposure} facilities={impact.facilities} roads={impact.roadSegments} visual={workspace.adjustedVisualLevel} /></div><p className="tg-product__limit-copy">Values are generated by transparent local arithmetic on fictional fixtures. They are not predictions, risk levels, or validated counterfactual outcomes.</p></SectionCard>
-    <SectionCard title="Decision stability" eyebrow="A21 · NOT CONNECTED" className="tg-product__span-two tg-product__stability-pending"><div className="tg-product__stability-layout"><span className="tg-product__stability-mark" aria-hidden="true">↔</span><div><h3>Will the preferred choice hold across scenarios?</h3><p>The planned analysis will compare route and shelter choices across saved simulation cases and identify conditions linked to changes. It has not produced results yet.</p><div className="tg-product__stability-points"><span>Route consistency <strong>Pending</strong></span><span>Shelter allocation consistency <strong>Pending</strong></span><span>Evidence to verify <strong>Pending</strong></span></div></div><span className="tg-product__pending-tag">WAITING FOR A21</span></div><p className="tg-product__limit-copy">No stability counts, likelihoods, or recommendations are shown. Scenario fractions, when available, will describe tested simulations only.</p></SectionCard>
+    <SectionCard title="Decision stability" eyebrow="A21 · NOT CONNECTED" className="tg-product__span-two tg-product__stability-pending"><div className="tg-product__stability-layout"><span className="tg-product__stability-mark" aria-hidden="true">↔</span><div><h3>Will the preferred choice hold across scenarios?</h3><p>A21 is still in progress. Its outputs remain unavailable here until the task completes and its evidence is reviewed.</p><div className="tg-product__stability-points"><span>Route consistency <strong>Pending</strong></span><span>Shelter allocation consistency <strong>Pending</strong></span><span>Evidence to verify <strong>Pending</strong></span></div></div><span className="tg-product__pending-tag">WAITING FOR A21</span></div><p className="tg-product__limit-copy">No stability counts, likelihoods, or recommendations are shown. Scenario fractions, when available, will describe tested simulations only.</p></SectionCard>
     <SectionCard title="Current demo view" eyebrow="SAME SELECTED STEP" className="tg-product__span-two"><div className="tg-product__current-demo"><Illustration frame={workspace.adjustedFrame} mode="2d" compact /><div><DemoPill mode="SIMULATED" /><h3>{workspace.frame.label}</h3><p>Visual-only change from the synthetic input controls. Source, selected frame, and limitations remain visible.</p><InfoLine label="Input provenance" value="Central fixture + local UI arithmetic" /><InfoLine label="Time basis" value={workspace.scenario.provenance.timeBasis} /></div></div></SectionCard>
   </div>;
 }

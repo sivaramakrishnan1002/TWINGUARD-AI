@@ -1,0 +1,21 @@
+{
+  "schema": "trackb.observation_envelope.v1",
+  "event_id": "replay:POONDI:date:2015-12-01",
+  "source_id": "Kaggle Chennai Water Management",
+  "source_mode": "REPLAY",
+  "time_precision": "date",
+  "source_date": "2015-12-01",
+  "observed_at": null,
+  "observation_timezone": "unknown",
+  "received_at": "2026-11-04T10:05:00+05:30",
+  "value": 2745.0,
+  "unit": "mcft",
+  "spatial_coverage": {"kind": "reservoir_point", "reservoir_key": "POONDI"},
+  "provenance": {
+    "source_id": "Kaggle Chennai Water Management",
+    "evidence_path": "data/raw/reservoirs/kaggle_chennai_water_management/archive.zip#chennai_reservoir_levels.csv:4354",
+    "sha256": "3b4b6f2f53b5db20513d2829c2dba265c5738a55bf0c8eade51e0e2d5cfeaef7"
+  },
+  "quality": ["source-row-hash-recorded", "date-only"],
+  "missingness": "present"
+}

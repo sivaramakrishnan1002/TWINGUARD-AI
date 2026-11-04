@@ -1,0 +1,21 @@
+{
+  "schema": "trackb.observation_envelope.v1",
+  "event_id": "fixture:rain:2026-11-04T10:00:00+05:30",
+  "source_id": "b35.synthetic-rain-fixture",
+  "source_mode": "SIMULATED",
+  "time_precision": "instant",
+  "source_date": "2026-11-04",
+  "observed_at": "2026-11-04T10:00:00+05:30",
+  "observation_timezone": "Asia/Kolkata",
+  "received_at": "2026-11-04T10:05:00+05:30",
+  "value": 12.5,
+  "unit": "mm",
+  "spatial_coverage": {"kind": "point", "location_key": "fixture-cell-1", "crs": "EPSG:4326"},
+  "provenance": {
+    "source_id": "b35.synthetic-rain-fixture",
+    "evidence_path": "services/trackb/ingestion_readiness/fixtures/timestamped_rain_simulated.json",
+    "sha256": "71d748c60cc9c9a661d010d1ec916b0fb20f833208f9006e2322acea7e6cfb70"
+  },
+  "quality": ["fixture-only", "not-a-live-measurement"],
+  "missingness": "present"
+}

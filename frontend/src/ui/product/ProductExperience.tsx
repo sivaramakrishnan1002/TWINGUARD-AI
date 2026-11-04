@@ -1,17 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import type { DemoFrame, DemoReservoir, DemoScenario, DemoStateKind, DemoWorkspace, ProductExperienceAdapter, WhatIfInputs } from '../demo/types';
 import { advanceDemoFrame, demoAdapter, defaultWhatIfInputs, setDemoShelterAvailability } from '../demo/adapter';
 import { DEMO_STATE_EXAMPLES } from '../demo/fixtures';
 import './product.css';
 
 const sections = [
-  { id: 'overview', label: 'Situation Overview', short: 'Overview', number: '01', icon: '◫' },
-  { id: 'twin', label: '3D Flood Twin', short: 'Flood twin', number: '02', icon: '◇' },
-  { id: 'reservoirs', label: 'Reservoirs & Alerts', short: 'Reservoirs', number: '03', icon: '▤' },
-  { id: 'impacts', label: 'Impacts', short: 'Impacts', number: '04', icon: '⌁' },
-  { id: 'response', label: 'Emergency Response', short: 'Response', number: '05', icon: '⇢' },
-  { id: 'what-if', label: 'What-if Lab', short: 'What-if', number: '06', icon: '◌' },
-  { id: 'system', label: 'Data & System', short: 'Data & System', number: '07', icon: '◎' },
+  { id: 'overview', label: 'Situation Overview', short: 'Overview', number: '01' },
+  { id: 'twin', label: '3D Flood Twin', short: 'Flood twin', number: '02' },
+  { id: 'reservoirs', label: 'Reservoirs & Alerts', short: 'Reservoirs', number: '03' },
+  { id: 'impacts', label: 'Impacts', short: 'Impacts', number: '04' },
+  { id: 'response', label: 'Emergency Response', short: 'Response', number: '05' },
+  { id: 'what-if', label: 'What-if Lab', short: 'What-if', number: '06' },
+  { id: 'system', label: 'Data & System', short: 'Data & System', number: '07' },
 ] as const;
 
 export type ProductSection = typeof sections[number]['id'];
@@ -87,7 +87,7 @@ export function ProductExperience({ initialSection = 'overview', initialViewMode
         <div className="tg-product__workspace"><span>WORKSPACE</span><strong>Chennai · Demo environment</strong><small>Local interface simulation</small></div>
         <nav className="tg-product__nav" aria-label="Product sections">
           {sections.map((item) => <button type="button" key={item.id} className={section === item.id ? 'is-active' : ''} aria-label={item.label} aria-current={section === item.id ? 'page' : undefined} onClick={() => navigateTo(item.id)}>
-            <span className="tg-product__nav-icon" aria-hidden="true">{item.icon}</span><span className="tg-product__nav-text" aria-hidden="true"><strong className="tg-product__nav-full">{item.label}</strong><strong className="tg-product__nav-compact">{item.short}</strong><small>{item.number} · {item.short}</small></span>
+            <span className="tg-product__nav-icon" aria-hidden="true"><SectionIcon section={item.id} /></span><span className="tg-product__nav-text" aria-hidden="true"><strong className="tg-product__nav-full">{item.label}</strong><strong className="tg-product__nav-compact">{item.short}</strong><small>{item.number} · {item.short}</small></span>
           </button>)}
         </nav>
         <div className="tg-product__sidebar-note"><span className="tg-product__dot" aria-hidden="true" /><div><strong>DEMO MODE</strong><small>No live data or service calls</small></div></div>
@@ -131,6 +131,18 @@ export function normalizeGateStatus(value: unknown): GateStatus { return value =
 export function gateText(value: GateStatus): string { return value === 'ready' ? 'READY' : value === 'not_ready' ? 'NOT READY' : 'STATUS UNKNOWN'; }
 
 function DemoPill({ mode }: { mode: 'DEMO' | 'SIMULATED' }) { return <span className={`tg-product__pill tg-product__pill--${mode.toLowerCase()}`}><i aria-hidden="true">{mode === 'DEMO' ? 'D' : 'S'}</i>{mode}</span>; }
+function SectionIcon({ section }: { section: ProductSection }) {
+  const shared = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.65, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  return <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    {section === 'overview' && <g {...shared}><path d="M3.5 7.2 12 3l8.5 4.2v9.6L12 21l-8.5-4.2z"/><path d="m3.8 7.5 8.2 4 8.2-4M12 11.5V21M7.4 5.1v4.2"/></g>}
+    {section === 'twin' && <g {...shared}><path d="m12 2.8 8.2 4.6v9.2L12 21.2l-8.2-4.6V7.4z"/><path d="m3.8 7.4 8.2 4.7 8.2-4.7M12 12.1v9"/><path d="m8 5.1 8.1 4.6"/></g>}
+    {section === 'reservoirs' && <g {...shared}><path d="M4 6.5h16M5.2 6.5v10.8M18.8 6.5v10.8M4 17.3h16M3.5 20h17"/><path d="M7 10.2c1.2-1.1 2.5-1.1 3.7 0s2.5 1.1 3.7 0 2.2-1.1 3.3 0"/></g>}
+    {section === 'impacts' && <g {...shared}><path d="M4 20V11M10 20V5M16 20v-7M22 20H2"/><circle cx="4" cy="8" r="1.4"/><circle cx="10" cy="3" r="1.4"/><circle cx="16" cy="10" r="1.4"/></g>}
+    {section === 'response' && <g {...shared}><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 18h4.5a3 3 0 0 0 3-3v-3a3 3 0 0 1 3-3H19M14 4l3 2-3 2"/><path d="M3 5h5M5.5 2.5v5"/></g>}
+    {section === 'what-if' && <g {...shared}><path d="M9 3h6M10 3v6.2L5.3 18a2 2 0 0 0 1.7 3h10a2 2 0 0 0 1.7-3L14 9.2V3"/><path d="M7.2 16h9.6M9.2 12h5.6"/><circle cx="15.7" cy="15" r=".6" fill="currentColor" stroke="none"/></g>}
+    {section === 'system' && <g {...shared}><rect x="4" y="3" width="16" height="5" rx="1.5"/><rect x="4" y="10" width="16" height="5" rx="1.5"/><rect x="4" y="17" width="16" height="4" rx="1.5"/><path d="M7.2 5.5h.1M7.2 12.5h.1M7.2 19h.1"/></g>}
+  </svg>;
+}
 function ScenarioContextBar({ scenario, frame, frameIndex, onSection }: { scenario: DemoScenario; frame: DemoFrame; frameIndex: number; onSection: (section: ProductSection) => void }) {
   return <section className="tg-product__context-bar" aria-label="Selected scenario context">
     <div className="tg-product__context-lead"><span className="tg-product__context-glyph" aria-hidden="true">◈</span><div><span className="tg-product__eyebrow">CURRENT SCENARIO</span><strong>{scenario.name}</strong><small>{scenario.provenance.runId} · {scenario.provenance.version}</small></div></div>
@@ -189,34 +201,71 @@ function TwinSection({ scenario, frame, frameIndex, viewMode, setViewMode, playi
 }
 
 function Illustration({ frame, mode, compact = false, layers = { water: true, blocks: true, roads: true } }: { frame: DemoFrame; mode: '3d' | '2d'; compact?: boolean; layers?: { water: boolean; blocks: boolean; roads: boolean } }) {
-  const label = mode === '3d' ? 'Illustrative isometric demo city with animated-looking synthetic water shape' : 'Top-down illustrative demo footprint using the same selected synthetic time step';
-  return <div className={`tg-product__scene tg-product__scene--${mode}${compact ? ' is-compact' : ''}`} role="img" aria-label={`${label}. Not geographic or measured.`}>
-    {mode === '3d' ? <svg viewBox="0 0 420 280" aria-hidden="true" focusable="false">
-      <defs><linearGradient id="tg-demo-ground" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#698779" /><stop offset=".52" stopColor="#3c5d58" /><stop offset="1" stopColor="#29454b" /></linearGradient><linearGradient id="tg-demo-water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#8be4df" stopOpacity=".86" /><stop offset=".55" stopColor="#49b9d0" stopOpacity=".91" /><stop offset="1" stopColor="#187b9a" stopOpacity=".96" /></linearGradient><linearGradient id="tg-demo-side" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#355b5c" /><stop offset="1" stopColor="#1d343e" /></linearGradient></defs>
-      <path d="M25 78 210 16 394 83 208 151Z" fill="url(#tg-demo-ground)" stroke="#7fa39a" strokeWidth="1.5" /><path d="M25 78v116l183 70V151Z" fill="url(#tg-demo-side)" stroke="#66877f" /><path d="M208 151v113l186-72V83Z" fill="#263e49" stroke="#66877f" />
-      <path d="M44 84 208 29 376 87M57 98l150-50 150 54M71 115l137-46 136 50M85 131l123-41 120 46M40 111l168 64 175-66M37 143l170 66 174-68" fill="none" stroke="#d6e6d7" strokeOpacity=".2" strokeWidth="1" />
-      {layers.roads && <><path d="M53 102 208 157 355 101M56 133l150 57 147-58M59 165l148 57 144-60" fill="none" stroke="#263e46" strokeWidth="10" strokeOpacity=".68" /><path d="M53 102 208 157 355 101M56 133l150 57 147-58M59 165l148 57 144-60" fill="none" stroke="#e3d9b6" strokeWidth="2.5" strokeOpacity=".9" strokeDasharray="5 5" /></>}
-      <path d="M0 0" fill="none" />
-      {layers.blocks && <>
-      <path d="M42 77 82 64v27L42 106Z" fill="#9caeaa" /><path d="M42 77v27l12 7V84Z" fill="#617a7c" /><path d="M82 64v27l-28 19V84Z" fill="#496368" />
-      <path d="M99 63 132 52v24L99 87Z" fill="#b9b5a5" /><path d="M99 63v24l11 7V67Z" fill="#728789" /><path d="M132 52v24l-22 18V67Z" fill="#546f75" />
-      <path d="M163 48 195 37v30l-32 12Z" fill="#a8bac1" /><path d="M163 48v31l12 7V52Z" fill="#657e88" /><path d="M195 37v30l-20 19V52Z" fill="#4c6876" />
-      <path d="M229 61 270 47v30l-41 15Z" fill="#c2b59f" /><path d="M229 61v31l12 7V65Z" fill="#79877d" /><path d="M270 47v30l-29 22V65Z" fill="#596f68" />
-      <path d="M299 89 337 76v28l-38 14Z" fill="#9eb6b8" /><path d="M299 89v29l13 7V93Z" fill="#617b80" /><path d="M337 76v28l-25 21V93Z" fill="#4a676e" />
-      <path d="m54 82 18-6v8l-18 6m0 5 18-6v5l-18 6M107 67l17-6v8l-17 6m0 5 17-6v5l-17 6M172 52l16-5v8l-16 6m0 5 16-6v5l-16 6M240 66l23-8v8l-23 8m0 5 23-8v5l-23 8M307 95l21-7v7l-21 7" fill="none" stroke="#d6e2dc" strokeOpacity=".6" strokeWidth="1.2" />
-      </>}
-      {layers.water && <path d={frame.waterPath3d} fill="url(#tg-demo-water)" stroke="#287f9a" strokeWidth="1.5" />}
-      {layers.blocks && <g fill="#547e62"><circle cx="91" cy="136" r="7" /><circle cx="113" cy="146" r="5" /><circle cx="288" cy="155" r="8" /><circle cx="316" cy="144" r="5" /><circle cx="235" cy="117" r="5" /></g>}
-      <g fill="#edf5ef" fontFamily="sans-serif" fontSize="9" fontWeight="700"><text x="27" y="258">SCHEMATIC BLOCKS</text><text x="290" y="258">NO MAP COORDINATES</text></g>
-    </svg> : <svg viewBox="0 0 420 280" aria-hidden="true" focusable="false">
-      <defs><pattern id="tg-demo-nodata" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#eff1ed" /><path d="M0 0V8" stroke="#aeb8b3" strokeWidth="2" /></pattern></defs>
-      <rect x="0" y="0" width="420" height="280" fill="#dce4df" /><rect x="12" y="11" width="49" height="16" rx="4" fill="#b8d3af" stroke="#72936f" /><text x="17" y="22" fill="#315834" fontFamily="sans-serif" fontSize="8">DEMO DRY</text>{layers.roads && <path d="M12 36H406M12 75H406M12 114H406M12 153H406M12 192H406M12 231H406M50 10V270M100 10V270M150 10V270M200 10V270M250 10V270M300 10V270M350 10V270" stroke="#fff" strokeWidth="8" />}
-      {layers.blocks && <path d="M20 31 87 28 92 68 20 72ZM119 28 174 31 173 68 117 68ZM203 29 265 30 267 71 201 69ZM299 29 389 31 389 72 299 70ZM21 88 85 88 89 143 22 146ZM122 86 180 86 181 141 119 142ZM293 90 389 87 388 141 294 143ZM20 162 84 162 85 220 19 219ZM117 162 178 159 179 221 117 220ZM207 162 269 162 270 222 207 221ZM299 159 390 160 390 219 297 218Z" fill="#c8d8c0" stroke="#a9bba7" />}
-      <path d="M342 18 406 18 406 54 373 54 362 42 342 42Z" fill="url(#tg-demo-nodata)" stroke="#899990" strokeDasharray="4 3" />
-      {layers.water && <path d={frame.waterPath2d} fill="#58b5c6" fillOpacity=".83" stroke="#267f97" strokeWidth="2" />}
-      <g fill="#264d57" fontFamily="sans-serif" fontSize="9"><text x="16" y="266">SYNTHETIC DEMO GRID · NOT A GEOGRAPHIC MAP</text></g>
+  const uid = useId().replace(/:/g, '');
+  const groundId = `tg-ground-${uid}`;
+  const waterId = `tg-water-${uid}`;
+  const waterGlowId = `tg-water-glow-${uid}`;
+  const noDataId = `tg-nodata-${uid}`;
+  const label = mode === '3d' ? 'Illustrative isometric city blocks, roads, and synthetic water shape' : 'Top-down illustrative city grid using the selected synthetic step';
+  const buildings = [
+    { x: 53, y: 86, w: 18, d: 12, h: 22, tone: '#b8cbd0' }, { x: 91, y: 72, w: 18, d: 12, h: 31, tone: '#8eafb9' },
+    { x: 137, y: 56, w: 21, d: 12, h: 37, tone: '#d0c6ab' }, { x: 186, y: 58, w: 19, d: 12, h: 26, tone: '#8fb4c1' },
+    { x: 237, y: 72, w: 23, d: 13, h: 42, tone: '#bfc8ba' }, { x: 292, y: 93, w: 20, d: 12, h: 28, tone: '#90b8bd' },
+    { x: 104, y: 119, w: 20, d: 12, h: 19, tone: '#d1c5aa' }, { x: 192, y: 119, w: 22, d: 13, h: 32, tone: '#b3c9cc' },
+    { x: 271, y: 137, w: 18, d: 12, h: 24, tone: '#c8c3ae' },
+  ];
+  return <div className={`tg-product__scene tg-product__scene--${mode}${compact ? ' is-compact' : ''}`} role="img" aria-label={`${label}. Schematic only: no geographic coordinates, measured depths, or hydraulic result.`}>
+    {mode === '3d' ? <svg viewBox="0 0 420 280" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id={groundId} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#263f4a"/><stop offset=".52" stopColor="#18343e"/><stop offset="1" stopColor="#122730"/></linearGradient>
+        <linearGradient id={waterId} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#a1f0e1" stopOpacity=".86"/><stop offset=".38" stopColor="#45c8d3" stopOpacity=".9"/><stop offset="1" stopColor="#14769f" stopOpacity=".97"/></linearGradient>
+        <filter id={waterGlowId} x="-20%" y="-25%" width="140%" height="160%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <pattern id={noDataId} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#22343b"/><path d="M0 0V8" stroke="#71868b" strokeWidth="2"/></pattern>
+        <clipPath id={`${waterId}-clip`}><path d={frame.waterPath3d}/></clipPath>
+      </defs>
+      <rect width="420" height="280" fill="#0b1b25"/>
+      <circle cx="215" cy="132" r="164" fill="#163a44" opacity=".32"/>
+      <path d="M25 77 210 14 395 79 210 147Z" fill={`url(#${groundId})`} stroke="#69878a" strokeWidth="1.3"/>
+      <path d="M25 77v116l185 72V147Z" fill="#19313b" stroke="#42616a"/>
+      <path d="M210 147v118l185-72V79Z" fill="#112630" stroke="#42616a"/>
+      <path d="M39 82 210 23 381 83M52 94l158-54 157 55M65 107l145-50 144 52M78 120l132-45 132 48M91 133l119-41 119 44M34 108l176 67 177-67M31 139l178 68 178-70M28 170l181 67 181-71" fill="none" stroke="#9bb4b2" strokeOpacity=".17" strokeWidth="1"/>
+      {layers.roads && <g fill="none" strokeLinecap="round">
+        <path d="M45 96 210 154 367 97M42 126l167 64 168-65M39 157l169 66 169-67" stroke="#091820" strokeWidth="10" opacity=".9"/>
+        <path d="M45 96 210 154 367 97M42 126l167 64 168-65M39 157l169 66 169-67" stroke="#91a9a4" strokeWidth="1.4" strokeDasharray="3 7" opacity=".8"/>
+      </g>}
+      {layers.blocks && <g>
+        {buildings.map((building, index) => {
+          const { x, y, w, d, h, tone } = building;
+          return <g key={index}>
+            <polygon points={`${x},${y-h} ${x+w},${y-h-4} ${x+w+d},${y-h} ${x+d},${y-h+4}`} fill={tone} stroke="#e2ece8" strokeOpacity=".48" strokeWidth=".7"/>
+            <polygon points={`${x},${y-h} ${x+d},${y-h+4} ${x+d},${y+4} ${x},${y}`} fill="#56737a"/>
+            <polygon points={`${x+w},${y-h-4} ${x+w+d},${y-h} ${x+w+d},${y} ${x+w},${y+4}`} fill="#314e59"/>
+            <path d={`M${x+4} ${y-h+5}l${Math.max(4,w-7)} -1M${x+4} ${y-h+11}l${Math.max(4,w-7)} -1M${x+4} ${y-h+17}l${Math.max(4,w-7)} -1`} stroke="#f0f4e9" strokeOpacity=".46" strokeWidth="1.2"/>
+          </g>;
+        })}
+        <g fill="#5b9b83" stroke="#9ac8ad" strokeOpacity=".5"><path d="m60 139 26-9 25 10-26 10z"/><path d="m282 119 24-8 24 9-24 9z"/><path d="m137 154 18-6 18 7-18 7z"/></g>
+      </g>}
+      {layers.water && <g filter={`url(#${waterGlowId})`}>
+        <path d={frame.waterPath3d} fill={`url(#${waterId})`} stroke="#8ff2e8" strokeOpacity=".9" strokeWidth="1.6"/>
+        <g clipPath={`url(#${waterId}-clip)`} fill="none" stroke="#d5fff3" strokeOpacity=".23" strokeWidth="1.2">
+          <path d="M-10 231C45 212 86 234 137 224S236 203 281 218s83 13 149-5"/><path d="M-10 246C48 226 88 249 143 238S239 219 285 233s86 13 145-6"/><path d="M-10 262C52 242 92 264 147 253s96-18 140-4 88 12 143-7"/>
+        </g>
+      </g>}
+      <path d="M326 23h65v34h-65z" fill={`url(#${noDataId})`} stroke="#9aadb0" strokeDasharray="3 3" opacity=".92"/>
+      <g fill="#e8f4f3" fontFamily="Inter,Segoe UI,sans-serif" fontSize="8" fontWeight="700" letterSpacing=".8"><text x="29" y="252">SCHEMATIC CITY BLOCKS</text><text x="324" y="68">UNKNOWN COVERAGE</text></g>
+      <g fill="#b4d8d4" fontFamily="Inter,Segoe UI,sans-serif" fontSize="7" fontWeight="700" letterSpacing="1"><text x="43" y="89">ZONE 01</text><text x="298" y="180">ZONE 02</text><text x="175" y="102">DEMO CHANNEL</text></g>
+    </svg> : <svg viewBox="0 0 420 280" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
+      <defs><pattern id={noDataId} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#182d37"/><path d="M0 0V8" stroke="#73888d" strokeWidth="2"/></pattern></defs>
+      <rect width="420" height="280" fill="#0c1d27"/>
+      <path d="M0 0H420V280H0z" fill="#102630"/>
+      {layers.roads && <g stroke="#668188" strokeOpacity=".36" strokeWidth="1"><path d="M22 18V262M74 18V262M126 18V262M178 18V262M230 18V262M282 18V262M334 18V262M386 18V262M12 44H408M12 91H408M12 138H408M12 185H408M12 232H408"/></g>}
+      {layers.roads && <g fill="none" stroke="#9db0aa" strokeOpacity=".75"><path d="M15 67H405M15 161H405M99 18V262M307 18V262" strokeWidth="4"/><path d="M15 67H405M15 161H405M99 18V262M307 18V262" stroke="#e1c58d" strokeWidth="1" strokeDasharray="5 7"/></g>}
+      {layers.blocks && <g fill="#344d55" stroke="#799196" strokeOpacity=".5"><path d="M27 25h54v32H27zM112 25h75v32h-75zM219 25h72v32h-72zM319 25h78v32h-78zM27 77h54v52H27zM113 77h74v52h-74zM219 77h72v52h-72zM320 77h77v52h-77zM27 171h54v52H27zM112 171h75v52h-75zM219 171h72v52h-72zM320 171h77v52h-77zM27 238h75v25H27zM114 238h74v25h-74zM220 238h71v25h-71zM319 238h78v25h-78z"/></g>}
+      {layers.water && <path d={frame.waterPath2d} fill="#42bfd0" fillOpacity=".72" stroke="#9bf0e3" strokeWidth="1.5"/>}
+      <path d="M335 18h69v38h-69z" fill={`url(#${noDataId})`} stroke="#a2b4b5" strokeDasharray="3 3"/>
+      <g fill="#e8f4f3" fontFamily="Inter,Segoe UI,sans-serif" fontSize="8" fontWeight="700" letterSpacing=".7"><text x="17" y="270">SYNTHETIC GRID · NO GEOGRAPHIC COORDINATES</text><text x="341" y="72">NO DATA</text></g>
     </svg>}
-    <span className="tg-product__scene-stamp">{mode === '3d' ? '3D ILLUSTRATION' : '2D FALLBACK'} · DEMO</span>
+    <span className="tg-product__scene-stamp">{mode === '3d' ? 'SCHEMATIC 3D' : '2D PLAN VIEW'} · DEMO</span>
   </div>;
 }
 

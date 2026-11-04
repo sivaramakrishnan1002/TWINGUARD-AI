@@ -2,6 +2,7 @@ import { useEffect, useId, useMemo, useState } from 'react';
 import type { DemoFrame, DemoReservoir, DemoScenario, DemoStateKind, DemoWorkspace, ProductExperienceAdapter, WhatIfInputs } from '../demo/types';
 import { advanceDemoFrame, demoAdapter, defaultWhatIfInputs, setDemoShelterAvailability } from '../demo/adapter';
 import { DEMO_STATE_EXAMPLES } from '../demo/fixtures';
+import floodCityConcept from './assets/flood-city-concept-v1.webp';
 import './product.css';
 
 const sections = [
@@ -79,20 +80,22 @@ export function ProductExperience({ initialSection = 'overview', initialViewMode
   return (
     <div className="tg-product">
       <a className="tg-product__skip" href="#tg-product-main">Skip to main content</a>
-      <aside className="tg-product__sidebar" aria-label="TwinGuard demo navigation">
+      <header className="tg-product__masthead">
         <a className="tg-product__brand" href="#tg-product-main" onClick={() => navigateTo('overview')} aria-label="TwinGuard demo overview">
           <span className="tg-product__brand-mark" aria-hidden="true"><i /><i /><i /></span>
-          <span><strong>TwinGuard</strong><small>FLOOD MANAGEMENT WORKSPACE</small></span>
+          <span><strong>TwinGuard</strong><small>CHENNAI FLOOD MANAGEMENT</small></span>
         </a>
-        <div className="tg-product__workspace"><span>WORKSPACE</span><strong>Chennai · Demo environment</strong><small>Local interface simulation</small></div>
-        <nav className="tg-product__nav" aria-label="Product sections">
+        <div className="tg-product__brand-pitch"><strong>Urban flood intelligence &amp; decision support</strong><small>Scenario workspace · synthetic values · research outputs clearly identified</small></div>
+        <div className="tg-product__masthead-status">
+          <span className="tg-product__location-chip"><span aria-hidden="true">⌖</span> Chennai study area <b>DEMO</b></span>
+          <span className="tg-product__live-status" role="status" aria-label="Live data is not connected"><i aria-hidden="true"/><span><small>LIVE INPUT</small><strong>NOT CONNECTED</strong></span></span>
+        </div>
+      </header>
+      <nav className="tg-product__nav" aria-label="Product sections">
           {sections.map((item) => <button type="button" key={item.id} className={section === item.id ? 'is-active' : ''} aria-label={item.label} aria-current={section === item.id ? 'page' : undefined} onClick={() => navigateTo(item.id)}>
             <span className="tg-product__nav-icon" aria-hidden="true"><SectionIcon section={item.id} /></span><span className="tg-product__nav-text" aria-hidden="true"><strong className="tg-product__nav-full">{item.label}</strong><strong className="tg-product__nav-compact">{item.short}</strong><small>{item.number} · {item.short}</small></span>
           </button>)}
-        </nav>
-        <div className="tg-product__sidebar-note"><span className="tg-product__dot" aria-hidden="true" /><div><strong>DEMO MODE</strong><small>No live data or service calls</small></div></div>
-        <div className="tg-product__sidebar-foot">TwinGuard product experience<br />Illustrative only · v1</div>
-      </aside>
+      </nav>
 
       <div className="tg-product__main">
         <header className="tg-product__topbar">
@@ -155,20 +158,55 @@ function SectionCard({ title, eyebrow, children, className = '' }: { title: stri
   return <section className={`tg-product__card ${className}`}><div className="tg-product__card-heading">{eyebrow && <span className="tg-product__eyebrow">{eyebrow}</span>}<h2>{title}</h2></div>{children}</section>;
 }
 
+function ConceptCityScene({ frame, frameIndex, frameCount }: { frame: DemoFrame; frameIndex: number; frameCount: number }) {
+  return <div className="tg-product__concept-scene" role="img" aria-label="Fictional flood-city concept artwork. Static illustration only; it is not a Chennai map, measured flood, or simulation output.">
+    <img src={floodCityConcept} alt="" />
+    <div className="tg-product__concept-scrim" aria-hidden="true" />
+    <div className="tg-product__concept-topline"><span className="tg-product__concept-label"><i /> CITY TWIN CONCEPT ART</span><span className="tg-product__concept-label tg-product__concept-label--quiet">FICTIONAL SCENE · NOT GEOREFERENCED</span></div>
+    <div className="tg-product__concept-caption"><div><span>SELECTED DEMO STEP</span><strong>{frame.label}</strong><small>Step {frameIndex + 1} of {frameCount} · this artwork is static</small></div><span className="tg-product__concept-water-tag">ILLUSTRATIVE WATER</span></div>
+    <div className="tg-product__concept-disclaimer">Concept artwork · no measured depth, flood extent, building impact, or hydraulic result</div>
+  </div>;
+}
+
 function OverviewSection({ scenario, frame, workspace, frameIndex, setFrameIndex, viewMode, setViewMode, onSection }: { scenario: DemoScenario; frame: DemoFrame; workspace: DemoWorkspace; frameIndex: number; setFrameIndex: (index: number) => void; viewMode: '3d' | '2d'; setViewMode: (mode: '3d' | '2d') => void; onSection: (section: ProductSection) => void }) {
   return <div className="tg-product__overview-layout">
-    <section className="tg-product__overview-map" aria-labelledby="overview-map-title">
-      <div className="tg-product__map-heading"><div><span className="tg-product__eyebrow">SCHEMATIC WORKSPACE · NO GEOGRAPHIC DATA</span><h2 id="overview-map-title">Scenario view</h2></div><div className="tg-product__segmented" role="group" aria-label="Overview display mode"><button type="button" aria-pressed={viewMode === '3d'} onClick={() => setViewMode('3d')}>Illustrative 3D</button><button type="button" aria-pressed={viewMode === '2d'} onClick={() => setViewMode('2d')}>2D view</button></div></div>
-      <Illustration frame={frame} mode={viewMode} />
-      <div className="tg-product__overview-timeline"><div className="tg-product__overview-time-copy"><DemoPill mode="SIMULATED" /><strong>{frame.label}</strong><span>Fixture step {frameIndex + 1} of {scenario.frames.length}</span></div><label><span className="tg-product__visually-hidden">Select illustrative demo time step</span><input aria-label="Select overview demo time step" type="range" min="0" max={scenario.frames.length - 1} step="1" value={frameIndex} onChange={(event) => setFrameIndex(Number(event.target.value))} /></label><button type="button" className="tg-product__button tg-product__button--primary" onClick={() => onSection('twin')}>Open full twin <span aria-hidden="true">→</span></button></div>
-      <p className="tg-product__map-disclaimer">Local vector illustration · no Chennai coordinates · water motion is UI-only, not a flood result.</p>
-    </section>
-    <aside className="tg-product__overview-rail" aria-label="Demo scenario context">
-      <section className="tg-product__overview-brief"><span className="tg-product__eyebrow">SELECTED SCENARIO · DEMO</span><h2>{scenario.name}</h2><p>{scenario.description}</p><div className="tg-product__run-line"><DemoPill mode={scenario.provenance.sourceMode} /><span>{scenario.provenance.runId}</span><span>{scenario.provenance.version}</span></div></section>
-      <section className="tg-product__overview-readouts" aria-labelledby="overview-readouts-title"><div className="tg-product__section-minihead"><h2 id="overview-readouts-title">Illustrative indicators</h2><span>DEMO</span></div><Metric label="Population exposure" value={workspace.adjustedImpact.populationExposure} unit="synthetic people" /><Metric label="Facilities" value={workspace.adjustedImpact.facilities} unit="fictional records" /><Metric label="Road segments" value={workspace.adjustedImpact.roadSegments} unit="illustrative segments" /><p className="tg-product__limit-copy">Separate fixture counts. No combined score, severity ranking, or geographic footprint.</p></section>
-      <section className="tg-product__overview-reservoirs"><div className="tg-product__section-minihead"><h2>Reservoir fixtures</h2><button type="button" onClick={() => onSection('reservoirs')}>Inspect <span aria-hidden="true">→</span></button></div>{scenario.reservoirs.slice(0, 2).map((reservoir) => <div className="tg-product__reservoir-line" key={reservoir.id}><span><strong>{reservoir.name}</strong><small>{reservoir.alertLabel} · SIMULATED</small></span><strong>{reservoir.storageMcft === null ? 'Unknown' : `${reservoir.storageMcft} mcft`}</strong></div>)}</section>
-      <div className="tg-product__readiness-inline"><StateBadge kind="unavailable" label="Services" detail="No health or data request was made." /></div>
+    <aside className="tg-product__overview-snapshot" aria-label="Demo scenario snapshot">
+      <div className="tg-product__snapshot-head"><div><span className="tg-product__eyebrow">SCENARIO SNAPSHOT</span><h2>City context</h2></div><DemoPill mode={scenario.provenance.sourceMode} /></div>
+      <div className="tg-product__snapshot-brief"><strong>{scenario.name}</strong><p>{scenario.description}</p><span>{scenario.provenance.runId} · {scenario.provenance.version}</span></div>
+      <StateBadge kind="unavailable" label="Live observations" detail="No rainfall, reservoir, or warning feed is connected." />
+      <div className="tg-product__snapshot-metrics"><Metric label="Population exposure" value={workspace.adjustedImpact.populationExposure} unit="synthetic people" /><Metric label="Facilities" value={workspace.adjustedImpact.facilities} unit="fictional records" /><Metric label="Road segments" value={workspace.adjustedImpact.roadSegments} unit="illustrative graph" /></div>
+      <p className="tg-product__limit-copy">Separate fixture counts; no combined risk score or geographic footprint.</p>
+      <button type="button" className="tg-product__text-link" onClick={() => onSection('impacts')}>Open impact layers <span aria-hidden="true">→</span></button>
     </aside>
+
+    <section className="tg-product__overview-map" aria-labelledby="overview-map-title">
+      <div className="tg-product__map-heading"><div><span className="tg-product__eyebrow">SPATIAL WORKSPACE · DEMO</span><h2 id="overview-map-title">Flood city twin</h2></div><div className="tg-product__segmented" role="group" aria-label="Overview display mode"><button type="button" aria-pressed={viewMode === '3d'} onClick={() => setViewMode('3d')}>3D concept</button><button type="button" aria-pressed={viewMode === '2d'} onClick={() => setViewMode('2d')}>2D schematic</button></div></div>
+      {viewMode === '3d' ? <ConceptCityScene frame={frame} frameIndex={frameIndex} frameCount={scenario.frames.length} /> : <Illustration frame={frame} mode="2d" />}
+      <div className="tg-product__overview-timeline"><div className="tg-product__overview-time-copy"><DemoPill mode="SIMULATED" /><strong>{frame.label}</strong><span>Local fixture step · no calendar timestamp</span></div><label><span className="tg-product__visually-hidden">Select illustrative demo time step</span><input aria-label="Select illustrative demo time step" type="range" min="0" max={scenario.frames.length - 1} step="1" value={frameIndex} onChange={(event) => setFrameIndex(Number(event.target.value))} /></label><button type="button" className="tg-product__button tg-product__button--primary" onClick={() => onSection('twin')}>Open interactive twin <span aria-hidden="true">→</span></button></div>
+    </section>
+
+    <aside className="tg-product__overview-controls" aria-label="Demo controls and source readiness">
+      <section className="tg-product__control-panel"><div className="tg-product__panel-title"><span className="tg-product__control-play" aria-hidden="true">▶</span><div><span className="tg-product__eyebrow">SIMULATION CONTROL</span><h2>Explore a demo step</h2></div></div>
+        <div className="tg-product__mode-row"><span>Current source</span><strong><DemoPill mode={scenario.provenance.sourceMode} /></strong></div>
+        <div className="tg-product__mode-row"><span>Live source</span><strong className="tg-product__unavailable-value">Not connected</strong></div>
+        <label className="tg-product__field"><span>Selected scenario</span><strong className="tg-product__field-readout">{scenario.name}</strong><small>Change scenarios from the header selector.</small></label>
+        <label className="tg-product__horizon-field"><span>Fixture timeline</span><input aria-label="Select demo fixture step" type="range" min="0" max={scenario.frames.length - 1} step="1" value={frameIndex} onChange={(event) => setFrameIndex(Number(event.target.value))} /><span className="tg-product__horizon-labels"><small>T+0</small><small>T+2</small><small>T+4</small><small>T+6</small></span></label>
+        <div className="tg-product__control-actions"><button type="button" className="tg-product__button" onClick={() => setFrameIndex((frameIndex + scenario.frames.length - 1) % scenario.frames.length)}>Previous</button><button type="button" className="tg-product__button tg-product__button--primary" onClick={() => onSection('what-if')}>Open what-if lab <span aria-hidden="true">→</span></button></div>
+        <p className="tg-product__limit-copy">The step control changes local demo fixtures only. It does not run a forecast or physical flood solver.</p>
+      </section>
+      <section className="tg-product__source-panel"><div className="tg-product__panel-title"><span className="tg-product__source-mark" aria-hidden="true">◉</span><div><span className="tg-product__eyebrow">DATA READINESS</span><h2>Source status</h2></div></div>
+        <div className="tg-product__source-line"><i className="is-demo"/><span><strong>Demo fixtures</strong><small>Available · local only</small></span><b>ACTIVE</b></div>
+        <div className="tg-product__source-line"><i className="is-pending"/><span><strong>Saved research outputs</strong><small>Separate evidence; not loaded in this screen</small></span><b>SEPARATE</b></div>
+        <div className="tg-product__source-line"><i className="is-offline"/><span><strong>Live feeds</strong><small>Approved observation endpoint unavailable</small></span><b>OFFLINE</b></div>
+        <p className="tg-product__limit-copy">No connectivity or source health is inferred from this static demo.</p>
+      </section>
+    </aside>
+
+    <div className="tg-product__overview-bottom" aria-label="Demo workspace shortcuts">
+      <button type="button" className="tg-product__overview-tile" onClick={() => onSection('reservoirs')}><span className="tg-product__tile-icon" aria-hidden="true"><SectionIcon section="reservoirs"/></span><span><small>RESERVOIR FIXTURES · DEMO</small><strong>{scenario.reservoirs.length} sample records</strong><em>Inspect values and unknown states</em></span><b aria-hidden="true">→</b></button>
+      <button type="button" className="tg-product__overview-tile" onClick={() => onSection('response')}><span className="tg-product__tile-icon" aria-hidden="true"><SectionIcon section="response"/></span><span><small>ROUTE &amp; SHELTER · DEMO</small><strong>Hazard assessment unknown</strong><em>No route is marked safe</em></span><b aria-hidden="true">→</b></button>
+      <button type="button" className="tg-product__overview-tile" onClick={() => onSection('what-if')}><span className="tg-product__tile-icon" aria-hidden="true"><SectionIcon section="what-if"/></span><span><small>WHAT-IF WORKSPACE</small><strong>Explore local assumptions</strong><em>Fictional inputs · no model run</em></span><b aria-hidden="true">→</b></button>
+    </div>
   </div>;
 }
 

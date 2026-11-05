@@ -1,0 +1,96 @@
+{
+  "task": "B39",
+  "verification_date": "2026-11-05",
+  "status": "SOURCE_CANDIDATE_DOCUMENTED_LIVE_READINESS_UNKNOWN",
+  "source": {
+    "name": "Tamil Nadu Department of Agriculture - Farmers Welfare Agrisnet: Storage and Flow Data on Major Reservoirs",
+    "publisher": "Government of Tamil Nadu, Department of Agriculture - Farmers Welfare (as identified on official page)",
+    "record_holder_for_measurements": "UNKNOWN; page publisher does not by itself establish operator/measurement record authority for each reservoir",
+    "page_url": "https://www.tnagrisnet.tn.gov.in/home/reservoir/",
+    "documented_machine_endpoint": "NONE FOUND in reviewed official documentation; none inferred or called",
+    "access_method": "Public HTTPS page. Unauthenticated GET on 2026-11-05 returned HTTP 200 text/html shell. No row sample/data endpoint was accessed. Related ARS dashboard route redirected to an officer username/password/OTP gate; not accessed beyond gate.",
+    "authentication_for_page": "No authentication prompt on public page GET; access permission for automated extraction UNKNOWN",
+    "authenticated_access_used": false,
+    "authorized_for_live_ingestion": false,
+    "terms_license_fees_rate_limits_retention_redistribution": "UNKNOWN/PENDING; not documented by reviewed page, no written permission evidenced",
+    "sample_schema_hash": "No lawful data sample acquired; no sample hash",
+    "unauthenticated_check": {
+      "checked_at_utc": "2026-11-05T07:43:08Z",
+      "method": "Single HTTPS GET of official page, no credentials",
+      "http_status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "response": "Client-rendered page shell; no table rows or observation sample retrieved",
+      "server_date_header": "Thu, 05 Nov 2026 07:43:08 GMT",
+      "meaning": "HTTP server response time only; not a reservoir measurement or publication timestamp"
+    },
+    "indexed_rendering_note": "Official search-indexed rendering showed table labels and selected date 03-07-2026, but was not the GET response payload and does not establish current freshness."
+  },
+  "fields": [
+    {"name": "reservoir_name", "unit": "name", "meaning": "Reservoir row label", "status": "DOCUMENTED_HEADING"},
+    {"name": "full_depth", "unit": "feet", "meaning": "Reference/full depth; datum/convention UNKNOWN", "status": "UNIT_DOCUMENTED_SEMANTICS_PARTIAL"},
+    {"name": "full_capacity", "unit": "M.Cft (million cubic feet)", "meaning": "Reference capacity condition UNKNOWN", "status": "UNIT_DOCUMENTED_SEMANTICS_PARTIAL"},
+    {"name": "current_year_level", "unit": "feet", "meaning": "Measurement time and gauge datum UNKNOWN", "status": "UNIT_DOCUMENTED_SEMANTICS_PARTIAL"},
+    {"name": "current_year_storage", "unit": "M.Cft", "meaning": "Storage calculation/semantics UNKNOWN", "status": "UNIT_DOCUMENTED_SEMANTICS_PARTIAL"},
+    {"name": "current_year_inflow", "unit": "CuSecs (cusecs)", "meaning": "Instantaneous vs interval rate and timing UNKNOWN", "status": "UNIT_DOCUMENTED_SEMANTICS_PARTIAL"},
+    {"name": "current_year_outflow", "unit": "CuSecs (cusecs)", "meaning": "Total discharge vs controlled release/spill and interval UNKNOWN", "status": "UNIT_DOCUMENTED_SEMANTICS_PARTIAL"},
+    {"name": "last_year_level", "unit": "feet", "meaning": "Comparator date/alignment UNKNOWN", "status": "UNIT_DOCUMENTED_SEMANTICS_PARTIAL"},
+    {"name": "last_year_storage", "unit": "M.Cft", "meaning": "Comparator semantics UNKNOWN", "status": "UNIT_DOCUMENTED_SEMANTICS_PARTIAL"}
+  ],
+  "time": {
+    "date_selector_present": true,
+    "date_meaning": "UNKNOWN: observation instant, reporting day, daily aggregate, or publication date not distinguished",
+    "source_timestamp": "UNKNOWN",
+    "timezone": "UNKNOWN",
+    "publication_timestamp": "UNKNOWN",
+    "fetch_received_time": "Only server Date header observed: 2026-11-05T07:43:08Z; not source publication time",
+    "preserve_c3": "Historical source_date date-only; observed_at=null; timezone unknown; received_at separate; no midnight synthesis"
+  },
+  "coverage": {
+    "official_table_scope": "Indexed official table rendering listed 19 reservoirs, including 4 Karnataka Cauvery-basin reservoirs; statewide completeness and per-reservoir operational coverage not established",
+    "spatial_reference_or_coordinates": "UNKNOWN; no coordinates or mapped service specification documented",
+    "chennai_public_dashboard_context": "Separate CFM-DSS page labels panels for Poondi, Chembarambakkam, Red Hills, Cholavaram, and Thervoy Kandigai; not the Agrisnet feed/schema"
+  },
+  "cadence_freshness": {
+    "documented_publication_cadence": "UNKNOWN",
+    "update_cadence_observed": "UNKNOWN; one GET returned shell only, no repeated observation window",
+    "publication_latency": "UNKNOWN",
+    "freshness_threshold": "UNKNOWN",
+    "latest_published_or_realtime": "UNKNOWN; cannot label LIVE or REAL-TIME because no observation source timestamp/freshness evidence",
+    "revisions_backfills": "UNKNOWN"
+  },
+  "provenance_missingness": {
+    "source_record_ids_or_provenance": "UNKNOWN",
+    "revision_log": "UNKNOWN",
+    "missing_nodata_zero_behavior": "UNKNOWN; preserve blank/absent as unavailable and do not interpret as zero without owner documentation"
+  },
+  "permission": {
+    "written_permission": "PENDING",
+    "automated_access_terms": "UNKNOWN",
+    "retention_redistribution": "UNKNOWN",
+    "credential_custodian": "UNKNOWN; no credentials used or stored",
+    "project_owner_decisions_D3_D8": "PENDING"
+  },
+  "human_follow_up": [
+    "Project owner identifies authoritative record holder for each target reservoir and field.",
+    "Obtain written source-owner confirmation of authorized access method, terms, retention/redistribution, fees/rate limits and authentication/custodian requirements.",
+    "Request an authorized sample/schema with source timestamps and provenance; confirm units, gauge datum, inflow/outflow/release/gate semantics and measurement intervals, timezone, reservoir coverage, cadence, latency, revisions and missing-data behavior.",
+    "Resolve project decisions D3 and D8 before any live connector or LIVE label."
+  ],
+  "evidence_paths": [
+    "docs/trackb/LIVE_SOURCE_READINESS_INVENTORY.md",
+    "docs/trackb/live_source_readiness_inventory.json",
+    "docs/master/LIVE_SOURCE_AUTHORIZATION_DECISION_REQUEST.md",
+    "docs/master/live_source_authorization_decision_request.json",
+    "docs/master/contracts/c3_messages_v0.md",
+    "docs/MANUAL_TODO.md"
+  ],
+  "official_references": [
+    "https://www.tnagrisnet.tn.gov.in/home/reservoir/",
+    "https://www.tnagrisnet.tn.gov.in/dashboard/report/04_07.pdf",
+    "https://www.tnagrisnet.tn.gov.in/ARS/acrs_apc_dashboard/reservoirs/",
+    "https://chennaifloodmonitor.tn.gov.in/HomePage/Dashboard",
+    "https://chennaifloodmonitor.tn.gov.in/Master/AboutUs"
+  ],
+  "live_access_verified": false,
+  "authorized_for_live": false
+}

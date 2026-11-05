@@ -1,0 +1,287 @@
+{
+  "task_id": "B38",
+  "verified_on": "2026-11-05",
+  "scope": "Official published IMD documentation and repository evidence only; no product API/data endpoint was probed.",
+  "decision": {
+    "status": "PROPOSED_NOT_AUTHORIZED",
+    "live_access_verified": false,
+    "connector_implemented": false,
+    "unauthenticated_product_checks": "NOT_PERFORMED",
+    "check_reason": "The published materials reviewed do not explicitly authorize unauthenticated read-only endpoint probes and do not publish product API rate limits. B38 therefore does not call product/data endpoints.",
+    "observed_endpoint_response": "UNKNOWN",
+    "observed_update_cadence": "UNKNOWN",
+    "registration": "The official API portal exposes Register/Create Account and Login. This suggests account registration is offered/expected for platform use, but per-product authentication requirements and whether any product is anonymously readable are UNKNOWN.",
+    "terms_permission": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+    "retention_redistribution_fees_rate_limits": "UNKNOWN",
+    "source_owner": "India Meteorological Department (IMD), Ministry of Earth Sciences; product-level operational owner/custodian and authorized project contact remain to be confirmed.",
+    "provenance": "Official API reference identifies product endpoints and sample schemas. No lawful product response was obtained, so no sample hash or response provenance is recorded.",
+    "human_follow_up": [
+      "Project owner must request written API access instructions, account/authentication requirements, and explicit permission for read-only use by this project.",
+      "Obtain applicable terms, license, retention/redistribution conditions, fees, and published rate limits before any endpoint probe or integration.",
+      "Ask IMD/RMC Chennai for authoritative Chennai district, city, and station selector identifiers and mappings for each selected product.",
+      "Obtain a dated, authorized sample/schema with field types, units, timestamp semantics/timezone, publication/update timestamps, revisions, and missing/error behavior.",
+      "Measure update latency only after permission, using a documented observation window and timestamped method; do not treat nominal issue cadence as measured delivery latency."
+    ]
+  },
+  "repository_evidence": [
+    "docs/trackb/LIVE_SOURCE_READINESS_INVENTORY.md",
+    "docs/trackb/live_source_readiness_inventory.json",
+    "docs/trackb/INGESTION_READINESS_DESIGN.md",
+    "docs/master/LIVE_SOURCE_AUTHORIZATION_DECISION_REQUEST.md",
+    "docs/master/FINAL_YEAR_OWNER_DECISIONS.md",
+    "docs/DATA_MANIFEST.csv",
+    "docs/MANUAL_TODO.md"
+  ],
+  "official_sources": [
+    {
+      "id": "imd_api_reference",
+      "url": "https://api.imd.gov.in/public/api_reference.html",
+      "purpose": "Published API catalogue, endpoint examples, and product field descriptions."
+    },
+    {
+      "id": "imd_api_portal",
+      "url": "https://api.imd.gov.in/public/",
+      "purpose": "Official Data Access Portal; exposes Register/Create Account, Login, and Explore APIs."
+    },
+    {
+      "id": "imd_api_terms_contact_notice",
+      "url": "https://mausam.imd.gov.in/Forecast/marquee_data/API_doc.pdf",
+      "purpose": "States API use is subject to IMD terms and directs interested organizations to contact the IMD nodal officer; the actual terms are not reproduced."
+    },
+    {
+      "id": "rmc_chennai_portal",
+      "url": "https://mausam.imd.gov.in/chennai/",
+      "purpose": "Regional Meteorological Centre Chennai portal links district/station nowcast, rainfall products, AWS/daily observations, City Forecast, and identifies Chennai-Nungambakkam."
+    },
+    {
+      "id": "imd_nowcast_sop",
+      "url": "https://mausam.imd.gov.in/imd_latest/contents/pdf/forecasting_sop.pdf",
+      "purpose": "Published SOP says station and district nowcasts are issued at three-hour intervals; district warnings include start/end time in IST."
+    },
+    {
+      "id": "imd_annual_report_2022",
+      "url": "https://mausam.imd.gov.in/imd_latest/contents/ar2022.pdf",
+      "purpose": "IMD reports operational district-level nowcasts for severe weather round-the-clock at three-hour intervals, updated every three hours on the IMD website."
+    },
+    {
+      "id": "rmc_chennai_city_nowcast",
+      "url": "https://mausam.imd.gov.in/chennaiums/district_nowcast_chnums.php",
+      "purpose": "Official Chennai-labelled city nowcast page; supports regional product availability, not API entitlement or API identifier mapping."
+    },
+    {
+      "id": "rmc_chennai_station_nowcast",
+      "url": "https://mausam.imd.gov.in/chennaiums/station_nowcast_chnums.php?id=2",
+      "purpose": "Official Location Specific Nowcast for Chennai page; its page parameter is not established as the API station identifier."
+    }
+  ],
+  "sources": [
+    {
+      "id": "cityforecast_7day",
+      "product": "City Weather Forecast (7 Days), mixed observed city weather and forecast",
+      "product_class": "OBSERVATION_PLUS_FORECAST",
+      "api_version": "v1",
+      "endpoints": [
+        "https://api.imd.gov.in/api/v1/cityforecast",
+        "https://api.imd.gov.in/api/v1/cityforecast?id=42182",
+        "https://api.imd.gov.in/api/v1/cityforecast_mapping",
+        "https://api.imd.gov.in/api/v1/cityforecastloc",
+        "https://api.imd.gov.in/api/v1/cityforecastloc?id=42182"
+      ],
+      "chennai": {
+        "coverage_status": "REGIONAL_CITY_PRODUCT_EXISTS_API_SELECTOR_UNVERIFIED",
+        "evidence": ["rmc_chennai_portal"],
+        "details": "RMC Chennai lists Chennai City Weather and City Forecast and identifies Chennai-Nungambakkam. API reference sample id 42182 is not identified as Chennai, and mapping response was not queried; Chennai API id and exact forecast station mapping remain UNKNOWN."
+      },
+      "documented_fields": [
+        "Date (YYYY-mm-dd, Date of Observation)", "Station_Code", "Station_Name", "Today_Max_temp", "Today_Max_Departure_from_Normal", "Previous_Day_Max_temp", "Previous_Day_Max_Departure_from_Normal", "Today_Min_temp", "Today_Min_Departure_from_Normal", "Past_24_hrs_Rainfall", "Relative_Humidity_at_0830", "Relative_Humidity_at_1730", "Previous_Day_Relative_Humidity_at_1730", "Sunset_time", "Sunrise_time", "Moonset_time", "Moonrise_time", "Todays_Forecast_Max_Temp", "Todays_Forecast_Min_temp", "Todays_Forecast", "Day_2 through Day_7 max/min temperature and forecast fields" , "Latitude and Longitude (cityforecastloc)"
+      ],
+      "documented_units_and_time": "Temperature and departures in °C; relative humidity in %; daily max recorded at 1730 IST, min at 0530 IST; past 24-hour rainfall interval is previous-day 0830 IST to current-day 0830 IST, but its numeric unit is not specified in this API reference. Date is observation date (YYYY-mm-dd). Forecasts are Day 1–Day 7; forecast issue/publication timestamp and exact within-day valid-time conventions are UNKNOWN.",
+      "documented_cadence": "UNKNOWN for this API product; 7-day horizon does not establish refresh frequency.",
+      "observed_update_cadence": "UNKNOWN; no endpoint observations performed.",
+      "spatial_coverage_resolution": "Station/city point; city mapping endpoint is documented. Per-city station list, Chennai selector, coordinate accuracy, and update coverage are UNKNOWN.",
+      "provenance_revision_missing_latency": "Response provenance/hash, latency, revision/backfill policy, missing/null behavior, error semantics, and response schema types are UNKNOWN.",
+      "access_terms_status": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+      "evidence": ["imd_api_reference", "imd_api_portal", "imd_api_terms_contact_notice", "rmc_chennai_portal"]
+    },
+    {
+      "id": "current_wx",
+      "product": "Current Weather API",
+      "product_class": "LATEST_PUBLISHED_OBSERVATION_NOT_PROVEN_REAL_TIME",
+      "api_version": "v1",
+      "endpoints": ["https://api.imd.gov.in/api/v1/current_wx", "https://api.imd.gov.in/api/v1/current_wx?id=StationId"],
+      "chennai": {
+        "coverage_status": "CHENNAI_OBSERVATION_SHOWN_API_STATION_SELECTOR_UNVERIFIED",
+        "evidence": ["rmc_chennai_portal"],
+        "details": "RMC Chennai page displays Chennai-Nungambakkam current weather, but no API StationId mapping is documented in the reviewed reference. Exact API coverage/selector is UNKNOWN."
+      },
+      "documented_fields": ["Station Id", "Station", "Date of Observation (YYYY-mm-dd)", "Time of Observation (UTC)", "M.S.L.P", "Wind Direction", "Wind Speed", "Temperature", "Weather Code", "Nebulosity", "Humidity", "Last 24 hrs Rainfall"],
+      "documented_units_and_time": "MSLP hPa; wind direction code; wind speed KMPH; temperature °C; weather code 01–99; nebulosity 0–8; humidity %; last-24-hour rainfall mm. Observation time is explicitly UTC; date is YYYY-mm-dd. Rain accumulation window anchor details are UNKNOWN.",
+      "documented_cadence": "UNKNOWN; 'Current Weather' does not establish an update schedule or real-time guarantee.",
+      "observed_update_cadence": "UNKNOWN; no endpoint observations performed.",
+      "spatial_coverage_resolution": "Station point; station inventory, coordinates, and Chennai station mapping UNKNOWN.",
+      "provenance_revision_missing_latency": "Publication timestamp, latency/SLA, revision/backfill, missing/null semantics, outage/error behavior, and data quality flags beyond weather codes are UNKNOWN.",
+      "access_terms_status": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+      "evidence": ["imd_api_reference", "imd_api_portal", "imd_api_terms_contact_notice", "rmc_chennai_portal"]
+    },
+    {
+      "id": "districtnowcast",
+      "product": "District-wise Nowcast",
+      "product_class": "NOWCAST_WARNING",
+      "api_version": "v1",
+      "endpoints": ["https://api.imd.gov.in/api/v1/districtnowcast", "https://api.imd.gov.in/api/v1/districtnowcast?id=1"],
+      "chennai": {
+        "coverage_status": "CHENNAI_REGIONAL_PAGE_EXISTS_API_DISTRICT_SELECTOR_UNVERIFIED",
+        "evidence": ["rmc_chennai_portal", "rmc_chennai_city_nowcast"],
+        "details": "RMC Chennai links district nowcast and has a Chennai city nowcast page. The API reference example id=1 does not establish a Chennai district selector or mapping."
+      },
+      "documented_fields": ["Station", "Date (warning issue date, YYYY-mm-dd)", "Cat1–Cat19 warning categories", "message", "toi (HHmm issue time)", "Vupto (HHmm valid-until time)", "color (1–4)"] ,
+      "documented_units_and_time": "Rain-category thresholds are <5 mm/hr (light), 5–15 mm/hr (moderate), >15 mm/hr (heavy); other categories include wind speeds in km/h and lightning probability. `toi` and `Vupto` are HHmm with timezone not declared in API reference; validity semantics beyond 'valid upto' and exact date rollover are UNKNOWN. The SOP separately says district warning intervals use IST; API field timezone binding needs sample/schema confirmation before normalization.",
+      "documented_cadence": "Every three hours for district nowcasts, per IMD forecasting SOP and IMD Annual Report 2022. This is product issue/update cadence, not a measured API publication latency or guaranteed endpoint refresh SLA.",
+      "observed_update_cadence": "UNKNOWN; no endpoint observations performed.",
+      "spatial_coverage_resolution": "District unit; IMD describes all-India district nowcasts; RMC Chennai offers regional/Chennai district nowcast. Exact API district IDs and spatial boundary/version are UNKNOWN.",
+      "provenance_revision_missing_latency": "No per-record source/publish timestamp or revision/backfill policy is documented in API reference. API missing/null, stale, outage, and error behavior and actual latency UNKNOWN.",
+      "access_terms_status": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+      "evidence": ["imd_api_reference", "imd_api_portal", "imd_api_terms_contact_notice", "imd_nowcast_sop", "imd_annual_report_2022", "rmc_chennai_portal", "rmc_chennai_city_nowcast"]
+    },
+    {
+      "id": "stationnowcast",
+      "product": "Station-wise Nowcast",
+      "product_class": "NOWCAST_WARNING",
+      "api_version": "v1",
+      "endpoints": ["https://api.imd.gov.in/api/v1/stationnowcast", "https://api.imd.gov.in/api/v1/stationnowcast?id=Adilabad"],
+      "chennai": {
+        "coverage_status": "CHENNAI_USER_FACING_PAGE_EXISTS_API_STATION_SELECTOR_UNVERIFIED",
+        "evidence": ["rmc_chennai_portal", "rmc_chennai_station_nowcast"],
+        "details": "RMC Chennai links station-wise nowcast and a Chennai location-specific page exists. Its page parameter is not proven to equal the API station selector; mapping UNKNOWN."
+      },
+      "documented_fields": ["Station", "Date (warning issue date, YYYY-mm-dd)", "Cat1–Cat19 warning categories", "message", "toi (HHmm issue time)", "Vupto (HHmm valid-until time)", "color (1–4)"],
+      "documented_units_and_time": "Category descriptions include rainfall thresholds in mm/hr, wind in km/h, and lightning probability. `toi` and `Vupto` are HHmm; timezone in API reference UNKNOWN. Do not convert to UTC or infer date rollover without owner schema confirmation.",
+      "documented_cadence": "Every three hours for station nowcasts per IMD forecasting SOP. This is nominal product cadence only.",
+      "observed_update_cadence": "UNKNOWN; no endpoint observations performed.",
+      "spatial_coverage_resolution": "Station/city points, including locations selected for nowcasting; exact list, Chennai API name, coordinates, and resolution UNKNOWN.",
+      "provenance_revision_missing_latency": "Publish timestamps, latency/SLA, revisions, missing/null and outage/error behavior UNKNOWN.",
+      "access_terms_status": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+      "evidence": ["imd_api_reference", "imd_api_portal", "imd_api_terms_contact_notice", "imd_nowcast_sop", "rmc_chennai_portal", "rmc_chennai_station_nowcast"]
+    },
+    {
+      "id": "districtrainfall",
+      "product": "District-wise Rainfall",
+      "product_class": "PUBLISHED_RAINFALL_STATISTICS",
+      "api_version": "v1",
+      "endpoints": ["https://api.imd.gov.in/api/v1/districtrainfall", "https://api.imd.gov.in/api/v1/districtrainfall?id=164"],
+      "chennai": {
+        "coverage_status": "CHENNAI_DISTRICT_PRODUCT_LISTED_API_SELECTOR_UNVERIFIED",
+        "evidence": ["rmc_chennai_portal"],
+        "details": "RMC Chennai provides Districtwise rainfall under rainfall products. API sample id=164 is Adilabad, not Chennai; Chennai API identifier and boundary are UNKNOWN."
+      },
+      "documented_fields": ["OBJ_ID", "District", "Date", "Daily Actual/Normal/Departure Per/Category", "Week Date/Weekly Actual/Normal/Departure Per/Category", "Cumulative Date/Actual/Normal/Departure Per/Category", "Monthly Date/Actual/Normal/Departure Per/Category"],
+      "documented_units_and_time": "Daily/weekly/cumulative/monthly date labels and string-valued numeric examples are shown; rainfall units are not stated in this API reference. Daily date is shown as YYYY-mm-dd, period fields as date ranges. Observation time/timezone and aggregation cutoffs are UNKNOWN. Category codes include NR (No Rain) and ND (No Data); these are distinct.",
+      "documented_cadence": "UNKNOWN; daily/weekly/monthly aggregation labels do not establish publication schedule.",
+      "observed_update_cadence": "UNKNOWN; no endpoint observations performed.",
+      "spatial_coverage_resolution": "District aggregate; geographic boundaries/vintage and Chennai API mapping UNKNOWN.",
+      "provenance_revision_missing_latency": "Category schema documents NR versus ND. Per-record source gauge/grid provenance, QC, revisions/backfill, publication timestamp, latency, null/error behavior UNKNOWN.",
+      "access_terms_status": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+      "evidence": ["imd_api_reference", "imd_api_portal", "imd_api_terms_contact_notice", "rmc_chennai_portal"]
+    },
+    {
+      "id": "staterainfall",
+      "product": "State-wise Rainfall",
+      "product_class": "PUBLISHED_RAINFALL_STATISTICS",
+      "api_version": "v1",
+      "endpoints": ["https://api.imd.gov.in/api/v1/staterainfall", "https://api.imd.gov.in/api/v1/staterainfall?id=jammu"],
+      "chennai": {
+        "coverage_status": "TAMIL_NADU_STATE_IS_RELEVANT_API_SELECTOR_UNVERIFIED",
+        "evidence": ["imd_api_reference", "rmc_chennai_portal"],
+        "details": "RMC Chennai is the regional centre for Tamil Nadu, Puducherry and Karaikal, but API reference only shows a Jammu query example and does not provide state id mapping for this endpoint. Tamil Nadu selector and coverage remain unverified."
+      },
+      "documented_fields": ["State", "Date", "Daily Actual/Normal/Departure Per/Category", "Week Date/Weekly Actual/Normal/Departure Per/Category", "Cumulative Date/Actual/Departure Per/Category", "Monthly Date/Actual/Normal/Departure Per/Category"],
+      "documented_units_and_time": "Sample numeric values are strings; rainfall unit is not stated in this API reference. Date/period labels are calendar dates/ranges. Observation time, aggregation cutoff and timezone UNKNOWN. NR means No Rain; ND means No Data.",
+      "documented_cadence": "UNKNOWN.",
+      "observed_update_cadence": "UNKNOWN; no endpoint observations performed.",
+      "spatial_coverage_resolution": "State aggregate. Tamil Nadu API selection and any finer spatial resolution UNKNOWN.",
+      "provenance_revision_missing_latency": "Gauge/source provenance, revision/backfill, publication timestamps, latency and API error/missing behavior UNKNOWN; NR and ND are documented category distinctions.",
+      "access_terms_status": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+      "evidence": ["imd_api_reference", "imd_api_portal", "imd_api_terms_contact_notice", "rmc_chennai_portal"]
+    },
+    {
+      "id": "aws_arg",
+      "product": "AWS/ARG Data",
+      "product_class": "AUTOMATIC_STATION_OBSERVATION",
+      "api_version": "v1",
+      "endpoints": ["https://api.imd.gov.in/api/v1/aws_data", "https://api.imd.gov.in/api/v1/aws_data?id=NDL", "https://api.imd.gov.in/api/v1/aws_data?sid=25", "https://api.imd.gov.in/api/v1/aws_data_mapping"],
+      "chennai": {
+        "coverage_status": "TAMIL_NADU_STATE_SELECTOR_DOCUMENTED_STATION_COVERAGE_UNVERIFIED",
+        "evidence": ["imd_api_reference", "rmc_chennai_portal"],
+        "details": "API reference maps state id 25 to TAMIL_NADU, making this state query geographically relevant. The example response is Lodi Road, Delhi; no Chennai station list or Chennai mapping response was retrieved."
+      },
+      "documented_fields": ["ID", "CALL_SIGN", "DISTRICT", "STATE", "STATION", "DATE", "TIME", "CURR_TEMP", "DEW_POINT_TEMP", "RH", "WIND_DIRECTION", "WIND_SPEED", "MSLP", "MIN_TEMP", "MAX_TEMP", "Latitude", "Longitude", "WEATHER_CODE", "NEBULOSITY", "Feel Like"],
+      "documented_units_and_time": "API reference says fields are self-explanatory and shows strings, but units for AWS/ARG sample fields are UNKNOWN; timezone and exact measurement meaning for DATE and TIME are UNKNOWN. Do not assign units/timezone from field names or sample values; confirm with IMD. Coordinates are provided but CRS/accuracy are UNKNOWN.",
+      "documented_cadence": "UNKNOWN; endpoint name and automatic-station label do not establish sampling or publish interval.",
+      "observed_update_cadence": "UNKNOWN; no endpoint observations performed.",
+      "spatial_coverage_resolution": "Station points; state ID 25 maps to Tamil Nadu. Station roster, Chennai coverage, coordinates/CRS accuracy and gaps UNKNOWN.",
+      "provenance_revision_missing_latency": "Station ID/call sign are documented identifiers. Sensor QC, source provenance, publication latency, revisions/backfill, missing/null, stale and error semantics UNKNOWN.",
+      "access_terms_status": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+      "evidence": ["imd_api_reference", "imd_api_portal", "imd_api_terms_contact_notice", "rmc_chennai_portal"]
+    },
+    {
+      "id": "basinqpf",
+      "product": "River Basin Quantitative Precipitation Forecast (QPF)",
+      "product_class": "PRECIPITATION_FORECAST",
+      "api_version": "v1",
+      "endpoints": ["https://api.imd.gov.in/api/v1/basinqpf", "https://api.imd.gov.in/api/v1/basinqpf?id=100"],
+      "chennai": {
+        "coverage_status": "UNKNOWN",
+        "evidence": ["imd_api_reference"],
+        "details": "The reference documents basin/subbasin records but does not identify a basin covering Chennai. Basin mapping must be confirmed by IMD."
+      },
+      "documented_fields": ["Obj_Id", "Date (issue date, YYYY-mm-dd)", "FMO", "Basin", "SubBasin", "Area (Sq. Km.)", "Day1 through Day5 forecasts", "AAP (Average Areal Precipitation)"],
+      "documented_units_and_time": "Basin area is km². Forecast values and AAP units/accumulation windows/valid timestamps are not specified in the reviewed API reference. Date is issue date, not a valid-time instant.",
+      "documented_cadence": "UNKNOWN.",
+      "observed_update_cadence": "UNKNOWN; no endpoint observations performed.",
+      "spatial_coverage_resolution": "Basin/subbasin; area field in km². Geometry, basin boundaries/vintage, resolution and Chennai basin membership UNKNOWN.",
+      "provenance_revision_missing_latency": "Source model, forecast cycles, issue/publication timestamps beyond issue date, revisions, backfill, missing/error and latency behavior UNKNOWN.",
+      "access_terms_status": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+      "evidence": ["imd_api_reference", "imd_api_portal", "imd_api_terms_contact_notice"]
+    },
+    {
+      "id": "subdivision_rainfall_forecast",
+      "product": "Subdivision Rainfall Forecast (7 Days)",
+      "product_class": "RAINFALL_FORECAST",
+      "api_version": "v1",
+      "endpoints": ["https://api.imd.gov.in/api/v1/subdivision_rainfall_forecast"],
+      "chennai": {
+        "coverage_status": "SUBDIVISION_PRODUCT_DOCUMENTED_CHENNAI_SELECTOR_UNVERIFIED",
+        "evidence": ["imd_api_reference", "rmc_chennai_portal"],
+        "details": "API reference shows subdivision-level product and example schema; RMC Chennai publishes regional forecasts, but the API reference does not establish which subdivision/API row covers Chennai."
+      },
+      "documented_fields": ["date_obs", "SUBDIV", "day1 through day7 color/distribution/distribution_percentage fields"],
+      "documented_units_and_time": "Forecast date and categorical distribution/percentage are shown; exact rain amount/unit, issue timestamp, valid period boundaries and timezone are UNKNOWN.",
+      "documented_cadence": "UNKNOWN.",
+      "observed_update_cadence": "UNKNOWN; no endpoint observations performed.",
+      "spatial_coverage_resolution": "Meteorological subdivision; subdivision geometry/version and Chennai assignment/API selector UNKNOWN.",
+      "provenance_revision_missing_latency": "Model/source, revision/backfill, freshness, missing/error behavior, publication time and latency UNKNOWN.",
+      "access_terms_status": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+      "evidence": ["imd_api_reference", "imd_api_portal", "imd_api_terms_contact_notice", "rmc_chennai_portal"]
+    },
+    {
+      "id": "state_district_rainfall_forecast",
+      "product": "State District Rainfall Forecast (5 Days)",
+      "product_class": "DISTRICT_RAINFALL_FORECAST",
+      "api_version": "v1",
+      "endpoints": ["https://api.imd.gov.in/api/v1/state_district_rainfall_forecast"],
+      "chennai": {
+        "coverage_status": "CHENNAI_REGIONAL_FORECAST_PUBLISHED_API_ROW_UNVERIFIED",
+        "evidence": ["imd_api_reference", "rmc_chennai_portal"],
+        "details": "RMC Chennai regional daily forecast includes Tamil Nadu products; API reference documents district forecast rows but does not verify Chennai row/selector."
+      },
+      "documented_fields": ["date_obs", "Obj_id", "District", "State", "day1 through day5 color/distribution/distribution_percentage fields"],
+      "documented_units_and_time": "Categorical distribution/percentage fields are shown; rain amount units, issue timestamp, valid-period boundaries and timezone UNKNOWN.",
+      "documented_cadence": "UNKNOWN.",
+      "observed_update_cadence": "UNKNOWN; no endpoint observations performed.",
+      "spatial_coverage_resolution": "District; API row IDs, Chennai boundary vintage and per-district list UNKNOWN.",
+      "provenance_revision_missing_latency": "Forecast source/model, publication timestamp, latency, revision/backfill, missing/null and API failure semantics UNKNOWN.",
+      "access_terms_status": "UNKNOWN_PENDING_IMD_CONFIRMATION",
+      "evidence": ["imd_api_reference", "imd_api_portal", "imd_api_terms_contact_notice", "rmc_chennai_portal"]
+    }
+  ]
+}

@@ -639,6 +639,62 @@
           }
         }
       }
+    },
+    "/reservoirs/history": {
+      "get": {
+        "operationId": "getCfmReservoirHistory",
+        "summary": "Fetch an on-demand public CFM-DSS reservoir snapshot",
+        "description": "Low-volume educational prototype read. Returns latest-published dashboard history, not sub-hourly telemetry. Does not trigger flood-model recomputation or operational decisions.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "description": "History aggregation; daily returns at most 75 rows and monthly at most 65 rows.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "daily",
+                "monthly"
+              ],
+              "default": "daily"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated latest-published history; source freshness and observation time remain unknown.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CfmReservoirHistory"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "503": {
+            "description": "Source unavailable or payload invalid; details, tokens and upstream bodies are not exposed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CfmReservoirUnavailable"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3946,6 +4002,179 @@
             }
           }
         ]
+      },
+      "CfmReservoirHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "history_kind",
+          "source_id",
+          "source_mode",
+          "received_at",
+          "availability",
+          "freshness",
+          "records",
+          "limitations"
+        ],
+        "properties": {
+          "history_kind": {
+            "type": "string",
+            "enum": [
+              "daily",
+              "monthly"
+            ]
+          },
+          "source_id": {
+            "type": "string",
+            "const": "tn_cfm_dss_public_lakes_dashboard"
+          },
+          "source_mode": {
+            "type": "string",
+            "const": "LIVE"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time this service fetched the response; not the source observation time."
+          },
+          "availability": {
+            "type": "string",
+            "const": "available"
+          },
+          "freshness": {
+            "type": "string",
+            "const": "unknown"
+          },
+          "records": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 75,
+            "items": {
+              "$ref": "#/components/schemas/CfmReservoirRecord"
+            }
+          },
+          "limitations": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CfmReservoirRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reservoir_id",
+          "reservoir_name",
+          "source_date",
+          "time_precision",
+          "observed_at",
+          "observation_timezone",
+          "water_level_m",
+          "average_storage_mcm",
+          "received_at",
+          "source_mode",
+          "availability",
+          "freshness",
+          "freshness_note",
+          "provenance"
+        ],
+        "properties": {
+          "reservoir_id": {
+            "type": "string"
+          },
+          "reservoir_name": {
+            "type": "string"
+          },
+          "source_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Source calendar bucket. For monthly history this is the first day of the month label, not an exact observation date."
+          },
+          "time_precision": {
+            "type": "string",
+            "const": "date"
+          },
+          "observed_at": {
+            "type": "null",
+            "description": "Unknown; the dashboard date label does not specify an observation instant."
+          },
+          "observation_timezone": {
+            "type": "string",
+            "const": "unknown"
+          },
+          "water_level_m": {
+            "type": "number",
+            "minimum": 0
+          },
+          "average_storage_mcm": {
+            "type": "number",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "source_mode": {
+            "type": "string",
+            "const": "LIVE"
+          },
+          "availability": {
+            "type": "string",
+            "const": "available"
+          },
+          "freshness": {
+            "type": "string",
+            "const": "unknown"
+          },
+          "freshness_note": {
+            "type": "string"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/CfmReservoirProvenance"
+          }
+        }
+      },
+      "CfmReservoirProvenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_id",
+          "endpoint",
+          "response_sha256"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "const": "tn_cfm_dss_public_lakes_dashboard"
+          },
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "/Master/GetLast15daysWaterLevel",
+              "/Master/GetMonthlyWaterLevelOfReservoir"
+            ]
+          },
+          "response_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "CfmReservoirUnavailable": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "detail"
+        ],
+        "properties": {
+          "detail": {
+            "type": "string",
+            "const": "Reservoir source is unavailable or returned invalid data."
+          }
+        }
       }
     }
   }

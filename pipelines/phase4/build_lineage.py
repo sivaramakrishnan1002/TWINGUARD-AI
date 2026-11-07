@@ -20,6 +20,9 @@ def digest(path: Path) -> str:
 
 def provenance(path: Path) -> tuple[str, str]:
     rel = path.relative_to(ROOT).as_posix()
+    if rel.startswith("data/features/predictions/phase9c/"):
+        return ("data/features/static/cell_table_phase9b_v2.parquet; data/features/predictions/labels_nov2015.parquet; data/processed/alignment/spatial_blocks.tif; data/processed/grid/cma_mask.tif; existing 2015 RTC quality masks; OpenCity KML points for composite rank only",
+                "pipelines/phase9c/urban_censoring.py")
     if rel == "data/features/static/cell_table_phase9b_v1.parquet" or rel == "data/features/static/cell_table_phase9b_v1.json":
         return ("data/features/static/cell_table.parquet; data/processed/terrain_cleaned/cleaned_elevation_m.tif; data/processed/terrain_cleaned/slope_deg_edge_safe.tif; data/processed/terrain_cleaned/twi_d8_proxy_edge_safe.tif; data/processed/terrain_cleaned/flow_accumulation_cells_d8.tif; data/features/landcover/worldcover_2021_class.tif; data/features/osm/chennai_osm_features.gpkg; data/processed/grid/cma_mask.tif; data/processed/terrain_cleaned/flow_direction_d8.tif",
                 "pipelines/phase9b/feature_build.py")

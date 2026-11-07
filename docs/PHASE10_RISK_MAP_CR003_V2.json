@@ -1,0 +1,203 @@
+{
+  "status": "PILOT; single-event apparent susceptibility; not forecast; out-of-event validation pending digitised labels",
+  "grid": {
+    "crs": "EPSG:32644",
+    "pixel_m": 30,
+    "shape": [
+      1760,
+      1370
+    ],
+    "cma_cells": 1319380
+  },
+  "fixed_probability_cut_points": {
+    "low": "<0.05",
+    "moderate": "0.05 to <0.10",
+    "high": "0.10 to <0.25",
+    "very_high": ">=0.25"
+  },
+  "products": {
+    "phase9b_v2": {
+      "probability_source": "data/features/predictions/phase9b_v2/probability_mean_apparent.tif",
+      "class_raster": "data/features/predictions/phase10_cr003_v2/risk_class_phase9b_v2_apparent.tif",
+      "valid_cells": 1078595,
+      "class_cut_points": [
+        0.05,
+        0.1,
+        0.25
+      ]
+    },
+    "phase9c_radar": {
+      "probability_source": "data/features/predictions/phase9c/radar_probability_mean_apparent.tif",
+      "class_raster": "data/features/predictions/phase10_cr003_v2/risk_class_phase9c_radar_apparent.tif",
+      "valid_cells": 481244,
+      "class_cut_points": [
+        0.05,
+        0.1,
+        0.25
+      ]
+    }
+  },
+  "input_copies": {
+    "phase9b_probability_mean_apparent.tif": "data/features/predictions/phase9b_v2/probability_mean_apparent.tif",
+    "phase9b_interval_lower90_apparent.tif": "data/features/predictions/phase9b_v2/interval_lower90_apparent.tif",
+    "phase9b_interval_upper90_apparent.tif": "data/features/predictions/phase9b_v2/interval_upper90_apparent.tif",
+    "phase9c_radar_probability_mean_apparent.tif": "data/features/predictions/phase9c/radar_probability_mean_apparent.tif",
+    "phase9c_radar_mondrian_p05_apparent.tif": "data/features/predictions/phase9c/radar_mondrian_p05_apparent.tif",
+    "phase9c_radar_mondrian_p95_apparent.tif": "data/features/predictions/phase9c/radar_mondrian_p95_apparent.tif",
+    "phase9c_urban_confidence.tif": "data/features/predictions/phase9c/urban_confidence.tif",
+    "phase9c_observability_mask.tif": "data/features/predictions/phase9c/radar_observability_mask.tif",
+    "phase9c_physical_complement_not_probability.tif": "data/features/predictions/phase9c/physical_susceptibility_outside_radar.tif"
+  },
+  "not_assessed_cells_by_product": {
+    "phase9b_v2": 1332605,
+    "phase9c_radar": 1929956
+  },
+  "zonal_stats_csv": "data/features/predictions/phase10_cr003_v2/zonal_stats_by_risk_class_and_3km_block.csv",
+  "zonal_rows": 1560,
+  "facilities_in_cma_queried": 15162,
+  "road_edges_in_cma_queried": 414822,
+  "road_length_method": "each complete edge length assigned to ST_PointOnSurface raster cell; approximate, not clipped at risk/block boundaries",
+  "population_nodata": "counted separately; valid-only population sum is an alpha WorldPop model estimate, not a census count",
+  "vector_tiles": {
+    "path": "data/processed/tiles/phase10_cr003_v2/phase10_apparent_risk.mbtiles",
+    "tiles_written": 45,
+    "zoom_range": [
+      8,
+      12
+    ],
+    "generalization_m": 120,
+    "features": 8
+  },
+  "opencity_point_cross_check": {
+    "source": "existing Phase 9C independent point validation; points are approximate and undated",
+    "scored": 111,
+    "total": 945,
+    "top_percentile_hits": {
+      "1": {
+        "hit_share": 0.0,
+        "ci_95": [
+          0.0,
+          0.0
+        ],
+        "n": 111
+      },
+      "5": {
+        "hit_share": 0.0,
+        "ci_95": [
+          0.0,
+          0.0
+        ],
+        "n": 111
+      },
+      "10": {
+        "hit_share": 0.009009009009009009,
+        "ci_95": [
+          0.0,
+          0.030310760667903485
+        ],
+        "n": 111
+      },
+      "20": {
+        "hit_share": 0.02702702702702703,
+        "ci_95": [
+          0.0,
+          0.06522247054043069
+        ],
+        "n": 111
+      }
+    },
+    "warning": "rank statistics use the Phase 9C composite ordinal rank surface; physical and radar domains are not probability-comparable"
+  },
+  "zonal_class_totals": [
+    {
+      "product": "phase9b_v2",
+      "risk_class": "low",
+      "cell_count": 890532,
+      "population_valid_sum_model_estimate": 5857989.071608829,
+      "population_nodata_cells": 0,
+      "facility_count": 14950,
+      "road_length_midpoint_allocated_m": 13822181.791154228
+    },
+    {
+      "product": "phase9b_v2",
+      "risk_class": "moderate",
+      "cell_count": 84963,
+      "population_valid_sum_model_estimate": 157731.73388709727,
+      "population_nodata_cells": 0,
+      "facility_count": 92,
+      "road_length_midpoint_allocated_m": 422864.8529525486
+    },
+    {
+      "product": "phase9b_v2",
+      "risk_class": "high",
+      "cell_count": 71930,
+      "population_valid_sum_model_estimate": 99251.78907823548,
+      "population_nodata_cells": 0,
+      "facility_count": 41,
+      "road_length_midpoint_allocated_m": 204116.20930447205
+    },
+    {
+      "product": "phase9b_v2",
+      "risk_class": "very_high",
+      "cell_count": 31170,
+      "population_valid_sum_model_estimate": 25994.178332946067,
+      "population_nodata_cells": 0,
+      "facility_count": 8,
+      "road_length_midpoint_allocated_m": 37551.308942010146
+    },
+    {
+      "product": "phase9b_v2",
+      "risk_class": "not_assessed",
+      "cell_count": 240785,
+      "population_valid_sum_model_estimate": 62844.50157832287,
+      "population_nodata_cells": 194961,
+      "facility_count": 69,
+      "road_length_midpoint_allocated_m": 241648.80195073568
+    },
+    {
+      "product": "phase9c_radar",
+      "risk_class": "low",
+      "cell_count": 301211,
+      "population_valid_sum_model_estimate": 1164575.7686738418,
+      "population_nodata_cells": 0,
+      "facility_count": 1263,
+      "road_length_midpoint_allocated_m": 2182281.3500035466
+    },
+    {
+      "product": "phase9c_radar",
+      "risk_class": "moderate",
+      "cell_count": 94783,
+      "population_valid_sum_model_estimate": 192244.2818331043,
+      "population_nodata_cells": 0,
+      "facility_count": 100,
+      "road_length_midpoint_allocated_m": 457780.76755234966
+    },
+    {
+      "product": "phase9c_radar",
+      "risk_class": "high",
+      "cell_count": 66300,
+      "population_valid_sum_model_estimate": 90161.99119666373,
+      "population_nodata_cells": 0,
+      "facility_count": 37,
+      "road_length_midpoint_allocated_m": 204499.96094837564
+    },
+    {
+      "product": "phase9c_radar",
+      "risk_class": "very_high",
+      "cell_count": 18950,
+      "population_valid_sum_model_estimate": 16076.608028786279,
+      "population_nodata_cells": 0,
+      "facility_count": 10,
+      "road_length_midpoint_allocated_m": 37308.98274397555
+    },
+    {
+      "product": "phase9c_radar",
+      "risk_class": "not_assessed",
+      "cell_count": 838136,
+      "population_valid_sum_model_estimate": 4740752.624753036,
+      "population_nodata_cells": 194961,
+      "facility_count": 13750,
+      "road_length_midpoint_allocated_m": 11846491.903055748
+    }
+  ]
+}

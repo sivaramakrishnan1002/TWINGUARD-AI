@@ -1,0 +1,32 @@
+# Final-year architecture rebaseline — owner decisions requested
+
+**Status:** awaiting authorized project-owner and domain-owner decisions. This is a request, not an approval. It does not authorize implementation, live feed access, API exposure, data acquisition, credential use, gate changes, release, or deployment. See [architecture rebaseline](FINAL_YEAR_ARCHITECTURE_REBASELINE.md) and CR-013.
+
+Please record a decision and evidence for each item. “Unknown / defer” is valid and keeps dependent work blocked. Do not treat silence as approval.
+
+| ID | Decision needed | Options / evidence requested | Blocks |
+|---|---|---|---|
+| D1 | Authoritative study boundary and vertical reference | Name/version/hash of boundary; vertical datum; transformation/geoid source and validation. The current older CMA boundary and GLO-30 DSM are provisional and insufficient as a verified hydraulic terrain base. | Final domain, terrain, boundary conditions, city-scale metrics |
+| D2 | Rainfall source and access | Approve replay-only source(s), or identify an authorized gauge/IMD source, owner, terms, cadence, timestamp/timezone semantics, credentials custodian, and permitted retention. | Ingestion and forcing |
+| D3 | Reservoir source and access | Identify authoritative source owner and provide written license/access, measurement-time/timezone semantics, level/storage/release/gate units and cadence. If not available, approve a clearly bounded replay-only input and prohibit claims about unobserved release. | Reservoir forcing and live-style update |
+| D4 | Flood validation references and rights | Identify held-out events with licensed, date-matched observed extent and preferably depth; provide coverage, resolution, units, uncertainty, hashes, and permission. Confirm permissions for UNOSAT/HDX, SAR, and PDF-derived labels. | Scientific validation and any performance claim |
+| D5 | Model domain and physical scope | Approve what hydrology/hydraulics are in scope; drainage/culverts and external catchment assumptions; simplified-model disclosure; independent domain reviewer. | Lane A model specification |
+| D6 | Resolution, time step, thresholds, and failure criteria | Approve only after benchmark/stability/convergence results; name domain reviewer and preregistration process. Candidate targets in the plan are discussion values, not accepted criteria. | Lane A acceptance and G5/G6 criteria proposals |
+| D7 | Hardware and runtime budget | Identify available CPU/GPU/RAM/storage, allowed environment, budget, target scenario area and update latency; reconcile prior conflicting GPU availability records by fresh owner evidence. | Feasibility benchmark and package design |
+| D8 | Prototype source mode | Approve replay-only demonstration, or identify which live feed may be used and the explicit authorization, terms, rate limits, secret handling and rollback boundary. Replay is the default until approved. | Lane B ingestion work |
+| D9 | UI audience and deployment boundary | Local examiner-only package or another specified audience; network binding, authentication, accessibility standard, data/privacy constraints. Public deployment is not presumed. | Backend/UI packaging and security review |
+| D10 | Novelty claim review | Assign literature-review owner, databases/search window/inclusion criteria, and independent reviewer. Approve or reject the provisional uncertainty-aware coupling hypothesis only after review. | Final research novelty statement |
+| D11 | Gate/change-control route | Decide whether this remains a planning proposal under existing gates or needs a separately versioned gate proposal. Any change to G5/G6 or frozen contracts requires formal change control; no change is requested here. | Future task registration and gate acceptance |
+
+## Required response record
+
+For each D1–D11, record `approved`, `rejected`, or `deferred`; decision-maker and date; exact source/permission evidence; scope and exclusions; affected owners; and follow-up task IDs. A decision does not itself satisfy implementation acceptance or a gate. After decisions, the Integrator must register narrowly scoped tasks with explicit owners, outputs, dependencies, acceptance criteria, evidence paths, and conflict checks before implementation starts.
+
+
+## Scoped owner decision recorded 2026-11-06
+
+- **D2 approved in part:** Open-Meteo Forecast API (`/v1/forecast`) for Chennai model-derived current weather context and hourly precipitation in the local educational prototype, under its published non-commercial terms and CC BY 4.0 attribution. This does not authorize an IMD/gauge source or use as a validated rainfall observation.
+- **D8 approved in part:** the UI may retrieve this public weather-model context directly by HTTPS GET with no credentials, no persistence, at most every 30 minutes while Overview is active. This does not authorize a continuously recomputed flood model or operational outputs.
+- **D3 remains deferred:** no reservoir source selected or authorized.
+
+See [CR-014](CR-014_OPEN_METEO_WEATHER_CONTEXT.md) for endpoint fields, timestamp meanings, terms, evidence, and exclusions. The project owner authorized this limited source/use in the instruction “okay proceed with open metro source.”

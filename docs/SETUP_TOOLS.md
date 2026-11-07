@@ -5,7 +5,7 @@ Checked 24 Oct 2026 on the project machine. No packages or global tools were ins
 | Tool | Detected version/status | Use in this task |
 |---|---|---|
 | Java | 21.0.7 LTS | Meets the Java version requirement. |
-| Maven | Missing | Spring Boot build cannot be run. |
+| Maven | Apache Maven 3.10.0 (verified 27 Oct 2026) | Available on PATH; backend Maven tests can run with Java 21. |
 | Gradle | Missing | Spring Boot build cannot be run. |
 | Node.js | 24.16.0 | Available; no frontend build requested. |
 | npm | 11.13.0 | Available; no frontend dependencies installed. |
@@ -14,6 +14,10 @@ Checked 24 Oct 2026 on the project machine. No packages or global tools were ins
 | pytest | 9.1.1 | Available in `.venv`; repository tests can run. |
 | FastAPI / Starlette / httpx | Not installed in `.venv` | AI-service runtime and HTTP client tests cannot run without packages. |
 | YAML / OpenAPI validator libraries | Not installed in `.venv` | Contracts use JSON syntax, a YAML 1.2 subset, with standard-library parsing and structural checks. |
+
+## Current verification (27 Oct 2026)
+
+`mvn -version` reports Apache Maven 3.10.0 and Java 21.0.7. M2 install/version verification is complete. M3 package-network approval remains unrecorded; existing local `node_modules` is not evidence of network approval.
 
 ## To enable the AI service later
 

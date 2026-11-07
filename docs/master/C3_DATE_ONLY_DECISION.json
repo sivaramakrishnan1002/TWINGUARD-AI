@@ -1,0 +1,20 @@
+{
+  "decision_id": "C3-DATE-ONLY-001",
+  "decision_status": "approved",
+  "approved_date": "2026-10-28",
+  "approver": "Project owner",
+  "approval_context": "User approved the exact six-point C3 date-only decision request in this Codex conversation with the reply: approve it.",
+  "historical_measurement_time_meaning": "unknown",
+  "historical_timezone": "unknown",
+  "semantics": [
+    "Preserve historical source calendar values exactly as source_date (YYYY-MM-DD).",
+    "Historical observation instant and timezone are unknown/null unless authoritative source-owner evidence is later obtained.",
+    "Never synthesize midnight, assume Asia/Kolkata or another timezone, or claim sub-day ordering or exact validity intervals for date-only records.",
+    "Keep received_at as the actual ingestion timestamp, separate from source_date.",
+    "For sources that provide genuine timestamps, retain the supplied offset and instant.",
+    "Any schema migration needed to store date-only records remains unapplied until separately authorized for an isolated database."
+  ],
+  "migration_101_authorized": false,
+  "shared_database_write_authorized": false,
+  "live_operation_claim_authorized": false
+}

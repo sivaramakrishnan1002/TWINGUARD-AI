@@ -1,0 +1,1205 @@
+{
+  "schema_version": 1,
+  "gate": "G0",
+  "review_date": "2026-10-28",
+  "decision": "PASS",
+  "contracts": [
+    {
+      "id": "C1",
+      "version": "v0",
+      "owner": "A/I",
+      "consumers": [
+        "routing",
+        "impact",
+        "simulation"
+      ],
+      "path": "docs/master/contracts/c1_depth_v0.md",
+      "criteria": {
+        "version": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c1_depth_v0.md",
+            "docs/DEPTH_FIELD_CONTRACT.md",
+            "docs/T6_DEPTH_OUTPUTS.json"
+          ],
+          "finding": "Draft and generated T6 artifacts are versioned v0 / batch1-depth-v1."
+        },
+        "owner": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c1_depth_v0.md",
+            "docs/DEPTH_FIELD_CONTRACT.md",
+            "docs/T6_DEPTH_OUTPUTS.json"
+          ],
+          "finding": "A/I per master registry."
+        },
+        "consumers": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c1_depth_v0.md",
+            "docs/DEPTH_FIELD_CONTRACT.md",
+            "docs/T6_DEPTH_OUTPUTS.json"
+          ],
+          "finding": "routing, impact, simulation per master registry."
+        },
+        "data_format": {
+          "status": "PASS",
+          "evidence": [
+            "docs/DEPTH_METADATA_REPAIR.md",
+            "data/features/depth/c1_metadata_repair_v0/metadata_repair_manifest.json",
+            "data/features/depth/c1_metadata_repair_v0/",
+            "tests/phase8/test_depth_metadata_contract.py",
+            "docs/master/contracts/c1_depth_v0.md"
+          ],
+          "finding": "A18 produced six one-band Float32 copies with EPSG:32644, 30 m transform, Area semantics and -9999 NoData; the manifest and tests verify required per-file tags. Source TIFFs are preserved separately."
+        },
+        "units": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c1_depth_v0.md",
+            "docs/DEPTH_FIELD_CONTRACT.md",
+            "docs/T6_DEPTH_OUTPUTS.json"
+          ],
+          "finding": "T6 specifies metres / Float32."
+        },
+        "timestamps": {
+          "status": "PASS",
+          "evidence": [
+            "docs/DEPTH_METADATA_REPAIR.md",
+            "data/features/depth/c1_metadata_repair_v0/metadata_repair_manifest.json",
+            "data/features/depth/c1_metadata_repair_v0/",
+            "tests/phase8/test_depth_metadata_contract.py",
+            "docs/master/contracts/c1_depth_v0.md"
+          ],
+          "finding": "A18 outputs preserve date-only event_date, explicit unknown acquisition instant (TIFF unknown marker and JSON-null sidecar), and original run_time_utc processing time; all six repaired copies were opened and the focused tests verify these semantics. Original T6 files remain unchanged."
+        },
+        "provenance": {
+          "status": "PASS",
+          "evidence": [
+            "docs/DEPTH_METADATA_REPAIR.md",
+            "data/features/depth/c1_metadata_repair_v0/metadata_repair_manifest.json",
+            "data/features/depth/c1_metadata_repair_v0/",
+            "tests/phase8/test_depth_metadata_contract.py",
+            "docs/master/contracts/c1_depth_v0.md"
+          ],
+          "finding": "A18 metadata-repair manifest records source/output SHA-256, required source/method/DEM/uncertainty tags, per-file counts and cell/mask equality; tests verify required tags on all six separate output copies."
+        },
+        "null_nodata": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c1_depth_v0.md",
+            "docs/DEPTH_FIELD_CONTRACT.md",
+            "docs/T6_DEPTH_OUTPUTS.json"
+          ],
+          "finding": "T6 file contract explicitly maps -9999 to missing/outside extent; proposal reiterates preservation."
+        },
+        "compatibility": {
+          "status": "PASS",
+          "evidence": [
+            "docs/DEPTH_METADATA_REPAIR.md",
+            "data/features/depth/c1_metadata_repair_v0/metadata_repair_manifest.json",
+            "data/features/depth/c1_metadata_repair_v0/",
+            "tests/phase8/test_depth_metadata_contract.py",
+            "docs/master/contracts/c1_depth_v0.md"
+          ],
+          "finding": "Six repaired copies conform to the C1 file contract and preserve source grid, transform, values and masks; source hashes and output hashes are recorded. The original T6 source files remain unmodified and are not claimed tag-conformant; no downstream routing consumption is claimed."
+        },
+        "scientific_semantics": {
+          "status": "PASS",
+          "evidence": [
+            "docs/master/contracts/c1_depth_v0.md",
+            "docs/DEPTH_FIELD_CONTRACT.md",
+            "docs/T6_DEPTH_OUTPUTS.json",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md"
+          ],
+          "finding": "Draft explicitly defines p05=max(0,mean−4 m) and p95=mean+4 m as uncalibrated assumption bounds and preserves DERIVED/surface-DEM/coverage limitations."
+        }
+      }
+    },
+    {
+      "id": "C2",
+      "version": "v0",
+      "owner": "A",
+      "consumers": [
+        "science",
+        "API"
+      ],
+      "path": "docs/master/contracts/c2_labels_v0.md",
+      "criteria": {
+        "version": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c2_labels_v0.md",
+            "database/migrations/014_stage8_label_hygiene.sql",
+            "docs/LABEL_DATASET.md"
+          ],
+          "finding": "Draft is v0."
+        },
+        "owner": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c2_labels_v0.md",
+            "database/migrations/014_stage8_label_hygiene.sql",
+            "docs/LABEL_DATASET.md"
+          ],
+          "finding": "A per master registry."
+        },
+        "consumers": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c2_labels_v0.md",
+            "database/migrations/014_stage8_label_hygiene.sql",
+            "docs/LABEL_DATASET.md"
+          ],
+          "finding": "science and API per master registry."
+        },
+        "data_format": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LABEL_GEOJSON_EXPORT.md",
+            "pipelines/labels/export_usable_labels_geojson.py",
+            "tests/labels/test_usable_labels_geojson.py",
+            "data/features/labels/usable_flood_labels_geojson_v0.geojson",
+            "data/features/labels/usable_flood_labels_geojson_v0.qa.json",
+            "docs/master/contracts/c2_labels_v0.md"
+          ],
+          "finding": "The actual A19 FeatureCollection output and serializer use the documented exact properties and RFC 7946 geometry; focused serializer tests cover accepted and rejected cases."
+        },
+        "units": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c2_labels_v0.md",
+            "database/migrations/014_stage8_label_hygiene.sql",
+            "docs/LABEL_DATASET.md"
+          ],
+          "finding": "Categorical label geometry/registry has no scalar measure units."
+        },
+        "timestamps": {
+          "status": "PASS",
+          "evidence": [
+            "docs/master/contracts/c2_labels_v0.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/LABEL_DATASET.md",
+            "database/migrations/014_stage8_label_hygiene.sql"
+          ],
+          "finding": "Draft distinguishes map/reference event_date SQL DATE from load_time timestamptz serialized UTC RFC3339."
+        },
+        "provenance": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c2_labels_v0.md",
+            "database/migrations/014_stage8_label_hygiene.sql",
+            "docs/LABEL_DATASET.md"
+          ],
+          "finding": "Draft requires provenance; view exposes source_id, source_sha256, loader, load_time."
+        },
+        "null_nodata": {
+          "status": "PASS",
+          "evidence": [
+            "docs/master/contracts/c2_labels_v0.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/LABEL_DATASET.md",
+            "database/migrations/014_stage8_label_hygiene.sql"
+          ],
+          "finding": "Accepted geometry is required non-null/valid/polygonal; invalid/null inputs are rejected with QA reason; unknown provenance is explicit JSON null."
+        },
+        "compatibility": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LABEL_GEOJSON_EXPORT.md",
+            "pipelines/labels/export_usable_labels_geojson.py",
+            "tests/labels/test_usable_labels_geojson.py",
+            "data/features/labels/usable_flood_labels_geojson_v0.geojson",
+            "data/features/labels/usable_flood_labels_geojson_v0.qa.json",
+            "docs/master/contracts/c2_labels_v0.md"
+          ],
+          "finding": "A19 implemented and tested accepted-view GeoJSON serialization. The read-only export contains 10,419 accepted features (8,414 event_flood, 2,005 baseline_water), zero rejected; SHA-256 matches the QA sidecar. Focused tests cover property shape, WGS84 geometry, UTC load_time, null provenance and invalid-geometry rejection. This is serialization compatibility, not field-truth validation or a deployed API."
+        },
+        "accepted_label_serialization": {
+          "status": "PASS",
+          "evidence": [
+            "docs/LABEL_GEOJSON_EXPORT.md",
+            "pipelines/labels/export_usable_labels_geojson.py",
+            "tests/labels/test_usable_labels_geojson.py",
+            "data/features/labels/usable_flood_labels_geojson_v0.geojson",
+            "data/features/labels/usable_flood_labels_geojson_v0.qa.json",
+            "docs/master/contracts/c2_labels_v0.md"
+          ],
+          "finding": "The actual exporter and tests prove accepted tiers/roles, exact Feature properties, date and UTC timestamp encoding, explicit null unknown provenance, and QA rejection of null/empty/invalid/non-polygon geometry."
+        }
+      }
+    },
+    {
+      "id": "C3",
+      "version": "v0",
+      "owner": "B",
+      "consumers": [
+        "streaming",
+        "twin"
+      ],
+      "path": "docs/master/contracts/c3_messages_v0.md",
+      "criteria": {
+        "version": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/MESSAGES.md",
+            "pipelines/trackb/streaming.py",
+            "docs/trackb/TRACKB_REPORT.md"
+          ],
+          "finding": "Versioned schema names are defined in MESSAGES.md."
+        },
+        "owner": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/MESSAGES.md",
+            "pipelines/trackb/streaming.py",
+            "docs/trackb/TRACKB_REPORT.md"
+          ],
+          "finding": "B per registry."
+        },
+        "consumers": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/MESSAGES.md",
+            "pipelines/trackb/streaming.py",
+            "docs/trackb/TRACKB_REPORT.md"
+          ],
+          "finding": "streaming and twin per registry."
+        },
+        "data_format": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/MESSAGES.md",
+            "pipelines/trackb/streaming.py",
+            "docs/trackb/TRACKB_REPORT.md"
+          ],
+          "finding": "UTF-8 JSON Lines with one JSON object per line."
+        },
+        "units": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/MESSAGES.md",
+            "pipelines/trackb/streaming.py",
+            "docs/trackb/TRACKB_REPORT.md"
+          ],
+          "finding": "Rainfall, storage, capacity, and release units are enumerated."
+        },
+        "timestamps": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/MESSAGES.md",
+            "docs/trackb/REALTIME_DESIGN.md",
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "pipelines/trackb/streaming.py",
+            "pipelines/trackb/replay.py",
+            "pipelines/trackb/persistence.py",
+            "services/trackb/router.py",
+            "tests/trackb/test_date_only_timestamps.py",
+            "tests/trackb/test_router.py"
+          ],
+          "finding": "B19 tests and implementation preserve historical source_date as YYYY-MM-DD with time_precision=date, observation_timezone=unknown, observed_at=null, and distinct aware received_at. Date-only replay identity/order uses the calendar date and derived alerts have null observed_at/valid_from/valid_to. Genuine timestamped inputs retain their supplied offset and instant. This proves representation behavior only; it does not establish historical measurement-time or timezone truth."
+        },
+        "provenance": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/MESSAGES.md",
+            "docs/trackb/REALTIME_DESIGN.md",
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "pipelines/trackb/streaming.py",
+            "pipelines/trackb/replay.py",
+            "pipelines/trackb/persistence.py",
+            "services/trackb/router.py",
+            "tests/trackb/test_date_only_timestamps.py",
+            "tests/trackb/test_router.py",
+            "database/migrations/101_trackb_date_only_reservoir_observations.sql"
+          ],
+          "finding": "Producer, consumer, replay, serializer, and isolated PostgreSQL read-back evidence preserve source class and provenance alongside date-only identity. B20 verifies this only on twinguard_trackb_test; no shared DB or live operation is claimed."
+        },
+        "null_nodata": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/MESSAGES.md",
+            "docs/trackb/REALTIME_DESIGN.md",
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "pipelines/trackb/streaming.py",
+            "pipelines/trackb/replay.py",
+            "pipelines/trackb/persistence.py",
+            "services/trackb/router.py",
+            "tests/trackb/test_date_only_timestamps.py",
+            "tests/trackb/test_router.py"
+          ],
+          "finding": "B19 regression evidence keeps unknown measurements null rather than zero, keeps date-only observation/validity instants null, and keeps received_at distinct. The router rejects synthetic instants. This is tested representation behavior."
+        },
+        "compatibility": {
+          "status": "PASS",
+          "evidence": [
+            "docs/master/STATE.json",
+            "docs/master/C3_DATE_ONLY_DECISION.json",
+            "database/migrations/101_trackb_date_only_reservoir_observations.sql",
+            "tests/trackb/test_date_only_persistence_db.py",
+            "tests/trackb/test_date_only_timestamps.py",
+            "pipelines/trackb/persistence.py",
+            "docs/master/B20_MIGRATION_100_RECONCILIATION.md"
+          ],
+          "finding": "B20 completion evidence records authorized migration 101 application and date-only/timestamped read-back only on isolated twinguard_trackb_test (database owner/role twinguard_app; non-template), checksum 65f50bca59e036ceaee84840f66f147dc8b4543f9b110f7bb5a5dd8689b535aa. Shared twinguard remains untouched; no deployment/live-service compatibility is claimed."
+        },
+        "timezone_status": {
+          "status": "PASS",
+          "evidence": [
+            "docs/master/C3_DATE_ONLY_DECISION.json",
+            "docs/master/contracts/c3_messages_v0.md",
+            "docs/trackb/MESSAGES.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "tests/trackb/test_date_only_timestamps.py",
+            "tests/trackb/test_router.py"
+          ],
+          "finding": "Project owner approved the bounded date-only representation policy. B19 tests preserve source_date and unknown/null historical observation instant/timezone; received_at remains separate and genuine offsets are preserved. Historical measurement-time meaning and timezone remain unknown. This is not source-time discovery."
+        }
+      }
+    },
+    {
+      "id": "C4",
+      "version": "v0",
+      "owner": "I/B",
+      "consumers": [
+        "UI",
+        "gateway"
+      ],
+      "path": "docs/master/contracts/c4_openapi_v0.md",
+      "criteria": {
+        "version": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/ai-service/app/main.py",
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/ROUTE_RESULT_SCHEMA.md"
+          ],
+          "finding": "OpenAPI specs identify 0.1.0."
+        },
+        "owner": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/ai-service/app/main.py",
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/ROUTE_RESULT_SCHEMA.md"
+          ],
+          "finding": "I/B per registry."
+        },
+        "consumers": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/ai-service/app/main.py",
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/ROUTE_RESULT_SCHEMA.md"
+          ],
+          "finding": "UI and gateway per registry."
+        },
+        "data_format": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/ai-service/app/main.py",
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/ROUTE_RESULT_SCHEMA.md"
+          ],
+          "finding": "OpenAPI 3.1 JSON objects."
+        },
+        "units": {
+          "status": "PASS",
+          "evidence": [
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "tests/master/test_api_contract_projection.py",
+            "services/ai-service/app/main.py",
+            "tests/ai_service/test_api.py",
+            "services/backend/src/main/java/org/twinguard/backend/dto/ImpactResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/backend/src/test/java/org/twinguard/backend/GatewayContractTest.java",
+            "services/backend/src/test/resources/owner-fixtures/a07_impact_v4.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_route_found.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_no_topological_path.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_insufficient_coverage.json",
+            "data/features/impact/batch2_v4_contract/impact_results.jsonl",
+            "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl"
+          ],
+          "finding": "AI and backend projections now use the same Pydantic schema constraints for C7/C8 result units: metres, seconds and unit-bearing distributions; typed fields preserve the A07/A09 model names. AI 501 and backend unexposed status remain documented; no live integration is implied."
+        },
+        "timestamps": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/ai-service/app/main.py",
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/ROUTE_RESULT_SCHEMA.md"
+          ],
+          "finding": "Specs use date-time for issued, valid, and departure values."
+        },
+        "provenance": {
+          "status": "PASS",
+          "evidence": [
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "tests/master/test_api_contract_projection.py",
+            "services/ai-service/app/main.py",
+            "tests/ai_service/test_api.py",
+            "services/backend/src/main/java/org/twinguard/backend/dto/ImpactResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/backend/src/test/java/org/twinguard/backend/GatewayContractTest.java",
+            "services/backend/src/test/resources/owner-fixtures/a07_impact_v4.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_route_found.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_no_topological_path.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_insufficient_coverage.json",
+            "data/features/impact/batch2_v4_contract/impact_results.jsonl",
+            "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl"
+          ],
+          "finding": "Projection schemas match typed AI provenance/source enums and the corresponding backend DTO wire shapes. B15 Java fixture round-trip tests pass; unknown source metadata remains nullable."
+        },
+        "null_nodata": {
+          "status": "PASS",
+          "evidence": [
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "tests/master/test_api_contract_projection.py",
+            "services/ai-service/app/main.py",
+            "tests/ai_service/test_api.py",
+            "services/backend/src/main/java/org/twinguard/backend/dto/ImpactResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/backend/src/test/java/org/twinguard/backend/GatewayContractTest.java",
+            "services/backend/src/test/resources/owner-fixtures/a07_impact_v4.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_route_found.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_no_topological_path.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_insufficient_coverage.json",
+            "data/features/impact/batch2_v4_contract/impact_results.jsonl",
+            "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl"
+          ],
+          "finding": "Projection schemas preserve nullable result fields and explicit coverage/NoData counts; owner fixtures include null instantaneous aggregation interval and unassessed route probabilities. Unknown values are not converted to zero."
+        },
+        "compatibility": {
+          "status": "PASS",
+          "evidence": [
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "tests/master/test_api_contract_projection.py",
+            "services/ai-service/app/main.py",
+            "tests/ai_service/test_api.py",
+            "services/backend/src/main/java/org/twinguard/backend/dto/ImpactResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/backend/src/test/java/org/twinguard/backend/GatewayContractTest.java",
+            "services/backend/src/test/resources/owner-fixtures/a07_impact_v4.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_route_found.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_no_topological_path.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_insufficient_coverage.json",
+            "data/features/impact/batch2_v4_contract/impact_results.jsonl",
+            "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl"
+          ],
+          "finding": "I05 tests compare AI/backend OpenAPI projections with current service models, validate all A07/A09 JSONL outputs and B15 fixtures, and backend Maven DTO round-trip tests pass. AI results remain 501 stubs; backend route is unexposed. Evidence is schema/serialization agreement, not runtime integration."
+        },
+        "api_projection_agreement": {
+          "status": "PASS",
+          "evidence": [
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "tests/master/test_api_contract_projection.py",
+            "services/ai-service/app/main.py",
+            "tests/ai_service/test_api.py",
+            "services/backend/src/main/java/org/twinguard/backend/dto/ImpactResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/backend/src/test/java/org/twinguard/backend/GatewayContractTest.java",
+            "services/backend/src/test/resources/owner-fixtures/a07_impact_v4.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_route_found.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_no_topological_path.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_insufficient_coverage.json",
+            "data/features/impact/batch2_v4_contract/impact_results.jsonl",
+            "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl"
+          ],
+          "finding": "The paired OpenAPI projections share the C7/C8 model shapes. Structural validator and model-conformance tests pass; AI result operations retain HTTP 501 and backend route is marked unexposed. This is specification/serialization compatibility, not runtime integration."
+        }
+      }
+    },
+    {
+      "id": "C5",
+      "version": "v0",
+      "owner": "I/B",
+      "consumers": [
+        "UI"
+      ],
+      "path": "docs/master/contracts/c5_tiles_v0.md",
+      "criteria": {
+        "version": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/master/contracts/c5_tiles_v0.md",
+            "database/migrations/002_gis_views_and_mvt.sql",
+            "services/ai-service/app/database.py",
+            "services/ai-service/app/main.py",
+            "docs/api/ai-service.yaml",
+            "tests/ai_service/test_api.py",
+            "tests/trackb/test_catalogue_metadata.py"
+          ],
+          "finding": "Draft is v0."
+        },
+        "owner": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/master/contracts/c5_tiles_v0.md",
+            "database/migrations/002_gis_views_and_mvt.sql",
+            "services/ai-service/app/database.py",
+            "services/ai-service/app/main.py",
+            "docs/api/ai-service.yaml",
+            "tests/ai_service/test_api.py",
+            "tests/trackb/test_catalogue_metadata.py"
+          ],
+          "finding": "I/B per registry."
+        },
+        "consumers": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/master/contracts/c5_tiles_v0.md",
+            "database/migrations/002_gis_views_and_mvt.sql",
+            "services/ai-service/app/database.py",
+            "services/ai-service/app/main.py",
+            "docs/api/ai-service.yaml",
+            "tests/ai_service/test_api.py",
+            "tests/trackb/test_catalogue_metadata.py"
+          ],
+          "finding": "UI per registry."
+        },
+        "data_format": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/master/contracts/c5_tiles_v0.md",
+            "database/migrations/002_gis_views_and_mvt.sql",
+            "services/ai-service/app/database.py",
+            "services/ai-service/app/main.py",
+            "docs/api/ai-service.yaml",
+            "tests/ai_service/test_api.py",
+            "tests/trackb/test_catalogue_metadata.py"
+          ],
+          "finding": "Migration 002 implements PostGIS MVT functions returning bytea; /layers is JSON metadata."
+        },
+        "units": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/master/contracts/c5_tiles_v0.md",
+            "database/migrations/002_gis_views_and_mvt.sql",
+            "services/ai-service/app/database.py",
+            "services/ai-service/app/main.py",
+            "docs/api/ai-service.yaml",
+            "tests/ai_service/test_api.py",
+            "tests/trackb/test_catalogue_metadata.py"
+          ],
+          "finding": "Catalogue model includes per-field unit map; unknown units can be empty."
+        },
+        "timestamps": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/master/contracts/c5_tiles_v0.md",
+            "database/migrations/002_gis_views_and_mvt.sql",
+            "services/ai-service/app/database.py",
+            "services/ai-service/app/main.py",
+            "docs/api/ai-service.yaml",
+            "tests/ai_service/test_api.py",
+            "tests/trackb/test_catalogue_metadata.py"
+          ],
+          "finding": "Catalogue returns source vintage explicitly; retrieval/source dates are in source catalogue."
+        },
+        "provenance": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/master/contracts/c5_tiles_v0.md",
+            "database/migrations/002_gis_views_and_mvt.sql",
+            "services/ai-service/app/database.py",
+            "services/ai-service/app/main.py",
+            "docs/api/ai-service.yaml",
+            "tests/ai_service/test_api.py",
+            "tests/trackb/test_catalogue_metadata.py"
+          ],
+          "finding": "Catalogue payload returns source hash and URL; licence/attribution field is explicit."
+        },
+        "null_nodata": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/master/contracts/c5_tiles_v0.md",
+            "database/migrations/002_gis_views_and_mvt.sql",
+            "services/ai-service/app/database.py",
+            "services/ai-service/app/main.py",
+            "docs/api/ai-service.yaml",
+            "tests/ai_service/test_api.py",
+            "tests/trackb/test_catalogue_metadata.py"
+          ],
+          "finding": "Unavailable tile endpoint, metadata, or NoData declaration are explicit (`false` / `not_declared_in_catalogue` / nullable fields)."
+        },
+        "compatibility": {
+          "status": "PASS",
+          "evidence": [
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "tests/master/test_api_contract_projection.py",
+            "services/ai-service/app/main.py",
+            "tests/ai_service/test_api.py",
+            "services/backend/src/main/java/org/twinguard/backend/dto/ImpactResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/backend/src/test/java/org/twinguard/backend/GatewayContractTest.java",
+            "services/backend/src/test/resources/owner-fixtures/a07_impact_v4.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_route_found.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_no_topological_path.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_insufficient_coverage.json",
+            "data/features/impact/batch2_v4_contract/impact_results.jsonl",
+            "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl"
+          ],
+          "finding": "AI Layer OpenAPI matches the Track B model including nullable source_crs, typed source_sha256/source_url provenance, NoData metadata, and tile_endpoint_available=false; I05 conformance test and Track B catalogue tests pass. No backend Layer route or HTTP tile serving is claimed."
+        },
+        "catalogue_and_tile_availability": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/master/contracts/c5_tiles_v0.md",
+            "database/migrations/002_gis_views_and_mvt.sql",
+            "services/ai-service/app/database.py",
+            "services/ai-service/app/main.py",
+            "docs/api/ai-service.yaml",
+            "tests/ai_service/test_api.py",
+            "tests/trackb/test_catalogue_metadata.py"
+          ],
+          "finding": "MVT format/functions and catalogue fields are evidenced; HTTP tile endpoint is explicitly unavailable."
+        }
+      }
+    },
+    {
+      "id": "C6",
+      "version": "v0",
+      "owner": "I/B",
+      "consumers": [
+        "services"
+      ],
+      "path": "docs/master/contracts/c6_twin_v0.md",
+      "criteria": {
+        "version": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "database/migrations/010_create_twin_schema.sql",
+            "database/migrations/100_trackb_twin_link.sql",
+            "pipelines/trackb/persistence.py"
+          ],
+          "finding": "v0 draft cites migration 010."
+        },
+        "owner": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "database/migrations/010_create_twin_schema.sql",
+            "database/migrations/100_trackb_twin_link.sql",
+            "pipelines/trackb/persistence.py"
+          ],
+          "finding": "I/B per registry."
+        },
+        "consumers": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "database/migrations/010_create_twin_schema.sql",
+            "database/migrations/100_trackb_twin_link.sql",
+            "pipelines/trackb/persistence.py"
+          ],
+          "finding": "services per registry."
+        },
+        "data_format": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "database/migrations/010_create_twin_schema.sql",
+            "database/migrations/100_trackb_twin_link.sql",
+            "pipelines/trackb/persistence.py"
+          ],
+          "finding": "Twin state is relational PostgreSQL; provenance/manifests use JSONB; grid artifacts identify external media type/path/hash."
+        },
+        "units": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "database/migrations/010_create_twin_schema.sql",
+            "database/migrations/100_trackb_twin_link.sql",
+            "pipelines/trackb/persistence.py"
+          ],
+          "finding": "Migration columns encode mm, metres, mcft, cusecs, people, and probability."
+        },
+        "timestamps": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "database/migrations/010_create_twin_schema.sql",
+            "database/migrations/100_trackb_twin_link.sql",
+            "pipelines/trackb/persistence.py"
+          ],
+          "finding": "State/run timestamps are timestamptz and valid intervals have defined bounds."
+        },
+        "provenance": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "database/migrations/010_create_twin_schema.sql",
+            "database/migrations/100_trackb_twin_link.sql",
+            "pipelines/trackb/persistence.py"
+          ],
+          "finding": "Runs, versions, artifacts, messages, and persisted rows carry provenance/hash fields."
+        },
+        "null_nodata": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "database/migrations/010_create_twin_schema.sql",
+            "database/migrations/100_trackb_twin_link.sql",
+            "pipelines/trackb/persistence.py"
+          ],
+          "finding": "SQL permits unavailable values as NULL and grid artifacts require a NoData policy."
+        },
+        "compatibility": {
+          "status": "PASS",
+          "evidence": [
+            "docs/master/contracts/c6_twin_v0.md",
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/RUNBOOK.md",
+            "docs/trackb/TRACKB_REPORT.md"
+          ],
+          "finding": "Isolated twinguard_trackb_test persistence mapping and idempotent B9 replay are evidenced; do not infer shared DB integration or live operation."
+        },
+        "twin_serialization": {
+          "status": "PASS",
+          "evidence": [
+            "docs/trackb/G0_REPAIR_EVIDENCE.md",
+            "docs/trackb/TRACKB_REPORT.md",
+            "database/migrations/010_create_twin_schema.sql",
+            "database/migrations/100_trackb_twin_link.sql",
+            "pipelines/trackb/persistence.py"
+          ],
+          "finding": "Migrations 010/100 and persistence adapter define relational, JSONB, and external artifact serialization."
+        },
+        "b9_runtime": {
+          "status": "PASS",
+          "evidence": [
+            "docs/master/contracts/c6_twin_v0.md",
+            "docs/trackb/RUNBOOK.md",
+            "docs/trackb/PROGRESS_BOARD.md",
+            "docs/trackb/TRACKB_REPORT.md"
+          ],
+          "finding": "Fresh run 0985c9e7544449eda8abe120a2f12512 verified Kafka/Redis/Prometheus replay and isolated persistence/idempotency; all records were source=replay, not live operation."
+        }
+      }
+    },
+    {
+      "id": "C7",
+      "version": "v0",
+      "owner": "A",
+      "consumers": [
+        "API",
+        "UI"
+      ],
+      "path": "docs/master/contracts/c7_impact_v0.md",
+      "criteria": {
+        "version": {
+          "status": "PASS",
+          "evidence": [
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c7_impact_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml"
+          ],
+          "finding": "Placeholder is versioned v0."
+        },
+        "owner": {
+          "status": "PASS",
+          "evidence": [
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c7_impact_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml"
+          ],
+          "finding": "A per registry."
+        },
+        "consumers": {
+          "status": "PASS",
+          "evidence": [
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c7_impact_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml"
+          ],
+          "finding": "API/UI per registry."
+        },
+        "data_format": {
+          "status": "PASS",
+          "evidence": [
+            "docs/master/contracts/c7_impact_v0.md",
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/PHASE13_IMPACT_BATCH2_V4.md",
+            "data/features/impact/batch2_v4_contract/impact_results.jsonl",
+            "data/features/impact/batch2_v4_contract/run_summary.json"
+          ],
+          "finding": "Completed A07 V4 emitted 75 UTF-8 JSONL records; the master v0 draft now records the observed field names, nullable instantaneous aggregation interval, nested distributions, sensitivity, coverage, provenance and QC shape."
+        },
+        "units": {
+          "status": "PASS",
+          "evidence": [
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c7_impact_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml"
+          ],
+          "finding": "Proposal names people, facilities, metres, fractions, and metre thresholds."
+        },
+        "timestamps": {
+          "status": "PASS",
+          "evidence": [
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c7_impact_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml"
+          ],
+          "finding": "Proposal defines UTC event, valid, aggregation, and generated timestamps."
+        },
+        "provenance": {
+          "status": "PASS",
+          "evidence": [
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c7_impact_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml"
+          ],
+          "finding": "Proposal defines typed source ids/hashes/versions/roles, algorithm, commit, parameters and grid."
+        },
+        "null_nodata": {
+          "status": "PASS",
+          "evidence": [
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c7_impact_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml"
+          ],
+          "finding": "Proposal defines null versus zero, explicit coverage/NoData counts, and QC flags."
+        },
+        "compatibility": {
+          "status": "PASS",
+          "evidence": [
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "tests/master/test_api_contract_projection.py",
+            "services/ai-service/app/main.py",
+            "tests/ai_service/test_api.py",
+            "services/backend/src/main/java/org/twinguard/backend/dto/ImpactResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/backend/src/test/java/org/twinguard/backend/GatewayContractTest.java",
+            "services/backend/src/test/resources/owner-fixtures/a07_impact_v4.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_route_found.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_no_topological_path.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_insufficient_coverage.json",
+            "data/features/impact/batch2_v4_contract/impact_results.jsonl",
+            "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl"
+          ],
+          "finding": "Both OpenAPI result projections match ImpactResult; I05 validates all 75 A07 V4 records and B15 fixture, and backend DTO round-trip tests preserve null aggregation interval, basis, units, NoData and QC. AI operation remains HTTP 501; A07 output remains simulated and flagged as draft schema, not scientific validation."
+        },
+        "implementable_result_schema": {
+          "status": "PASS",
+          "evidence": [
+            "docs/master/contracts/c7_impact_v0.md",
+            "docs/IMPACT_RESULT_SCHEMA.md",
+            "docs/PHASE13_IMPACT_BATCH2_V4.md",
+            "data/features/impact/batch2_v4_contract/impact_results.jsonl",
+            "data/features/impact/batch2_v4_contract/run_summary.json",
+            "docs/master/STATE.json"
+          ],
+          "finding": "A07 is done_with_caveats and its V4 JSONL/run summary provide final implementation-shape evidence, including code commit and draft-schema QC flag. This supports the local schema only, not API compatibility or freeze."
+        }
+      }
+    },
+    {
+      "id": "C8",
+      "version": "v0",
+      "owner": "A",
+      "consumers": [
+        "API",
+        "UI"
+      ],
+      "path": "docs/master/contracts/c8_routing_v0.md",
+      "criteria": {
+        "version": {
+          "status": "PASS",
+          "evidence": [
+            "docs/ROUTE_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c8_routing_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java"
+          ],
+          "finding": "Placeholder is versioned v0."
+        },
+        "owner": {
+          "status": "PASS",
+          "evidence": [
+            "docs/ROUTE_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c8_routing_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java"
+          ],
+          "finding": "A per registry."
+        },
+        "consumers": {
+          "status": "PASS",
+          "evidence": [
+            "docs/ROUTE_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c8_routing_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java"
+          ],
+          "finding": "API/UI per registry."
+        },
+        "data_format": {
+          "status": "PASS",
+          "evidence": [
+            "docs/ROUTE_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c8_routing_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java"
+          ],
+          "finding": "Lane A implementable proposal specifies UTF-8 JSON and GeoJSON LineString geometry."
+        },
+        "units": {
+          "status": "PASS",
+          "evidence": [
+            "docs/ROUTE_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c8_routing_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java"
+          ],
+          "finding": "Proposal defines metres, seconds, metres of depth, and unitless probabilities."
+        },
+        "timestamps": {
+          "status": "PASS",
+          "evidence": [
+            "docs/ROUTE_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c8_routing_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java"
+          ],
+          "finding": "Proposal distinguishes departure, issue, validity, horizon, arrival, and UTC intervals."
+        },
+        "provenance": {
+          "status": "PASS",
+          "evidence": [
+            "docs/ROUTE_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c8_routing_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java"
+          ],
+          "finding": "Proposal requires graph/hazard hashes and versions, sources, code and parameters."
+        },
+        "null_nodata": {
+          "status": "PASS",
+          "evidence": [
+            "docs/ROUTE_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c8_routing_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java"
+          ],
+          "finding": "Proposal defines unavailable/null fields, assessed coverage, and unknown depth as UNASSESSED."
+        },
+        "compatibility": {
+          "status": "PASS",
+          "evidence": [
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "tests/master/test_api_contract_projection.py",
+            "services/ai-service/app/main.py",
+            "tests/ai_service/test_api.py",
+            "services/backend/src/main/java/org/twinguard/backend/dto/ImpactResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteRequest.java",
+            "services/backend/src/test/java/org/twinguard/backend/GatewayContractTest.java",
+            "services/backend/src/test/resources/owner-fixtures/a07_impact_v4.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_route_found.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_no_topological_path.json",
+            "services/backend/src/test/resources/owner-fixtures/a09_insufficient_coverage.json",
+            "data/features/impact/batch2_v4_contract/impact_results.jsonl",
+            "data/features/routing/results/batch2_v1/revision_3/route_results.jsonl"
+          ],
+          "finding": "Both OpenAPI result projections match RouteResponse; I05 validates all 216 A09 revision 3 records and B15 found/no-path/insufficient-coverage fixtures; backend DTO round-trip tests pass. AI route remains HTTP 501 and backend route unexposed. No live operation, passability validation or safety claim."
+        },
+        "implementable_result_schema": {
+          "status": "PASS",
+          "evidence": [
+            "docs/ROUTE_RESULT_SCHEMA.md",
+            "docs/LANE_A_G0_REPAIR_PROPOSALS.md",
+            "docs/master/contracts/c8_routing_v0.md",
+            "docs/api/ai-service.yaml",
+            "docs/api/backend.yaml",
+            "services/backend/src/main/java/org/twinguard/backend/dto/RouteResponse.java"
+          ],
+          "finding": "A09 revision 3 provides actual versioned route-result records and schema/tests, superseding the former proposal-only state. Observed model outputs remain simulated and do not establish street-level routing truth or safety."
+        }
+      }
+    }
+  ],
+  "report_path": "docs/master/GATE_G0_REPORT.md",
+  "gate_protocol_blockers": [
+    {
+      "id": "REQ-MLFLOW-PYARROW",
+      "owner": "Integrator",
+      "repair_task": "I13",
+      "status": "resolved",
+      "finding": "Resolved by I13: requirements.txt pins pyarrow==25.0.1 (compatible with requirements-A.txt mlflow==3.17.2 requiring pyarrow>=4,<26) and certifi==2026.10.23 (compatible with databricks-sdk==0.157.0 requiring certifi>=2026.10.19). The authorized certifi wheel was used for an offline combined-manifest pip dry-run; no package was installed. See docs/master/REQUIREMENTS_GATE_RECONCILIATION.md."
+    }
+  ],
+  "gate_protocol_evidence": {
+    "requirements_merge": {
+      "status": "PASS",
+      "evidence": [
+        "requirements.txt",
+        "requirements-A.txt",
+        "docs/master/REQUIREMENTS_GATE_RECONCILIATION.md"
+      ],
+      "finding": "I13 combined-manifest offline pip dry-run passed; pyarrow==25.0.1 and certifi==2026.10.23 satisfy recorded MLflow/databricks-sdk constraints; pip check passed; no install occurred."
+    },
+    "migration_numbering": {
+      "status": "PASS",
+      "evidence": [
+        "database/migrations/",
+        "docs/master/GATE_G0_REPORT.md"
+      ],
+      "finding": "Checked-in SQL migration numbers are unique: 001-014, 100, 101. Migration 101 application remains limited to twinguard_trackb_test per B20; shared twinguard was not modified."
+    },
+    "full_python_suite": {
+      "status": "PASS",
+      "evidence": [
+        "tests/",
+        "docs/master/GATE_G0_REPORT.md"
+      ],
+      "finding": "211 passed, 1 skipped; the skip is the explicitly gated database test, for which B20 records a separate successful isolated PostgreSQL run."
+    },
+    "api_and_backend": {
+      "status": "PASS",
+      "evidence": [
+        "docs/api/ai-service.yaml",
+        "docs/api/backend.yaml",
+        "tests/master/test_api_contract_projection.py",
+        "services/backend/src/test/java/org/twinguard/backend/GatewayContractTest.java"
+      ],
+      "finding": "OpenAPI structural validation passed; offline Maven suite passed 14 tests."
+    },
+    "raw_audit": {
+      "status": "PASS",
+      "evidence": [
+        "tools/audit_raw_logs.py",
+        "docs/master/GATE_G0_REPORT.md"
+      ],
+      "finding": "157 files / 30,544,672,450 bytes; 157 hash matches; zero non-comparable hashes and mismatches."
+    },
+    "end_to_end": {
+      "status": "PASS",
+      "evidence": [
+        "docs/trackb/RUNBOOK.md",
+        "docs/master/B20_MIGRATION_100_RECONCILIATION.md",
+        "docs/master/STATE.json"
+      ],
+      "finding": "Reviewed completed B9 historical REPLAY run and B20 isolated persistence/readback evidence. No replay or database operation was rerun in this review; no live operation is claimed."
+    },
+    "backup": {
+      "status": "NOT_REQUIRED",
+      "evidence": [
+        "docs/master/GATES.md",
+        "docs/master/GATE_G0_REPORT.md"
+      ],
+      "finding": "This review made no database writes, migration applications, or Docker volume changes; no database dump was required."
+    }
+  }
+}

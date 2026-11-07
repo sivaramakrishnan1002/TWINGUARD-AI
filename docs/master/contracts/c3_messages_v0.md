@@ -1,2 +1,18 @@
-# C3 replay messages v0
-Use the four message types in `docs/trackb/MESSAGES.md`: rain_update, reservoir_update, twin_update, alert. Every message carries schema version and source=`replay|live|simulated`; preserve event/acquisition time and distinguish missing data from zero.
+# C3 replay/live/simulated messages v0
+
+Use the four versioned message types in `docs/trackb/MESSAGES.md`: `rain_update`, `reservoir_update`, `twin_update`, and `alert`. Wire format is UTF-8 JSON Lines, one record per line. Each record carries schema version, source class `replay|live|simulated`, event/source provenance, and typed unit-bearing values. Missing numeric measurements are JSON null, distinct from zero.
+
+## Temporal fields
+
+- Historical reservoir rows that provide only a calendar date preserve `source_date` as `YYYY-MM-DD` and use `time_precision=date`. Their observation instant is unknown (`observed_at=null`) and timezone is unknown (`observation_timezone=unknown`); never synthesize midnight or infer a timezone.
+- `received_at` is the separate, actual ingestion/processing timestamp. It does not substitute for observation time.
+- Sources that provide a genuine timestamp retain that supplied offset and instant in offset-aware `observed_at`.
+- Date-only replay ordering and identity use the calendar date. Derived alerts retain null `observed_at`, `valid_from`, and `valid_to`; they do not claim exact validity intervals or sub-day timing. Missing values remain null, never zero.
+
+## Historical source meaning and persistence boundary
+
+The historical reservoir source provides date-only rows. No authoritative source-owner evidence establishes whether the date denotes a measurement instant, reporting day, or aggregation period, or establishes its timezone. On 2026-10-28, the project owner approved the bounded date-only contract policy recorded in `docs/master/C3_DATE_ONLY_DECISION.json`: preserve `source_date`, leave observation instant/timezone unknown, keep `received_at` separate, retain real source offsets when present, and do not claim sub-day order or exact validity intervals. This approval defines how the system represents the available data; it does **not** resolve the historical scientific meaning or discover a timezone. B19's implementation and regression tests evidence the representation behavior. C3 is frozen at v0 for G0. Historical measurement-time meaning and timezone remain unknown; the freeze accepts only the project-approved date-only representation and isolated persistence evidence. Its G0 policy criterion passes only as an approved representation policy supported by B19 owner tests; historical measurement-time meaning and timezone remain unknown. B20 now provides isolated PostgreSQL schema application/read-back evidence for migration 101 and compatibility with an existing timestamped row. This evidence is limited to `twinguard_trackb_test` (database owner/connected role `twinguard_app`) and does not establish shared-database or live-service compatibility.
+
+Migration `database/migrations/101_trackb_date_only_reservoir_observations.sql` (runner-normalized SHA-256 `65f50bca59e036ceaee84840f66f147dc8b4543f9b110f7bb5a5dd8689b535aa`) was applied only to the explicitly authorized isolated test database `twinguard_trackb_test`, owned by `twinguard_app`; B20 records successful date-only and timestamped-row persistence/read-back there. It remains unapplied to shared `twinguard`. No Docker volumes were touched. This isolated test proves the migration and persistence behavior against that test schema only; it does not establish shared-database deployment, production compatibility, or live operation. B9 remains historical REPLAY evidence, not live operation.
+
+Evidence: `docs/trackb/MESSAGES.md`, `docs/trackb/REALTIME_DESIGN.md`, `docs/trackb/G0_REPAIR_EVIDENCE.md`, `docs/trackb/TRACKB_REPORT.md`, `pipelines/trackb/streaming.py`, `pipelines/trackb/replay.py`, `pipelines/trackb/persistence.py`, `services/trackb/router.py`, `tests/trackb/test_date_only_timestamps.py`, `tests/trackb/test_router.py`, and `tests/trackb/test_date_only_persistence_db.py` (B20 isolated PostgreSQL run).

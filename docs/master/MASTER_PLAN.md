@@ -2,7 +2,17 @@
 
 ## Vision and locked stack
 
-Build an auditable flood digital twin for the Chennai Metropolitan Area. Current evidence uses the provisional older CMA boundary (about 1,187 km²). The repository's stack is authoritative: Python pipelines, PostgreSQL 18.6/PostGIS 3.6.2, FastAPI AI-service, Docker Compose; planned UI uses React/TypeScript/Tailwind/MapLibre and Java 21/Spring Boot. Maven is unavailable and the UI has not been installed.
+Build an auditable flood digital twin for the Chennai Metropolitan Area. Current evidence uses the provisional older CMA boundary (about 1,187 km²). The repository's stack is authoritative: Python pipelines, PostgreSQL 18.6/PostGIS 3.6.2, FastAPI AI-service, Docker Compose; UI uses React/TypeScript/Tailwind/MapLibre and Java 21/Spring Boot. Maven tests and the locked-dependency frontend build have recorded passing evidence; business API/data integration remains gated by task completion and service readiness.
+
+<!-- CURRENT STATE START -->
+
+## Current coordinated state (generated)
+
+- G0: `ready`; C1-C8: frozen at v0.
+- Running tasks: A23.
+- Selector-ready tasks: A: none; B: none; I: none.
+
+<!-- CURRENT STATE END -->
 
 ## Contributions and hypotheses
 
@@ -19,18 +29,18 @@ These are proposed tests, not findings. Track B has no observed release decision
 
 | Lane | Scope | Current evidence |
 |---|---|---|
-| A | labels, depth, forecasting, simulation, impact, routing, decisions and experiments | Batch 1 T3 doing; T1/T2 reported complete in the board. |
-| B | reservoir/replay platform, twin integration and product UI | Track B board reports B1–B6/B10–B13 complete with caveats; B7–B9 blocked. UI tasks not started. |
-| I | contracts, shared files, gates and release integration | Integrator control files being established. |
+| A | labels, depth, forecasting, simulation, impact, routing, decisions, experiments and CR-006 visualization data | A01-A20 completion evidence is recorded; no Lane A task is currently running. |
+| B | reservoir/replay platform, twin integration, AI/API services and product UI | G0 is ready. B08, B11, B17, B18, B21-B26 are complete with their recorded evidence/caveats. C9 remains proposed and unfrozen. B13 remains blocked pending a distinct mounted backend/UI historical REPLAY slice beyond B9 and B18/I08. B27 is blocked pending I21, CR-011 owner approval and verified date-only fixture evidence. No live operation is implied. |
+| I | contracts, shared files, gates, API projections and release integration | G0 is formally ready; C1-C8 are frozen at v0. I16/CR-009, I17, I19/CR-010 and I20 completed. I21 is ready to review the proposed B13 C4 v2 API/change control. I08 completed with caveats; C9 remains proposed and unfrozen. I04 is blocked_manual pending the recorded release/tag and backup decisions. |
 
 ## Task catalogue
 
 | ID | Task | Lane | Depends on | Status |
 |---|---|---|---|---|
 | F1–F12 | Foundation phases 1–9 and tools | I | — | See STATE.json; F7–F12 caveats recorded. |
-| A01–A17 | Batch 1 and science roadmap | A | As specified in STATE.json and lane spec | A01 running; downstream tasks blocked/not started. |
-| B01–B13 | Track B and product platform | B | As specified in STATE.json and Track B spec | Verify board plus disk in RECONCILIATION.md. |
-| I01–I04 | Gate checks, requirements merge, contract versioning, release | I | See STATE.json | I01/I03 ready; release gated. |
+| A01–A20 | Batch 1, Batch 2 and science roadmap | A | As specified in STATE.json and lane spec | See generated task catalogue below. |
+| B01–B27 | Track B and product platform | B | As specified in STATE.json and Track B spec | See generated task catalogue below. |
+| I01–I21 | Gate checks, requirements, contract versioning, release, CR-006, CR-008, CR-009/010, CR-011 and API projection coordination | I | See STATE.json | See generated task catalogue below. |
 | M1–M8 | Human actions | M | External/manual | Listed in NEXT.md. |
 
 ## Gate calendar (relative to project day 1)
@@ -64,47 +74,112 @@ Gate days are planning targets, not calendar commitments. No gate is declared pa
 | F10 | Tools setup | I | — | done_with_caveats |
 | F11 | Phase 8 SAR pilot | I | — | done_with_caveats |
 | F12 | Phase 9 pilot | I | — | done_with_caveats |
-| A01 | Label rework T1-T5 | A | — | running |
-| A02 | Depth fields T6 | A | A01 | blocked_prerequisite |
-| A03 | Phase 10 risk map T7-T8 | A | A01 | blocked_prerequisite |
-| A04 | Phase 9b model upgrade | A | A01 | blocked_prerequisite |
-| A05 | Phase 11 forecast | A | A01, A02, A04 | blocked_prerequisite |
-| A06 | Phase 12 simulation | A | A02 | blocked_prerequisite |
-| A07 | Phase 13 impact | A | A02 | blocked_prerequisite |
-| A08 | Time-dependent routing graph | A | A07 | blocked_prerequisite |
-| A09 | Phase 15 routing | A | A08, A05 | blocked_prerequisite |
-| A10 | Phase 16 shelter ranking | A | A07, A08 | blocked_prerequisite |
-| A11 | Phase 17 priority zones | A | A07, A10 | blocked_prerequisite |
-| A12 | Phase 18 explainability | A | A04 | blocked_prerequisite |
-| A13 | Phase 22 uncertainty/counterfactuals | A | A05, A09, A10 | blocked_prerequisite |
-| A14 | Phases 19-21 experiments | A | A05, A01 | blocked_prerequisite |
-| A15 | Phase 25 validation | A | A05, A06, A09 | blocked_prerequisite |
-| A16 | MLflow | A | — | blocked_manual |
-| A17 | Paper/report | A | A15 | blocked_prerequisite |
+| A01 | Label rework T1-T5 | A | — | done_with_caveats |
+| A02 | Depth fields T6 | A | A01 | done_with_caveats |
+| A03 | Phase 10 without out-of-event validation | A | A03b, A03c, A04b | done_with_caveats |
+| A03b | SAR diagnostic, Label Strategy V2, PDF georeferencing prep and digitised-label loader | A | A01, A02, A04b | done_with_caveats |
+| A03c | Depth uncertainty scenarios and probabilistic depth classes | A | A02, A04b | done_with_caveats |
+| A04 | Phase 9b model upgrade | A | A01 | done_with_caveats |
+| A04b | Phase 9C: urban label censoring, independent point validation, spatial conformal fix | A | A04 | done_with_caveats |
+| A04c | Phase 9C urban physical susceptibility layer | A | A04b | done_with_caveats |
+| A03d | GeoPDF map labels and 2023 out-of-event check | A | A03b, A04b | done_with_caveats |
+| A04d | Calibrated SAR candidate labels (diagnostic acceptance gate) | A | A03b, A04b | done_with_caveats |
+| A05 | Phase 11 forecast and hindcast wrapper | A | A06 | done_with_caveats |
+| A06 | Phase 12 local-inertial shallow-water simulation | A | A02, A04c, A03d | done_with_caveats |
+| A07 | Phase 13 ensemble impact analysis | A | A05, A06, A02 | done_with_caveats |
+| A08 | Time-dependent flood-aware routing graph | A | A07 | done_with_caveats |
+| A09 | Phase 15 routing decision comparison | A | A05, A08 | done_with_caveats |
+| A10 | Phase 16 shelter allocation | A | A07, A08, A09 | done_with_caveats |
+| A11 | Phase 17 descriptive hazard, exposure, and access-loss layers (no vulnerability ranking) | A | A07, A10 | done_with_caveats |
+| A12 | Phase 18 explainability and parameter sensitivity | A | A04, A04d, A06 | done_with_caveats |
+| A13 | Phase 22 decision lab and H2–H5 experiments | A | A05, A09, A10, A11, A12 | done_with_caveats |
+| A14 | Phases 19-21 experiments | A | A01, A03d, A04, A04d, A05 | done_with_caveats |
+| A15 | Phase 25 validation | A | A05, A06, A09 | done_with_caveats |
+| A16 | MLflow | A | — | done_with_caveats |
+| A17 | Paper/report | A | A15 | done_with_caveats |
 | B01 | Track B Part 1 | B | — | done_with_caveats |
-| B02 | Streaming/monitoring B6-B10 | B | B01, M1 | blocked_prerequisite |
+| B02 | Streaming/monitoring B6-B10 | B | B01, M1 | done_with_caveats |
 | B03 | Twin link/API | B | B01 | done_with_caveats |
-| B04 | UI-1 | B | — | blocked_manual |
-| B05 | UI-2 | B | B04 | blocked_prerequisite |
-| B06 | UI-3 | B | B04, B03 | blocked_prerequisite |
-| B07 | UI-4 | B | B04, A09 | blocked_prerequisite |
-| B08 | AI real endpoints | B | A05, A13 | blocked_prerequisite |
-| B09 | Spring gateway | B | M2 | blocked_manual |
-| B10 | Monitoring and CI | B | B02 | blocked_prerequisite |
-| B11 | Full-stack packaging | B | B04, B08, B09 | blocked_prerequisite |
-| B12 | Docs | B | — | running |
-| B13 | E2E scenario | B | B02, B03, B04 | blocked_prerequisite |
-| I01 | Gate checks | I | — | ready |
-| I02 | Requirements merge | I | B01 | not_started |
-| I03 | Contract versioning | I | — | ready |
-| I04 | Release/backups | I | I01 | blocked_prerequisite |
-| M1 | Pull Track B Docker images | M | — | blocked_manual |
-| M2 | Install Maven | M | — | blocked_manual |
-| M3 | Approve UI npm/network | M | — | blocked_manual |
+| B04 | UI-1 | B | M3 | done_with_caveats |
+| B05 | UI-2 | B | B04 | done_with_caveats |
+| B06 | UI-3 | B | B05, B03 | done_with_caveats |
+| B07 | UI-4 | B | B06, A07, A09, B15, I05 | done_with_caveats |
+| B08 | AI real endpoints | B | A05, A07, A09, A13, B15, B16, I05, I13, I14 | done_with_caveats |
+| B09 | Spring gateway | B | M2 | done_with_caveats |
+| B10 | Monitoring and CI | B | B02 | done_with_caveats |
+| B11 | Full-stack packaging | B | B04, B08, B09 | done_with_caveats |
+| B12 | Docs | B | — | done |
+| B13 | E2E scenario | B | B02, B03, B04, B05, B06, B07, B08, B09, B11, B15, I05, B18, I21, B27, B28, I22 | blocked_prerequisite |
+| B14 | Professional live-ready UI redesign (design-only) | B | — | done_with_caveats |
+| I01 | Gate checks | I | — | done_with_caveats |
+| I02 | Requirements merge | I | B01 | done_with_caveats |
+| I03 | Contract versioning | I | — | done_with_caveats |
+| I04 | Release/backups | I | I01 | blocked_manual |
+| M1 | Pull Track B Docker images | M | — | done |
+| M2 | Install Maven | M | — | done |
+| M3 | Approve UI npm/network | M | — | done_with_caveats |
 | M4 | Create GitHub repo/push | M | — | blocked_manual |
-| M5 | Install MLflow | M | — | blocked_manual |
+| M5 | Install MLflow | M | — | done_with_caveats |
 | M6 | Optional PDF georeferencing | M | — | parked |
 | M7 | Census/licence checks | M | — | blocked_manual |
 | M8 | Mentor review dates | M | — | blocked_manual |
+| I05 | Reconcile OpenAPI projections with C4-C8 evidence | I | A07, A09, B02, B15, I06, B16 | done_with_caveats |
+| A18 | C1 T6 GeoTIFF metadata conformance repair | A | A02 | done_with_caveats |
+| A19 | C2 accepted-label GeoJSON export and serialization tests | A | A01 | done_with_caveats |
+| B15 | Align route and impact DTOs to completed C7/C8 outputs | B | A07, A09, B02, B16 | done_with_caveats |
+| I06 | Publish C5 Layer catalogue OpenAPI projection | I | B02 | done_with_caveats |
+| B16 | Repair and verify C4/C5 service DTO and catalogue serialization | B | B02, I06 | done_with_caveats |
+| A20 | 3D flood scenario time-series and visualization readiness | A | A15 | done_with_caveats |
+| I07 | Define post-G0 3D scenario display contract | I | A20, I05 | done_with_caveats |
+| B17 | Serve versioned flood scenario visualization assets | B | A20, I07, B08, B09, B15 | done_with_caveats |
+| B18 | 3D flood scenario timeline and map visualization | B | B17, B05, B06, B07, B14, B21, I19, B23, B24, I20 | done_with_caveats |
+| I08 | End-to-end acceptance for 3D flood scenario replay | I | A20, I07, B17, B18 | done_with_caveats |
+| B19 | Preserve date-only reservoir time semantics through replay and persistence | B | B02, B03 | done_with_caveats |
+| I09 | Reconcile C3 date-only timestamp contract and gate evidence | I | B19, I01 | done_with_caveats |
+| I10 | Apply approved C3 date-only contract policy and gate evidence | I | B19, I09 | done_with_caveats |
+| B20 | Verify isolated PostgreSQL persistence compatibility for C3 date-only records | B | B03, B19 | done_with_caveats |
+| I11 | Reconcile C3 persistence compatibility evidence after B20 | I | B20, I10 | done_with_caveats |
+| I12 | Final G0 evidence reassessment and gate closure | I | A07, A09, A13, A16, A18, A19, B02, B09, B15, B16, B20, I01, I05, I06, I11, M5 | done_with_caveats |
+| I13 | Reconcile root and Lane A dependency pins for the G0 gate | I | I02, A16, M5 | done_with_caveats |
+| I14 | CR-008: reconcile B08 artifact selectors under change control | I | A07, A09, B15, I05 | done_with_caveats |
+| I15 | Reconcile OpenAPI runtime annotations after B08 | I | B08, I14, I05 | done_with_caveats |
+| I16 | CR-009 C9 read-only route activation change-control review | I | I07, B17 | done_with_caveats |
+| B21 | Mount approved C9 read-only catalog and detail routes | B | B08, B09, B11, B17, I07, I16, I17 | done_with_caveats |
+| I17 | Complete CR-009 catalog duplicate-identity response mapping | I | I16, B17 | done_with_caveats |
+| B22 | Reconcile B11 packaging checks after C9 route mounts | B | B11, B21 | done |
+| I18 | Define browser and raster delivery prerequisites for B18 | I | A20, I07, B17, B21, B22 | done_with_caveats |
+| I19 | Project approved C9 raster delivery projection | I | I18 | done_with_caveats |
+| B23 | Serve exact A20 scenario GeoTIFF assets read-only | B | A20, I18, I19, B17, B21, B22 | done_with_caveats |
+| B24 | Allow the packaged B18 UI origin to read approved AI scenario assets | B | B21, B22, B23 | done_with_caveats |
+| I20 | Reconcile C9 raster runtime projection after package verification | I | I19, B24 | done_with_caveats |
+| B25 | Repair AI image Rasterio libexpat runtime dependency | B | B11, B23 | done |
+| B26 | Display authoritative gate state in the packaged UI | B | B18, I08 | done_with_caveats |
+| I21 | CR-011 B13 replay API and change-control review | I | B08, B09, B11, B15, B18, B19, B26, I05, I08, I20 | done_with_caveats |
+| B27 | B13 source-backed date-only observation replay vertical slice | B | B08, B09, B11, B15, B18, B19, B26, I05, I08, I20, I21, B28, I22 | done_with_caveats |
+| B28 | B13 source-backed date-only replay fixture evidence | B | B09, B19 | done_with_caveats |
+| I22 | CR-012 API projection for date-only observation replay | I | B28, I21 | done_with_caveats |
+| B29 | Frontend product experience - centralized DEMO/SIMULATED mode | B | B14, B18, B27 | done_with_caveats |
+| B30 | Refine B29 frontend visual design from user reference | B | B29 | done_with_caveats |
+| A21 | Evaluate three-state evidence-aware flood routing and novelty | A | A08, A09, A13, A15, A10 | done_with_caveats |
+| B31 | Flood operations control-room UI refinement | B | B29, B30 | done_with_caveats |
+| B32 | High-fidelity TwinGuard product UI | B | B29, B30, B31 | done_with_caveats |
+| B33 | Reference-inspired flood control-room UI | B | B29, B30, B31, B32 | done_with_caveats |
+| I23 | Map live-data integration flow against frozen contracts | I | — | done_with_caveats |
+| B34 | Inventory live-source readiness and evidence gaps | B | — | done |
+| B35 | Define fixture-only ingestion adapter and offline behavior tests | B | I23, B34 | done |
+| B36 | Add explicit source and freshness states to the UI adapter boundary | B | B33, I23, B34, B35 | done_with_caveats |
+| I24 | Prepare rainfall and reservoir source authorization decision package | I | I23, B34, B35, B36 | done_with_caveats |
+| B37 | Professor-facing TwinGuard demo UI refinement | B | B33, B36, B18, I08, I24 | done_with_caveats |
+| B38 | Verify IMD rainfall and weather source readiness | B | B34, I24 | done_with_caveats |
+| B39 | Verify official Tamil Nadu reservoir source readiness | B | B34, I24 | done_with_caveats |
+| B40 | Implement authorized IMD rainfall/weather connector | B | B38 | blocked_prerequisite |
+| B41 | Implement bounded public CFM-DSS reservoir snapshot connector | B | B39 | done_with_caveats |
+| B42 | Prove observation-triggered recomputation through API and UI | B | B37, B40, B41 | blocked_prerequisite |
+| B43 | Connect Open-Meteo Chennai weather-model context to the product UI | B | B34, B35, B36, B37, I23, I24 | done_with_caveats |
+| A22 | Assess Open-Meteo Chennai weather-model rainfall for a versioned flood run | A | A05, A06, B43 | done_with_caveats |
+| A23 | Assess spatial Open-Meteo rainfall forcing over A06 domain | A | A22, A05, A06, B43 | running |
+| I25 | Define additive CFM-DSS reservoir snapshot API projection | I | B41, I23, I24 | done_with_caveats |
+| B44 | Mount read-only CFM-DSS reservoir snapshot API | B | I25, B41 | done_with_caveats |
+| B45 | Connect CFM reservoir snapshots to the product UI | B | B44, B36, B37 | blocked_prerequisite |
 
 <!-- TASK TABLE END -->

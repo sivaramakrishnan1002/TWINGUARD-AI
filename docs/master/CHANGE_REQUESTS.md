@@ -37,3 +37,11 @@ Approved 2026-11-06; implemented by B44. See `CR-017_CFM_RESERVOIR_SNAPSHOT_API.
 ## CR-018 — Live prototype integration
 
 Approved 2026-11-07 under the owner's delegated authority: same-origin `/api/ai/` proxy, B45 live reservoir panel, and live recomputation runs as later sections are added. See `CR-018_LIVE_PROTOTYPE_INTEGRATION.md`.
+
+## CR-015 note — request disclosure and supersession (2026-11-07)
+
+A23 disclosed extra preparatory Open-Meteo requests beyond the single retained 3-model snapshot (`docs/PHASE12_OPEN_METEO_GRID_FEASIBILITY.md` item 5): one 2-point probe per candidate model (11 requests) and one 0.03° trial across four models, in which GFS returned HTTP 429. These trial responses were neither retained nor used. They exceeded CR-015's "minimum request set" wording only by small preparatory probes, and are recorded here for transparency. CR-015's one-snapshot/no-polling limit is now replaced by OD-2026-11-07 item 7: on-demand, cached, 600 s minimum interval, no background polling.
+
+## CR-019 — Product rebaseline: reference UI, Google 3D Tiles, C4 v3 API
+
+Approved by the project owner as OD-2026-11-07. Tasks A25 (Lane A simulation), B47 (Lane B API) and B48 (UI session) are registered with disjoint file ownership. The contract is C4 v3 in `docs/api/ai-service.yaml` § `x-c4-v3-product-api`. A24/I26/B46 are superseded. See `CR-019_PRODUCT_REBASELINE_UI_API.md`.

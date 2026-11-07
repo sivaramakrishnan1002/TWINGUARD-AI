@@ -665,3 +665,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-07 12:19:31 Integrator G1-G4 gate review: G1/G2/G3 PASS_WITH_CAVEATS (set ready); G4 FAIL (not_ready, B46 added to requires); repair tasks A24/I26/B46 registered; A10 outputs add batch2_v3. Reports docs/master/GATE_G1..G4_REPORT.md.
 
 - 2026-11-07 12:21:07 Finished A23: done_with_caveats
+
+- 2026-11-07 12:41:53 OD-2026-11-07 / CR-019 recorded: registered A25 (Lane A), B47 (Lane B API), B48 (ui session); A24/I26/B46 parked as superseded; G4 requires B47; C4 v3 contract in docs/api/ai-service.yaml x-c4-v3-product-api; CR-015 probe disclosure noted.

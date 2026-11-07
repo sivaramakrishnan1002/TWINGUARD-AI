@@ -18,3 +18,13 @@ Contracts evolve additively and increment their version only on a separately aut
 ### Approved post-G0 C4 change
 
 CR-008 authorizes a separately versioned C4 v1 request/operation delta in `contracts/c4_openapi_v1.md`: exact A07 impact selection by `(run_id, valid_at, scenario_key)` and saved A09 revision-3 retrieval by its revision-scoped `result_id`. C4 v0 remains the frozen G0 baseline; C7/C8 response schemas are unchanged. `POST /route` computation remains unavailable because no authoritative run mapping exists. The OpenAPI projection is design/conformance evidence only until B08 passes its runtime tests; this change does not alter G0's v0 record.
+
+### Proposed C4 v3 (CR-019 / OD-2026-11-07)
+
+C4 v3 is an additive product API for the 7-tab UI: simulations, depth frames, buildings, wards, three-state roads, routes, shelters, generated incidents, scenario resources, what-if comparison, weather and overview.
+- **Definition:** `docs/api/ai-service.yaml` § `x-c4-v3-product-api`, summarised in `contracts/c4_openapi_v3.md`.
+- **Status:** proposed/unfrozen.
+- **Owners:** I (contract) and B (runtime, B47).
+- **Consumer:** UI (B48).
+
+C4 v0 stays frozen.

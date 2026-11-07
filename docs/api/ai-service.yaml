@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "TwinGuard AI Service",
-    "version": "0.3.0",
-    "description": "C4 v0 remains the frozen G0 baseline; C4 v1 selectors follow CR-008. The AI service implements health, layers, B08 exact saved-artifact selectors, and B21 C9 metadata GETs in the local B11 package. The CR-010 C9 v1 raster-byte GET is verified in that same local package by B25 (commit 0aebc59); it serves only exact saved A20 research/simulation bytes. Forecast, uncertainty, route computation, and scenario computation remain HTTP 501. No live or deployment-wide operation is implied; C9 remains proposed and unfrozen. C4 v2 / CR-012 defines a test-scoped, read-only date-only replay projection; it is not mounted until B27 evidence passes."
+    "version": "0.4.0",
+    "description": "C4 v0 remains the frozen G0 baseline; C4 v1 selectors follow CR-008. The AI service implements health, layers, B08 exact saved-artifact selectors, and B21 C9 metadata GETs in the local B11 package. The CR-010 C9 v1 raster-byte GET is verified in that same local package by B25 (commit 0aebc59); it serves only exact saved A20 research/simulation bytes. Forecast, uncertainty, route computation, and scenario computation remain HTTP 501. No live or deployment-wide operation is implied; C9 remains proposed and unfrozen. C4 v2 / CR-012 defines a test-scoped, read-only date-only replay projection; it is not mounted until B27 evidence passes. C4 v3 (OD-2026-11-07 / CR-019) is a proposed, unmounted product-API section under `x-c4-v3-product-api`; operations move into `paths` only when mounted and tested."
   },
   "paths": {
     "/health": {
@@ -4173,6 +4173,3618 @@
           "detail": {
             "type": "string",
             "const": "Reservoir source is unavailable or returned invalid data."
+          }
+        }
+      }
+    }
+  },
+  "x-c4-v3-product-api": {
+    "version": "C4 v3 (proposed, unfrozen) \u2014 OD-2026-11-07 / CR-019",
+    "status": "contract-first design for parallel Lane B (B47) and UI (B48) work; no operation is mounted yet",
+    "base_path": "/v3 on the AI service; the packaged UI reaches it through the same-origin /api/ai/ proxy (CR-018)",
+    "promotion_rule": "Lane B moves an operation from this section into top-level `paths` (with x-current-runtime-status 200) only when it is mounted and its focused tests pass; tests/ai_service/test_api.py requires every top-level path to exist at runtime.",
+    "conventions": {
+      "times": "RFC 3339 UTC (Z). Date-only historical sources keep source_date semantics from C3.",
+      "units": "depth/height/tide m; distance m; duration s; rainfall mm per interval; flow m3/s; area km2; population people.",
+      "crs": "Grids EPSG:32644 (metres). GeoJSON and LonLat are WGS84 (RFC 7946).",
+      "nulls": "null = unknown/outside domain, never zero. 0 depth = modelled dry.",
+      "source_mode": "Every result carries source_mode; generated incidents carry generated=true; resources are SCENARIO_INPUT.",
+      "ui_badge": "The UI shows a single 'DEMO / SIMULATION' badge (OD-2026-11-07); limitations arrays are short thesis notes.",
+      "secrets": "No endpoint returns or accepts the Google Maps Tiles API key; it stays in frontend/.env.local (VITE_GOOGLE_MAPS_API_KEY), never committed.",
+      "existing_reuse": "Tab 6 Reservoir Monitoring reuses the mounted GET /reservoirs/history (CR-017). The draft /live/* router (CR-018) is superseded by /v3 and should be folded into it by B47."
+    },
+    "tab_map": {
+      "1_situation_overview": [
+        "/v3/overview",
+        "/v3/weather",
+        "/reservoirs/history"
+      ],
+      "2_flood_simulation": [
+        "/v3/events",
+        "POST /v3/simulations",
+        "/v3/simulations/{run_id}",
+        "/v3/simulations/{run_id}/depth",
+        "/v3/simulations/{run_id}/wards"
+      ],
+      "3_emergency_support": [
+        "/v3/simulations/{run_id}/incidents",
+        "/v3/simulations/{run_id}/shelters",
+        "/v3/scenario-resources",
+        "/v3/simulations/{run_id}/emergency-plan"
+      ],
+      "4_road_routing": [
+        "/v3/simulations/{run_id}/roads",
+        "POST /v3/routes"
+      ],
+      "5_what_if_simulation": [
+        "POST /v3/simulations (mode=what_if)",
+        "/v3/simulations/{run_id}/comparison"
+      ],
+      "6_reservoir_monitoring": [
+        "/reservoirs/history"
+      ],
+      "7_digital_twin_3d_city": [
+        "/v3/simulations/{run_id}/depth",
+        "/v3/simulations/{run_id}/buildings",
+        "/v3/static/{layer}"
+      ]
+    },
+    "paths": {
+      "/v3/status": {
+        "get": {
+          "operationId": "v3GetEngineStatus",
+          "summary": "Engine, queue and weather-cache status",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/EngineStatus"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/overview": {
+        "get": {
+          "operationId": "v3GetOverview",
+          "summary": "Tab 1 Situation Overview aggregate",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/Overview"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/events": {
+        "get": {
+          "operationId": "v3ListEvents",
+          "summary": "Historical events available as saved forcing",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/EventList"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/weather": {
+        "get": {
+          "operationId": "v3GetWeather",
+          "summary": "Cached Open-Meteo Chennai weather (on demand, min interval 600 s)",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "refresh",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "boolean",
+                "default": false
+              },
+              "description": "Fetch now if the minimum interval has elapsed; otherwise return the cache. Never polls in the background."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/Weather"
+                  }
+                }
+              }
+            },
+            "429": {
+              "description": "Rate limited: the Open-Meteo minimum fetch interval or the run-start interval has not elapsed. Retry-After header is set.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/simulations": {
+        "post": {
+          "operationId": "v3CreateSimulation",
+          "summary": "Tabs 2/5: start an event, custom-rainfall, forecast or what-if simulation",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "description": "One run executes at a time; further requests queue (max 4). mode=forecast fetches Open-Meteo on demand subject to the 600 s minimum interval and response caching (OD-2026-11-07).",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "202": {
+              "description": "Accepted or served from cache",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationAccepted"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Malformed request or invalid selector.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "Conflict: another run is in progress or the resource version changed.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Request failed validation (field ranges, units or enums).",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "429": {
+              "description": "Rate limited: the Open-Meteo minimum fetch interval or the run-start interval has not elapsed. Retry-After header is set.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "get": {
+          "operationId": "v3ListSimulations",
+          "summary": "List completed and in-progress runs, newest first",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "cursor",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50,
+                "default": 12
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationList"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/simulations/{run_id}": {
+        "get": {
+          "operationId": "v3GetSimulation",
+          "summary": "Run status, timeline frames, summary and provenance",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "run_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+              },
+              "example": "sim-20261107T063000Z-3fa9c2d1"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationRun"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/simulations/{run_id}/depth": {
+        "get": {
+          "operationId": "v3GetDepthFrame",
+          "summary": "Tabs 2/7: depth grid for one frame (or peak) for draped/extruded water",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "run_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+              },
+              "example": "sim-20261107T063000Z-3fa9c2d1"
+            },
+            {
+              "name": "frame_index",
+              "in": "query",
+              "required": false,
+              "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+              "schema": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            {
+              "name": "layer",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "depth_mean",
+                  "depth_p05",
+                  "depth_p95",
+                  "velocity_mps"
+                ],
+                "default": "depth_mean"
+              }
+            },
+            {
+              "name": "resolution",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "citywide",
+                  "focus"
+                ],
+                "default": "citywide"
+              }
+            },
+            {
+              "name": "focus_area",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "VELACHERY",
+                  "ADYAR",
+                  "T_NAGAR",
+                  "PORUR"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/DepthFrame"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Request failed validation (field ranges, units or enums).",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/simulations/{run_id}/buildings": {
+        "get": {
+          "operationId": "v3GetBuildingDepths",
+          "summary": "Tab 7: per-building max depth (382,294 OSM footprints), paged",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "run_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+              },
+              "example": "sim-20261107T063000Z-3fa9c2d1"
+            },
+            {
+              "name": "frame_index",
+              "in": "query",
+              "required": false,
+              "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+              "schema": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            {
+              "name": "bbox",
+              "in": "query",
+              "required": false,
+              "description": "WGS84 filter 'min_lon,min_lat,max_lon,max_lat'.",
+              "schema": {
+                "type": "string",
+                "pattern": "^-?[0-9.]+,-?[0-9.]+,-?[0-9.]+,-?[0-9.]+$"
+              },
+              "example": "80.20,12.97,80.23,13.00"
+            },
+            {
+              "name": "cursor",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5000,
+                "default": 1000
+              }
+            },
+            {
+              "name": "min_depth_m",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/BuildingDepthPage"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Request failed validation (field ranges, units or enums).",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/simulations/{run_id}/wards": {
+        "get": {
+          "operationId": "v3GetWardSummaries",
+          "summary": "Per-ward (GCC 200 wards) flood summary",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "run_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+              },
+              "example": "sim-20261107T063000Z-3fa9c2d1"
+            },
+            {
+              "name": "frame_index",
+              "in": "query",
+              "required": false,
+              "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+              "schema": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/WardSummaryList"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/simulations/{run_id}/roads": {
+        "get": {
+          "operationId": "v3GetRoadStates",
+          "summary": "Tab 4: three-state road edges as GeoJSON",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "run_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+              },
+              "example": "sim-20261107T063000Z-3fa9c2d1"
+            },
+            {
+              "name": "frame_index",
+              "in": "query",
+              "required": false,
+              "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+              "schema": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            {
+              "name": "bbox",
+              "in": "query",
+              "required": false,
+              "description": "WGS84 filter 'min_lon,min_lat,max_lon,max_lat'.",
+              "schema": {
+                "type": "string",
+                "pattern": "^-?[0-9.]+,-?[0-9.]+,-?[0-9.]+,-?[0-9.]+$"
+              },
+              "example": "80.20,12.97,80.23,13.00"
+            },
+            {
+              "name": "blocked_depth_threshold_m",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "number",
+                "minimum": 0.1,
+                "maximum": 1.0,
+                "default": 0.3
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/RoadFeatureCollection"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Request failed validation (field ranges, units or enums).",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/simulations/{run_id}/shelters": {
+        "get": {
+          "operationId": "v3GetShelterReport",
+          "summary": "Tab 3: shelter reachability and allocation",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "run_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+              },
+              "example": "sim-20261107T063000Z-3fa9c2d1"
+            },
+            {
+              "name": "frame_index",
+              "in": "query",
+              "required": false,
+              "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+              "schema": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            {
+              "name": "capacity_factor",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "number",
+                "enum": [
+                  0.5,
+                  1.0,
+                  2.0
+                ],
+                "default": 1.0
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ShelterReport"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/simulations/{run_id}/incidents": {
+        "get": {
+          "operationId": "v3GetIncidents",
+          "summary": "Tab 3: incidents generated from simulation results (labelled generated)",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "run_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+              },
+              "example": "sim-20261107T063000Z-3fa9c2d1"
+            },
+            {
+              "name": "frame_index",
+              "in": "query",
+              "required": false,
+              "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+              "schema": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            {
+              "name": "min_severity",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "info",
+                  "watch",
+                  "warning",
+                  "critical"
+                ],
+                "default": "watch"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/IncidentList"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/simulations/{run_id}/emergency-plan": {
+        "get": {
+          "operationId": "v3GetEmergencyPlan",
+          "summary": "Tab 3: assign scenario resources to generated incidents",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "run_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+              },
+              "example": "sim-20261107T063000Z-3fa9c2d1"
+            },
+            {
+              "name": "frame_index",
+              "in": "query",
+              "required": false,
+              "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+              "schema": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/EmergencyPlan"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/simulations/{run_id}/comparison": {
+        "get": {
+          "operationId": "v3GetComparison",
+          "summary": "Tab 5: what-if run compared with its baseline",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "run_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+              },
+              "example": "sim-20261107T063000Z-3fa9c2d1"
+            },
+            {
+              "name": "baseline_run_id",
+              "in": "query",
+              "required": false,
+              "description": "Defaults to the what-if base_run_id.",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/Comparison"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Malformed request or invalid selector.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/routes": {
+        "post": {
+          "operationId": "v3SearchRoute",
+          "summary": "Tab 4: from->to route search over three-state roads",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/RouteRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/RouteResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Malformed request or invalid selector.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Request failed validation (field ranges, units or enums).",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/scenario-resources": {
+        "get": {
+          "operationId": "v3GetScenarioResources",
+          "summary": "Tab 3: owner-set emergency resources (boats, teams, vehicles)",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ResourceSet"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "put": {
+          "operationId": "v3PutScenarioResources",
+          "summary": "Replace owner-set scenario resources (local store; not dispatch data)",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ResourceSet"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ResourceSet"
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "Conflict: another run is in progress or the resource version changed.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Request failed validation (field ranges, units or enums).",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/static/{layer}": {
+        "get": {
+          "operationId": "v3GetStaticLayer",
+          "summary": "Static reference layers: wards, buildings (paged), shelters",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B47)",
+          "parameters": [
+            {
+              "name": "layer",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "wards",
+                  "buildings",
+                  "shelters",
+                  "focus_areas"
+                ]
+              }
+            },
+            {
+              "name": "bbox",
+              "in": "query",
+              "required": false,
+              "description": "WGS84 filter 'min_lon,min_lat,max_lon,max_lat'.",
+              "schema": {
+                "type": "string",
+                "pattern": "^-?[0-9.]+,-?[0-9.]+,-?[0-9.]+,-?[0-9.]+$"
+              },
+              "example": "80.20,12.97,80.23,13.00"
+            },
+            {
+              "name": "cursor",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5000,
+                "default": 1000
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/StaticFeatureCollection"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run, ward, building, shelter or resource not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "SourceMode": {
+          "type": "string",
+          "enum": [
+            "SIMULATED",
+            "MODEL_FORECAST",
+            "PUBLISHED_SNAPSHOT",
+            "SCENARIO_INPUT",
+            "REPLAY",
+            "STATIC_REFERENCE"
+          ],
+          "description": "SIMULATED = flood-engine output; MODEL_FORECAST = Open-Meteo numerical weather model; PUBLISHED_SNAPSHOT = CFM-DSS public dashboard read; SCENARIO_INPUT = owner-set value; REPLAY = archived historical record; STATIC_REFERENCE = OSM/ward/boundary data. No value with a non-observed mode may be shown as observed."
+        },
+        "LonLat": {
+          "type": "object",
+          "required": [
+            "lon",
+            "lat"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "lon": {
+              "type": "number",
+              "minimum": 79.9,
+              "maximum": 80.5
+            },
+            "lat": {
+              "type": "number",
+              "minimum": 12.7,
+              "maximum": 13.4
+            }
+          },
+          "example": {
+            "lon": 80.2209,
+            "lat": 12.9815
+          }
+        },
+        "ApiError": {
+          "type": "object",
+          "required": [
+            "detail",
+            "code"
+          ],
+          "properties": {
+            "detail": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string",
+              "enum": [
+                "bad_request",
+                "not_found",
+                "conflict",
+                "invalid",
+                "rate_limited",
+                "unavailable"
+              ]
+            },
+            "retry_after_s": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            }
+          },
+          "example": {
+            "detail": "Weather cache is fresh; next fetch allowed in 412 s.",
+            "code": "rate_limited",
+            "retry_after_s": 412
+          }
+        },
+        "Provenance": {
+          "type": "object",
+          "required": [
+            "engine_version",
+            "run_id",
+            "inputs"
+          ],
+          "properties": {
+            "engine_version": {
+              "type": "string"
+            },
+            "run_id": {
+              "type": "string"
+            },
+            "forcing_sha256": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "static_assets_version": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "inputs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "source",
+                  "source_mode"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "source_mode": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/SourceMode"
+                  },
+                  "fetched_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "sha256": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "example": {
+            "engine_version": "twinguard-flood-engine/2.0.0",
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "forcing_sha256": "9f2c...e1",
+            "static_assets_version": "a25_static_v1",
+            "inputs": [
+              {
+                "name": "rainfall",
+                "source": "open-meteo:ecmwf_ifs025",
+                "source_mode": "MODEL_FORECAST",
+                "fetched_at": "2026-11-07T06:29:41Z",
+                "sha256": "41aa...07"
+              }
+            ]
+          }
+        },
+        "GridSpec": {
+          "type": "object",
+          "required": [
+            "crs",
+            "origin_x_m",
+            "origin_y_m",
+            "cell_size_m",
+            "rows",
+            "cols",
+            "bbox_wgs84"
+          ],
+          "description": "Raster origin is the upper-left corner; row 0 is north. Projected CRS EPSG:32644 (metres).",
+          "properties": {
+            "crs": {
+              "const": "EPSG:32644"
+            },
+            "origin_x_m": {
+              "type": "number"
+            },
+            "origin_y_m": {
+              "type": "number"
+            },
+            "cell_size_m": {
+              "type": "number",
+              "enum": [
+                30,
+                90,
+                100,
+                120
+              ]
+            },
+            "rows": {
+              "type": "integer"
+            },
+            "cols": {
+              "type": "integer"
+            },
+            "bbox_wgs84": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 4,
+              "maxItems": 4
+            }
+          },
+          "example": {
+            "crs": "EPSG:32644",
+            "origin_x_m": 395000.0,
+            "origin_y_m": 1468000.0,
+            "cell_size_m": 100,
+            "rows": 520,
+            "cols": 410,
+            "bbox_wgs84": [
+              80.005,
+              12.852,
+              80.342,
+              13.292
+            ]
+          }
+        },
+        "Frame": {
+          "type": "object",
+          "required": [
+            "index",
+            "valid_time_utc"
+          ],
+          "properties": {
+            "index": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "valid_time_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "elapsed_minutes": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "CustomRainfall": {
+          "type": "object",
+          "required": [
+            "start_time_utc",
+            "interval_minutes",
+            "values_mm"
+          ],
+          "description": "Uniform areal rainfall depth per interval (mm per interval, not mm/h).",
+          "properties": {
+            "start_time_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "interval_minutes": {
+              "type": "integer",
+              "enum": [
+                15,
+                30,
+                60
+              ]
+            },
+            "values_mm": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 288,
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 200
+              }
+            }
+          },
+          "example": {
+            "start_time_utc": "2026-11-07T00:00:00Z",
+            "interval_minutes": 60,
+            "values_mm": [
+              5,
+              12,
+              30,
+              45,
+              22,
+              8,
+              2,
+              0
+            ]
+          }
+        },
+        "WhatIfModifiers": {
+          "type": "object",
+          "required": [
+            "base_run_id"
+          ],
+          "properties": {
+            "base_run_id": {
+              "type": "string"
+            },
+            "rainfall_scale_pct": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 300,
+              "default": 100,
+              "description": "Percentage of the base rainfall (100 = unchanged)."
+            },
+            "reservoir_release_m3s": {
+              "type": "object",
+              "description": "Scenario outflow per reservoir in cubic metres per second (1 m3/s = 35.3147 cusecs).",
+              "propertyNames": {
+                "enum": [
+                  "CHEMBARAMBAKKAM",
+                  "POONDI",
+                  "PUZHAL",
+                  "CHOLAVARAM"
+                ]
+              },
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 3000
+              }
+            },
+            "tide_offset_m": {
+              "type": "number",
+              "minimum": -1.0,
+              "maximum": 2.0,
+              "default": 0.0,
+              "description": "Sea-level boundary offset in metres relative to the base run."
+            }
+          },
+          "example": {
+            "base_run_id": "evt-20261107T050000Z-0b11aa20",
+            "rainfall_scale_pct": 130,
+            "reservoir_release_m3s": {
+              "CHEMBARAMBAKKAM": 850
+            },
+            "tide_offset_m": 0.5
+          }
+        },
+        "SimulationRequest": {
+          "type": "object",
+          "required": [
+            "mode"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "event",
+                "custom",
+                "forecast",
+                "what_if"
+              ],
+              "description": "event = saved historical event forcing; custom = user rainfall; forecast = on-demand Open-Meteo fetch (cached, minimum interval); what_if = modifiers on a base run."
+            },
+            "event_key": {
+              "type": "string",
+              "description": "Required when mode=event; see GET /v3/events."
+            },
+            "custom_rainfall": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/CustomRainfall"
+            },
+            "what_if": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/WhatIfModifiers"
+            },
+            "duration_hours": {
+              "type": "integer",
+              "minimum": 6,
+              "maximum": 72,
+              "default": 24
+            },
+            "resolution": {
+              "type": "string",
+              "enum": [
+                "citywide",
+                "focus"
+              ],
+              "default": "citywide",
+              "description": "citywide = 90-120 m grid; focus = 30 m grid for one focus_area."
+            },
+            "focus_area": {
+              "type": "string",
+              "enum": [
+                "VELACHERY",
+                "ADYAR",
+                "T_NAGAR",
+                "PORUR"
+              ]
+            },
+            "frame_interval_minutes": {
+              "type": "integer",
+              "enum": [
+                15,
+                30
+              ],
+              "default": 30
+            }
+          },
+          "example": {
+            "mode": "event",
+            "event_key": "2015-12-01",
+            "duration_hours": 48,
+            "resolution": "citywide",
+            "frame_interval_minutes": 30
+          }
+        },
+        "SimulationAccepted": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "state",
+            "status_url"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "queued",
+                "running",
+                "cached"
+              ],
+              "description": "cached = identical request/forcing already computed; run_id points to it."
+            },
+            "status_url": {
+              "type": "string"
+            },
+            "estimated_seconds": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "state": "queued",
+            "status_url": "/v3/simulations/sim-20261107T063000Z-3fa9c2d1",
+            "estimated_seconds": 240
+          }
+        },
+        "SimulationSummary": {
+          "type": "object",
+          "properties": {
+            "max_depth_m": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "flooded_area_km2": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Peak area with depth >= 0.10 m."
+            },
+            "buildings_affected": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Buildings with max depth >= 0.10 m."
+            },
+            "population_exposed": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "People in cells with depth >= 0.10 m; null where WorldPop is NoData."
+            },
+            "roads_blocked_km": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "wards_affected": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "peak_time_utc": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            }
+          }
+        },
+        "SimulationRun": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "state",
+            "mode",
+            "source_mode",
+            "created_at",
+            "frames",
+            "provenance"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "queued",
+                "running",
+                "completed",
+                "failed"
+              ]
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "event",
+                "custom",
+                "forecast",
+                "what_if"
+              ]
+            },
+            "request": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationRequest"
+            },
+            "source_mode": {
+              "const": "SIMULATED"
+            },
+            "label": {
+              "type": "string",
+              "description": "Short display label, e.g. 'Dec 2015 event (simulated)'."
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "completed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "progress_pct": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100
+            },
+            "error": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "grid": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/GridSpec"
+            },
+            "frame_interval_minutes": {
+              "type": "integer"
+            },
+            "frames": {
+              "type": "array",
+              "items": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/Frame"
+              }
+            },
+            "summary": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationSummary"
+            },
+            "provenance": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/Provenance"
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5,
+              "description": "Short thesis-style limitations; the UI shows only the DEMO / SIMULATION badge."
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "state": "completed",
+            "mode": "event",
+            "source_mode": "SIMULATED",
+            "label": "Dec 2015 event (simulated)",
+            "created_at": "2026-11-07T06:30:00Z",
+            "completed_at": "2026-11-07T06:34:10Z",
+            "progress_pct": 100,
+            "error": null,
+            "frame_interval_minutes": 30,
+            "frames": [
+              {
+                "index": 0,
+                "valid_time_utc": "2015-12-01T00:00:00Z",
+                "elapsed_minutes": 0
+              },
+              {
+                "index": 1,
+                "valid_time_utc": "2015-12-01T00:30:00Z",
+                "elapsed_minutes": 30
+              }
+            ],
+            "summary": {
+              "max_depth_m": 2.41,
+              "flooded_area_km2": 61.3,
+              "buildings_affected": 48210,
+              "population_exposed": 912000,
+              "roads_blocked_km": 182.4,
+              "wards_affected": 117,
+              "peak_time_utc": "2015-12-02T03:00:00Z"
+            },
+            "provenance": {
+              "engine_version": "twinguard-flood-engine/2.0.0",
+              "run_id": "sim-20261107T063000Z-3fa9c2d1",
+              "forcing_sha256": "9f2c...e1",
+              "static_assets_version": "a25_static_v1",
+              "inputs": [
+                {
+                  "name": "rainfall",
+                  "source": "open-meteo:ecmwf_ifs025",
+                  "source_mode": "MODEL_FORECAST",
+                  "fetched_at": "2026-11-07T06:29:41Z",
+                  "sha256": "41aa...07"
+                }
+              ]
+            },
+            "limitations": [
+              "Simplified 2D model without a storm-drain network.",
+              "Building heights partly estimated."
+            ]
+          }
+        },
+        "SimulationList": {
+          "type": "object",
+          "required": [
+            "runs"
+          ],
+          "properties": {
+            "runs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationRun"
+              }
+            },
+            "next_cursor": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "DepthFrame": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "unit",
+            "rows",
+            "cols",
+            "grid",
+            "values"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "frame_index": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "null = peak (max over time)."
+            },
+            "valid_time_utc": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "unit": {
+              "const": "m"
+            },
+            "layer": {
+              "type": "string",
+              "enum": [
+                "depth_mean",
+                "depth_p05",
+                "depth_p95",
+                "velocity_mps"
+              ],
+              "default": "depth_mean"
+            },
+            "rows": {
+              "type": "integer"
+            },
+            "cols": {
+              "type": "integer"
+            },
+            "grid": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/GridSpec"
+            },
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                }
+              },
+              "description": "Row-major, north row first, rounded to 0.01 m. null = outside model domain (not dry); 0 = dry."
+            },
+            "max_value": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "frame_index": 12,
+            "valid_time_utc": "2015-12-01T06:00:00Z",
+            "unit": "m",
+            "layer": "depth_mean",
+            "rows": 2,
+            "cols": 3,
+            "grid": {
+              "crs": "EPSG:32644",
+              "origin_x_m": 395000.0,
+              "origin_y_m": 1468000.0,
+              "cell_size_m": 100,
+              "rows": 2,
+              "cols": 3,
+              "bbox_wgs84": [
+                80.005,
+                12.852,
+                80.008,
+                12.854
+              ]
+            },
+            "values": [
+              [
+                0.0,
+                0.12,
+                null
+              ],
+              [
+                0.35,
+                1.04,
+                0.0
+              ]
+            ],
+            "max_value": 1.04
+          }
+        },
+        "BuildingDepth": {
+          "type": "object",
+          "required": [
+            "building_id",
+            "max_depth_m",
+            "depth_class"
+          ],
+          "properties": {
+            "building_id": {
+              "type": "string",
+              "description": "OSM element id, e.g. 'way/123456'."
+            },
+            "centroid": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
+            },
+            "ward_id": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 200
+            },
+            "height_m": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "height_source": {
+              "type": "string",
+              "enum": [
+                "osm_height",
+                "osm_levels",
+                "estimated"
+              ]
+            },
+            "max_depth_m": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "null = footprint outside model domain."
+            },
+            "time_of_max_utc": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "depth_class": {
+              "type": "string",
+              "enum": [
+                "dry",
+                "lt_0_15",
+                "0_15_to_0_5",
+                "0_5_to_1_0",
+                "gt_1_0",
+                "unknown"
+              ]
+            }
+          }
+        },
+        "BuildingDepthPage": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "count",
+            "buildings"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "frame_index": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "count": {
+              "type": "integer"
+            },
+            "total": {
+              "type": "integer"
+            },
+            "buildings": {
+              "type": "array",
+              "items": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/BuildingDepth"
+              }
+            },
+            "next_cursor": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "frame_index": null,
+            "count": 1,
+            "total": 382294,
+            "buildings": [
+              {
+                "building_id": "way/226871094",
+                "centroid": {
+                  "lon": 80.2209,
+                  "lat": 12.9815
+                },
+                "ward_id": 177,
+                "height_m": 9.0,
+                "height_source": "osm_levels",
+                "max_depth_m": 0.82,
+                "time_of_max_utc": "2015-12-02T03:00:00Z",
+                "depth_class": "0_5_to_1_0"
+              }
+            ],
+            "next_cursor": "b:1000"
+          }
+        },
+        "WardSummary": {
+          "type": "object",
+          "required": [
+            "ward_id",
+            "ward_name",
+            "risk_level"
+          ],
+          "properties": {
+            "ward_id": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "ward_name": {
+              "type": "string"
+            },
+            "zone": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "max_depth_m": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "mean_flooded_depth_m": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "flooded_area_km2": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "flooded_fraction": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "buildings_affected": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "population_exposed": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "roads_blocked_km": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "shelters_reachable": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "risk_level": {
+              "type": "string",
+              "enum": [
+                "low",
+                "moderate",
+                "high",
+                "severe"
+              ],
+              "description": "Display class from max depth and flooded fraction; thresholds documented by Lane A."
+            }
+          }
+        },
+        "WardSummaryList": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "wards"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "frame_index": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "source_mode": {
+              "const": "SIMULATED"
+            },
+            "wards": {
+              "type": "array",
+              "items": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/WardSummary"
+              }
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "frame_index": null,
+            "source_mode": "SIMULATED",
+            "wards": [
+              {
+                "ward_id": 177,
+                "ward_name": "Velachery",
+                "zone": "XIII Adyar",
+                "max_depth_m": 1.9,
+                "mean_flooded_depth_m": 0.64,
+                "flooded_area_km2": 3.1,
+                "flooded_fraction": 0.42,
+                "buildings_affected": 6120,
+                "population_exposed": 58300,
+                "roads_blocked_km": 14.2,
+                "shelters_reachable": 3,
+                "risk_level": "severe"
+              }
+            ]
+          }
+        },
+        "RoadFeatureCollection": {
+          "type": "object",
+          "required": [
+            "type",
+            "features"
+          ],
+          "description": "GeoJSON (RFC 7946, WGS84). Edge state follows the A21 three-state rule.",
+          "properties": {
+            "type": {
+              "const": "FeatureCollection"
+            },
+            "run_id": {
+              "type": "string"
+            },
+            "frame_index": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "Feature"
+                  },
+                  "geometry": {
+                    "type": "object"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "required": [
+                      "edge_id",
+                      "state"
+                    ],
+                    "properties": {
+                      "edge_id": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string",
+                        "enum": [
+                          "ASSESSED_PASSABLE",
+                          "ASSESSED_BLOCKED",
+                          "UNKNOWN"
+                        ]
+                      },
+                      "unknown_reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "depth_m": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0
+                      },
+                      "speed_factor": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "road_class": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "example": {
+            "type": "FeatureCollection",
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "frame_index": 12,
+            "features": [
+              {
+                "type": "Feature",
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      80.2201,
+                      12.9801
+                    ],
+                    [
+                      80.2215,
+                      12.9822
+                    ]
+                  ]
+                },
+                "properties": {
+                  "edge_id": "e:118822",
+                  "state": "ASSESSED_BLOCKED",
+                  "unknown_reason": null,
+                  "depth_m": 0.46,
+                  "speed_factor": 0.0,
+                  "road_class": "primary"
+                }
+              }
+            ]
+          }
+        },
+        "RouteRequest": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "origin",
+            "destination"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "frame_index": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "null = peak."
+            },
+            "origin": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
+            },
+            "destination": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
+            },
+            "policy": {
+              "type": "string",
+              "enum": [
+                "avoid_blocked",
+                "avoid_blocked_and_unknown",
+                "shortest_dry"
+              ],
+              "default": "avoid_blocked"
+            },
+            "profile": {
+              "type": "string",
+              "enum": [
+                "car",
+                "emergency_vehicle",
+                "walk"
+              ],
+              "default": "car"
+            },
+            "blocked_depth_threshold_m": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1.0,
+              "default": 0.3
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "frame_index": 12,
+            "origin": {
+              "lon": 80.2209,
+              "lat": 12.9815
+            },
+            "destination": {
+              "lon": 80.2707,
+              "lat": 13.0827
+            },
+            "policy": "avoid_blocked",
+            "profile": "car",
+            "blocked_depth_threshold_m": 0.3
+          }
+        },
+        "RouteOption": {
+          "type": "object",
+          "required": [
+            "policy",
+            "route_status",
+            "distance_m",
+            "travel_time_s",
+            "geometry"
+          ],
+          "properties": {
+            "policy": {
+              "type": "string"
+            },
+            "route_status": {
+              "type": "string",
+              "enum": [
+                "ASSESSED_PASSABLE",
+                "CONDITIONAL",
+                "NO_ROUTE"
+              ],
+              "description": "CONDITIONAL = uses >=1 UNKNOWN edge (needs verification)."
+            },
+            "distance_m": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "travel_time_s": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "geometry": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "GeoJSON LineString, WGS84."
+            },
+            "length_by_state_m": {
+              "type": "object",
+              "properties": {
+                "ASSESSED_PASSABLE": {
+                  "type": "number"
+                },
+                "ASSESSED_BLOCKED": {
+                  "type": "number"
+                },
+                "UNKNOWN": {
+                  "type": "number"
+                }
+              }
+            },
+            "max_depth_on_route_m": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            }
+          }
+        },
+        "RouteResponse": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "status",
+            "routes",
+            "source_mode"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "frame_index": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "found",
+                "no_route",
+                "origin_unreachable",
+                "destination_unreachable"
+              ]
+            },
+            "routes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/RouteOption"
+              }
+            },
+            "dry_baseline": {
+              "oneOf": [
+                {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/RouteOption"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Same OD with no flooding, for comparison."
+            },
+            "source_mode": {
+              "const": "SIMULATED"
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "frame_index": 12,
+            "status": "found",
+            "source_mode": "SIMULATED",
+            "routes": [
+              {
+                "policy": "avoid_blocked",
+                "route_status": "CONDITIONAL",
+                "distance_m": 14820.0,
+                "travel_time_s": 1980.0,
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      80.2209,
+                      12.9815
+                    ],
+                    [
+                      80.245,
+                      13.03
+                    ],
+                    [
+                      80.2707,
+                      13.0827
+                    ]
+                  ]
+                },
+                "length_by_state_m": {
+                  "ASSESSED_PASSABLE": 13900.0,
+                  "ASSESSED_BLOCKED": 0.0,
+                  "UNKNOWN": 920.0
+                },
+                "max_depth_on_route_m": 0.12
+              }
+            ],
+            "dry_baseline": {
+              "policy": "shortest_dry",
+              "route_status": "ASSESSED_PASSABLE",
+              "distance_m": 12610.0,
+              "travel_time_s": 1500.0,
+              "geometry": null,
+              "length_by_state_m": {
+                "ASSESSED_PASSABLE": 12610.0,
+                "ASSESSED_BLOCKED": 0.0,
+                "UNKNOWN": 0.0
+              },
+              "max_depth_on_route_m": 0.0
+            }
+          }
+        },
+        "Shelter": {
+          "type": "object",
+          "required": [
+            "shelter_id",
+            "name",
+            "category",
+            "location",
+            "capacity_people",
+            "capacity_source",
+            "reachable"
+          ],
+          "properties": {
+            "shelter_id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "shelter",
+                "school",
+                "college",
+                "community_hall"
+              ]
+            },
+            "location": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
+            },
+            "ward_id": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "capacity_people": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "capacity_source": {
+              "type": "string",
+              "enum": [
+                "assumed",
+                "scenario_input",
+                "published"
+              ]
+            },
+            "site_max_depth_m": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "reachable": {
+              "type": "boolean",
+              "description": "Site dry (< 0.15 m) and connected by assessed-passable roads to assigned demand."
+            },
+            "assigned_population": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "utilisation_pct": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            }
+          }
+        },
+        "ShelterReport": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "shelters",
+            "totals",
+            "source_mode"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "frame_index": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "source_mode": {
+              "const": "SIMULATED"
+            },
+            "capacity_factor": {
+              "type": "number",
+              "default": 1.0
+            },
+            "shelters": {
+              "type": "array",
+              "items": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/Shelter"
+              }
+            },
+            "totals": {
+              "type": "object",
+              "properties": {
+                "demand_people": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "served_people": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "unserved_people": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "unreachable_people": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "reachable_shelters": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "frame_index": null,
+            "source_mode": "SIMULATED",
+            "capacity_factor": 1.0,
+            "shelters": [
+              {
+                "shelter_id": "osm:node/5523011",
+                "name": "Govt Hr Sec School, Velachery",
+                "category": "school",
+                "location": {
+                  "lon": 80.2188,
+                  "lat": 12.979
+                },
+                "ward_id": 177,
+                "capacity_people": 250,
+                "capacity_source": "assumed",
+                "site_max_depth_m": 0.05,
+                "reachable": true,
+                "assigned_population": 250,
+                "utilisation_pct": 100.0
+              }
+            ],
+            "totals": {
+              "demand_people": 912000,
+              "served_people": 216950,
+              "unserved_people": 695050,
+              "unreachable_people": 120400,
+              "reachable_shelters": 512
+            }
+          }
+        },
+        "Incident": {
+          "type": "object",
+          "required": [
+            "incident_id",
+            "generated",
+            "type",
+            "severity",
+            "location",
+            "valid_time_utc"
+          ],
+          "properties": {
+            "incident_id": {
+              "type": "string"
+            },
+            "generated": {
+              "const": true
+            },
+            "generated_from": {
+              "const": "simulation"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "building_flooding",
+                "road_blocked",
+                "shelter_unreachable",
+                "population_cut_off",
+                "reservoir_release"
+              ]
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "info",
+                "watch",
+                "warning",
+                "critical"
+              ]
+            },
+            "ward_id": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "location": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
+            },
+            "valid_time_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "title": {
+              "type": "string"
+            },
+            "metrics": {
+              "type": "object",
+              "additionalProperties": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "IncidentList": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "incidents",
+            "source_mode"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "source_mode": {
+              "const": "SIMULATED"
+            },
+            "incidents": {
+              "type": "array",
+              "items": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/Incident"
+              }
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "source_mode": "SIMULATED",
+            "incidents": [
+              {
+                "incident_id": "inc-0001",
+                "generated": true,
+                "generated_from": "simulation",
+                "type": "building_flooding",
+                "severity": "critical",
+                "ward_id": 177,
+                "location": {
+                  "lon": 80.2209,
+                  "lat": 12.9815
+                },
+                "valid_time_utc": "2015-12-02T03:00:00Z",
+                "title": "Simulated: 1,240 buildings > 0.5 m in Velachery",
+                "metrics": {
+                  "buildings_gt_0_5m": 1240,
+                  "max_depth_m": 1.9
+                }
+              }
+            ]
+          }
+        },
+        "Resource": {
+          "type": "object",
+          "required": [
+            "resource_id",
+            "type",
+            "count",
+            "base"
+          ],
+          "properties": {
+            "resource_id": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "boat",
+                "rescue_team",
+                "vehicle",
+                "ambulance",
+                "pump"
+              ]
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 500
+            },
+            "base": {
+              "type": "object",
+              "required": [
+                "name",
+                "location"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "location": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
+                }
+              }
+            },
+            "source_mode": {
+              "const": "SCENARIO_INPUT"
+            }
+          }
+        },
+        "ResourceSet": {
+          "type": "object",
+          "required": [
+            "resources"
+          ],
+          "properties": {
+            "version": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Optimistic-concurrency version; PUT must echo it."
+            },
+            "updated_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "resources": {
+              "type": "array",
+              "maxItems": 200,
+              "items": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/Resource"
+              }
+            }
+          },
+          "example": {
+            "version": 3,
+            "updated_at": "2026-11-07T06:00:00Z",
+            "resources": [
+              {
+                "resource_id": "boat-ndrf-1",
+                "type": "boat",
+                "count": 12,
+                "base": {
+                  "name": "Guindy staging",
+                  "location": {
+                    "lon": 80.2206,
+                    "lat": 13.0067
+                  }
+                },
+                "source_mode": "SCENARIO_INPUT"
+              }
+            ]
+          }
+        },
+        "EmergencyPlan": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "assignments",
+            "source_mode"
+          ],
+          "description": "Greedy nearest-resource assignment of scenario resources to generated incidents. Decision-support demo, not dispatch.",
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "frame_index": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "source_mode": {
+              "const": "SIMULATED"
+            },
+            "resource_set_version": {
+              "type": "integer"
+            },
+            "assignments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "incident_id",
+                  "resource_id",
+                  "units"
+                ],
+                "properties": {
+                  "incident_id": {
+                    "type": "string"
+                  },
+                  "resource_id": {
+                    "type": "string"
+                  },
+                  "units": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "eta_s": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "route_status": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            },
+            "unassigned_incidents": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "frame_index": 12,
+            "source_mode": "SIMULATED",
+            "resource_set_version": 3,
+            "assignments": [
+              {
+                "incident_id": "inc-0001",
+                "resource_id": "boat-ndrf-1",
+                "units": 4,
+                "eta_s": 1260.0,
+                "route_status": "CONDITIONAL"
+              }
+            ],
+            "unassigned_incidents": []
+          }
+        },
+        "Comparison": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "baseline_run_id",
+            "delta"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "baseline_run_id": {
+              "type": "string"
+            },
+            "modifiers": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/WhatIfModifiers"
+            },
+            "delta": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationSummary"
+            },
+            "ward_changes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ward_id": {
+                    "type": "integer"
+                  },
+                  "max_depth_change_m": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "risk_level_before": {
+                    "type": "string"
+                  },
+                  "risk_level_after": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "example": {
+            "run_id": "whatif-20261107T064500Z-77d0e1aa",
+            "baseline_run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "modifiers": {
+              "base_run_id": "sim-20261107T063000Z-3fa9c2d1",
+              "rainfall_scale_pct": 130,
+              "tide_offset_m": 0.5
+            },
+            "delta": {
+              "max_depth_m": 0.38,
+              "flooded_area_km2": 14.2,
+              "buildings_affected": 9120,
+              "population_exposed": 151000,
+              "roads_blocked_km": 41.0,
+              "wards_affected": 19,
+              "peak_time_utc": null
+            },
+            "ward_changes": [
+              {
+                "ward_id": 177,
+                "max_depth_change_m": 0.31,
+                "risk_level_before": "high",
+                "risk_level_after": "severe"
+              }
+            ]
+          }
+        },
+        "Event": {
+          "type": "object",
+          "required": [
+            "event_key",
+            "label",
+            "start_utc",
+            "end_utc"
+          ],
+          "properties": {
+            "event_key": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "start_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "end_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "rainfall_source": {
+              "type": "string"
+            },
+            "source_mode": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/SourceMode"
+            }
+          }
+        },
+        "EventList": {
+          "type": "object",
+          "required": [
+            "events"
+          ],
+          "properties": {
+            "events": {
+              "type": "array",
+              "items": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/Event"
+              }
+            }
+          },
+          "example": {
+            "events": [
+              {
+                "event_key": "2015-12-01",
+                "label": "Chennai floods, Dec 2015",
+                "start_utc": "2015-11-30T00:00:00Z",
+                "end_utc": "2015-12-03T00:00:00Z",
+                "rainfall_source": "GPM IMERG daily, ERA5 hourly shape",
+                "source_mode": "REPLAY"
+              }
+            ]
+          }
+        },
+        "Weather": {
+          "type": "object",
+          "required": [
+            "provider",
+            "fetched_at",
+            "min_refresh_interval_s",
+            "source_mode",
+            "attribution"
+          ],
+          "properties": {
+            "provider": {
+              "const": "open-meteo"
+            },
+            "model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fetched_at": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Actual retrieval time; the provider does not supply model issue time."
+            },
+            "cache_age_s": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "min_refresh_interval_s": {
+              "type": "integer",
+              "minimum": 600
+            },
+            "location": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
+            },
+            "current": {
+              "type": "object",
+              "properties": {
+                "temperature_c": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "precipitation_mm": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "relative_humidity_pct": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "wind_speed_kmh": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "hourly": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "time_utc": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "precipitation_mm": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "precipitation_probability_pct": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 100
+                  }
+                }
+              }
+            },
+            "source_mode": {
+              "const": "MODEL_FORECAST"
+            },
+            "attribution": {
+              "type": "string"
+            }
+          },
+          "example": {
+            "provider": "open-meteo",
+            "model": "best_match",
+            "fetched_at": "2026-11-07T06:29:41Z",
+            "cache_age_s": 188,
+            "min_refresh_interval_s": 600,
+            "location": {
+              "lon": 80.2707,
+              "lat": 13.0827
+            },
+            "current": {
+              "temperature_c": 27.4,
+              "precipitation_mm": 1.2,
+              "relative_humidity_pct": 86,
+              "wind_speed_kmh": 14.0
+            },
+            "hourly": [
+              {
+                "time_utc": "2026-11-07T07:00:00Z",
+                "precipitation_mm": 2.3,
+                "precipitation_probability_pct": 70
+              }
+            ],
+            "source_mode": "MODEL_FORECAST",
+            "attribution": "Weather data by Open-Meteo.com (CC BY 4.0)"
+          }
+        },
+        "Overview": {
+          "type": "object",
+          "required": [
+            "generated_at",
+            "badge"
+          ],
+          "properties": {
+            "generated_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "badge": {
+              "const": "DEMO / SIMULATION"
+            },
+            "latest_run": {
+              "oneOf": [
+                {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationRun"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "weather": {
+              "oneOf": [
+                {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/Weather"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reservoirs": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Latest row from GET /reservoirs/history (CR-017), PUBLISHED_SNAPSHOT."
+            },
+            "incident_counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "top_wards": {
+              "type": "array",
+              "maxItems": 10,
+              "items": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/WardSummary"
+              }
+            }
+          },
+          "example": {
+            "generated_at": "2026-11-07T06:35:00Z",
+            "badge": "DEMO / SIMULATION",
+            "latest_run": null,
+            "weather": null,
+            "reservoirs": null,
+            "incident_counts": {
+              "critical": 4,
+              "warning": 17,
+              "watch": 33
+            },
+            "top_wards": []
+          }
+        },
+        "EngineStatus": {
+          "type": "object",
+          "required": [
+            "engine_version",
+            "static_available",
+            "running"
+          ],
+          "properties": {
+            "engine_version": {
+              "type": "string"
+            },
+            "static_available": {
+              "type": "boolean"
+            },
+            "running": {
+              "type": "boolean"
+            },
+            "running_run_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "queue_length": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "last_completed_run_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "weather_min_refresh_interval_s": {
+              "type": "integer"
+            },
+            "weather_next_fetch_allowed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            }
+          },
+          "example": {
+            "engine_version": "twinguard-flood-engine/2.0.0",
+            "static_available": true,
+            "running": false,
+            "running_run_id": null,
+            "queue_length": 0,
+            "last_completed_run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "weather_min_refresh_interval_s": 600,
+            "weather_next_fetch_allowed_at": "2026-11-07T06:39:41Z"
+          }
+        },
+        "StaticFeatureCollection": {
+          "type": "object",
+          "required": [
+            "type",
+            "features"
+          ],
+          "description": "GeoJSON FeatureCollection (WGS84). Wards: properties ward_id, ward_name, zone. Buildings: building_id, height_m, height_source, ward_id. Shelters: shelter_id, name, category, capacity_people, capacity_source.",
+          "properties": {
+            "type": {
+              "const": "FeatureCollection"
+            },
+            "layer": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "source_mode": {
+              "const": "STATIC_REFERENCE"
+            },
+            "attribution": {
+              "type": "string"
+            },
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "next_cursor": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "example": {
+            "type": "FeatureCollection",
+            "layer": "wards",
+            "source": "GCC 200-ward boundary (open data)",
+            "source_mode": "STATIC_REFERENCE",
+            "attribution": "Greater Chennai Corporation open data",
+            "next_cursor": null,
+            "features": [
+              {
+                "type": "Feature",
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [
+                      [
+                        80.21,
+                        12.97
+                      ],
+                      [
+                        80.23,
+                        12.97
+                      ],
+                      [
+                        80.23,
+                        12.99
+                      ],
+                      [
+                        80.21,
+                        12.97
+                      ]
+                    ]
+                  ]
+                },
+                "properties": {
+                  "ward_id": 177,
+                  "ward_name": "Velachery",
+                  "zone": "XIII Adyar"
+                }
+              }
+            ]
           }
         }
       }

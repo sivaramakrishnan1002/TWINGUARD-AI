@@ -16,11 +16,12 @@
 
 ## Ready tasks by lane A
 
-- **A24 — G4 repair: versioned shelter-allocation result schema and A05 forecast artifact selector evidence** (ready)
+- **A25 — High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards)** (ready)
 
 ## Ready tasks by lane B
 
-- None.
+- **B47 — Simulation and decision API (C4 v3)** (ready)
+- **B48 — Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session** (ready)
 
 ## Ready tasks by lane I
 
@@ -35,12 +36,10 @@
 - **M8 — Mentor review dates** (blocked_manual)
 - **B40 — Implement authorized IMD rainfall/weather connector** (blocked_prerequisite)
 - **B42 — Prove observation-triggered recomputation through API and UI** (blocked_prerequisite)
-- **I26 — G4 repair: CR-019 additive read-only forecast and shelter API projection** (blocked_prerequisite)
-- **B46 — G4 repair: mount read-only saved forecast and shelter-allocation endpoints** (blocked_prerequisite)
 
 ## Running tasks
 
-- **A23 — Assess spatial Open-Meteo rainfall forcing over A06 domain** (running)
+- None.
 
 ## Next gate
 

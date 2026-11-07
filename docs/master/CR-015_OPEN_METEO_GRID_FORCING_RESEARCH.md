@@ -22,3 +22,7 @@
 ## Decision scope
 
 This CR authorizes only the bounded Open-Meteo data retrieval and retention above and, conditionally, one research-only A23 run after its feasibility gate passes. It does not establish that Open-Meteo's product is spatially or temporally suitable, that A06 is validated, or that the experiment will produce interpretable flood outputs. A23 must stop without flood outputs if any required mapping or physical assumption is unsupported.
+
+## Post-run note — 2026-11-07
+
+Besides the retained snapshot, A23 disclosed 11 two-point model probes and one 0.03° four-model trial (GFS returned HTTP 429). These responses were not retained or used; see `docs/PHASE12_OPEN_METEO_GRID_FEASIBILITY.md` item 5. This CR's one-snapshot limit is superseded by OD-2026-11-07 item 7 and CR-019: on-demand cached fetches, 600 s minimum interval, no background polling.

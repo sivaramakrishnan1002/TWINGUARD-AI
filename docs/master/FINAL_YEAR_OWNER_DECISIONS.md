@@ -30,3 +30,34 @@ For each D1–D11, record `approved`, `rejected`, or `deferred`; decision-maker 
 - **D3 remains deferred:** no reservoir source selected or authorized.
 
 See [CR-014](CR-014_OPEN_METEO_WEATHER_CONTEXT.md) for endpoint fields, timestamp meanings, terms, evidence, and exclusions. The project owner authorized this limited source/use in the instruction “okay proceed with open metro source.”
+
+## OD-2026-11-07 — Bachelor's final-year product rebaseline (recorded 2026-11-07)
+
+**Decision-maker:** project owner, relayed through the coordinator session. Recorded by the Integrator. Implemented under [CR-019](CR-019_PRODUCT_REBASELINE_UI_API.md).
+
+1. **Project scope:** TwinGuard is a bachelor's final-year project. It is not an operational or research-grade service.
+2. **Target product:** the owner's 13 reference UI images, as 7 tabs in a dark control-room style: 1 Situation Overview, 2 Flood Simulation, 3 Emergency Support, 4 Road Routing, 5 What-if Simulation, 6 Reservoir Monitoring, 7 Digital Twin 3D City.
+3. **3D:** Google Photorealistic 3D Tiles through CesiumJS.
+   - The owner supplies the Map Tiles API key in `frontend/.env.local` as `VITE_GOOGLE_MAPS_API_KEY`. It is never committed (git-ignored via `*.local`), and no API endpoint returns or accepts it.
+   - Internet access at demo time is acceptable.
+   - Google attribution and the Google logo must stay visible, as Google's terms require.
+4. **Caveat policy (relaxed):**
+   - `done_with_caveats` counts as done.
+   - The UI shows one small "DEMO / SIMULATION" badge instead of long limitation text. There are no "unproven/not validated" banners on every card.
+   - Reports keep only a short Limitations section for the thesis. Earlier gate reports remain as historical evidence.
+5. **Still binding:**
+   - No fabricated value may be shown as observed. Every result carries a `source_mode`.
+   - Emergency resources (boats, teams, vehicles) are owner-set scenario inputs (`SCENARIO_INPUT`).
+   - Incidents and alerts are generated from simulation results and labelled as generated.
+6. **Novelty claim (thesis wording):** "an integrated rainfall + reservoir → flood simulation → 3D digital twin → impact, three-state routing and shelter decision pipeline with what-if scenarios for Chennai" is the project's contribution. This supersedes D10's pending literature-review gate for thesis wording.
+7. **Open-Meteo retrieval:** this replaces CR-015's "one snapshot, no polling" limit.
+   - On-demand Open-Meteo fetches are allowed for user-triggered runs, with response caching and a minimum interval of 600 s (10 min).
+   - There is no background polling.
+   - Published Open-Meteo terms, CC BY 4.0 attribution and rate limits still apply.
+
+**Follow-up tasks:**
+- A25: high-resolution simulation for 3D (Lane A).
+- B47: simulation and decision API (Lane B).
+- B48: reference-design UI with Google 3D Tiles (ui session).
+- The G4 repair chain A24/I26/B46 is superseded.
+- Contract: C4 v3 in `docs/api/ai-service.yaml` § `x-c4-v3-product-api`, summarised in `contracts/c4_openapi_v3.md`.

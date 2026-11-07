@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T12:19:31+0530",
+  "updated_at": "2026-11-07",
   "tasks": [
     {
       "id": "F1",
@@ -6090,7 +6090,7 @@
       "lane": "A",
       "title": "G4 repair: versioned shelter-allocation result schema and A05 forecast artifact selector evidence",
       "phase": "A",
-      "status": "ready",
+      "status": "parked",
       "depends_on": [
         "A05",
         "A10"
@@ -6119,7 +6119,8 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-07 Registered by Integrator as a G4 repair task (docs/master/GATE_G4_REPORT.md, criterion G4.4 FAIL: forecast operations are HTTP 501 and no shelter API exists)."
+        "2026-11-07 Registered by Integrator as a G4 repair task (docs/master/GATE_G4_REPORT.md, criterion G4.4 FAIL: forecast operations are HTTP 501 and no shelter API exists).",
+        "2026-11-07 Superseded by OD-2026-11-07 / CR-019: the forecast and shelter API is folded into B47 (C4 v3 POST /v3/simulations and GET /v3/simulations/{run_id}/shelters), with Lane A data in A25. Parked, not cancelled; no work started."
       ]
     },
     {
@@ -6127,7 +6128,7 @@
       "lane": "I",
       "title": "G4 repair: CR-019 additive read-only forecast and shelter API projection",
       "phase": "I",
-      "status": "blocked_prerequisite",
+      "status": "parked",
       "depends_on": [
         "A24"
       ],
@@ -6155,7 +6156,8 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-07 Registered by Integrator as a G4 repair task (docs/master/GATE_G4_REPORT.md, criterion G4.4 FAIL: forecast operations are HTTP 501 and no shelter API exists)."
+        "2026-11-07 Registered by Integrator as a G4 repair task (docs/master/GATE_G4_REPORT.md, criterion G4.4 FAIL: forecast operations are HTTP 501 and no shelter API exists).",
+        "2026-11-07 Superseded by OD-2026-11-07 / CR-019: the forecast and shelter API is folded into B47 (C4 v3 POST /v3/simulations and GET /v3/simulations/{run_id}/shelters), with Lane A data in A25. Parked, not cancelled; no work started."
       ]
     },
     {
@@ -6163,7 +6165,7 @@
       "lane": "B",
       "title": "G4 repair: mount read-only saved forecast and shelter-allocation endpoints",
       "phase": "B",
-      "status": "blocked_prerequisite",
+      "status": "parked",
       "depends_on": [
         "I26",
         "A24",
@@ -6192,7 +6194,142 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-07 Registered by Integrator as a G4 repair task (docs/master/GATE_G4_REPORT.md, criterion G4.4 FAIL: forecast operations are HTTP 501 and no shelter API exists)."
+        "2026-11-07 Registered by Integrator as a G4 repair task (docs/master/GATE_G4_REPORT.md, criterion G4.4 FAIL: forecast operations are HTTP 501 and no shelter API exists).",
+        "2026-11-07 Superseded by OD-2026-11-07 / CR-019: the forecast and shelter API is folded into B47 (C4 v3 POST /v3/simulations and GET /v3/simulations/{run_id}/shelters), with Lane A data in A25. Parked, not cancelled; no work started."
+      ]
+    },
+    {
+      "id": "A25",
+      "lane": "A",
+      "title": "High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards)",
+      "phase": "A",
+      "status": "ready",
+      "depends_on": [
+        "A23",
+        "A10",
+        "A21"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/api/ai-service.yaml",
+        "docs/master/contracts/c4_openapi_v3.md",
+        "docs/master/CR-019_PRODUCT_REBASELINE_UI_API.md"
+      ],
+      "outputs": [
+        "pipelines/",
+        "services/flood_engine/",
+        "data/features/",
+        "tests/flood_engine/"
+      ],
+      "acceptance": [
+        "Rerun services/flood_engine citywide at 90-120 m and at 30 m for four focus areas (VELACHERY, ADYAR, T_NAGAR, PORUR) for the saved events (2015-12-01, 2021-11-11, 2023-12-03) and custom/what-if forcing (rainfall %, reservoir release m3/s, tide offset m). Mass balance <= 1% and finite non-negative depths.",
+        "Write time-series outputs every 15-30 min suitable for animation, in versioned folders under data/features/, with the frame/valid-time index and EPSG:32644 grid spec matching the C4 v3 GridSpec/DepthFrame schemas.",
+        "Produce per-building max depth and time of max for the 382,294 OSM footprints. Building heights come from OSM height or building:levels tags, otherwise estimated (height_source recorded).",
+        "Acquire the open GCC 200-ward boundary GeoJSON with source/licence/hash recorded and produce per-ward summaries matching C4 v3 WardSummary (risk_level thresholds documented).",
+        "Recompute three-state road edges (ASSESSED_PASSABLE/ASSESSED_BLOCKED/UNKNOWN, A21 rule) and shelter reachability per frame for B47 to serve. Static assets go to a versioned bundle (e.g. data/features/live/a25_static_v1/).",
+        "Keep data/raw read-only and raw audit 157/157; never overwrite prior outputs; focused tests; short Limitations section only."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": true,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths."
+      ]
+    },
+    {
+      "id": "B47",
+      "lane": "B",
+      "title": "Simulation and decision API (C4 v3)",
+      "phase": "B",
+      "status": "ready",
+      "depends_on": [
+        "B08",
+        "B44",
+        "B45"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/api/ai-service.yaml",
+        "docs/master/contracts/c4_openapi_v3.md",
+        "docs/master/CR-019_PRODUCT_REBASELINE_UI_API.md"
+      ],
+      "outputs": [
+        "services/ai-service/",
+        "services/backend/",
+        "docker-compose.yml",
+        "docker-compose.b11.yml",
+        "docker/",
+        "tests/ai_service/",
+        "tests/packaging/"
+      ],
+      "acceptance": [
+        "Implement the C4 v3 operations in docs/api/ai-service.yaml x-c4-v3-product-api exactly (paths, field names, units, enums, error codes), building on the draft services/ai-service/app/live/router.py and folding /live/* into /v3.",
+        "Covers run simulation (event, custom rainfall, forecast), what-if (rainfall %, reservoir release, tide), depth frames, buildings, wards, three-state roads, route search from->to, shelter reachability, incidents (generated=true), scenario resources (SCENARIO_INPUT), emergency plan, comparison, weather, overview and status. Tab 6 reuses GET /reservoirs/history.",
+        "Open-Meteo: on-demand only for user-triggered runs, response caching, 600 s minimum interval (429 with Retry-After), no background polling; keep TWINGUARD_LIVE_SCHEDULE_MIN=0.",
+        "Until A25 outputs exist, serve existing A06/A23 outputs or clearly labelled fixtures; switch to A25 bundles when available. Every response carries source_mode; nothing non-observed is labelled observed.",
+        "Move each operation into top-level paths with x-current-runtime-status 200 only when mounted and tested (request the Integrator for the docs/api edit). Package services/flood_engine into the AI image read-only with a writable run store.",
+        "Focused tests per operation (happy path, 404/409/422/429/503), API validator, full suite and raw audit pass. Never return or accept the Google Maps key."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths."
+      ]
+    },
+    {
+      "id": "B48",
+      "lane": "B",
+      "title": "Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) \u2014 ui session",
+      "phase": "B",
+      "status": "ready",
+      "depends_on": [
+        "B45",
+        "B37"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/api/ai-service.yaml",
+        "docs/master/contracts/c4_openapi_v3.md",
+        "docs/master/CR-019_PRODUCT_REBASELINE_UI_API.md"
+      ],
+      "outputs": [
+        "frontend/",
+        "tests/ui/",
+        "tools/ui/",
+        "docs/ui/",
+        ".gitignore"
+      ],
+      "acceptance": [
+        "Rebuild all 7 tabs (Situation Overview, Flood Simulation, Emergency Support, Road Routing, What-if Simulation, Reservoir Monitoring, Digital Twin 3D City) to the owner's 13 reference images in a dark control-room style.",
+        "3D with CesiumJS and Google Photorealistic 3D Tiles using VITE_GOOGLE_MAPS_API_KEY from frontend/.env.local. The key is never committed (.gitignore *.local verified) and never sent to the TwinGuard API. Google attribution/logo stays visible.",
+        "Flood depth as a draped/extruded water surface coloured by depth, animated timeline over frames, layer toggles (water, buildings by depth class, wards, roads three-state, shelters, incidents).",
+        "Use saved results first, then the C4 v3 API (same-origin /api/ai/ proxy) exactly as specified in x-c4-v3-product-api. Show a single DEMO / SIMULATION badge; label generated incidents and scenario resources as such; never show a non-observed value as observed.",
+        "Production build and UI tests pass; screenshots of each tab recorded under docs/ui/ or docs/figures/."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths."
       ]
     }
   ],
@@ -6241,7 +6378,7 @@
       "requires": [
         "A05",
         "A10",
-        "B46"
+        "B47"
       ],
       "tests": [],
       "target_day": 25,

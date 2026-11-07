@@ -23,8 +23,8 @@ services:
     image: local/twinguard-b11-ai:0.1.0
     pull_policy: never
     build:
-      context: ./services/ai-service
-      dockerfile: Dockerfile
+      context: ./services
+      dockerfile: ai-service/Dockerfile
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
@@ -50,7 +50,7 @@ services:
         read_only: true
     environment:
       PYTHONDONTWRITEBYTECODE: "1"
-      PYTHONPATH: /app/services/ai-service
+      PYTHONPATH: /app/services/ai-service:/app
     healthcheck:
       test:
         - CMD

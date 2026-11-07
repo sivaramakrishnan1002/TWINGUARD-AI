@@ -73,7 +73,12 @@ def test_backend_mounts_only_a20_scenario_assets_read_only() -> None:
         ("./data/features/forecast/batch2_v1", "/app/data/features/forecast/batch2_v1"),
         ("./data/features/simulation/batch2_v1", "/app/data/features/simulation/batch2_v1"),
     )
-    assert set(backend["environment"]) == {"SERVER_PORT", "TWINGUARD_SCENARIO_PROJECT_ROOT"}
+    assert set(backend["environment"]) == {
+        "SERVER_PORT",
+        "TWINGUARD_SCENARIO_PROJECT_ROOT",
+        "TWINGUARD_B13_ENABLED",
+        "TWINGUARD_B13_AI_BASE_URL",
+    }
 
 
 def test_build_inputs_are_version_pinned_and_do_not_mount_secrets() -> None:

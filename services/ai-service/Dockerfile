@@ -1,7 +1,7 @@
 FROM python:3.12.8-slim-bookworm
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app/services/ai-service
+    PYTHONPATH=/app/services/ai-service:/app
 WORKDIR /app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libexpat1 \
@@ -12,6 +12,7 @@ RUN python -m pip install --no-cache-dir \
     pydantic==2.14.1 \
     rasterio==1.5.2 \
     "psycopg[binary]==3.3.6"
-COPY app /app/services/ai-service/app
+COPY ai-service/app /app/services/ai-service/app
+COPY trackb/connectors/tn_reservoir /app/services/trackb/connectors/tn_reservoir
 EXPOSE 8000
 CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

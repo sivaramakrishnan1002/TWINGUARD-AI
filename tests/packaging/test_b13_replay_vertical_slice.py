@@ -24,9 +24,13 @@ def test_packaged_fixture_and_b11_route_enablement_are_bounded() -> None:
     backend_env = compose["services"]["backend"]["environment"]
     assert backend_env["TWINGUARD_B13_ENABLED"] == "true"
     assert backend_env["TWINGUARD_B13_AI_BASE_URL"] == "http://ai-service:8000"
-    assert compose["services"]["ai-service"]["build"]["context"] == "./services/ai-service"
+    # The bounded services/ build context packages the shared, dependency-free
+    # public reservoir connector without including raw data or the repository.
+    assert compose["services"]["ai-service"]["build"]["context"] == "./services"
+    assert compose["services"]["ai-service"]["build"]["dockerfile"] == "ai-service/Dockerfile"
     dockerfile = (ROOT / "services/ai-service/Dockerfile").read_text(encoding="utf-8")
-    assert "COPY app /app/services/ai-service/app" in dockerfile
+    assert "COPY ai-service/app /app/services/ai-service/app" in dockerfile
+    assert "COPY trackb/connectors/tn_reservoir /app/services/trackb/connectors/tn_reservoir" in dockerfile
     assert fixture_path.is_relative_to(ROOT / "services/ai-service/app")
 
     # Packaging contains only the app tier; the B13 path has no database service or writable data mount.

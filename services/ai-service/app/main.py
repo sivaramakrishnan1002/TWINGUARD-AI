@@ -17,6 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import get_layer_records
 from app.scenario_visualization.router import router as scenario_visualization_router
+from app.reservoir_snapshot.router import router as reservoir_snapshot_router
 from app.scenario_visualization.raster_router import router as scenario_raster_router
 
 
@@ -706,6 +707,7 @@ app = FastAPI(
 )
 app.include_router(scenario_visualization_router)
 app.include_router(scenario_raster_router)
+app.include_router(reservoir_snapshot_router)
 app.add_middleware(
     _ExactAcceptCORSMiddleware,
     allow_origins=["http://127.0.0.1:8081"],

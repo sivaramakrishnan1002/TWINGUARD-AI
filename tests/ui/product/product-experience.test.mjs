@@ -12,140 +12,115 @@ const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const { createServer } = require('vite');
 
-test('all seven product sections render with reachable semantic navigation', async (context) => {
-  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true }, define: { 'import.meta.env.VITE_GATE_G0_STATUS': JSON.stringify('ready') } });
+const server = (gate = 'ready') => createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true }, define: { 'import.meta.env.VITE_GATE_G0_STATUS': JSON.stringify(gate) } });
+
+test('all seven report-backed sections render with reachable semantic navigation', async (context) => {
+  const vite = await server();
   try {
-    const ui = await server.ssrLoadModule('/src/ui/product/ProductExperience.tsx');
+    const ui = await vite.ssrLoadModule('/src/ui/product/ProductExperience.tsx');
     const expectations = [
-      ['overview', 'Situation overview', 'Flood city twin'],
-      ['twin', '3D Flood Twin', 'Illustrative flood scene'],
-      ['reservoirs', 'Reservoirs & alerts', 'FIXTURE INVENTORY'],
-      ['impacts', 'Impacts', 'Illustrative layer view'],
-      ['response', 'Emergency response', 'Candidate route comparison'],
-      ['what-if', 'What-if lab', 'Adjust demo assumptions'],
-      ['system', 'Data & system', 'Source and run context'],
+      ['overview', 'Situation overview', 'Scenario snapshot'],
+      ['twin', 'Flood simulation', 'Simulation setup'],
+      ['impacts', 'Impacts &amp; shelters', 'Facility access cascade at +72 h'],
+      ['response', 'Road routing', 'Three-state road evidence'],
+      ['what-if', 'What-if comparison', 'Compare saved scenarios'],
+      ['reservoirs', 'Reservoirs (Track B)', '2015 REPLAY alert sequence'],
+      ['system', 'Data &amp; evidence', 'Coverage states'],
     ];
     for (const [section, heading, card] of expectations) {
-      await context.test(`${heading} section`, () => {
+      await context.test(`${section} section`, () => {
         const markup = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: section }));
-        assert.match(markup, new RegExp(`aria-label="Product sections"`));
-        assert.match(markup, /aria-label="Situation Overview"/);
-        assert.match(markup, /aria-label="3D Flood Twin"/);
+        assert.match(markup, /aria-label="Product sections"/);
+        for (const label of ['Situation Overview', 'Flood Simulation', 'Impacts &amp; Shelters', 'Road Routing', 'What-if Comparison', 'Reservoirs (Track B)', 'Data &amp; Evidence']) assert.ok(markup.includes(`aria-label="${label}"`), `${label} nav item`);
         assert.equal((markup.match(/aria-current="page"/g) ?? []).length, 1);
-        assert.ok(markup.includes(`<h1>${heading.replaceAll('&', '&amp;')}</h1>`), `${section} heading should render`);
+        assert.ok(markup.includes(`<h1>${heading}</h1>`), `${section} heading should render`);
         assert.ok(markup.includes(card), `${section} content should render`);
-        assert.match(markup, /DEMO \/ SIMULATED/);
         assert.match(markup, /NOT AN OPERATIONAL SERVICE/);
+        assert.match(markup, /Research prototype · not an official warning/);
+        assert.match(markup, /SIMULATED · HINDCAST/);
+        assert.match(markup, /aria-label="Select event window"/);
+        assert.match(markup, /aria-label="Select rainfall scenario"/);
       });
     }
-    const twin = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'twin' }));
-    const overview = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'overview' }));
-    assert.match(overview, /aria-label="Overview display mode"/);
-    assert.match(overview, /aria-label="Select illustrative demo time step"/);
-    assert.match(twin, /hand-authored interface illustration and has no Chennai coordinates/);
-    assert.match(overview, /aria-label="Select demo scenario"/);
-    assert.match(twin, /Play demo/);
-    assert.match(twin, /Previous step/);
-    assert.match(twin, /Next step/);
-    assert.match(twin, /Reset/);
-    assert.match(twin, /Select illustrative demo time step/);
-    assert.match(twin, /aria-label="Map display mode"/);
-    assert.match(twin, /aria-pressed="true">3D view/);
-    assert.match(twin, /Map display mode/);
-    assert.match(twin, /Demo water shape/);
-    assert.match(twin, /Illustrative roads/);
-    assert.match(twin, /NoData is a missing-coverage state, never a dry classification/);
-    assert.match(twin, /SCHEMATIC CITY BLOCKS/);
-    assert.match(twin, /Visual level is unitless/);
-    const fallback = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'twin', initialViewMode: '2d' }));
-    assert.match(fallback, /aria-pressed="true">2D fallback/);
-    assert.match(fallback, /Top-down illustrative city grid/);
-    assert.doesNotMatch(fallback, /Water surface depth|metres of flood depth/i);
-    const whatIf = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'what-if' }));
-    assert.match(whatIf, /Choose what-if demo scenario/);
-    assert.match(whatIf, /Choose demo reservoir assumption/);
-    assert.match(whatIf, /Choose demo unavailable shelter/);
-    assert.match(whatIf, /Illustrative rainfall input/);
-    assert.match(whatIf, /Illustrative reservoir release/);
   } finally {
-    await server.close();
+    await vite.close();
   }
 });
 
-test('existing gate badge remains an exact build-time snapshot and fails closed', async () => {
-  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true }, define: { 'import.meta.env.VITE_GATE_G0_STATUS': JSON.stringify('not_ready') } });
+test('figures shown come from the cited reports and keep their caveats', async () => {
+  const vite = await server();
   try {
-    const { default: App } = await server.ssrLoadModule('/src/ui/App.tsx');
+    const ui = await vite.ssrLoadModule('/src/ui/product/ProductExperience.tsx');
+    const render = (section) => renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: section }));
+    const overview = render('overview');
+    assert.match(overview, /2,21,131/, 'A07 Dec 2015 perfect-foresight +48 h people in screened cells');
+    assert.match(overview, /WorldPop model estimate · PARTIAL/);
+    assert.match(overview, /docs\/PHASE13_IMPACT_BATCH2_V4\.md/);
+    const twin = render('twin');
+    assert.match(twin, /aria-label="Map display mode"/);
+    assert.match(twin, /aria-label="Depth band"/);
+    assert.match(twin, /351\.54 mm \/ 72 h/, 'A05 report rainfall total');
+    assert.match(twin, /Nothing is interpolated between them/);
+    const routing = render('response');
+    assert.match(routing, /Unknown · verify/);
+    assert.match(routing, /Never treated as passable/);
+    assert.match(routing, /Uncertainty-aware/);
+    const whatIf = render('what-if');
+    assert.match(whatIf, /aria-label="Scenario A"/);
+    assert.match(whatIf, /aria-label="Scenario B"/);
+    assert.match(whatIf, /not predictions or validated counterfactual outcomes/);
+    assert.match(whatIf, /H2–H5 are not confirmed/);
+    const reservoirs = render('reservoirs');
+    assert.match(reservoirs, /Storage % uses current published capacity/);
+    assert.match(reservoirs, /not a live feed or flood warning/);
+    const system = render('system');
+    for (const state of ['Known value', 'Known zero (0)', 'NoData', 'Unknown', 'Unavailable']) assert.ok(system.includes(state), `${state} remains distinct`);
+    assert.match(system, /Unknown, not dry/);
+    assert.match(system, /B40 is blocked pending authorization/);
+  } finally {
+    await vite.close();
+  }
+});
+
+test('gate badge remains an exact build-time snapshot and fails closed', async () => {
+  const vite = await server('not_ready');
+  try {
+    const { default: App } = await vite.ssrLoadModule('/src/ui/App.tsx');
     const markup = renderToStaticMarkup(React.createElement(App));
     assert.match(markup, /role="status" aria-label="Gate G0: NOT READY" data-gate-status="not_ready">G0 NOT READY<\/small>/);
     assert.doesNotMatch(markup, /data-gate-status="ready"/);
   } finally {
-    await server.close();
+    await vite.close();
   }
 });
 
-test('demo adapter steps frames and updates what-if values deterministically', async () => {
-  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true } });
+test('report evidence keeps NoData, unknown and assumption semantics', async () => {
+  const vite = await server();
   try {
-    const adapter = await server.ssrLoadModule('/src/ui/demo/adapter.ts');
-    const fixtures = await server.ssrLoadModule('/src/ui/demo/fixtures.ts');
-    const initial = adapter.demoAdapter.getWorkspace('demo-monsoon', 0, adapter.defaultWhatIfInputs);
-    const later = adapter.demoAdapter.getWorkspace('demo-monsoon', 1, adapter.defaultWhatIfInputs);
-    assert.notEqual(initial.frame.waterPath2d, later.frame.waterPath2d);
-    assert.equal(initial.adjustedFrame.waterPath2d, initial.frame.waterPath2d);
-    assert.equal(initial.adjustedFrame.waterPath3d, initial.frame.waterPath3d);
-    assert.equal(adapter.advanceDemoFrame(0, -1, 4), 0);
-    assert.equal(adapter.advanceDemoFrame(3, 1, 4), 3);
-    assert.equal(adapter.advanceDemoFrame(3, 1, 4, true), 0);
-    const changed = adapter.demoAdapter.getWorkspace('demo-monsoon', 1, { rainfallMm: 100, reservoirReleaseCusecs: 600, unavailableShelterId: 'shelter-a' });
-    assert.ok(changed.adjustedImpact.populationExposure > changed.baseline.populationExposure);
-    assert.notEqual(changed.adjustedRoutes[0].minutes, initial.adjustedRoutes[0].minutes);
-    assert.equal(changed.inputs.unavailableShelterId, 'shelter-a');
-    assert.equal(changed.inputs.reservoirId, 'demo-north');
-    assert.notEqual(changed.adjustedFrame.waterPath2d, changed.frame.waterPath2d);
-    const unavailableShelter = adapter.setDemoShelterAvailability(adapter.defaultWhatIfInputs, 'shelter-a', true);
-    assert.equal(unavailableShelter.unavailableShelterId, 'shelter-a');
-    assert.equal(adapter.setDemoShelterAvailability(unavailableShelter, 'shelter-a', false).unavailableShelterId, null);
-    assert.equal(changed.scenario.reservoirs.find((item) => item.id === 'demo-unknown').storageMcft, null);
-    assert.equal(fixtures.DEMO_STATE_EXAMPLES.zero.value, 0);
-    for (const kind of ['unknown', 'unavailable', 'zero', 'dry', 'nodata']) assert.equal(fixtures.DEMO_STATE_EXAMPLES[kind].kind, kind);
+    const reports = await vite.ssrLoadModule('/src/ui/evidence/reports.ts');
+    const grids = await vite.ssrLoadModule('/src/ui/evidence/grids.ts');
+    assert.equal(reports.EVENTS.length, 3);
+    assert.equal(reports.SCENARIOS.length, 5);
+    assert.deepEqual(reports.LEADS, [6, 12, 24, 48, 72]);
+    for (const e of reports.EVENTS) for (const s of reports.SCENARIOS) for (const l of reports.LEADS) assert.equal(reports.A07_IMPACT[e.id][s.id][l].length, 3);
+    assert.equal(reports.A21.failClosed + reports.A21.conditional + reports.A21.noPath, reports.A21.primaryCases);
+    assert.equal(reports.TRACKB_REPLAY.length, 50);
+    assert.equal(grids.NODATA_MM, 65535);
+    assert.equal(reports.A09_METHODS.find((m) => m.method === 'Static free-flow').failure, null, 'unassessed stays null, not zero');
   } finally {
-    await server.close();
-  }
-});
-
-test('Demo and scenario state stays clearly named as synthetic, not historical or operational', async () => {
-  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true } });
-  try {
-    const ui = await server.ssrLoadModule('/src/ui/product/ProductExperience.tsx');
-    const dataPage = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'system' }));
-    assert.match(dataPage, /Local static fixture · no refresh/);
-    assert.match(dataPage, /Synthetic elapsed steps; no calendar date or observation time/);
-    for (const state of ['Unknown', 'Unavailable', 'Known zero \\(0\\)', 'Explicit dry fixture', 'NoData']) assert.match(dataPage, new RegExp(state));
-    const response = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'response' }));
-    assert.match(response, /Reachability does not establish flood access or safety/);
-    assert.match(response, /scope="col">Hazard assessment<\/th>/);
-    assert.match(response, /<td>Unknown<\/td>/);
-    assert.match(response, /No shelter is represented as open or operational/);
-    assert.match(response, /Explicit zero-length test case; does not mean a usable route exists/);
-  } finally {
-    await server.close();
+    await vite.close();
   }
 });
 
 test('product shell retains responsive, keyboard, and reduced-motion styling with AA token contrast', async () => {
   const css = await readFile(path.join(frontendRoot, 'src/ui/product/product.css'), 'utf8');
-  assert.match(css, /:focus-visible/);
-    assert.match(css, /max-width:\s*940px/);
-    assert.match(css, /max-width:\s*700px/);
-    assert.match(css, /max-width:\s*520px/);
-    assert.match(css, /grid-template-columns:\s*repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(css, /\.tg-app :focus-visible/);
+  assert.match(css, /max-width:\s*940px/);
+  assert.match(css, /max-width:\s*700px/);
+  assert.match(css, /max-width:\s*520px/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
-    assert.match(css, /\.tg-product__nav-text small\s*\{[^}]*font-size:\s*11px/s);
-    assert.match(css, /\.tg-product__metric > span\s*\{[^}]*font-size:\s*12px/s);
-    assert.match(css, /\.tg-product__overview-layout\s*\{[^}]*minmax\(0, 1fr\)[^}]*300px/s);
-    assert.match(css, /\.tg-product__reservoir-workspace\s*\{[^}]*265px/s);
-
+  assert.match(css, /\.tg-reservoir-live\s*\{/, 'B45 panel styles are retained');
+  assert.match(css, /\.tg-weather-card\s*\{/, 'CR-014 weather card styles are retained');
   const token = (name) => {
     const match = css.match(new RegExp(`${name}:\\s*(#[0-9a-fA-F]{6})`));
     assert.ok(match, `${name} design token should exist`);
@@ -159,7 +134,18 @@ test('product shell retains responsive, keyboard, and reduced-motion styling wit
     const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
     return (values[0] + 0.05) / (values[1] + 0.05);
   };
-  for (const [fg, bg] of [['--tg-ink', '--tg-canvas'], ['--tg-muted', '--tg-panel'], ['--tg-primary', '--tg-panel']]) {
+  for (const [fg, bg] of [['--tg-ink', '--tg-canvas'], ['--tg-muted', '--tg-panel'], ['--tg-soft', '--tg-panel'], ['--tg-primary', '--tg-panel']]) {
     assert.ok(contrast(token(fg), token(bg)) >= 4.5, `${fg} on ${bg} should meet 4.5:1; got ${contrast(token(fg), token(bg)).toFixed(2)}`);
+  }
+});
+
+test('demo adapter remains deterministic for any consumer still importing it', async () => {
+  const vite = await server();
+  try {
+    const adapter = await vite.ssrLoadModule('/src/ui/demo/adapter.ts');
+    assert.equal(adapter.advanceDemoFrame(0, -1, 4), 0);
+    assert.equal(adapter.advanceDemoFrame(3, 1, 4, true), 0);
+  } finally {
+    await vite.close();
   }
 });

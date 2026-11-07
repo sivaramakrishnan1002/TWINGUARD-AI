@@ -103,19 +103,18 @@ test('stale and unavailable cards expose evidence without asserting a live conne
   assert.doesNotMatch(liveMarkup, />LIVE<\/strong>/);
 });
 
-test('current product binds only DEMO metadata and shows unconnected live input as unavailable', async () => {
+test('current product labels saved outputs as SIMULATED and unconnected live inputs as unavailable', async () => {
   const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true } });
   try {
     const ui = await server.ssrLoadModule('/src/ui/product/ProductExperience.tsx');
     const markup = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'system' }));
-    assert.match(markup, /DEMO · SIMULATED/);
-    assert.match(markup, /data-source-mode="SIMULATED" data-availability="current"/);
-    assert.match(markup, /Local DEMO fixture is loaded; source age and refresh are not measured/);
-    assert.match(markup, /data-source-mode="LIVE" data-availability="UNAVAILABLE"/);
-    assert.match(markup, /No source-owner-approved live feed is connected or verified/);
-    assert.match(markup, /received_at|Received \/ refreshed/);
+    assert.match(markup, /Saved research outputs · SIMULATED/);
+    assert.match(markup, /No refresh; not observations/);
+    assert.match(markup, /IMD rainfall connector · Unavailable/);
+    assert.match(markup, /Flood-model recomputation · Unavailable/);
+    assert.match(markup, /Freshness unknown/);
     assert.match(markup, /NoData/);
-    assert.match(markup, /NoData/);
+    assert.match(markup, /Unknown, not dry/);
     assert.doesNotMatch(markup, /LIVE · current/);
   } finally {
     await server.close();

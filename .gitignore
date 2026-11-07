@@ -28,3 +28,10 @@ Thumbs.db
 /tmp/
 /.claude/
 /docs/master/locks/
+
+# Generated from git-ignored saved rasters (tools/ui/export_ui_depth_grids.py)
+/frontend/src/ui/evidence/generated/
+
+# Local secrets (e.g. VITE_GOOGLE_MAPS_API_KEY per OD-2026-11-07): never commit
+.env.local
+*.local

@@ -100,6 +100,8 @@ test('panel renders idle, live and failure states without demo substitution', as
     assert.match(kept.message, /not presented as current/);
     const section = renderToStaticMarkup(React.createElement(product.ProductExperience, { initialSection: 'reservoirs' }));
     assert.match(section, /PUBLIC CFM-DSS DASHBOARD · LIVE FETCH/);
-    assert.match(section, /FIXTURE INVENTORY · SIMULATED/);
+    // The live panel sits beside saved REPLAY evidence, which stays labelled as replay, not live.
+    assert.match(section, /2015 REPLAY alert sequence/);
+    assert.match(section, /REPLAY of past data, not a live feed/);
   });
 });

@@ -139,12 +139,13 @@ def test_unavailable_manifest_or_asset_maps_to_503_without_partial_result(monkey
         assert "scenario_series" not in response.text and "series" not in response.text
 
 
-def test_openapi_projects_only_the_two_approved_get_operations() -> None:
+def test_openapi_projects_only_the_three_approved_get_operations() -> None:
     spec = _contract()
     generated = app.openapi()
     for path, operation_id in (
         (CATALOG_PATH, "listScenarioVisualizationAssets"),
         (DETAIL_PATH, "getScenarioVisualizationAsset"),
+        ("/scenario-visualization-assets/{event_id}/{scenario_id}/raster", "getScenarioVisualizationRaster"),
     ):
         documented = spec["paths"][path]["get"]
         runtime = generated["paths"][path]["get"]

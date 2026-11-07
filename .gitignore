@@ -23,3 +23,8 @@ node_modules/
 Thumbs.db
 .idea/
 .vscode/
+
+# Local scratch, session config and runtime locks
+/tmp/
+/.claude/
+/docs/master/locks/

@@ -15,6 +15,7 @@ PRODUCT_ROOTS = [
     FRONTEND / "src/ui/demo",
     FRONTEND / "src/ui/live-readiness",
     FRONTEND / "src/ui/weather",
+    FRONTEND / "src/ui/reservoir-live",
 ]
 FORBIDDEN = [
     (re.compile(r"\baxios\b", re.I), "Axios client"),
@@ -27,9 +28,11 @@ FORBIDDEN = [
 NETWORK_CALL = re.compile(r"\b(?:fetch|fetcher)\s*\(", re.I)
 NETWORK_URL = re.compile(r"https?://[^\s'\"`]+", re.I)
 APPROVED_WEATHER_CLIENT = FRONTEND / "src/ui/weather/openMeteoClient.ts"
-APPROVED_WEATHER_URLS = {
-    "https://api.open-meteo.com/v1/forecast",
-    "https://open-meteo.com/en/docs",
+APPROVED_RESERVOIR_CLIENT = FRONTEND / "src/ui/reservoir-live/reservoirClient.ts"
+APPROVED_CLIENT_URLS = {
+    APPROVED_WEATHER_CLIENT: {"https://api.open-meteo.com/v1/forecast", "https://open-meteo.com/en/docs"},
+    # CR-016/CR-018: same-origin /api/ai proxy plus the source attribution link only.
+    APPROVED_RESERVOIR_CLIENT: {"https://chennaifloodmonitor.tn.gov.in/HomePage/Dashboard"},
 }
 
 
@@ -55,12 +58,12 @@ class FrontendDemoOnlyTests(unittest.TestCase):
                     self.assertIsNone(pattern.search(text), f"{label} found in {source.relative_to(ROOT)}")
             if NETWORK_CALL.search(text):
                 with self.subTest(path=source.relative_to(ROOT), forbidden="unapproved network call"):
-                    self.assertEqual(source, APPROVED_WEATHER_CLIENT, "only the registered Open-Meteo client may make a request")
+                    self.assertIn(source, APPROVED_CLIENT_URLS, "only registered clients may make a request")
             urls = NETWORK_URL.findall(text)
             if urls:
                 with self.subTest(path=source.relative_to(ROOT), forbidden="unapproved external URL"):
-                    self.assertEqual(source, APPROVED_WEATHER_CLIENT, "external URLs are limited to the weather client and attribution")
-                    self.assertTrue(set(urls).issubset(APPROVED_WEATHER_URLS), f"unexpected external URL(s): {urls}")
+                    self.assertIn(source, APPROVED_CLIENT_URLS, "external URLs are limited to registered clients and attribution")
+                    self.assertTrue(set(urls).issubset(APPROVED_CLIENT_URLS[source]), f"unexpected external URL(s): {urls}")
         weather_client = APPROVED_WEATHER_CLIENT.read_text(encoding="utf-8")
         self.assertIn("https://api.open-meteo.com/v1/forecast", weather_client)
         self.assertIn("https://open-meteo.com/en/docs", weather_client)

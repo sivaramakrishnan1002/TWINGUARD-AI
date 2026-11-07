@@ -5,6 +5,7 @@ import { DEMO_STATE_EXAMPLES } from '../demo/fixtures';
 import { SourceReadinessPanel } from '../live-readiness/SourceReadinessPanel';
 import { demoScenarioMetadata, unavailableLiveMetadata } from '../live-readiness/model';
 import { OpenMeteoWeatherCard } from '../weather/OpenMeteoWeatherCard';
+import { ReservoirLivePanel } from '../reservoir-live/ReservoirLivePanel';
 import { activateProfessorStep, activeProfessorStep, fixtureBarHeight, professorDemoFlow, type ProfessorDemoStepId } from './professor-refinement/guided-flow';
 import floodCityConcept from './assets/flood-city-concept-v1.webp';
 import './product.css';
@@ -324,10 +325,10 @@ function Illustration({ frame, mode, compact = false, layers = { water: true, bl
 
 function ReservoirsSection({ scenario, selectedId, onSelect, frame }: { scenario: DemoScenario; selectedId: string; onSelect: (id: string) => void; frame: DemoFrame }) {
   const selected = scenario.reservoirs.find((item) => item.id === selectedId) ?? scenario.reservoirs[0];
-  return <div className="tg-product__reservoir-workspace">
+  return <><ReservoirLivePanel /><div className="tg-product__reservoir-workspace">
     <nav className="tg-product__reservoir-index" aria-label="Demo reservoir fixtures"><span className="tg-product__eyebrow">FIXTURE INVENTORY · SIMULATED</span>{scenario.reservoirs.map((item, index) => <button type="button" key={item.id} className={selectedId === item.id ? 'is-selected' : ''} aria-pressed={selectedId === item.id} onClick={() => onSelect(item.id)}><span className="tg-product__index-number">0{index + 1}</span><span><strong>{item.name}</strong><small>{item.storageMcft === null ? 'Storage unknown' : `${item.storageMcft} mcft`}</small></span><span aria-hidden="true">›</span></button>)}<p>Fictional fixture names and readings. Not real reservoir observations.</p></nav>
     <div className="tg-product__reservoir-detail-column"><div className="tg-product__reservoir-detail-head"><div><span className="tg-product__eyebrow">SELECTED FIXTURE · NO TELEMETRY</span><h2>{selected.name}</h2><p>Storage, capacity, and release fields are local demo values. Source date and operating status are not established.</p></div><DemoPill mode="SIMULATED" /></div><ReservoirDetail reservoir={selected} frame={frame} /><section className="tg-product__reservoir-history" aria-labelledby="reservoir-history-title"><div className="tg-product__section-minihead"><div><span className="tg-product__eyebrow">SYNTHETIC STEP HISTORY</span><h2 id="reservoir-history-title">Demo timeline</h2></div><span className="tg-product__plain-tag">NOT AN ALERT HISTORY</span></div><div className="tg-product__timeline-list">{scenario.frames.map((item, index) => <div className={index <= scenario.frames.findIndex((x) => x.id === frame.id) ? 'is-passed' : ''} key={item.id}><i aria-hidden="true" /><span>{item.label}</span><strong>{index === 1 && selected.id !== 'demo-unknown' ? 'DEMO WATCH' : 'SIMULATED'}</strong></div>)}</div><p className="tg-product__limit-copy">The selected frame is a synthetic clock step. Alert names and thresholds are fictional; no emergency warning is issued.</p></section></div>
-  </div>;
+  </div></>;
 }
 
 function ReservoirDetail({ reservoir, frame, compact = false }: { reservoir: DemoReservoir; frame: DemoFrame; compact?: boolean }) {

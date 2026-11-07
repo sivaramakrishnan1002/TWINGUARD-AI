@@ -104,6 +104,10 @@ def test_build_inputs_are_version_pinned_and_do_not_mount_secrets() -> None:
 def test_frontend_is_static_only_and_ai_route_computation_stays_separate() -> None:
     nginx = (ROOT / "frontend/nginx.conf").read_text(encoding="utf-8").lower()
     assert "try_files" in nginx
-    assert "proxy_pass" not in nginx
+    # CR-018: the only proxy is the same-origin /api/ai/ route to the packaged AI service.
+    assert nginx.count("proxy_pass") == 1
+    assert "location /api/ai/ {" in nginx
+    assert "proxy_pass http://ai-service:8000/;" in nginx
+    assert "limit_except get" in nginx
     assert "proxy_pass" not in COMPOSE.read_text(encoding="utf-8").lower()
 

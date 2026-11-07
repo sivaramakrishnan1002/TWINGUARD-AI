@@ -29,3 +29,11 @@ Changes to existing shared tables must add nullable columns only and be recorded
 ## CR-016 — Public CFM-DSS reservoir dashboard source
 
 Approved 2026-11-06 for low-volume, on-demand, non-operational academic prototype reads from the publicly accessible Chennai Flood Monitoring dashboard. The decision does not claim source-owner endorsement, formal terms, operational freshness, or permission to redistribute. Preserve date-only C3 semantics; see `CR-016_PUBLIC_RESERVOIR_DASHBOARD_SOURCE.md`.
+
+## CR-017 — On-demand CFM-DSS reservoir snapshot API
+
+Approved 2026-11-06; implemented by B44. See `CR-017_CFM_RESERVOIR_SNAPSHOT_API.md`.
+
+## CR-018 — Live prototype integration
+
+Approved 2026-11-07 under the owner's delegated authority: same-origin `/api/ai/` proxy, B45 live reservoir panel, and live recomputation runs as later sections are added. See `CR-018_LIVE_PROTOTYPE_INTEGRATION.md`.

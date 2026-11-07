@@ -35,7 +35,6 @@
 - **M8 — Mentor review dates** (blocked_manual)
 - **B40 — Implement authorized IMD rainfall/weather connector** (blocked_prerequisite)
 - **B42 — Prove observation-triggered recomputation through API and UI** (blocked_prerequisite)
-- **B45 — Connect CFM reservoir snapshots to the product UI** (blocked_prerequisite)
 
 ## Running tasks
 

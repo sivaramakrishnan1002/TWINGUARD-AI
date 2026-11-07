@@ -15,6 +15,7 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
 | Time | RFC 3339 UTC (`Z`). Date-only historical sources keep the C3 `source_date` semantics. |
 | Units | Depth, height and tide in m; distance in m; duration in s; rainfall in mm per interval; flow in m³/s (1 m³/s = 35.3147 cusecs); area in km²; population in people |
 | CRS | Grids use EPSG:32644 with the origin at the upper-left and row 0 at the north. GeoJSON and `LonLat` use WGS84. |
+| Grid size | `GridSpec.cell_size_m` ∈ {30, 90, 100, 120, 600}. 600 m is the interim A06/A23 engine grid (88×69) served until A25 bundles exist. This additive change was made on 2026-11-07 at the request of Lane B and the UI session. |
 | Nulls | `null` means unknown or outside the domain, never zero. A depth of `0` means modelled dry. |
 | Provenance | Every result has `source_mode` ∈ {SIMULATED, MODEL_FORECAST, PUBLISHED_SNAPSHOT, SCENARIO_INPUT, REPLAY, STATIC_REFERENCE}. Incidents have `generated: true`. Resources are `SCENARIO_INPUT`. |
 | Errors | `ApiError {detail, code, retry_after_s}` with codes 400, 404, 409 (run in progress or version conflict), 422, 429 (minimum interval not elapsed; `Retry-After` set) and 503 (no partial body) |

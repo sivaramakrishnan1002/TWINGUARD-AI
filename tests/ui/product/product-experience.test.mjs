@@ -17,7 +17,7 @@ test('all seven product sections render with reachable semantic navigation', asy
   try {
     const ui = await server.ssrLoadModule('/src/ui/product/ProductExperience.tsx');
     const expectations = [
-      ['overview', 'Situation overview', 'Scenario view'],
+      ['overview', 'Situation overview', 'Flood city twin'],
       ['twin', '3D Flood Twin', 'Illustrative flood scene'],
       ['reservoirs', 'Reservoirs & alerts', 'FIXTURE INVENTORY'],
       ['impacts', 'Impacts', 'Illustrative layer view'],
@@ -41,8 +41,8 @@ test('all seven product sections render with reachable semantic navigation', asy
     const twin = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'twin' }));
     const overview = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'overview' }));
     assert.match(overview, /aria-label="Overview display mode"/);
-    assert.match(overview, /aria-label="Select overview demo time step"/);
-    assert.match(overview, /Local vector illustration · no Chennai coordinates/);
+    assert.match(overview, /aria-label="Select illustrative demo time step"/);
+    assert.match(twin, /hand-authored interface illustration and has no Chennai coordinates/);
     assert.match(overview, /aria-label="Select demo scenario"/);
     assert.match(twin, /Play demo/);
     assert.match(twin, /Previous step/);
@@ -55,11 +55,11 @@ test('all seven product sections render with reachable semantic navigation', asy
     assert.match(twin, /Demo water shape/);
     assert.match(twin, /Illustrative roads/);
     assert.match(twin, /NoData is a missing-coverage state, never a dry classification/);
-    assert.match(twin, /SCHEMATIC BLOCKS/);
-    assert.match(twin, /not geographic or measured/i);
+    assert.match(twin, /SCHEMATIC CITY BLOCKS/);
+    assert.match(twin, /Visual level is unitless/);
     const fallback = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'twin', initialViewMode: '2d' }));
     assert.match(fallback, /aria-pressed="true">2D fallback/);
-    assert.match(fallback, /Top-down illustrative demo footprint/);
+    assert.match(fallback, /Top-down illustrative city grid/);
     assert.doesNotMatch(fallback, /Water surface depth|metres of flood depth/i);
     const whatIf = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'what-if' }));
     assert.match(whatIf, /Choose what-if demo scenario/);

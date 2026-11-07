@@ -358,7 +358,7 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "Reconciled with T6 completion recorded on the Lane A board and commit 84368ee. Caveat: depth is an assumption-based DEM surface proxy; only 29.91–32.10% of mapped extents have valid DEM-derived depth."
+        "Reconciled with T6 completion recorded on the Lane A board and commit 84368ee. Caveat: depth is an assumption-based DEM surface proxy; only 29.91\u201332.10% of mapped extents have valid DEM-derived depth."
       ]
     },
     {
@@ -455,11 +455,11 @@
         "tests/labels/"
       ],
       "acceptance": [
-        "L1 compute time box 30 minutes; compare VV/VH/dB change in UNOSAT flood pixels to land-cover/HAND matched non-flood pixels; AUCs and small spatial-block decision stump; shifts of 1–3 cells and permanent-water alignment; no tuning to IoU.",
+        "L1 compute time box 30 minutes; compare VV/VH/dB change in UNOSAT flood pixels to land-cover/HAND matched non-flood pixels; AUCs and small spatial-block decision stump; shifts of 1\u20133 cells and permanent-water alignment; no tuning to IoU.",
         "Conclude whether simple scene rules separate UNOSAT extent; AUC >=0.7 is documented but never promoted to label without registered acceptance.",
         "L2 state UNOSAT Nov 2015 tier A training label; Stage 8 SAR candidates remain tier D, excluded from training and usable-label view; rank OpenCity, GFD 4309 and future digitised maps with limits.",
         "L3 time box 120 minutes; inspect only PDFs present; read-only GeoPDF check, extract embedded images at native resolution to processed folder, inspect graticule/legend and feasibility.",
-        "Provide 8–10 candidate control points per present map from database/OSM in EPSG:4326 and EPSG:32644, transformation, RMS acceptance, polygonisation, QA and expected digitising time.",
+        "Provide 8\u201310 candidate control points per present map from database/OSM in EPSG:4326 and EPSG:32644, transformation, RMS acceptance, polygonisation, QA and expected digitising time.",
         "Create empty digitised_labels.gpkg schema and idempotent geometry-validating loader for tier B/C by one-cell RMS rule; tests; do not load empty template rows.",
         "Raw audit remains clean; no raw writes."
       ],
@@ -506,8 +506,8 @@
         "tests/phase10/test_depth_scenarios.py"
       ],
       "acceptance": [
-        "Time box 60 minutes. Compare relative-error and ±4 m absolute-error scenarios on the water-surface method; numerically simulate spatially correlated DEM error and test whether common offset cancels in the surface-minus-DEM calculation.",
-        "Create class probabilities for depth <0.15, 0.15–0.3, 0.3–0.5, >0.5 m; preserve NoData and provide coverage mask.",
+        "Time box 60 minutes. Compare relative-error and \u00b14 m absolute-error scenarios on the water-surface method; numerically simulate spatially correlated DEM error and test whether common offset cancels in the surface-minus-DEM calculation.",
+        "Create class probabilities for depth <0.15, 0.15\u20130.3, 0.3\u20130.5, >0.5 m; preserve NoData and provide coverage mask.",
         "Clearly label outputs calibration proxies, not routing inputs; never overwrite T6 files."
       ],
       "evidence": [
@@ -889,7 +889,7 @@
       "acceptance": [
         "Implement a NumPy local-inertial shallow-water solver; choose 30 m or coarser using measured runtime and justify.",
         "Use land-cover Manning roughness; state building representation (porosity default, not DSM obstacles), drainage/infiltration assumptions, and sea/river boundaries.",
-        "Optional CAG 1–2 Dec 2015 scenario is illustrative, never observed release truth.",
+        "Optional CAG 1\u20132 Dec 2015 scenario is illustrative, never observed release truth.",
         "Run at least 20 parameter members; calibrate with spatial-block holdout on Nov 2015 labels; compare with GFD, OpenCity and accepted A03d labels where available.",
         "Check numerical stability, mass balance <=1%, runtime, and depth-field contract mean/p05/p95. State no drain network, GLO-30 not building DSM, few events and no hydraulic-accuracy claim."
       ],
@@ -934,7 +934,7 @@
         "tests/phase13/"
       ],
       "acceptance": [
-        "Estimate edge-passability probability per time and ensemble using depth threshold 0.30 m and sensitivity 0.15–0.50 m.",
+        "Estimate edge-passability probability per time and ensemble using depth threshold 0.30 m and sensitivity 0.15\u20130.50 m.",
         "Preserve WorldPop NoData as NoData. Report population exposure distributions, facility access loss and hospital/shelter cascades.",
         "Use docs/IMPACT_RESULT_SCHEMA.md as the integrator-approved Lane A implementation schema for A07 versioned outputs. This is task-level approval only; C7 remains v0 and unfrozen, and API/UI integration is not authorized by this approval."
       ],
@@ -1201,7 +1201,7 @@
     {
       "id": "A13",
       "lane": "A",
-      "title": "Phase 22 decision lab and H2–H5 experiments",
+      "title": "Phase 22 decision lab and H2\u2013H5 experiments",
       "phase": "A",
       "status": "done_with_caveats",
       "depends_on": [
@@ -1316,7 +1316,7 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-10-27 Integrator scope reconciliation: mapped Phases 19–21 to H1 multimodal comparison in docs/handbook/11_Evaluation_Plan.md. A01/A03d/A04/A04d/A05 dependencies are complete. Missing independent date-matched labels must result in an explicit not-testable conclusion, not a fabricated success.",
+        "2026-10-27 Integrator scope reconciliation: mapped Phases 19\u201321 to H1 multimodal comparison in docs/handbook/11_Evaluation_Plan.md. A01/A03d/A04/A04d/A05 dependencies are complete. Missing independent date-matched labels must result in an explicit not-testable conclusion, not a fabricated success.",
         "H1 is not testable: accepted Tier A event flood labels cover only the Nov 2015 episode; 2021/2023 maps are not accepted digitized labels. No training or scores; feasibility/config only."
       ]
     },
@@ -1595,7 +1595,7 @@
         "Provide typed UI view-model foundations for event/run/source/evidence and core map/alert/route/shelter states; preserve unknown/NoData distinctly from zero.",
         "Keep the map shell on MapLibre with an empty/unavailable source state and no unverified remote basemap, tiles, or live-data request.",
         "Build the production frontend using the already-installed lockfile dependencies; record the command/result and known build warnings. No package installation or network access is required for this acceptance.",
-        "Keep real API/database integration disabled pending G0 and service prerequisites. Do not absorb the later Phase 2–5 work or duplicate B14 professional redesign scope."
+        "Keep real API/database integration disabled pending G0 and service prerequisites. Do not absorb the later Phase 2\u20135 work or duplicate B14 professional redesign scope."
       ],
       "evidence": [
         "docs/ui/PHASE1_STATUS.md",
@@ -1698,7 +1698,7 @@
         "docs/ui/PHASE4_STATUS.md"
       ],
       "acceptance": [
-        "Deliver the Phase 3–4 UI-3 scope evidenced by the phase board: documented event-window selector and source/time/provenance context, plus reservoir and alert presentation states.",
+        "Deliver the Phase 3\u20134 UI-3 scope evidenced by the phase board: documented event-window selector and source/time/provenance context, plus reservoir and alert presentation states.",
         "Mark event periods PLANNED or REPLAY exactly as their source evidence permits; do not imply observed flood onset, connected playback, current valid time, or live alerts. Keep time-indexed controls disabled without a verified feed.",
         "Keep reservoir selector contextual only; storage, capacity, release, observation time, run and source mode remain unknown/unavailable when absent. Unknown capacity is not zero; alert severities remain definitions until an evidenced alert exists.",
         "Use an inert no-network Track B adapter and preserve source-mode, provenance, timestamp meaning, NoData and the Phase 2 2D fallback. Do not mount Track B routes or enable service/API calls.",
@@ -1725,7 +1725,7 @@
       "target_day": null,
       "notes": [
         "2026-10-28 Integrator scope mapping: B06 UI-3 covers the ordered Phase 3 event explorer and Phase 4 reservoir/alert screen group, with B03 as the Track B prerequisite for that phase. Sequentially depends on B05 to serialize shared frontend ownership. No playback/service integration is in scope.",
-        "UI-3 Phase 3–4 event explorer and reservoir/alert screen states exist with source/time/provenance and explicit unavailable behavior; selector labels planned/replay windows, no real playback or connected data; reservoir/capacity/release and alert states remain unknown. Current B14 production build passed. Caveats: no router mount, no live data/API integration, no automated UI suite, bundle advisories and browser limitation. No frontend files changed by Integrator."
+        "UI-3 Phase 3\u20134 event explorer and reservoir/alert screen states exist with source/time/provenance and explicit unavailable behavior; selector labels planned/replay windows, no real playback or connected data; reservoir/capacity/release and alert states remain unknown. Current B14 production build passed. Caveats: no router mount, no live data/API integration, no automated UI suite, bundle advisories and browser limitation. No frontend files changed by Integrator."
       ]
     },
     {
@@ -2161,7 +2161,7 @@
       "target_day": null,
       "notes": [
         "2026-10-28 Integrator B13 reconciliation: B02/B03/B04 dependencies are done_with_caveats with recorded owner evidence; no running task overlaps tests/e2e/ or docs/trackb/B13_E2E_SCENARIO.md (A20 remains running on disjoint paths). Existing B9 run 0985c9e7544449eda8abe120a2f12512 is verified historical REPLAY with isolated persistence/idempotency, not live operation and not a backend/UI end-to-end path. Broader B13 scenario remains blocked because its concrete boundary is not specified and current gateway exposes health only, adapters are unavailable, AI operations return 501, UI calls are disconnected, and G0/C1-C8 are not ready/frozen. No implementation or G0 status changed. A B9-like isolated replay check itself does not require G0, but would duplicate existing B9 evidence unless a distinct purpose is documented.",
-        "2026-10-28 Integrator scope clarification per user: B13 is the later full-stack historical replay demonstration (approved backend/API route to UI), distinct from B9’s Kafka/Redis/isolated-database/Prometheus pipeline replay. Added dependencies on UI phases B05-B07, AI B08, backend B09, packaging B11, DTO evidence B15 and OpenAPI I05, retaining B02/B03/B04. B09 currently exposes health only; business routes/adapters remain unavailable; B08 is blocked and AI routes return 501; G0 is not_ready and C1-C8 are v0/unfrozen. Kept B13 blocked; no implementation or live integration started. This is separate from CR-006 A20→G0/I07→B17→B18→I08; B13 does not imply the CR-006 3D scope.",
+        "2026-10-28 Integrator scope clarification per user: B13 is the later full-stack historical replay demonstration (approved backend/API route to UI), distinct from B9\u2019s Kafka/Redis/isolated-database/Prometheus pipeline replay. Added dependencies on UI phases B05-B07, AI B08, backend B09, packaging B11, DTO evidence B15 and OpenAPI I05, retaining B02/B03/B04. B09 currently exposes health only; business routes/adapters remain unavailable; B08 is blocked and AI routes return 501; G0 is not_ready and C1-C8 are v0/unfrozen. Kept B13 blocked; no implementation or live integration started. This is separate from CR-006 A20\u2192G0/I07\u2192B17\u2192B18\u2192I08; B13 does not imply the CR-006 3D scope.",
         "2026-10-28 post-G0 review: G0 and contract prerequisites are now satisfied; remaining blockers are B08 implementation, B11 packaging scope/completion, a mounted test-scoped backend/API path beyond B09 health-only foundation, and a stable replay scenario through UI. No B13 output conflict; not ready until all registered dependencies and owner evidence complete.",
         "2026-10-29 Integrator reconciliation after B11: verified B08 and B11 completion evidence; removed stale statements that B08 was unimplemented and B11 was blocked. The full-stack B13 path remains absent: B09 exposes health only, the B11 UI is static/no API calls, and backend business routes remain unexposed. Lane B must register a distinct bounded backend-route/UI replay vertical slice; Integrator API projection/change-control review is required before route availability. B13 remains blocked; B9 is pipeline REPLAY only. No implementation started.",
         "2026-10-31 reconciliation after I08: corrected stale B13 prerequisites. B18 now directly displays saved A20 C9 assets and I08 verified that path, but neither is the distinct B08 historical REPLAY result flowing through a mounted backend route. B09 still exposes health only for this purpose; B21/B23 C9 routes do not supply the B13 operation. Added B18 as a completed dependency. Kept B13 blocked pending a separately registered Lane B backend/UI replay vertical slice and Integrator OpenAPI/change-control review; no implementation started.",
@@ -2713,7 +2713,7 @@
         "Create repaired copies in the distinct output folder with required band_role, units, CRS/grid, NoData, event date, processing time, version/status, source/tier/feature count, method, uncertainty rule, DEM metadata and ASCII-safe encoding.",
         "Do not invent acquisition times. Encode unknown acquisition time explicitly and consistently with the C1 metadata/sidecar contract; retain date-only event_date and actual run_time_utc.",
         "Automated tests reopen every output TIFF and verify count=1, Float32, EPSG:32644, 30 m alignment, AREA_OR_POINT, NoData=-9999, all required tags, semantic band_role and correct bound interpretation.",
-        "Prove cell values/masks are unchanged from source copies, p05/p95 remain ±4 m assumption bounds not calibrated quantiles, and output/source checksums and provenance are documented.",
+        "Prove cell values/masks are unchanged from source copies, p05/p95 remain \u00b14 m assumption bounds not calibrated quantiles, and output/source checksums and provenance are documented.",
         "Run focused tests and raw audit; provide owner completion evidence. This does not freeze C1 or authorize routing use."
       ],
       "evidence": [
@@ -3005,7 +3005,7 @@
         "tests/master/test_scenario_visualization_contract.py"
       ],
       "acceptance": [
-        "Under approved CR-006, define a separately versioned C9 scenario-display contract from A20’s completed visualization manifest and limitations: stable scenario/run identity, exact saved UTC valid times (including null for temporal peaks), CRS/grid/resolution, depth units/bands and their evidence basis, NoData/coverage, parameter-member spread, provenance/hashes, and source mode.",
+        "Under approved CR-006, define a separately versioned C9 scenario-display contract from A20\u2019s completed visualization manifest and limitations: stable scenario/run identity, exact saved UTC valid times (including null for temporal peaks), CRS/grid/resolution, depth units/bands and their evidence basis, NoData/coverage, parameter-member spread, provenance/hashes, and source mode.",
         "Keep the new scenario-display contract and API operations distinct from existing C4 /scenario and backend /scenarios operations; use unique path/operation identifiers so the C9 asset/time-slice projection cannot silently change frozen C1-C8 semantics.",
         "Update only the Integrator-owned OpenAPI projections and C9 draft needed to describe the A20 manifest-backed, read-only display interface. Do not require completed B17 implementation as an input; keep the operation unavailable/501 until B17 implements and verifies it.",
         "Add structural/model conformance tests that validate the C9 draft and projections against data/features/visualization3d/batch2_v1/manifest.json, including exact timestamps, grid/CRS, units basis, masks, hashes and null valid times; reject invented/interpolated scientific values.",
@@ -4779,7 +4779,7 @@
         "docs/ui/FRONTEND_VISUAL_REFINEMENT.md"
       ],
       "acceptance": [
-        "Refine the completed seven-section product experience to a polished, professional flood-operations interface matching the user-provided reference’s visual quality, hierarchy, density, and coherent visual system; retain clear product identity and avoid copying unprovided assets.",
+        "Refine the completed seven-section product experience to a polished, professional flood-operations interface matching the user-provided reference\u2019s visual quality, hierarchy, density, and coherent visual system; retain clear product identity and avoid copying unprovided assets.",
         "Keep Situation Overview, 3D Flood Twin, Reservoirs & Alerts, Impacts, Emergency Response, What-if Lab, and Data & System navigable. All existing B29 demo interactions must continue to work; tests cover section navigation and key interactions.",
         "Centralized B29 demo fixtures remain the sole source of UI data. No network/service calls, including fetch, Axios, WebSocket, EventSource, backend/AI calls, or B18 raster/catalog/detail endpoints. Preserve the typed replaceable adapter boundary.",
         "All values, alerts, routes, health/service-readiness states, and map content are visibly and persistently marked DEMO, SIMULATED, or ILLUSTRATIVE as appropriate. The water animation remains illustrative and is not described as backend-generated, physically modeled, or validated.",
@@ -4862,13 +4862,13 @@
       "acceptance": [
         "Commit a preregistered analysis plan before comparative result generation. Record fixed sampling, hashes, seeds, state mapping, methods, denominators, exclusions, missingness, metrics, and failure criteria.",
         "Compare A09 fail-closed routing with a three-state edge representation: ASSESSED_PASSABLE under A08 documented rules, ASSESSED_BLOCKED under those rules, and UNKNOWN when flood evidence does not assess the edge. Preserve unknown reason codes and NoData.",
-        "Use at least 120 reproducibly selected directed OD pairs across 12 spatial-sector × network-distance strata (at least 10 pairs per feasible stratum; document infeasible strata and exclusions). Include disconnected/no-path cases and full/partial/absent assessed-coverage strata.",
+        "Use at least 120 reproducibly selected directed OD pairs across 12 spatial-sector \u00d7 network-distance strata (at least 10 pairs per feasible stratum; document infeasible strata and exclusions). Include disconnected/no-path cases and full/partial/absent assessed-coverage strata.",
         "Evaluate identical cases across all three event windows, all five saved scenario labels where A08 snapshots exist, and saved 6/24/72-hour horizons. Do not interpolate snapshots or modify prior artifacts.",
         "First seek assessed-passable-only paths. Only if none exists may a configured conditional search traverse assessed-passable and UNKNOWN edges, minimizing unknown-edge distance before assessed travel cost, excluding assessed-blocked edges. Every route with UNKNOWN edges is explicitly CONDITIONAL / NEEDS VERIFICATION; unknown is never treated or described as passable.",
         "Report route availability/no-path, conditional frequency, unknown-edge distance/share, coverage, route changes, and route-coverage versus simulated risk/failure trade-offs. Held-out member results count only fully assessed paths; unknown truth remains an unknown denominator, never success or failure.",
         "Test a deterministic greedy unknown-edge verification-priority ranking by conditional OD-case coverage, with fixed tie-breaks. Report both passable and blocked outcomes for hypothetically assessed edges; present this only as verification prioritization, not evidence of safety/passability.",
         "Add regression tests for all three states, NoData/unmapped/ambiguous/structure-unknown reasons, blocked-edge exclusion, assessed route, conditional labeling, unknown distance, no path, deterministic sampling/ties, unknown held-out truth, and immutable inputs/previous outputs.",
-        "Complete focused 2025–2026 literature comparison with reproducible searches, dated source citations and closest-prior-art analysis covering incomplete/uncertain flood/road evidence, three-state edges, conditional routing, and verification prioritization. Allow negative/inconclusive novelty result; do not claim a gap without support.",
+        "Complete focused 2025\u20132026 literature comparison with reproducible searches, dated source citations and closest-prior-art analysis covering incomplete/uncertain flood/road evidence, three-state edges, conditional routing, and verification prioritization. Allow negative/inconclusive novelty result; do not claim a gap without support.",
         "If no independent observed road/flood outcomes are found, label evaluation OSSE using simulated member truth and state novelty/real-world improvement unproven.",
         "Verify source/output hashes; run focused and applicable Lane A checks, raw-data audit, and verify_state.py; update Lane A progress board and report exact commands/results/evidence; finish through official protocol.",
         "As a secondary A21 question, evaluate decision stability only using registered saved A05/A08 scenarios, member-resolved A21 routes, and saved A09/A10/A13 outputs. Preregister methods, baselines, metrics, tie rules, exclusions, and failure criteria before comparative analysis.",
@@ -5747,7 +5747,7 @@
         "Present values as external numerical-weather-model estimates, not rain-gauge observations. Display Open-Meteo attribution/license, provider valid time, fetch time, returned grid coordinates, units, precipitation accumulation interval, and source limitations.",
         "Represent loading, successful response, request failure, invalid response, and last-success-but-refresh-failed distinctly. Never relabel a retained previous response as current; do not invent a freshness SLA.",
         "Keep reservoir values, alerts, flood depth/extent, impacts, routes, shelters, risk, what-if results, and 3D water output DEMO/REPLAY/unknown/unavailable. The weather feed must not call, trigger, or alter the Lane A solver or any decision output.",
-        "Keep the rest of the UI demo-only and preserve B18/A20 visualization, B29–B37 behavior, accessible controls, responsive layout, and reduced-motion support. Add only the narrow weather panel/status treatment.",
+        "Keep the rest of the UI demo-only and preserve B18/A20 visualization, B29\u2013B37 behavior, accessible controls, responsive layout, and reduced-motion support. Add only the narrow weather panel/status treatment.",
         "Add local mocked tests for valid/malformed/null/error/timeout/previous-response states and prove tests perform no external request. No dependency install/change, backend/API/OpenAPI route, persistence, database, migration, credential, Docker, or contract/gate changes.",
         "Document source fields, refresh behavior, terms/attribution, model-vs-observation distinction, no-accuracy/no-uptime caveat, and the strict non-flood-use boundary. Run focused UI checks, production build, demo-only packaging checks adjusted only for the named weather request, verifier, and diff checks."
       ],
@@ -5786,7 +5786,7 @@
       ],
       "prerequisites": [
         "CR-014 authorizes only the fixed educational, non-commercial Open-Meteo weather-context display. It does not authorize solver input, retaining a response for deterministic model replay, or flood-model integration. Gate 1 may assess feasibility; any Gate 2 use requires a separate explicit project-owner approval/change-control record. Do not edit or expand CR-014.",
-        "Use B43’s exact request/schema and evidence; do not add locations, variables, requests, credentials, or a connection from B43 to the solver.",
+        "Use B43\u2019s exact request/schema and evidence; do not add locations, variables, requests, credentials, or a connection from B43 to the solver.",
         "Do not modify A05/A06, existing forecast/simulation outputs, APIs, frozen contracts, gates, B42, or A21 outputs. Keep reservoirs and all downstream decision products unavailable or research/demo-only.",
         "If Gate 1 cannot justify input semantics, spatial mapping, initialization/boundaries, rainfall-to-runoff assumptions, and internal feasibility, stop with a report and produce no flood outputs."
       ],
@@ -5818,16 +5818,16 @@
         "tests/phase12_openmeteo/"
       ],
       "acceptance": [
-        "Gate 1 — Feasibility report: identify the exact approved current/hourly fields, units and field meanings; establish the current precipitation accumulation interval (B43 records 900 s), hourly precipitation interval/amount meaning, provider valid-time labels/timezone, and actual fetch time as a separate timestamp. Do not infer model initialization/publication time from current.time or refresh cadence from B43 polling.",
-        "Gate 1 — Feasibility report: distinguish model-derived values from gauge observations and from flood simulation. Record which provider model/source and returned grid coordinates/resolution are actually evidenced; unknown model identity/resolution remains unknown.",
-        "Gate 1 — Spatial representativeness: compare the fixed Chennai point and provider grid coverage/resolution to the A06 600 m EPSG:32644 grid and assessed domain. Do not expand a city-point value across the model domain unless Lane A provides and justifies an evidence-backed spatial method and its limits. If not supportable, mark NOT FEASIBLE/INSUFFICIENT EVIDENCE and stop before any flood output.",
-        "Gate 1 — Temporal/physical mapping: evaluate the 900-second current accumulation separately from hourly forecast amounts; define any conversion to A06 hourly mm inputs and model seconds only from documented semantics. Address UTC/local valid-time alignment, gaps/nulls, zero, duplicate steps, 24-hour input limit versus A05 6/12/24/48/72 h horizons, solver time steps, initialization, initial water state, sea/river boundaries, and restart behavior.",
-        "Gate 1 — Rainfall-runoff and compute feasibility: document how A06 applies rainfall, porosity, infiltration, mapped drains, and boundaries; identify unsupported runoff/catchment assumptions, domain representativeness, runtime and memory feasibility, and the limits of A06 validation. Do not treat A06 calibration or weak cross-checks as independent flood validation.",
-        "Gate 1 — Decision: record `FEASIBLE_FOR_EXPERIMENT`, `FEASIBLE_WITH_LIMITS`, `NOT_FEASIBLE`, or `INSUFFICIENT_EVIDENCE`, with evidence and rationale. If not feasible/insufficient, or if separate solver-input/data-retention approval is absent, finish with the feasibility report only and generate no flood output.",
-        "Gate 2 — Conditional implementation only after Gate 1 passes and a separate explicit project-owner approval authorizes using and retaining a deterministic Open-Meteo response as a research rainfall input. Record the approval/change-control evidence; no change to CR-014 itself. If approval is absent, stop after Gate 1.",
-        "Gate 2 — Use a deterministic, replayable response snapshot with exact request, provider coordinates/model metadata where supplied, valid times, fetch time, units, source mode, provenance, terms/attribution and SHA-256. Preserve raw source timestamps and nulls; never claim gauge truth or live solver operation.",
-        "Gate 2 — Write only new versioned outputs below the registered `openmeteo_chennai_v1` paths; preserve all A05/A06 outputs. Record one-to-one input/forcing timestep mapping and explicit unknowns. Do not extrapolate beyond the supported 24-hour forecast or fabricate spatial coverage.",
-        "Gate 2 — Add deterministic tests for parsing, unit/interval conversion, timezone/UTC alignment, fetch-time separation, null/NoData/zero distinctions, spatial mapping, input hashes and repeatability. Run solver stability and mass-balance checks (A06 threshold <=1%), physical plausibility diagnostics, baseline comparisons, and report all failures; no calibration or validation claims from these checks.",
+        "Gate 1 \u2014 Feasibility report: identify the exact approved current/hourly fields, units and field meanings; establish the current precipitation accumulation interval (B43 records 900 s), hourly precipitation interval/amount meaning, provider valid-time labels/timezone, and actual fetch time as a separate timestamp. Do not infer model initialization/publication time from current.time or refresh cadence from B43 polling.",
+        "Gate 1 \u2014 Feasibility report: distinguish model-derived values from gauge observations and from flood simulation. Record which provider model/source and returned grid coordinates/resolution are actually evidenced; unknown model identity/resolution remains unknown.",
+        "Gate 1 \u2014 Spatial representativeness: compare the fixed Chennai point and provider grid coverage/resolution to the A06 600 m EPSG:32644 grid and assessed domain. Do not expand a city-point value across the model domain unless Lane A provides and justifies an evidence-backed spatial method and its limits. If not supportable, mark NOT FEASIBLE/INSUFFICIENT EVIDENCE and stop before any flood output.",
+        "Gate 1 \u2014 Temporal/physical mapping: evaluate the 900-second current accumulation separately from hourly forecast amounts; define any conversion to A06 hourly mm inputs and model seconds only from documented semantics. Address UTC/local valid-time alignment, gaps/nulls, zero, duplicate steps, 24-hour input limit versus A05 6/12/24/48/72 h horizons, solver time steps, initialization, initial water state, sea/river boundaries, and restart behavior.",
+        "Gate 1 \u2014 Rainfall-runoff and compute feasibility: document how A06 applies rainfall, porosity, infiltration, mapped drains, and boundaries; identify unsupported runoff/catchment assumptions, domain representativeness, runtime and memory feasibility, and the limits of A06 validation. Do not treat A06 calibration or weak cross-checks as independent flood validation.",
+        "Gate 1 \u2014 Decision: record `FEASIBLE_FOR_EXPERIMENT`, `FEASIBLE_WITH_LIMITS`, `NOT_FEASIBLE`, or `INSUFFICIENT_EVIDENCE`, with evidence and rationale. If not feasible/insufficient, or if separate solver-input/data-retention approval is absent, finish with the feasibility report only and generate no flood output.",
+        "Gate 2 \u2014 Conditional implementation only after Gate 1 passes and a separate explicit project-owner approval authorizes using and retaining a deterministic Open-Meteo response as a research rainfall input. Record the approval/change-control evidence; no change to CR-014 itself. If approval is absent, stop after Gate 1.",
+        "Gate 2 \u2014 Use a deterministic, replayable response snapshot with exact request, provider coordinates/model metadata where supplied, valid times, fetch time, units, source mode, provenance, terms/attribution and SHA-256. Preserve raw source timestamps and nulls; never claim gauge truth or live solver operation.",
+        "Gate 2 \u2014 Write only new versioned outputs below the registered `openmeteo_chennai_v1` paths; preserve all A05/A06 outputs. Record one-to-one input/forcing timestep mapping and explicit unknowns. Do not extrapolate beyond the supported 24-hour forecast or fabricate spatial coverage.",
+        "Gate 2 \u2014 Add deterministic tests for parsing, unit/interval conversion, timezone/UTC alignment, fetch-time separation, null/NoData/zero distinctions, spatial mapping, input hashes and repeatability. Run solver stability and mass-balance checks (A06 threshold <=1%), physical plausibility diagnostics, baseline comparisons, and report all failures; no calibration or validation claims from these checks.",
         "Report explicit limitations: model-derived weather input, not rain gauge; no independent validation of rainfall-driven flood outputs; 600 m coarse model and unverified subgrid precipitation; simplified runoff/infiltration/drainage and boundaries. Do not produce or imply alerts, impacts, routes, shelter advice, safety, warning, or operational forecasts.",
         "Run applicable focused and Lane A checks, raw-data audit, verify_state.py and diff checks; finish through Lane A protocol. Do not change A21, B43, contracts, APIs, gates, databases, services, Docker, or data/raw."
       ],
@@ -5855,7 +5855,7 @@
       "lane": "A",
       "title": "Assess spatial Open-Meteo rainfall forcing over A06 domain",
       "phase": "Open-Meteo spatial forcing feasibility and conditional research run",
-      "status": "running",
+      "status": "done_with_caveats",
       "depends_on": [
         "A22",
         "A05",
@@ -5895,24 +5895,26 @@
         "tests/phase12_openmeteo_grid/"
       ],
       "acceptance": [
-        "Gate 1 — identify the exact Open-Meteo Forecast API product/model available for the Chennai domain and its documented native spatial and temporal resolution. Record model/version identity where supplied; if the API does not identify the model or coverage sufficiently, retain UNKNOWN and stop as INSUFFICIENT_EVIDENCE.",
-        "Gate 1 — determine whether terms-compliant spatial precipitation can be retrieved for the entire A06 assessed grid/domain, not only B43’s 13.0827, 80.2707 point. Record native cell coordinates, grid spacing/resolution, coverage, missing cells and request bounds. Do not create a citywide field by copying one point value.",
-        "Gate 1 — determine whether the selected product can supply a complete forecast horizon sufficient for A05/A06’s 72 consecutive UTC hours. Record forecast initialization/reference time only if explicitly supplied, each valid time, accumulation interval, and actual fetch time separately. B43’s 24-hour UI request is not sufficient by itself; no extrapolation or synthetic time steps.",
-        "Gate 1 — define and assess a reproducible mapping from provider precipitation cells to each A06 600 m EPSG:32644 cell. Compare native resolution to the solver grid; justify aggregation/resampling only with documented method, uncertainty, edge behavior, and NoData/missing propagation. If a defensible spatial method is unavailable, stop before flood outputs.",
-        "Gate 1 — validate field semantics: current 900-second accumulation is distinct from hourly amount; document units and intervals, map only compatible forecast accumulations to A06 hourly_mm forcing, and define exact UTC alignment. Do not add overlapping current precipitation to the first forecast hour or convert current rain by assuming a rate.",
-        "Gate 1 — assess missing/zero behavior, duplicate and revised forecast steps, model snapshot determinism, initial water state, sea/river boundary conditions, rainfall-to-runoff and infiltration/porosity assumptions, mapped drainage limits, and computational/runtime feasibility against existing A06 implementation.",
-        "Gate 1 — assess whether A06’s coarse, assumption-based physics and current validation evidence support a research forcing experiment only. Explicitly note the absence of independent depth truth, gauge-validated rainfall field, and validated hydraulic behavior; do not treat A06 calibration/cross-checks as validation of this source.",
+        "Gate 1 \u2014 identify the exact Open-Meteo Forecast API product/model available for the Chennai domain and its documented native spatial and temporal resolution. Record model/version identity where supplied; if the API does not identify the model or coverage sufficiently, retain UNKNOWN and stop as INSUFFICIENT_EVIDENCE.",
+        "Gate 1 \u2014 determine whether terms-compliant spatial precipitation can be retrieved for the entire A06 assessed grid/domain, not only B43\u2019s 13.0827, 80.2707 point. Record native cell coordinates, grid spacing/resolution, coverage, missing cells and request bounds. Do not create a citywide field by copying one point value.",
+        "Gate 1 \u2014 determine whether the selected product can supply a complete forecast horizon sufficient for A05/A06\u2019s 72 consecutive UTC hours. Record forecast initialization/reference time only if explicitly supplied, each valid time, accumulation interval, and actual fetch time separately. B43\u2019s 24-hour UI request is not sufficient by itself; no extrapolation or synthetic time steps.",
+        "Gate 1 \u2014 define and assess a reproducible mapping from provider precipitation cells to each A06 600 m EPSG:32644 cell. Compare native resolution to the solver grid; justify aggregation/resampling only with documented method, uncertainty, edge behavior, and NoData/missing propagation. If a defensible spatial method is unavailable, stop before flood outputs.",
+        "Gate 1 \u2014 validate field semantics: current 900-second accumulation is distinct from hourly amount; document units and intervals, map only compatible forecast accumulations to A06 hourly_mm forcing, and define exact UTC alignment. Do not add overlapping current precipitation to the first forecast hour or convert current rain by assuming a rate.",
+        "Gate 1 \u2014 assess missing/zero behavior, duplicate and revised forecast steps, model snapshot determinism, initial water state, sea/river boundary conditions, rainfall-to-runoff and infiltration/porosity assumptions, mapped drainage limits, and computational/runtime feasibility against existing A06 implementation.",
+        "Gate 1 \u2014 assess whether A06\u2019s coarse, assumption-based physics and current validation evidence support a research forcing experiment only. Explicitly note the absence of independent depth truth, gauge-validated rainfall field, and validated hydraulic behavior; do not treat A06 calibration/cross-checks as validation of this source.",
         "Gate 1 decision: report FEASIBLE_FOR_RESEARCH, FEASIBLE_WITH_LIMITS, NOT_FEASIBLE, or INSUFFICIENT_EVIDENCE. If spatial coverage, 72-hour horizon, temporal mapping, or physical assumptions cannot be justified, finish with the feasibility report only; do not request/retain a forecast response or generate any flood output.",
-        "Gate 2 — only if Gate 1 passes, use CR-015’s one bounded snapshot, preserve exact request and response, retrieval time, model/coordinates/times/units, provenance and SHA-256 under data/features/weather/openmeteo_a06_domain_v1/. No polling, continuous feed, or solver connection from B43.",
-        "Gate 2 — generate any supported A05/A06-based result only under new openmeteo_grid_72h_v1 versioned paths; preserve all prior outputs. Include mapped rainfall inputs, mapping uncertainty and masks, model/member/run identity, deterministic replay manifest, and source/input/output hashes.",
-        "Gate 2 — run numerical stability, runtime, water/mass-balance checks (A06 existing criterion <=1%), physical plausibility checks and comparison with untouched A06 baseline; record all failures and limitations. These checks do not establish forecast skill, hydraulic accuracy, safety, warnings, or operational readiness.",
+        "Gate 2 \u2014 only if Gate 1 passes, use CR-015\u2019s one bounded snapshot, preserve exact request and response, retrieval time, model/coordinates/times/units, provenance and SHA-256 under data/features/weather/openmeteo_a06_domain_v1/. No polling, continuous feed, or solver connection from B43.",
+        "Gate 2 \u2014 generate any supported A05/A06-based result only under new openmeteo_grid_72h_v1 versioned paths; preserve all prior outputs. Include mapped rainfall inputs, mapping uncertainty and masks, model/member/run identity, deterministic replay manifest, and source/input/output hashes.",
+        "Gate 2 \u2014 run numerical stability, runtime, water/mass-balance checks (A06 existing criterion <=1%), physical plausibility checks and comparison with untouched A06 baseline; record all failures and limitations. These checks do not establish forecast skill, hydraulic accuracy, safety, warnings, or operational readiness.",
         "Keep reservoir data, alerts, impacts, routes, shelters, emergency decisions, backend/API/UI integration and B42 unchanged or unavailable/demo/research-only. Run focused and applicable Lane A tests, raw audit, verify_state.py and diff checks; finish through the official task protocol."
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/PHASE12_OPEN_METEO_GRID_FEASIBILITY.md"
+      ],
       "session": "A23 spatial Open-Meteo Gate 1 feasibility",
       "claimed_at": "2026-11-06T12:57:54+0530",
-      "finished_at": null,
-      "commit": null,
+      "finished_at": "2026-11-07T12:21:07+0530",
+      "commit": "2dd18c6",
       "heavy": true,
       "manual": false,
       "estimate_days": 5,
@@ -5921,7 +5923,8 @@
         "Registered after A22 reported INSUFFICIENT_EVIDENCE because CR-014 covered one point and 24 hours only. A23 addresses the spatial and 72-hour mismatch; it does not supersede or rewrite A22.",
         "CR-015 was approved and recorded before any solver input or retained forecast response. It permits one bounded Open-Meteo spatial forecast snapshot for A06 feasibility and one conditional research-only run; no continuous solver, credentials, or downstream integration.",
         "Gate 1 is feasibility only. If full-domain spatial forcing, 72-hour coverage, time/unit semantics, mapping uncertainty, or A06 physical assumptions are not defensible, stop with report and no flood output.",
-        "Output conflict review: no active tasks; all A23 output paths are new, clean, and disjoint from A05/A06, A21/A22, B43, and other lane work. No retrieval or implementation started during registration."
+        "Output conflict review: no active tasks; all A23 output paths are new, clean, and disjoint from A05/A06, A21/A22, B43, and other lane work. No retrieval or implementation started during registration.",
+        "Gate 1 FEASIBLE_WITH_LIMITS; Gate 2 run a23-research-20261107T064510Z (ECMWF IFS/UKMO 10 km/ICON x 20 members, max mass balance 0.91%, outlook MINIMAL). Engine in services/flood_engine; live API drafted unmounted in services/ai-service/app/live/ for Integrator change control. Extra probe requests disclosed in report."
       ]
     },
     {
@@ -6386,12 +6389,5 @@
       "freeze_evidence": "docs/master/GATE_G0_REPORT.md"
     }
   ],
-  "locks": [
-    {
-      "task": "A23",
-      "lane": "A",
-      "start_time": "2026-11-06T12:57:54+0530",
-      "expected_duration": "set by claimant"
-    }
-  ]
+  "locks": []
 }

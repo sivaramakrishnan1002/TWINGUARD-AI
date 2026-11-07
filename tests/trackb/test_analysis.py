@@ -70,11 +70,12 @@ def test_alert_persistence_is_idempotent_and_maps_critical_to_emergency():
 def test_state_persistence_keeps_missing_release_null_and_queues_marker():
     conn=Connection()
     event={'event_id':'res-1','source':'replay','observed_at':'2015-12-01T00:00:00+00:00',
-           'reservoir_key':'poondi','storage_value':100.,'capacity_value':3231.,'release_value':None}
+           'reservoir_key':'POONDI','storage_value':100.,'capacity_value':3231.,'release_value':None}
     write_reservoir_state(conn,7,event)
     state_sql, state_params=conn.cur.sql[0]
     assert 'ON CONFLICT(run_id,valid_at,reservoir_key) DO UPDATE' in state_sql
     assert state_params[6] is None
+    assert state_params[2]=='poondi'
     assert 'ON CONFLICT(marker_key) DO NOTHING' in conn.cur.sql[1][0]
 
 

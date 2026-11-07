@@ -1,6 +1,7 @@
 """Read-only Track B API; inject a project-specific read adapter."""
 from typing import Any, Protocol
 from datetime import date
+from datetime import datetime
 from fastapi import APIRouter, HTTPException, Query
 
 class TrackBReader(Protocol):
@@ -25,6 +26,25 @@ def _reader_or_503() -> TrackBReader:
 def _check_sources(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     if any(row.get('source') not in {'replay','live','simulated'} for row in rows):
         raise HTTPException(status_code=502, detail="Track B rows must identify replay, live, or simulated source")
+    for row in rows:
+        if row.get('time_precision')=='date':
+            try:
+                source_date=date.fromisoformat(row.get('source_date',''))
+            except (TypeError,ValueError) as exc:
+                raise HTTPException(status_code=502,detail="Date-only Track B rows require an ISO source_date") from exc
+            if source_date.isoformat()!=row.get('source_date') or row.get('observed_at') is not None:
+                raise HTTPException(status_code=502,detail="Date-only Track B rows cannot advertise an observation instant")
+            if row.get('observation_timezone') not in (None,'unknown'):
+                raise HTTPException(status_code=502,detail="Date-only Track B timezone must remain unknown")
+            if row.get('valid_from') is not None or row.get('valid_to') is not None:
+                raise HTTPException(status_code=502,detail="Date-only Track B alerts cannot advertise an exact validity interval")
+        elif row.get('time_precision')=='instant':
+            try:
+                observed=datetime.fromisoformat(str(row.get('observed_at','')).replace('Z','+00:00'))
+            except ValueError as exc:
+                raise HTTPException(status_code=502,detail="Instant Track B rows require an ISO observed_at") from exc
+            if observed.tzinfo is None:
+                raise HTTPException(status_code=502,detail="Instant Track B observed_at must include an offset")
     return rows
 
 @router.get("/reservoirs/current")

@@ -29,6 +29,24 @@ Track B files are committed in scoped commits; unrelated worktree changes remain
 
 
 
+## B19 — date-only historical reservoir semantics — 2026-10-28
+
+**Status: implementation and regression checks complete; migration proposal not applied.** The authoritative source archive provides a date column only, and no source-owner metadata establishes measurement time or timezone. Track B no longer encodes date-only reservoir/rain records at midnight or carries `Asia/Kolkata` as an event-time default. Producer messages now preserve `source_date=YYYY-MM-DD`, set `time_precision=date`, `observation_timezone=unknown`, `observed_at=null`, and keep aware `received_at` separate. Stable source-date identity/order, provenance, replay source class, numeric nulls and QC fields pass through the consumer state and date-only alert. Date-only alerts have no exact `valid_from`/`valid_to`; unknown rise/rain windows remain null rather than becoming zero. Timestamped replay rows retain the supplied offset and instant.
+
+Migration 010 requires `twin.reservoir_state.valid_at` and primary key `(run_id, valid_at, reservoir_key)`; `twin.alerts` requires exact non-null interval instants. Migration 100 likewise requires `observed_at` for `trackb.alert_events` and `valid_at` for recompute markers. The additive, backward-compatible migration proposal `database/migrations/101_trackb_date_only_reservoir_observations.sql` creates separate date-keyed observation/recompute tables and a date-only alert event table. Existing timestamp tables and rows remain unchanged. Date-only alerts stay out of `twin.alerts`, whose schema asserts exact validity intervals. **Migration 101 was not applied, and no shared or isolated database was accessed or modified.**
+
+Regression evidence: source producer JSON fields; consumer state and generated alerts; API date-only serialization and rejection of synthetic instants; offset-preserving timestamp replay; date-key persistence queries and duplicate suppression; and date-only validation rejecting synthetic midnight/timezone fields. B19 has not claimed historical timezone truth, live ingestion, G0 readiness, or contract freeze.
+
+Commands/results for B19:
+
+- `.venv\\Scripts\\python.exe -m pytest tests\\trackb\\test_date_only_timestamps.py tests\\trackb\\test_streaming.py tests\\trackb\\test_analysis.py tests\\trackb\\test_router.py -q` — **26 passed**, one existing Starlette/httpx deprecation warning.
+- `.venv\\Scripts\\python.exe -m pytest -q --import-mode=importlib tests\\trackb tests\\ai_service` — **50 passed**, one existing Starlette/httpx deprecation warning.
+- `.venv\\Scripts\\python.exe -m pytest -q --import-mode=importlib` — **202 passed**, one existing Starlette/httpx deprecation warning (final rerun after task finish).
+- `.venv\\Scripts\\python.exe -m compileall -q pipelines\\trackb\\streaming.py pipelines\\trackb\\replay.py pipelines\\trackb\\persistence.py services\\trackb\\router.py tests\\trackb\\test_date_only_timestamps.py tests\\trackb\\test_router.py` — passed. `git diff --check` — passed.
+- `.venv\\Scripts\\python.exe tools\\audit_raw_logs.py` — **157 files, 30,544,672,450 bytes, 157 hash matches, 0 without comparable hashes, 0 mismatches**.
+
+The current board/task-state reconciliation remains Integrator-owned; B19 did not change master state, C3, G0, or contract versions. I09 should review the date-only event and persistence contract before any integration/freeze decision.
+
 ## Runtime prerequisite recheck — 2026-10-25
 
 The four exact image tags are present locally: `redis:8.10.2-alpine`, `apache/kafka:4.3.2`, `prom/prometheus:v3.13.2`, and `grafana/grafana:13.2.2-ubuntu`. Installed `.venv` clients are redis 8.1.0, confluent-kafka 2.16.0, and prometheus-client 0.26.0. No pull or package install was performed. Migration 100 is still unapplied; DB persistence is not claimed.
@@ -97,3 +115,56 @@ Track B-owned repairs and the requested fresh runtime verification were performe
 - Shared `twinguard` read-only check: 14 migration records; migration 100 absent; Track B alert/link/marker tables absent. B10 stop-only succeeded; four Track B services stopped and all four named volumes remain present. No volume deletion or cleanup command ran. Retained volumes contain replay data.
 - C3 remains blocked pending authoritative timezone confirmation; C4 and C6 require Integrator contract/freeze review. B9 live E2E acceptance passed for this replay. C5 does not expose a serving HTTP tile endpoint.
 - Verification after these repairs: focused Track B + AI-service tests **35 passed**; Python compilation passed; backend `mvn -q test` passed; full Python suite `pytest -q --import-mode=importlib` **137 passed**, one existing Starlette/httpx deprecation warning. Raw audit **157 files / 30,544,672,450 bytes / 157 hash matches / 0 missing comparable hashes / 0 mismatches**.
+
+## B08 — bounded AI artifact projection review — 2026-10-29
+
+**Disposition: blocked_prerequisite with fail-closed implementation evidence.** B08 remained under the existing `B08 bounded artifact endpoint projections` claim; task state was not reset or reclaimed. G0 remained formally ready with C1–C8 frozen at v0. No live feed, database query/write, model training, new scientific result, API YAML edit, or C9 endpoint mount was added.
+
+`services/ai-service/app/main.py` now reads only the fixed A07 V4 JSONL artifact through a size/row-bounded cached loader, validates each line against the frozen `ImpactResult`, normalizes request time through the existing UTC model, and maps genuinely unknown run/time to the documented 404. A request matching an existing A07 run/time still returns 501: all five rainfall scenarios share each run/time key and frozen C4 `RunTimeRequest` has no scenario selector. The implementation refuses to pick one silently. The response model advertises the frozen `ImpactResult`; no successful impact response is possible until Integrator change control resolves the selector/schema gap.
+
+`POST /route` remains 501. All 216 A09 rows have `run_id=null`, while frozen `RouteRequest` requires an integer run ID; there is no evidence-backed mapping. `/forecast`, `/uncertainty`, and C4 `/scenario` remain 501 because the registered A05/A13 artifacts do not supply the response/run identity and selector semantics required by those frozen operations. A13 is a simulation-only manifest/comparison, not a new scenario result. I07's `/scenario-visualization-assets` paths remain unmounted and separate from C4 `/scenario`.
+
+Artifact identities checked read-only:
+
+- A05 forecast summary: `data/features/forecast/batch2_v1/forecast_summary.json`, 231,233 bytes, SHA-256 `0bc0e322041c0d264a214d995912fd648fbda3534616f3e4588122e292e94dba`.
+- A07 V4 results: `data/features/impact/batch2_v4_contract/impact_results.jsonl`, 75 records, SHA-256 `7dbecdcfe12a9761a5fb58859a29f3c4c99171931413416ae3233c460d20d7c2`; run summary SHA-256 `8d89cd84cfa822252be368309940e8e2cc2ffe9275f129061859b1f1141e9e0a`.
+- A09 revision 3 results: `data/features/routing/results/batch2_v1/revision_3/route_results.jsonl`, 216 records, SHA-256 `ee4e33b45268ba869cfc0f3f48eee1c10ac2c5ae83837b1d82165c6ca6c2ea7f`; summary SHA-256 `3d0784a481aaaf451456e9e9f1bb1291461bb0a3680b6cc7019335d0501adc3b`.
+- A13 manifest: `experiments/decision_lab/batch2_v1/run_manifest.json`, source mode `SIMULATED`, status `SIMULATED_DESCRIPTIVE_RESEARCH_NOT_VALIDATED_NOT_OPERATIONAL`, SHA-256 `2f0f780b14131b59cc29f12d02e8a54fd31a9772adbbdfda8d3691f1c05ca4bc`.
+
+B08-focused verification:
+
+- `.venv\\Scripts\\python.exe -m pytest -q --import-mode=importlib tests\\ai_service tests\\master\\test_api_contract_projection.py` — **26 passed**, one existing Starlette/httpx deprecation warning. This includes model validation of all A07 and A09 rows, null/NoData and simulated-source assertions, unknown run/time 404s, ambiguity behavior, no-database-access test, and retained 501 tests for unsupported operations.
+- `.venv\\Scripts\\python.exe -m compileall -q services\\ai-service\\app tests\\ai_service` — passed.
+- `git diff --check -- services/ai-service/app/main.py tests/ai_service/test_api.py` — passed.
+- `.venv\\Scripts\\python.exe -m pytest -q --import-mode=importlib` — **218 passed, 1 skipped**, one existing Starlette/httpx warning.
+- `.venv\\Scripts\\python.exe tools\\audit_raw_logs.py` — **157 files, 30,544,672,450 bytes, 157 hash matches, 0 without comparable hashes, 0 mismatches**.
+
+Integrator action needed before B08 can expose successful results without violating frozen v0: authorize a C4 change-control revision that gives impact requests an explicit A07 scenario selector; define a safe route lookup key that maps to the A09 records without inventing a run ID; and specify whether A05/A13 artifacts have compatible operations or remain unavailable. No contract/OpenAPI files were changed by B08. No live-operation, forecast-skill, scientific-validation, or route-safety claim is made.
+
+## B08 — C4 v1 saved-artifact endpoints — 2026-10-29
+
+**Status: implementation complete with documentation caveat.** B08 was claimed through `tools/master/claim.py` as session `B08 C4 v1 saved-artifact endpoints`. Runtime work is limited to fixed, versioned A07 V4 and A09 revision-3 JSONL artifacts. No database or live feed is accessed; there is no computation, model training, or new result generation. C4 v0 and C7/C8 response bodies remain unchanged. All returned artifacts retain `SIMULATED` source mode, source metadata, units, UTC valid time, nullable values, coverage and QC.
+
+Implemented in `services/ai-service/app/main.py`:
+
+- `POST /impact` requires C4 v1 `run_id`, offset-aware `valid_at`, and non-empty `scenario_key`; it resolves the exact A07 tuple and returns its single C7 response. Missing tuples return 404; duplicate tuples fail closed with a generic 503. The fixed reader is cached and bounded to 500 records and 16 MiB; errors do not expose file/parser details.
+- `GET /route-results/{result_id}` resolves within the hard-coded A09 revision-3 artifact only. It returns one exact C8 result; missing IDs return 404 and duplicate IDs fail closed with generic 503. The reader is cached and bounded to 500 records and 32 MiB. This is revision-scoped retrieval, not route calculation.
+- `POST /route` remains 501 because no integer run mapping exists. Forecast, uncertainty, and C4 `/scenario` remain 501 because their registered sources and request/response identities are not established. C9 visualization paths remain separate and unmounted.
+
+The I14 OpenAPI files were read-only. Their `x-current-runtime-status: 501` markers and descriptions still reflect pre-B08 behavior for the two now-tested endpoints. Integrator should reconcile those runtime-availability annotations; B08 did not edit I14-owned OpenAPI files. This is a documentation caveat, not a response-schema change.
+
+Owner-produced artifact identities:
+
+- A07 V4 `data/features/impact/batch2_v4_contract/impact_results.jsonl`: 75 rows, SHA-256 `7dbecdcfe12a9761a5fb58859a29f3c4c99171931413416ae3233c460d20d7c2`.
+- A09 revision 3 `data/features/routing/results/batch2_v1/revision_3/route_results.jsonl`: 216 rows, SHA-256 `ee4e33b45268ba869cfc0f3f48eee1c10ac2c5ae83837b1d82165c6ca6c2ea7f`.
+- A05 forecast summary and A13 comparison manifest remain unchanged and are not served by B08.
+
+Verification:
+
+- `.venv\\Scripts\\python.exe -m pytest -q --import-mode=importlib tests\\ai_service tests\\master\\test_api_contract_projection.py` — **33 passed**, one existing Starlette/httpx deprecation warning. Covers exact A07/A09 lookup, unknown selectors, duplicate fail-closed behavior, request/OpenAPI schema parity, all owner output rows, null/NoData and provenance, read-only database boundary, and retained 501 behavior for unsupported operations.
+- `.venv\\Scripts\\python.exe tools\\validate_api_contracts.py` — PASS: AI OpenAPI 3.1.0, 10 paths/10 operations; backend OpenAPI 3.1.0, 10 paths/11 operations.
+- `.venv\\Scripts\\python.exe -m compileall -q services\\ai-service\\app tests\\ai_service` — passed; `git diff --check -- services/ai-service/app/main.py tests/ai_service/test_api.py` — passed.
+- `.venv\\Scripts\\python.exe -m pytest -q --import-mode=importlib` — **226 passed, 1 skipped**, one existing Starlette/httpx warning.
+- `.venv\\Scripts\\python.exe tools\\audit_raw_logs.py` — **157 files, 30,544,672,450 bytes, 157 hash matches, 0 without comparable hashes, 0 mismatches**.
+
+Limitations: A07/A09 outputs remain simulated research results, not validated operational impact or safe routes. B9 remains historical REPLAY evidence only. No shared database, service deployment, Docker operation, or volume change was performed.

@@ -18,3 +18,25 @@ def test_read_only_routes_and_validation():
     assert client.get('/trackb/alerts/timeline?start=bad&end=2020-01-01').status_code == 422
     assert client.get('/trackb/backtest/summary').json()['status'] == 'exploratory'
     assert client.get('/trackb/rules/parameters').status_code == 200
+
+
+def test_date_only_api_rows_preserve_null_time_and_reject_synthetic_instants():
+    class DateOnlyReader(Reader):
+        def current_reservoir_states(self):
+            return [{"source": "replay", "source_date": "2015-12-01", "time_precision": "date",
+                     "observation_timezone": "unknown", "observed_at": None,
+                     "received_at": "2026-10-28T12:00:00+05:30", "storage_mcft": 100.0}]
+
+    configure_reader(DateOnlyReader())
+    app = FastAPI(); app.include_router(router); client = TestClient(app)
+    row = client.get('/trackb/reservoirs/current').json()['states'][0]
+    assert row['source_date'] == '2015-12-01' and row['observed_at'] is None
+    assert row['received_at'] == '2026-10-28T12:00:00+05:30'
+
+    class InvalidDateOnlyReader(DateOnlyReader):
+        def current_reservoir_states(self):
+            return [{"source": "replay", "source_date": "2015-12-01", "time_precision": "date",
+                     "observation_timezone": "unknown", "observed_at": "2015-12-01T00:00:00+05:30"}]
+
+    configure_reader(InvalidDateOnlyReader())
+    assert client.get('/trackb/reservoirs/current').status_code == 502

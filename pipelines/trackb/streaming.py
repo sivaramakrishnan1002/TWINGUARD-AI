@@ -6,11 +6,10 @@ never logged or copied to logs.
 """
 from __future__ import annotations
 from dataclasses import dataclass
-from datetime import datetime, timedelta, time
+from datetime import date, datetime, timedelta
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Callable, Iterable
-from zoneinfo import ZoneInfo
 import json
 import time as clock
 
@@ -52,14 +51,37 @@ def validate_event(event:dict[str,Any])->None:
     schema=event.get('schema')
     if schema not in TOPIC_BY_SCHEMA: raise InvalidEvent('unknown_schema','unsupported schema')
     if event.get('source') not in SOURCE_VALUES: raise InvalidEvent('invalid_source','source is not allowed')
-    for key in ('event_id','observed_at','received_at','provenance'):
+    for key in ('event_id','received_at','provenance'):
         if key not in event: raise InvalidEvent('missing_common_field',f'missing {key}')
     try:
-        observed=datetime.fromisoformat(str(event['observed_at']).replace('Z','+00:00'))
         received=datetime.fromisoformat(str(event['received_at']).replace('Z','+00:00'))
     except (ValueError,TypeError) as exc: raise InvalidEvent('invalid_timestamp','timestamps must be ISO-8601') from exc
-    if observed.tzinfo is None or received.tzinfo is None:
-        raise InvalidEvent('invalid_timestamp','timestamps must include a timezone')
+    if received.tzinfo is None:
+        raise InvalidEvent('invalid_timestamp','received_at must include a timezone')
+    precision=event.get('time_precision','instant')
+    if precision not in {'date','instant'}:
+        raise InvalidEvent('invalid_time_precision','time_precision must be date or instant')
+    if precision=='date':
+        source_date=event.get('source_date')
+        try:
+            parsed_date=date.fromisoformat(str(source_date))
+        except (ValueError,TypeError) as exc:
+            raise InvalidEvent('invalid_source_date','date precision requires source_date in YYYY-MM-DD form') from exc
+        if parsed_date.isoformat()!=source_date:
+            raise InvalidEvent('invalid_source_date','source_date must use canonical YYYY-MM-DD form')
+        if event.get('observed_at') is not None:
+            raise InvalidEvent('date_has_instant','date-only events must not contain observed_at')
+        if event.get('observation_timezone') not in (None,'unknown'):
+            raise InvalidEvent('date_has_timezone','date-only observation timezone must be unknown')
+    else:
+        try:
+            observed=datetime.fromisoformat(str(event['observed_at']).replace('Z','+00:00'))
+        except (ValueError,TypeError,KeyError) as exc:
+            raise InvalidEvent('invalid_timestamp','instant precision requires an ISO-8601 observed_at') from exc
+        if observed.tzinfo is None:
+            raise InvalidEvent('invalid_timestamp','observed_at must include a timezone')
+        if event.get('source_date') is not None and date.fromisoformat(event['source_date'])!=observed.date():
+            raise InvalidEvent('source_date_mismatch','source_date must match the supplied offset calendar date')
     if not isinstance(event.get('event_id'),str) or not event['event_id'].strip():
         raise InvalidEvent('invalid_event_id','event_id must be a non-empty string')
     if not isinstance(event.get('provenance'),dict):
@@ -78,10 +100,14 @@ def validate_event(event:dict[str,Any])->None:
                 raise InvalidEvent('invalid_alert_level','alert level is invalid')
             confidence=float(event['confidence'])
             if not 0<=confidence<=1: raise InvalidEvent('invalid_confidence','confidence must be between 0 and 1')
-            valid_from=datetime.fromisoformat(str(event['valid_from']).replace('Z','+00:00'))
-            valid_to=datetime.fromisoformat(str(event['valid_to']).replace('Z','+00:00'))
-            if valid_from.tzinfo is None or valid_to.tzinfo is None or valid_to<=valid_from:
-                raise InvalidEvent('invalid_validity','alert validity interval must be timezone-aware and increasing')
+            if precision=='date':
+                if event['valid_from'] is not None or event['valid_to'] is not None:
+                    raise InvalidEvent('date_has_validity_interval','date-only alerts must not advertise an instant validity interval')
+            else:
+                valid_from=datetime.fromisoformat(str(event['valid_from']).replace('Z','+00:00'))
+                valid_to=datetime.fromisoformat(str(event['valid_to']).replace('Z','+00:00'))
+                if valid_from.tzinfo is None or valid_to.tzinfo is None or valid_to<=valid_from:
+                    raise InvalidEvent('invalid_validity','alert validity interval must be timezone-aware and increasing')
             if not isinstance(event['trigger_inputs'],dict) or not isinstance(event['target'],dict):
                 raise InvalidEvent('invalid_alert_payload','trigger_inputs and target must be objects')
         elif schema=='trackb.rain_update.v1':
@@ -256,18 +282,20 @@ def make_replay_events(repo_root:Path,start:str,end:str,run_id:str|None=None)->I
     subset=df[(df.date>=start)&(df.date<=end)].sort_values(['date','reservoir'])
     received=datetime.now().astimezone().isoformat()
     for row in subset.itertuples(index=False):
-        observed=datetime.combine(pd.Timestamp(row.date).date(),time.min,tzinfo=ZoneInfo('Asia/Kolkata')).isoformat()
+        source_date=pd.Timestamp(row.date).date().isoformat()
         provenance={'source_id':'Kaggle Chennai Water Management','source_file':'data/raw/reservoirs/kaggle_chennai_water_management/archive.zip',
-                    'source_sha256':digest,'date_timezone':'Asia/Kolkata','timezone_status':'DEFAULT, to confirm',
+                    'source_sha256':digest,'timezone_status':'unknown; source provides date only',
                     'rainfall_unit_status':'INFERRED; original unit unspecified'}
         if run_id is not None:provenance['replay_run_id']=run_id
         reservoir=row.reservoir.upper()
         suffix=f':run:{run_id}' if run_id is not None else ''
         yield {'schema':'trackb.rain_update.v1','event_id':f'replay:{reservoir}:rain:{row.date:%Y-%m-%d}{suffix}',
-               'observed_at':observed,'received_at':received,'source':'replay','provenance':provenance,
+               'source_date':source_date,'time_precision':'date','observation_timezone':'unknown','observed_at':None,
+               'received_at':received,'source':'replay','provenance':provenance,
                'location_key':reservoir,'value':float(row.rain_kaggle_raw),'unit':'mm/day','period_seconds':86400,'qc_flags':[]}
         yield {'schema':'trackb.reservoir_update.v1','event_id':f'replay:{reservoir}:storage:{row.date:%Y-%m-%d}{suffix}',
-               'observed_at':observed,'received_at':received,'source':'replay','provenance':provenance,
+               'source_date':source_date,'time_precision':'date','observation_timezone':'unknown','observed_at':None,
+               'received_at':received,'source':'replay','provenance':provenance,
                'reservoir_key':reservoir,'storage_value':float(row.storage_mcft),'storage_unit':'mcft',
                'capacity_value':float(row.capacity_mcft),'capacity_unit':'mcft','release_value':None,'release_unit':'cusecs',
                'rainfall_mm':float(row.rain_kaggle_raw),'rain_3d_mm':None if pd.isna(row.rain_3d_mm) else float(row.rain_3d_mm),
@@ -296,6 +324,14 @@ def _delta_on_date(history:list[dict],target_date:str)->float|None:
     return float(matches[-1]['storage_pct']) if matches else None
 
 
+def _event_date(event:dict[str,Any])->str:
+    """Return the source-calendar date without inventing an instant."""
+    if event.get('source_date') is not None:return event['source_date']
+    observed=event.get('observed_at')
+    if not observed:raise ValueError('event has neither source_date nor observed_at')
+    return str(observed)[:10]
+
+
 class TrackBEventProcessor:
     def __init__(self,redis_client:Any,producer:KafkaJSONProducer,thresholds:dict[str,dict],metrics:TrackBMetrics,
                  alert_writer:Callable[[dict],Any]|None=None,state_writer:Callable[[dict],Any]|None=None):
@@ -315,12 +351,15 @@ class TrackBEventProcessor:
         return True
 
     def _rain(self,event:dict[str,Any])->None:
-        key=event['location_key'].upper(); day=event['observed_at'][:10]
-        history=_series_upsert(self.redis,f'trackb:rain_history:{key}',{'date':day,'value':event['value'],'source':event['source']})
-        self.redis.set(f'trackb:rain:{key}:latest',json.dumps({'observed_at':event['observed_at'],'value':event['value'],'unit':event['unit'],'source':event['source']}),ex=14*86400)
+        key=event['location_key'].upper(); day=_event_date(event)
+        history=_series_upsert(self.redis,f'trackb:rain_history:{key}',{'date':day,'value':event['value'],'source':event['source'],
+            'event_id':event['event_id'],'provenance':event['provenance']})
+        self.redis.set(f'trackb:rain:{key}:latest',json.dumps({'source_date':day,'time_precision':event.get('time_precision','instant'),
+            'observed_at':event.get('observed_at'),'received_at':event['received_at'],'value':event['value'],'unit':event['unit'],
+            'source':event['source'],'provenance':event['provenance']}),ex=14*86400)
 
     def _reservoir(self,event:dict[str,Any])->None:
-        key=event['reservoir_key'].upper(); observed=event['observed_at']; day=observed[:10]
+        key=event['reservoir_key'].upper(); observed=event.get('observed_at'); day=_event_date(event)
         capacity=event['capacity_value']; storage=float(event['storage_value'])
         if capacity is None or float(capacity)<=0:
             storage_pct=None
@@ -339,31 +378,39 @@ class TrackBEventProcessor:
         current=_delta_on_date(state_history,day)
         one=_delta_on_date(state_history,prior_day)
         three=_delta_on_date(state_history,prior_3day)
-        rise1=float(event['rise_1d_pct']) if event.get('rise_1d_pct') is not None else (current-one if current is not None and one is not None else 0.)
-        rise3=float(event['rise_3d_pct']) if event.get('rise_3d_pct') is not None else (current-three if current is not None and three is not None else 0.)
+        rise1=float(event['rise_1d_pct']) if event.get('rise_1d_pct') is not None else (current-one if current is not None and one is not None else None)
+        rise3=float(event['rise_3d_pct']) if event.get('rise_3d_pct') is not None else (current-three if current is not None and three is not None else None)
         rainfall_rows={r['date']:r.get('value') for r in rain_history}
         recent_days=[(pd.Timestamp(day)-pd.Timedelta(days=i)).strftime('%Y-%m-%d') for i in (2,1,0)]
-        rain3=sum(float(rainfall_rows[d]) for d in recent_days if rainfall_rows.get(d) is not None)
+        rain3=(sum(float(rainfall_rows[d]) for d in recent_days)
+               if all(rainfall_rows.get(d) is not None for d in recent_days) else None)
         if event.get('rain_3d_mm') is not None:rain3=float(event['rain_3d_mm'])
-        state={'event_id':event['event_id'],'observed_at':observed,'source':event['source'],
+        state={'event_id':event['event_id'],'source_date':day,'time_precision':event.get('time_precision','instant'),
+               'observation_timezone':event.get('observation_timezone'),'observed_at':observed,
+               'received_at':event['received_at'],'source':event['source'],
                'storage_value':storage,'storage_unit':event['storage_unit'],'capacity_value':capacity,
                'capacity_unit':event['capacity_unit'],'storage_pct':storage_pct,'rainfall_mm':rain_value,
                'rise_1d_pct':rise1,'rise_3d_pct':rise3,'rain_3d_mm':rain3,
                'release_value':event.get('release_value'),'qc_flags':event.get('qc_flags',[]),'provenance':event['provenance']}
         if self.state_writer is not None:self.state_writer(event)
         self.redis.set(f'trackb:reservoir:{key}:state',json.dumps(state,separators=(',',':')),ex=14*86400)
-        alert_id=f"alert:{key}:{observed}:trackb-rule-v1"
+        identity_time=f'date:{day}' if event.get('time_precision')=='date' else f'instant:{observed}'
+        alert_id=f"alert:{key}:{identity_time}:trackb-rule-v1"
         replay_id=event.get('provenance',{}).get('replay_run_id')
         if event.get('source')=='replay' and replay_id:
             alert_id+=f':run:{replay_id}'
-        alert={'schema':'trackb.alert.v1','event_id':alert_id,'observed_at':observed,
+        alert={'schema':'trackb.alert.v1','event_id':alert_id,'source_date':day,
+               'time_precision':event.get('time_precision','instant'),'observation_timezone':event.get('observation_timezone'),
+               'observed_at':observed,
                'received_at':datetime.now().astimezone().isoformat(),'source':event['source'],'provenance':event['provenance'],
-               'reservoir_key':key,'level':'Normal','confidence':0.0,'valid_from':observed,
-               'valid_to':(datetime.fromisoformat(observed.replace('Z','+00:00'))+timedelta(days=1)).isoformat(),
+               'reservoir_key':key,'level':'Normal','confidence':0.0,'valid_from':None,'valid_to':None,
                'rule_version':'trackb-rule-v1','trigger_inputs':{'storage_pct':storage_pct,'rise_1d_pct':rise1,'rise_3d_pct':rise3,'rain_3d_mm':rain3},
                'target':{'horizon_days':7,'capacity_fraction':0.8,'status':'DEFAULT, to confirm'}}
+        if event.get('time_precision','instant')=='instant':
+            alert['valid_from']=observed
+            alert['valid_to']=(datetime.fromisoformat(observed.replace('Z','+00:00'))+timedelta(days=1)).isoformat()
         if storage_pct is not None and key in self.thresholds:
-            frame=pd.DataFrame([{'storage_pct':storage_pct,'rise_1d_pct':rise1,'rise_3d_pct':rise3,'rain_3d_mm':rain3}])
+            frame=pd.DataFrame([{'storage_pct':storage_pct,'rise_1d_pct':rise1,'rise_3d_pct':rise3,'rain_3d_mm':rain3}]).astype(float)
             fired,level,confidence=rule_alert(frame,RuleThresholds(**self.thresholds[key]))
             alert['level']=('Normal','Watch','Warning','Critical')[int(level[0])]
             alert['confidence']=float(confidence[0])
@@ -374,7 +421,10 @@ class TrackBEventProcessor:
 
     def _alert(self,event:dict[str,Any])->None:
         key=event['reservoir_key'].upper()
-        self.redis.set(f'trackb:alert:{key}:current',json.dumps({'level':event['level'],'source':event['source'],'observed_at':event['observed_at'],'event_id':event['event_id']}),ex=14*86400)
+        self.redis.set(f'trackb:alert:{key}:current',json.dumps({'level':event['level'],'source':event['source'],
+            'source_date':event.get('source_date'),'time_precision':event.get('time_precision','instant'),
+            'observed_at':event.get('observed_at'),'received_at':event['received_at'],'event_id':event['event_id'],
+            'provenance':event['provenance']}),ex=14*86400)
         self.metrics.record_alert(event['level'],event['source'])
         if self.alert_writer is not None:self.alert_writer(event)
 

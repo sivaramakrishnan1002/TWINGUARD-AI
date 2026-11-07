@@ -44,6 +44,7 @@ active=[t for t in tasks if t.get('status')=='running']
 ready_by_lane={lane:[t['id'] for t in ready if t['lane']==lane] for lane in ('A','B','I')}
 current=[current_start,'', '## Current coordinated state (generated)', '',
  f"- G0: `{g0.get('status','unknown')}`; C1-C8: {'frozen at v0' if len(contracts)==8 and all(c.get('version')=='v0' and c.get('status')=='frozen' for c in contracts) else 'see STATE.json'}.",
+ "- Gate status: "+'; '.join(f"{g['id']} `{g.get('status','unknown')}`"+(f" ([report](GATE_{g['id']}_REPORT.md))" if (ROOT/f"docs/master/GATE_{g['id']}_REPORT.md").is_file() else '') for g in s.get('gates',[]))+'.',
  f"- Running tasks: {', '.join(t['id'] for t in active) if active else 'none'}.",
  f"- Selector-ready tasks: A: {', '.join(ready_by_lane['A']) or 'none'}; B: {', '.join(ready_by_lane['B']) or 'none'}; I: {', '.join(ready_by_lane['I']) or 'none'}.",
  '',current_end]

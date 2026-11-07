@@ -661,3 +661,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-07 11:55:33 Finished B44: done_with_caveats
 
 - 2026-11-07 11:57:15 Finished B44: done_with_caveats
+
+- 2026-11-07 12:19:31 Integrator G1-G4 gate review: G1/G2/G3 PASS_WITH_CAVEATS (set ready); G4 FAIL (not_ready, B46 added to requires); repair tasks A24/I26/B46 registered; A10 outputs add batch2_v3. Reports docs/master/GATE_G1..G4_REPORT.md.

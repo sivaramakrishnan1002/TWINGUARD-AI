@@ -16,7 +16,7 @@
 
 ## Ready tasks by lane A
 
-- None.
+- **A24 — G4 repair: versioned shelter-allocation result schema and A05 forecast artifact selector evidence** (ready)
 
 ## Ready tasks by lane B
 
@@ -35,6 +35,8 @@
 - **M8 — Mentor review dates** (blocked_manual)
 - **B40 — Implement authorized IMD rainfall/weather connector** (blocked_prerequisite)
 - **B42 — Prove observation-triggered recomputation through API and UI** (blocked_prerequisite)
+- **I26 — G4 repair: CR-019 additive read-only forecast and shelter API projection** (blocked_prerequisite)
+- **B46 — G4 repair: mount read-only saved forecast and shelter-allocation endpoints** (blocked_prerequisite)
 
 ## Running tasks
 
@@ -42,4 +44,4 @@
 
 ## Next gate
 
-G1 is next (`not_ready`); review its registered prerequisites and evidence before closure.
+G4 is next (`not_ready`); review its registered prerequisites and evidence before closure.

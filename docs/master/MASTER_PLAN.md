@@ -9,8 +9,9 @@ Build an auditable flood digital twin for the Chennai Metropolitan Area. Current
 ## Current coordinated state (generated)
 
 - G0: `ready`; C1-C8: frozen at v0.
+- Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `not_ready` ([report](GATE_G4_REPORT.md)); G5 `not_ready`; G6 `not_ready`.
 - Running tasks: A23.
-- Selector-ready tasks: A: none; B: none; I: none.
+- Selector-ready tasks: A: A24; B: none; I: none.
 
 <!-- CURRENT STATE END -->
 
@@ -180,6 +181,9 @@ Gate days are planning targets, not calendar commitments. No gate is declared pa
 | A23 | Assess spatial Open-Meteo rainfall forcing over A06 domain | A | A22, A05, A06, B43 | running |
 | I25 | Define additive CFM-DSS reservoir snapshot API projection | I | B41, I23, I24 | done_with_caveats |
 | B44 | Mount read-only CFM-DSS reservoir snapshot API | B | I25, B41 | done_with_caveats |
-| B45 | Connect CFM reservoir snapshots to the product UI | B | B44, B36, B37 | blocked_prerequisite |
+| B45 | Connect CFM reservoir snapshots to the product UI | B | B44, B36, B37 | done_with_caveats |
+| A24 | G4 repair: versioned shelter-allocation result schema and A05 forecast artifact selector evidence | A | A05, A10 | ready |
+| I26 | G4 repair: CR-019 additive read-only forecast and shelter API projection | I | A24 | blocked_prerequisite |
+| B46 | G4 repair: mount read-only saved forecast and shelter-allocation endpoints | B | I26, A24, B08 | blocked_prerequisite |
 
 <!-- TASK TABLE END -->

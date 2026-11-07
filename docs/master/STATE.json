@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07",
+  "updated_at": "2026-11-07T12:19:31+0530",
   "tasks": [
     {
       "id": "F1",
@@ -1069,7 +1069,8 @@
       "outputs": [
         "data/features/decision/shelters/batch2_v1/",
         "docs/SHELTER_ALLOCATION_BATCH2.md",
-        "tests/decision/"
+        "tests/decision/",
+        "data/features/decision/shelters/batch2_v3/"
       ],
       "acceptance": [
         "Use OSM shelters plus schools/colleges as candidate set, explicitly an assumption; state capacity assumptions.",
@@ -1091,7 +1092,8 @@
         "Batch 2 specification loaded; status follows declared completed dependencies.",
         "2026-10-27 Integrator readiness reconciliation after A09 closeout: A07/A08/A09 are done_with_caveats, acceptance is present, and no running output conflict remains. Research-only allocation; candidate shelter capacities remain assumptions.",
         "Final corrected run is data/features/decision/shelters/batch2_v3; batch2_v1 and v2 preserved. Registered output still names batch2_v1; integrator should reconcile output registry.",
-        "v2 total-unserved field was mislabeled as reachable and double-counted with unreachable; v3 separates and reconciles total, reachable, and unreachable demand."
+        "v2 total-unserved field was mislabeled as reachable and double-counted with unreachable; v3 separates and reconciles total, reachable, and unreachable demand.",
+        "2026-11-07 Integrator G4 review: output registry reconciled; data/features/decision/shelters/batch2_v3/ is the final corrected run. batch2_v1/ and batch2_v2/ remain preserved, superseded outputs."
       ]
     },
     {
@@ -1561,7 +1563,9 @@
       "manual": false,
       "estimate_days": null,
       "target_day": null,
-      "notes": []
+      "notes": [
+        "2026-11-07 Integrator G3 review: no finished_at/commit was recorded at closeout. Git history shows services/trackb/router.py and migration 100 added in b0d123e; date-only persistence and migration 101 in d12c454. The router is adapter-only and is not mounted in a service. Completion rests on the cited files plus B9/B20 isolated evidence; see docs/master/GATE_G3_REPORT.md."
+      ]
     },
     {
       "id": "B04",
@@ -6077,6 +6081,116 @@
         "Do not edit ProductExperience.tsx if another task owns it; use the App wrapper or a dedicated integration point and preserve B43/B37 changes.",
         "2026-11-07: ReservoirLivePanel mounted in Reservoirs section via same-origin /api/ai proxy (CR-018). Packaged smoke: UI 200, proxied /api/ai/reservoirs/history 200 with live CFM data, POST via proxy 403. UI tests 3/3; packaging 13 passed."
       ]
+    },
+    {
+      "id": "A24",
+      "lane": "A",
+      "title": "G4 repair: versioned shelter-allocation result schema and A05 forecast artifact selector evidence",
+      "phase": "A",
+      "status": "ready",
+      "depends_on": [
+        "A05",
+        "A10"
+      ],
+      "prerequisites": [],
+      "inputs": [],
+      "outputs": [
+        "docs/SHELTER_RESULT_SCHEMA.md",
+        "docs/G4_LANEA_API_SELECTOR_EVIDENCE.md",
+        "tests/decision/test_shelter_result_schema.py"
+      ],
+      "acceptance": [
+        "Read-only over existing artifacts: A10 data/features/decision/shelters/batch2_v3/ and A05 data/features/forecast/batch2_v1/. Do not recompute, retune or overwrite any output.",
+        "Define a versioned JSON result schema for A10 case-level shelter allocation: event/scenario/horizon/member/capacity-factor identity, people units, served/total-unserved/reachable-unserved/unreachable-component demand, UTC valid times, graph/hazard/forecast provenance hashes, WorldPop NoData semantics, assumption labels for candidate set and capacities, and SIMULATED source mode.",
+        "Document unique selector keys for A10 cases and for A05 forecast scenario/horizon/member artifacts; prove uniqueness or report duplicates with counts. State that A05 is a hindcast with no operational forecast skill.",
+        "Add serialization/uniqueness tests over fixtures or the existing artifacts; run focused tests and the raw audit.",
+        "Make no evacuation-guidance, verified-capacity, safe-route, validation or live-operation claim. This does not change C4/C7/C8 or authorize API work; I26 performs change control."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-07 Registered by Integrator as a G4 repair task (docs/master/GATE_G4_REPORT.md, criterion G4.4 FAIL: forecast operations are HTTP 501 and no shelter API exists)."
+      ]
+    },
+    {
+      "id": "I26",
+      "lane": "I",
+      "title": "G4 repair: CR-019 additive read-only forecast and shelter API projection",
+      "phase": "I",
+      "status": "blocked_prerequisite",
+      "depends_on": [
+        "A24"
+      ],
+      "prerequisites": [],
+      "inputs": [],
+      "outputs": [
+        "docs/master/CR-019_G4_FORECAST_SHELTER_API.md",
+        "docs/master/contracts/c4_openapi_v3.md",
+        "docs/api/ai-service.yaml",
+        "docs/api/backend.yaml"
+      ],
+      "acceptance": [
+        "Using A24 evidence, draft CR-019: an additive, read-only C4 projection that serves saved A05 forecast artifacts and A10 batch2_v3 shelter results by exact selectors. Do not alter frozen C4 v0, approved C4 v1/v2 or frozen C7/C8.",
+        "Specify fail-closed status semantics (400/404/409/503), units, UTC/time meanings, null/NoData, provenance and SIMULATED/hindcast/assumption labels. POST /forecast and POST /route computation stay unavailable unless separately approved.",
+        "Record the project-owner approval decision before any B46 implementation. Update the OpenAPI projections and pass tools/validate_api_contracts.py and the master contract tests.",
+        "Make no live-operation, operational-forecast-skill, verified-shelter or safety claim."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-07 Registered by Integrator as a G4 repair task (docs/master/GATE_G4_REPORT.md, criterion G4.4 FAIL: forecast operations are HTTP 501 and no shelter API exists)."
+      ]
+    },
+    {
+      "id": "B46",
+      "lane": "B",
+      "title": "G4 repair: mount read-only saved forecast and shelter-allocation endpoints",
+      "phase": "B",
+      "status": "blocked_prerequisite",
+      "depends_on": [
+        "I26",
+        "A24",
+        "B08"
+      ],
+      "prerequisites": [],
+      "inputs": [],
+      "outputs": [
+        "services/ai-service/",
+        "tests/ai_service/"
+      ],
+      "acceptance": [
+        "Implement only the I26-approved read-only selectors over the registered A05 and A10 batch2_v3 artifacts. Use no recomputation, live feed, shared-database query or write.",
+        "Return exact schema fields, units, time meanings, null/NoData, provenance, SIMULATED/hindcast/assumption labels and QC. Missing selectors return 404; duplicates fail closed with 409/503; unreadable or hash-invalid artifacts return 503 with no partial body.",
+        "Add a gateway projection only if I26 approves one; otherwise keep backend /shelters unexposed.",
+        "Add focused tests for lookup, not-found, duplicate, NoData and provenance preservation and the no-live/no-shared-DB path. Run the AI-service suite, the API validator, the full suite and the raw audit, and record the evidence in the Lane B report.",
+        "Make no evacuation-guidance, verified-capacity, safe-route, operational-forecast or live-operation claim."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-07 Registered by Integrator as a G4 repair task (docs/master/GATE_G4_REPORT.md, criterion G4.4 FAIL: forecast operations are HTTP 501 and no shelter API exists)."
+      ]
     }
   ],
   "gates": [
@@ -6097,7 +6211,7 @@
       ],
       "tests": [],
       "target_day": 10,
-      "status": "not_ready"
+      "status": "ready"
     },
     {
       "id": "G2",
@@ -6107,7 +6221,7 @@
       ],
       "tests": [],
       "target_day": 12,
-      "status": "not_ready"
+      "status": "ready"
     },
     {
       "id": "G3",
@@ -6117,13 +6231,14 @@
       ],
       "tests": [],
       "target_day": 15,
-      "status": "not_ready"
+      "status": "ready"
     },
     {
       "id": "G4",
       "requires": [
         "A05",
-        "A10"
+        "A10",
+        "B46"
       ],
       "tests": [],
       "target_day": 25,

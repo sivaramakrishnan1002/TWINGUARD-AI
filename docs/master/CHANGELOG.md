@@ -691,3 +691,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 10:18:12 Registered A26 (Lane A optional CUDA flood-engine backend, OD-2026-11-08), depends on A25.
 
 - 2026-11-08 14:48:43 Finished A25: done_with_caveats
+
+- 2026-11-08 14:50:58 A26 unblocked (A25 done); registered A27 (flow velocity/WSE export, priority before A26) and B49 (serve /v3 flow); B48 gains flow-animation item; proposed C4 v3 FlowFrame and GET /v3/simulations/{run_id}/flow added under proposed_paths.

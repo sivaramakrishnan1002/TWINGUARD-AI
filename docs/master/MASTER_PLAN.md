@@ -10,8 +10,8 @@ Build an auditable flood digital twin for the Chennai Metropolitan Area. Current
 
 - G0: `ready`; C1-C8: frozen at v0.
 - Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `ready` ([report](GATE_G4_REPORT.md)); G5 `not_ready`; G6 `not_ready`.
-- Running tasks: A25, B48.
-- Selector-ready tasks: A: none; B: none; I: none.
+- Running tasks: B48.
+- Selector-ready tasks: A: A27, A26; B: none; I: none.
 
 <!-- CURRENT STATE END -->
 
@@ -57,6 +57,12 @@ These are proposed tests, not findings. Track B has no observed release decision
 | G6 | day 34–38 | Validation, docs and v1.0 release. |
 
 Gate days are planning targets, not calendar commitments. No gate is declared passed without evidence and checks in GATES.md.
+
+## Lane reports outside `docs/`
+
+Some lane reports live with their owned code, because their lanes do not own `docs/`:
+
+- **A25** high-resolution flood engine (120/90 m citywide, 30 m focus; commit a4b2cbc): [pipelines/a25_hires/REPORT.md](../../pipelines/a25_hires/REPORT.md)
 
 
 <!-- TASK TABLE START -->
@@ -185,9 +191,11 @@ Gate days are planning targets, not calendar commitments. No gate is declared pa
 | A24 | G4 repair: versioned shelter-allocation result schema and A05 forecast artifact selector evidence | A | A05, A10 | parked |
 | I26 | G4 repair: CR-019 additive read-only forecast and shelter API projection | I | A24 | parked |
 | B46 | G4 repair: mount read-only saved forecast and shelter-allocation endpoints | B | I26, A24, B08 | parked |
-| A25 | High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards) | A | A23, A10, A21 | running |
+| A25 | High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards) | A | A23, A10, A21 | done_with_caveats |
 | B47 | Simulation and decision API (C4 v3) | B | B08, B44, B45 | done_with_caveats |
 | B48 | Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session | B | B45, B37 | running |
-| A26 | Optional CUDA backend for services/flood_engine (OD-2026-11-08) | A | A25 | blocked_prerequisite |
+| A27 | Per-frame flow velocity and water-surface export for UI flow animation | A | A25 | ready |
+| A26 | Optional CUDA backend for services/flood_engine (OD-2026-11-08) | A | A25 | ready |
+| B49 | Serve per-frame flow (GET /v3/simulations/{run_id}/flow) | B | A27, B47 | blocked_prerequisite |
 
 <!-- TASK TABLE END -->

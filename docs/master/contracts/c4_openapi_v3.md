@@ -75,4 +75,8 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
   - `EngineStatus.device` = {requested auto|cuda|cpu, resolved cuda|cpu, name, cuda_available, gpu_jobs_max = 1}.
   - `Provenance.device` = {used cuda|cpu, name, fallback_reason}.
   - Requested by Lane B (B47).
+- **2026-11-08 proposed flow operation (A27 → B49 → B48):**
+  - `GET /v3/simulations/{run_id}/flow?frame_index=&stride=&resolution=&focus_area=` returns `FlowFrame`.
+  - `FlowFrame` holds cell-centred u and v (m/s; u eastward, v northward, EPSG:32644), water-surface elevation (m, with its vertical datum), `wet_threshold_m`, and nulls outside the domain. Dry cells have u = v = 0 and wse = null.
+  - It is listed under `x-c4-v3-product-api.proposed_paths`, not mounted. B49 moves it into the section's `paths` when mounted and tested; the Integrator then promotes it.
 

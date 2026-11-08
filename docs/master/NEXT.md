@@ -16,7 +16,8 @@
 
 ## Ready tasks by lane A
 
-- None.
+- **A27 — Per-frame flow velocity and water-surface export for UI flow animation** (ready)
+- **A26 — Optional CUDA backend for services/flood_engine (OD-2026-11-08)** (ready)
 
 ## Ready tasks by lane B
 
@@ -35,11 +36,10 @@
 - **M8 — Mentor review dates** (blocked_manual)
 - **B40 — Implement authorized IMD rainfall/weather connector** (blocked_prerequisite)
 - **B42 — Prove observation-triggered recomputation through API and UI** (blocked_prerequisite)
-- **A26 — Optional CUDA backend for services/flood_engine (OD-2026-11-08)** (blocked_prerequisite)
+- **B49 — Serve per-frame flow (GET /v3/simulations/{run_id}/flow)** (blocked_prerequisite)
 
 ## Running tasks
 
-- **A25 — High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards)** (running)
 - **B48 — Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session** (running)
 
 ## Next gate

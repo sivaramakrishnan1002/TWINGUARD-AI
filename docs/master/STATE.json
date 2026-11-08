@@ -6327,7 +6327,8 @@
         "3D with CesiumJS and Google Photorealistic 3D Tiles using VITE_GOOGLE_MAPS_API_KEY from frontend/.env.local. The key is never committed (.gitignore *.local verified) and never sent to the TwinGuard API. Google attribution/logo stays visible.",
         "Flood depth as a draped/extruded water surface coloured by depth, animated timeline over frames, layer toggles (water, buildings by depth class, wards, roads three-state, shelters, incidents).",
         "Use saved results first, then the C4 v3 API (same-origin /api/ai/ proxy) exactly as specified in x-c4-v3-product-api. Show a single DEMO / SIMULATION badge; label generated incidents and scenario resources as such; never show a non-observed value as observed.",
-        "Production build and UI tests pass; screenshots of each tab recorded under docs/ui/ or docs/figures/."
+        "Production build and UI tests pass; screenshots of each tab recorded under docs/ui/ or docs/figures/.",
+        "Flow animation (added 2026-11-08): once B49 serves GET /v3/simulations/{run_id}/flow, animate the water with the per-frame u/v velocity (e.g. particles or a flow-direction texture) and water-surface elevation on the 3D surface; fall back to depth-only animation when flow returns 503."
       ],
       "evidence": [],
       "session": "ui",
@@ -6339,7 +6340,49 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths."
+        "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths.",
+        "2026-11-08 Integrator: added the flow-animation consumption item above (A27 -> B49 -> B48), at the coordinator's request."
+      ]
+    },
+    {
+      "id": "A27",
+      "lane": "A",
+      "title": "Per-frame flow velocity and water-surface export for UI flow animation",
+      "phase": "A",
+      "status": "ready",
+      "depends_on": [
+        "A25"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/api/ai-service.yaml",
+        "docs/master/contracts/c4_openapi_v3.md",
+        "pipelines/a25_hires/REPORT.md"
+      ],
+      "outputs": [
+        "services/flood_engine/",
+        "pipelines/",
+        "data/features/",
+        "tests/flood_engine/"
+      ],
+      "acceptance": [
+        "services/flood_engine saves per-frame depth-averaged u and v (m/s, cell-centred, u eastward +x and v northward +y in EPSG:32644) and water-surface elevation (m, stating its vertical datum) for every saved frame, in a sidecar next to frames.npz (e.g. flow.npz). Use a compact encoding (float16, or int16 with a stored scale and offset), at about 2x frame storage.",
+        "Add a products reader (e.g. velocity_frame(run, frame_index, stride) and wse_frame(...)) that returns arrays, grid spec, units and NoData semantics matching C4 v3 FlowFrame: null outside the domain; dry cells (depth < wet_threshold_m) have u = v = 0 and wse = null.",
+        "Document units, CRS, datum, NoData and the wet threshold. Existing outputs and frames.npz stay unchanged and bit-identical; runs without the sidecar remain readable.",
+        "Tests: sidecar round-trip within the encoding tolerance, speed consistent with discharge/depth, dry-cell and NoData handling, stride subsampling, and the reader on a run without flow output. Raw audit unchanged.",
+        "Do not edit services/ai-service/ (B49 serves it) or frontend/ (B48 consumes it)."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-08 Registered by Integrator at the coordinator's request. Owner priority: before A26 (realistic flowing water for the demo). Contract: proposed C4 v3 GET /v3/simulations/{run_id}/flow (FlowFrame) under x-c4-v3-product-api.proposed_paths."
       ]
     },
     {
@@ -6347,7 +6390,7 @@
       "lane": "A",
       "title": "Optional CUDA backend for services/flood_engine (OD-2026-11-08)",
       "phase": "A",
-      "status": "blocked_prerequisite",
+      "status": "ready",
       "depends_on": [
         "A25"
       ],
@@ -6378,7 +6421,46 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-08 Registered by Integrator at Lane B's request (relayed by the coordinator) under OD-2026-11-08. Lane A owns services/flood_engine; depends on A25. B47's /v3 already passes device= once run_scenario accepts it."
+        "2026-11-08 Registered by Integrator at Lane B's request (relayed by the coordinator) under OD-2026-11-08. Lane A owns services/flood_engine; depends on A25. B47's /v3 already passes device= once run_scenario accepts it.",
+        "2026-11-08 Unblocked by Integrator: A25 is done_with_caveats (a4b2cbc). Owner priority: claim A27 first, then A26; both write services/flood_engine/, so the selector holds A26 until A27 is no longer running."
+      ]
+    },
+    {
+      "id": "B49",
+      "lane": "B",
+      "title": "Serve per-frame flow (GET /v3/simulations/{run_id}/flow)",
+      "phase": "B",
+      "status": "blocked_prerequisite",
+      "depends_on": [
+        "A27",
+        "B47"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/api/ai-service.yaml",
+        "docs/master/contracts/c4_openapi_v3.md",
+        "pipelines/a25_hires/REPORT.md"
+      ],
+      "outputs": [
+        "services/ai-service/",
+        "tests/ai_service/"
+      ],
+      "acceptance": [
+        "Mount GET /v3/simulations/{run_id}/flow exactly as the proposed C4 v3 FlowFrame operation (frame_index, stride, resolution, focus_area; 404/422/503 as ApiError), reading A27's products reader. Runs without flow output return 503.",
+        "Move the operation from x-c4-v3-product-api.proposed_paths into the section's paths with schema-validated tests, then ask the Integrator to promote it to top-level paths.",
+        "Keep the payload bounded (stride; consider gzip). Do not change existing /v3 responses."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-08 Registered by Integrator as the serving follow-on to A27."
       ]
     }
   ],

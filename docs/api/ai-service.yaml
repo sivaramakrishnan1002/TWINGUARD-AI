@@ -9191,8 +9191,370 @@
             "profile": "car",
             "blocked_depth_threshold_m": 0.3
           }
+        },
+        "FlowFrame": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "frame_index",
+            "valid_time_utc",
+            "grid",
+            "units",
+            "rows",
+            "cols",
+            "wet_threshold_m"
+          ],
+          "description": "Per-frame depth-averaged flow for UI flow animation (A27 engine output, served by B49). Values are cell-centred on the run's GridSpec; u is eastward (+x) and v is northward (+y) in EPSG:32644. With stride > 1 the grid is subsampled and `grid` describes the subsampled lattice.",
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "frame_index": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "valid_time_utc": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "source_mode": {
+              "const": "SIMULATED"
+            },
+            "grid": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/GridSpec"
+            },
+            "stride": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 8,
+              "default": 1
+            },
+            "rows": {
+              "type": "integer"
+            },
+            "cols": {
+              "type": "integer"
+            },
+            "units": {
+              "type": "object",
+              "properties": {
+                "u": {
+                  "const": "m/s"
+                },
+                "v": {
+                  "const": "m/s"
+                },
+                "wse": {
+                  "const": "m"
+                }
+              }
+            },
+            "wse_vertical_datum": {
+              "type": "string",
+              "description": "Vertical reference of water-surface elevation (that of the engine DEM, e.g. EGM2008 for Copernicus GLO-30)."
+            },
+            "wet_threshold_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Cells with depth below this are dry: u = v = 0 and wse = null."
+            },
+            "u": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "description": "Row-major, north row first, m/s, rounded to 0.01. null = outside model domain."
+            },
+            "v": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "wse": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "description": "Water-surface elevation in m, rounded to 0.01. null = dry or outside domain."
+            },
+            "speed_max_mps": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "frame_index": 12,
+            "valid_time_utc": "2015-12-01T06:00:00Z",
+            "source_mode": "SIMULATED",
+            "grid": {
+              "crs": "EPSG:32644",
+              "origin_x_m": 395000.0,
+              "origin_y_m": 1468000.0,
+              "cell_size_m": 120,
+              "rows": 2,
+              "cols": 3,
+              "bbox_wgs84": [
+                80.005,
+                12.852,
+                80.008,
+                12.854
+              ]
+            },
+            "stride": 1,
+            "rows": 2,
+            "cols": 3,
+            "units": {
+              "u": "m/s",
+              "v": "m/s",
+              "wse": "m"
+            },
+            "wse_vertical_datum": "EGM2008",
+            "wet_threshold_m": 0.01,
+            "u": [
+              [
+                0.0,
+                0.42,
+                null
+              ],
+              [
+                0.11,
+                0.87,
+                0.0
+              ]
+            ],
+            "v": [
+              [
+                0.0,
+                -0.18,
+                null
+              ],
+              [
+                0.05,
+                0.33,
+                0.0
+              ]
+            ],
+            "wse": [
+              [
+                null,
+                6.21,
+                null
+              ],
+              [
+                5.98,
+                6.4,
+                null
+              ]
+            ],
+            "speed_max_mps": 0.93
+          }
         }
       }
-    }
+    },
+    "proposed_paths": {
+      "/v3/simulations/{run_id}/flow": {
+        "get": {
+          "operationId": "v3GetFlowFrame",
+          "summary": "Tab 2/7: per-frame u, v velocity and water-surface elevation for flow animation",
+          "tags": [
+            "c4-v3"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B49), data from Lane A (A27)",
+          "parameters": [
+            {
+              "name": "run_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+              }
+            },
+            {
+              "name": "frame_index",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            {
+              "name": "stride",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8,
+                "default": 1
+              },
+              "description": "Subsample every n-th cell to reduce payload for animation."
+            },
+            {
+              "name": "resolution",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "citywide",
+                  "focus"
+                ],
+                "default": "citywide"
+              }
+            },
+            {
+              "name": "focus_area",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "VELACHERY",
+                  "ADYAR",
+                  "T_NAGAR",
+                  "PORUR"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/FlowFrame"
+                  },
+                  "example": {
+                    "run_id": "sim-20261107T063000Z-3fa9c2d1",
+                    "frame_index": 12,
+                    "valid_time_utc": "2015-12-01T06:00:00Z",
+                    "source_mode": "SIMULATED",
+                    "grid": {
+                      "crs": "EPSG:32644",
+                      "origin_x_m": 395000.0,
+                      "origin_y_m": 1468000.0,
+                      "cell_size_m": 120,
+                      "rows": 2,
+                      "cols": 3,
+                      "bbox_wgs84": [
+                        80.005,
+                        12.852,
+                        80.008,
+                        12.854
+                      ]
+                    },
+                    "stride": 1,
+                    "rows": 2,
+                    "cols": 3,
+                    "units": {
+                      "u": "m/s",
+                      "v": "m/s",
+                      "wse": "m"
+                    },
+                    "wse_vertical_datum": "EGM2008",
+                    "wet_threshold_m": 0.01,
+                    "u": [
+                      [
+                        0.0,
+                        0.42,
+                        null
+                      ],
+                      [
+                        0.11,
+                        0.87,
+                        0.0
+                      ]
+                    ],
+                    "v": [
+                      [
+                        0.0,
+                        -0.18,
+                        null
+                      ],
+                      [
+                        0.05,
+                        0.33,
+                        0.0
+                      ]
+                    ],
+                    "wse": [
+                      [
+                        null,
+                        6.21,
+                        null
+                      ],
+                      [
+                        5.98,
+                        6.4,
+                        null
+                      ]
+                    ],
+                    "speed_max_mps": 0.93
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Run or frame not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Invalid frame_index, stride or resolution.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Run has no flow output (e.g. computed before A27) or its files are unreadable; no partial body.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "proposed_paths_rule": "Operations under `proposed_paths` are approved contract additions that are not mounted yet. The serving lane moves each into this section's `paths` when it is mounted and tested, and the Integrator then promotes it to top-level `paths`. B47 tests read only `paths`."
   }
 }

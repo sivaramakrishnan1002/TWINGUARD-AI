@@ -10,8 +10,8 @@ Build an auditable flood digital twin for the Chennai Metropolitan Area. Current
 
 - G0: `ready`; C1-C8: frozen at v0.
 - Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `ready` ([report](GATE_G4_REPORT.md)); G5 `not_ready`; G6 `not_ready`.
-- Running tasks: B48.
-- Selector-ready tasks: A: none; B: none; I: none.
+- Running tasks: none.
+- Selector-ready tasks: A: none; B: B13; I: none.
 
 <!-- CURRENT STATE END -->
 
@@ -119,7 +119,7 @@ Some lane reports live with their owned code, because their lanes do not own `do
 | B10 | Monitoring and CI | B | B02 | done_with_caveats |
 | B11 | Full-stack packaging | B | B04, B08, B09 | done_with_caveats |
 | B12 | Docs | B | — | done |
-| B13 | E2E scenario: packaged replay -> engine -> /v3 -> UI (G5, CR-020) | B | B02, B03, B04, B05, B06, B07, B08, B09, B11, B15, I05, B18, I21, B27, B28, I22, A25, A27, B47, B49 | blocked_prerequisite |
+| B13 | E2E scenario: packaged replay -> engine -> /v3 -> UI (G5, CR-020) | B | B02, B03, B04, B05, B06, B07, B08, B09, B11, B15, I05, B18, I21, B27, B28, I22, A25, A27, B47, B49 | ready |
 | B14 | Professional live-ready UI redesign (design-only) | B | — | done_with_caveats |
 | I01 | Gate checks | I | — | done_with_caveats |
 | I02 | Requirements merge | I | B01 | done_with_caveats |
@@ -196,7 +196,7 @@ Some lane reports live with their owned code, because their lanes do not own `do
 | B46 | G4 repair: mount read-only saved forecast and shelter-allocation endpoints | B | I26, A24, B08 | parked |
 | A25 | High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards) | A | A23, A10, A21 | done_with_caveats |
 | B47 | Simulation and decision API (C4 v3) | B | B08, B44, B45 | done_with_caveats |
-| B48 | Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session | B | B45, B37 | running |
+| B48 | Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session | B | B45, B37 | done_with_caveats |
 | A27 | Per-frame flow velocity and water-surface export for UI flow animation | A | A25 | done |
 | A26 | Optional CUDA backend for services/flood_engine (OD-2026-11-08) | A | A25 | done |
 | B49 | Serve per-frame flow (GET /v3/simulations/{run_id}/flow) | B | A27, B47 | done |

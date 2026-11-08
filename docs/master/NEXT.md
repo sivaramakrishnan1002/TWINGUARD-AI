@@ -20,7 +20,7 @@
 
 ## Ready tasks by lane B
 
-- None.
+- **B13 — E2E scenario: packaged replay -> engine -> /v3 -> UI (G5, CR-020)** (ready)
 
 ## Ready tasks by lane I
 
@@ -28,7 +28,6 @@
 
 ## Blocked tasks
 
-- **B13 — E2E scenario: packaged replay -> engine -> /v3 -> UI (G5, CR-020)** (blocked_prerequisite)
 - **I04 — Release/backups** (blocked_manual)
 - **M4 — Create GitHub repo/push** (blocked_manual)
 - **M7 — Census/licence checks** (blocked_manual)
@@ -38,7 +37,7 @@
 
 ## Running tasks
 
-- **B48 — Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session** (running)
+- None.
 
 ## Next gate
 

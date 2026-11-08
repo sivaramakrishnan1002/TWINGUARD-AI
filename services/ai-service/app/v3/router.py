@@ -410,6 +410,9 @@ def create_simulation(body: SimulationRequest, response: Response) -> dict:
         identity = {"label": "Open-Meteo forecast", "forcing": plan["forcing_sha256"] or f"fetch-{datetime.now(timezone.utc).timestamp()}"}
         job_extra = {"fetch_forecast": plan["fetch"]}
     identity["engine"] = engine
+    if engine == "a25":  # engine upgrades (e.g. 2.1.0 adds A27 flow) must not be served from older cached runs
+        from services.flood_engine import scenario as _scenario
+        identity["engine_version"] = getattr(_scenario, "ENGINE_VERSION", "unknown")
     # GPU results would match CPU only within tolerance, so the compute device is part of the cache identity.
     identity["device"] = device.resolve(device.engine_supports_gpu())["used"] if engine == "a25" else "cpu"
     job_extra["engine"] = engine
@@ -470,6 +473,48 @@ def get_depth(run_id: str, response: Response, frame_index: int | None = Query(d
             "valid_time_utc": doc["frames"][frame_index]["valid_time_utc"] if frame_index is not None else None,
             "unit": "m", "layer": layer, "rows": len(values), "cols": len(values[0]) if values else 0, "grid": doc["grid"],
             "values": values, "max_value": analysis.r2(max(float(finite.max()), 0.0)) if finite.size else None}
+
+
+@router.get("/simulations/{run_id}/flow", operation_id="v3GetFlowFrame", responses=errors(404, 422, 503))
+def get_flow(run_id: str, request: Request, frame_index: int = Query(ge=0),
+             stride: int = Query(default=1, ge=1, le=8),
+             resolution: Literal["citywide", "focus"] = Query(default="citywide"),
+             focus_area: Literal["VELACHERY", "ADYAR", "T_NAGAR", "PORUR"] | None = Query(default=None)):
+    """B49: per-frame depth-averaged u/v and water-surface elevation from the A27 flow sidecar (FlowFrame).
+
+    Served gzip-compressed when the client accepts it (a citywide frame is ~1 MB of JSON before compression).
+    """
+    doc = _run(run_id)
+    if resolution != doc["request"]["resolution"] or (resolution == "focus" and focus_area != doc["request"].get("focus_area")):
+        raise V3Error(422, f"Run was computed at resolution={doc['request']['resolution']}.")
+    frame_index = _frame_index(doc, frame_index)
+    engine_run = doc.get("_engine_run_id")
+    if doc.get("_engine", "a06") != "a25" or not engine_run:
+        raise V3Error(503, "This run has no flow output (A06 pilot engine); run a new A25 simulation.")
+    from services.flood_engine import products
+    try:
+        body = products.flow_frame(config.runs_dir() / "_a25", engine_run, frame_index, stride)
+    except products.FlowUnavailable:
+        raise V3Error(503, "This run has no flow output (computed before engine 2.1.0 / A27); run a new simulation.") from None
+    except products.NotFound:
+        raise V3Error(503, "Engine output for this run is missing.") from None
+    except ValueError as error:
+        raise V3Error(422, str(error)[:200]) from None
+    body["run_id"] = run_id
+    body["wet_threshold_m"] = round(float(body["wet_threshold_m"]), 6)  # float32 sidecar value (0.0099999998 -> 0.01)
+    return _json_maybe_gzip(request, body)
+
+
+def _json_maybe_gzip(request: Request, body: dict) -> Response:
+    import gzip
+    import json as _json
+
+    raw = _json.dumps(body, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    headers = {"Cache-Control": "no-store", "Vary": "Accept-Encoding"}
+    if "gzip" in request.headers.get("accept-encoding", "").lower() and len(raw) > 1024:
+        headers["Content-Encoding"] = "gzip"
+        raw = gzip.compress(raw, compresslevel=5)
+    return Response(content=raw, media_type="application/json", headers=headers)
 
 
 @router.get("/simulations/{run_id}/buildings", operation_id="v3GetBuildingDepths", responses=errors(400, 404, 422, 503))

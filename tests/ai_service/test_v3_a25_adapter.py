@@ -71,11 +71,28 @@ def fake_run_scenario(calls):
         np.savez_compressed(out / "peak.npz", velocity_mps=np.full((ROWS, COLS), 0.4, np.float32))
         if progress:
             progress(100.0)
-        return {"run_id": run_id, "grid": json.loads((Path(static_root) / "citywide_120m/meta.json").read_text())["grid"],
-                "frames": [{"index": k, "valid_time_utc": f"2026-11-07T{(k + 1) // 2:02d}:{30 * ((k + 1) % 2):02d}:00Z",
-                            "elapsed_minutes": (k + 1) * frame_interval_minutes} for k in range(frames)],
-                "provenance": {"engine_version": "twinguard-flood-engine/2.0.0", "forcing_sha256": "c" * 64,
-                               "inputs": [{"name": "rainfall", "source": "user", "source_mode": "SCENARIO_INPUT", "fetched_at": None, "sha256": None}]}}
+        doc = {"run_id": run_id, "grid": json.loads((Path(static_root) / "citywide_120m/meta.json").read_text())["grid"],
+               "frames": [{"index": k, "valid_time_utc": f"2026-11-07T{(k + 1) // 2:02d}:{30 * ((k + 1) % 2):02d}:00Z",
+                           "elapsed_minutes": (k + 1) * frame_interval_minutes} for k in range(frames)],
+               "provenance": {"engine_version": "twinguard-flood-engine/2.1.0", "forcing_sha256": "c" * 64,
+                              "inputs": [{"name": "rainfall", "source": "user", "source_mode": "SCENARIO_INPUT", "fetched_at": None, "sha256": None}]},
+               "flow": {"file": "flow.npz", "wse_vertical_datum": "EGM2008"}}
+        # A27 flow sidecar in Lane A's encoding: int16 x 0.01, wse relative to a per-cell offset, -32768 = NoData.
+        nodata = -32768
+        u = np.full((frames, ROWS, COLS), 25, np.int16)       # 0.25 m/s east
+        v = np.full((frames, ROWS, COLS), -10, np.int16)      # 0.10 m/s south
+        wse = np.full((frames, ROWS, COLS), 50, np.int16)     # +0.50 m above the offset
+        offset = np.full((ROWS, COLS), 600, np.int16)         # 6.00 m
+        for arr in (u, v, wse):
+            arr[:, :, -1] = nodata                            # drain column: outside the land domain
+        wse[0] = nodata                                       # first frame dry: wse null
+        u[0] = 0
+        v[0] = 0
+        u[0, :, -1] = v[0, :, -1] = nodata
+        np.savez_compressed(out / "flow.npz", u=u, v=v, wse=wse, wse_offset_cm=offset, scale=np.float32(0.01),
+                            nodata=np.int16(nodata), wet_threshold_m=np.float32(0.01))
+        (out / "run.json").write_text(json.dumps(doc), encoding="utf-8")
+        return doc
     return run
 
 
@@ -177,3 +194,47 @@ def test_cuda_failure_falls_back_to_cpu_and_is_reported(env, monkeypatch):
     run = assert_contract(client.get(RUN.format(run_id=accepted["run_id"])), RUN)
     assert run["state"] == "completed" and devices == ["cuda", "cpu"]
     assert run["provenance"]["device"] == {"used": "cpu", "name": None, "fallback_reason": "CUDA run failed (RuntimeError); rerun on CPU"}
+
+
+# ------------------------------------------------------------------------------------------------- B49 flow
+def test_flow_frame_from_a27_sidecar(env):
+    client = env["client"]
+    run_id = run_and_wait_a25(client, custom_request([4.0, 4.0, 4.0]))
+    url = RUN.format(run_id=run_id) + "/flow"
+    response = client.get(url + "?frame_index=3", headers={"accept-encoding": "gzip"})
+    assert response.status_code == 200 and response.headers["content-encoding"] == "gzip"
+    body = assert_contract(response, RUN + "/flow")
+    assert body["run_id"] == run_id and body["source_mode"] == "SIMULATED" and body["wse_vertical_datum"] == "EGM2008"
+    assert body["u"][0][0] == 0.25 and body["v"][0][0] == -0.1 and body["wse"][0][0] == 6.5
+    assert body["u"][0][-1] is None and body["wse"][0][-1] is None
+    assert body["speed_max_mps"] == 0.27 and body["rows"] == ROWS and body["cols"] == COLS
+    dry = client.get(url + "?frame_index=0").json()
+    assert dry["u"][0][0] == 0 and dry["wse"][0][0] is None  # dry: u = v = 0, wse null
+    coarse = client.get(url + "?frame_index=3&stride=2").json()
+    assert coarse["stride"] == 2 and coarse["rows"] == (ROWS + 1) // 2 and coarse["cols"] == (COLS + 1) // 2
+    for query in ("", "?frame_index=99", "?frame_index=1&stride=9", "?frame_index=1&resolution=focus&focus_area=ADYAR"):
+        bad = client.get(url + query)
+        assert bad.status_code == 422, query
+        assert_contract(bad, RUN + "/flow")
+    missing = client.get(RUN.format(run_id="evt-20260101T000000Z-deadbeef") + "/flow?frame_index=0")
+    assert missing.status_code == 404
+    assert_contract(missing, RUN + "/flow")
+
+
+def test_flow_unavailable_for_runs_without_sidecar(env):
+    client = env["client"]
+    run_id = run_and_wait_a25(client, custom_request([2.0, 2.0]))
+    engine_run = MANAGER.get(run_id)["_engine_run_id"]
+    (Path(config.runs_dir()) / "_a25" / engine_run / "flow.npz").unlink()  # as a pre-A27 (2.0.0) run
+    response = client.get(RUN.format(run_id=run_id) + "/flow?frame_index=0")
+    assert response.status_code == 503 and "no flow output" in response.json()["detail"]
+    assert_contract(response, RUN + "/flow")
+
+
+def run_and_wait_a25(client, body) -> str:
+    accepted = client.post("/v3/simulations", json=body)
+    assert accepted.status_code == 202, accepted.text
+    assert MANAGER.wait_idle(60)
+    run = client.get(RUN.format(run_id=accepted.json()["run_id"])).json()
+    assert run["state"] == "completed", run.get("error")
+    return run["run_id"]

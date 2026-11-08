@@ -28,6 +28,25 @@ def available() -> tuple[bool, str | None]:
         return False, f"CUDA query failed: {type(error).__name__}: {str(error)[:120]}"
 
 
+_WARM: dict = {}
+
+
+def warmup(device: str = "cuda") -> dict:
+    """Import torch and create the CUDA context once per process; returns the seconds spent (0 when already warm).
+    A long-lived worker can call this at start-up so the first simulation does not pay ~5-20 s of cold init."""
+    import time
+    if device in _WARM:
+        return {"torch_import_s": 0.0, "cuda_context_s": 0.0}
+    t = time.perf_counter()
+    import torch
+    t_import = time.perf_counter() - t
+    t = time.perf_counter()
+    torch.zeros(1, device=device)
+    torch.cuda.synchronize(device)
+    _WARM[device] = True
+    return {"torch_import_s": t_import, "cuda_context_s": time.perf_counter() - t}
+
+
 def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, frame_interval_s: float,
         stage_m: float = 0.0, inflows=None, max_dt: float = 60.0, cfl: float = 0.7,
         boundary_stage_fn=None, progress=None, threads: int | None = None, record_flow: bool = True,

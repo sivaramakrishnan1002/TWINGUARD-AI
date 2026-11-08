@@ -88,3 +88,22 @@ def test_gpu_scenario_parity_including_nested_focus(static_root, tmp_path):
     b = np.array(products.depth_frame(tmp_path / "gpu", fg["run_id"])["values"], dtype=float)
     assert np.nanmax(np.abs(a - b)) <= PEAK_TOL_M + 0.01
     assert products.flow_frame(tmp_path / "gpu", fg["run_id"], 6)["rows"] == 24
+
+
+def test_savez_fast_round_trip_and_timing_block(static_root, tmp_path):
+    arrays = {"a": np.arange(1000, dtype=np.uint16).reshape(10, 100), "b": np.full((3, 4), -32768, np.int16), "c": np.float32(0.01)}
+    scenario.savez_fast(tmp_path / "x.npz", **arrays)
+    with np.load(tmp_path / "x.npz", allow_pickle=False) as z:
+        for k, v in arrays.items():
+            np.testing.assert_array_equal(z[k], v)
+            assert z[k].dtype == np.asarray(v).dtype
+    doc = scenario.run_scenario(static_root, tmp_path / "runs", mode="event", event_key="2015-12-01", duration_hours=6)
+    t = doc["timing"]
+    assert {"forcing_and_setup_s", "device_init_s", "solve_s", "post_processing_s"} <= set(t) and t["solve_s"] >= 0
+
+
+@needs_cuda
+def test_warmup_is_paid_once():
+    hires_torch.warmup("cuda:0")
+    again = hires_torch.warmup("cuda:0")
+    assert again == {"torch_import_s": 0.0, "cuda_context_s": 0.0}

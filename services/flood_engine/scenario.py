@@ -368,6 +368,16 @@ def _shelter_nodes(static_root: Path, topo: dict, shelters: dict) -> np.ndarray:
 
 
 # ----------------------------------------------------------------------------------------------- run
+def savez_fast(path: Path, **arrays) -> None:
+    """np.savez_compressed equivalent (same .npz layout, readable by np.load) using zlib level 1:
+    ~3x faster to write for the large per-frame arrays, slightly larger files."""
+    import zipfile
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=1) as zf:
+        for name, value in arrays.items():
+            with zf.open(f"{name}.npy", "w", force_zip64=True) as fh:
+                np.lib.format.write_array(fh, np.asanyarray(value), allow_pickle=False)
+
+
 def resolve_device(device: str | None) -> tuple[str, str | None, str | None]:
     """-> (device used, GPU name, fallback reason). Accepts "cpu", "cuda", "cuda:N"; anything else falls back to CPU."""
     if device in (None, "", "cpu"):
@@ -471,7 +481,15 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
                                          parent_run["frame_interval_minutes"] * 60.0, forcing["stage_m"])
     results = []
     n_members = len(MEMBERS[members])
+    t_init = time.perf_counter()
     used, gpu_name, fallback = resolve_device(device)
+    if used != "cpu":
+        from . import hires_torch
+        init_info = hires_torch.warmup(used)  # torch import + CUDA context, timed apart from the solve
+    else:
+        init_info = {}
+    device_init_s = time.perf_counter() - t_init
+    t_solve = time.perf_counter()
     vram = []
     for i_member, (label, nm, fi) in enumerate(MEMBERS[members]):
         cb = (lambda f, i=i_member: progress(round(100.0 * (i + f) / n_members, 1))) if progress else None
@@ -494,6 +512,8 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
         if boundary_fn is None and r.diagnostics["mass_balance_relative_error"] > 0.01:
             raise RuntimeError(f"mass balance > 1% in member {label}: {r.diagnostics['mass_balance_relative_error']:.4g}")
         results.append((label, r))
+    solve_s = time.perf_counter() - t_solve
+    t_post = time.perf_counter()
     central = results[0][1]
     out = runs_root / f".tmp-{run_id}"
     if out.exists():
@@ -506,7 +526,7 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
         stack = np.stack([r.peak_m for _, r in results])
         peaks["depth_p05"] = np.where(bundle.a["active"], stack.min(axis=0), np.nan)  # bracket members, not statistical quantiles
         peaks["depth_p95"] = np.where(bundle.a["active"], stack.max(axis=0), np.nan)
-    np.savez_compressed(out / "frames.npz", depth_cm=central.frames_cm, frame_minutes=np.asarray(central.frame_minutes, np.int32))
+    savez_fast(out / "frames.npz", depth_cm=central.frames_cm, frame_minutes=np.asarray(central.frame_minutes, np.int32))
     flow_meta = None
     if central.flow_u is not None:  # A27 sidecar (central member)
         # wse is stored relative to a per-cell bed offset (int16 cm, stored once) so it compresses like depth:
@@ -514,7 +534,7 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
         offset = np.round(bundle.a["z"].astype(np.float64) / hires.FLOW_SCALE).astype(np.int32)
         rel = central.flow_wse.astype(np.int32) - offset[None]
         rel = np.where(central.flow_wse == hires.FLOW_NODATA, hires.FLOW_NODATA, np.clip(rel, -32767, 32767)).astype(np.int16)
-        np.savez_compressed(out / "flow.npz", u=central.flow_u, v=central.flow_v, wse=rel,
+        savez_fast(out / "flow.npz", u=central.flow_u, v=central.flow_v, wse=rel,
                             wse_offset_cm=np.clip(offset, -32767, 32767).astype(np.int16),
                             scale=np.float32(hires.FLOW_SCALE), nodata=np.int16(hires.FLOW_NODATA),
                             wet_threshold_m=np.float32(hires.WET_THRESHOLD_M))
@@ -552,7 +572,7 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
     for k in range(len(frames)):
         road_frames[k], _ = road_states(central.frames_cm[k], rcell, structure)
     in_grid = rcell >= 0
-    np.savez_compressed(out / "road_states.npz", state=road_frames[:, in_grid], segment_index=np.flatnonzero(in_grid).astype(np.int32))
+    savez_fast(out / "road_states.npz", state=road_frames[:, in_grid], segment_index=np.flatnonzero(in_grid).astype(np.int32))
     with np.load(static_root / "shared/shelters.npz", allow_pickle=False) as sz:
         shelters = {k: sz[k] for k in sz.files}
     scell = a["shelter_cell"]
@@ -561,11 +581,16 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
     s_in = scell >= 0
     reach = np.zeros((len(frames), len(scell)), bool)
     flat_frames = central.frames_cm.reshape(len(frames), -1)
+    reach_cache: dict = {}
     for k in range(len(frames)):
         site = np.full(len(scell), np.nan, np.float32)
         raw = flat_frames[k, np.where(s_in, scell, 0)]
         site[s_in & (raw != hires.NODATA_CM)] = raw[s_in & (raw != hires.NODATA_CM)] / 100.0
-        reach[k] = shelter_reachability(road_frames[k], topo, snode, site)
+        # identical road states + identical shelter-site depths give identical reachability (often ~30% of frames)
+        key_k = (hashlib.blake2b(road_frames[k].tobytes(), digest_size=16).digest(), np.nan_to_num(site, nan=-1).tobytes())
+        if key_k not in reach_cache:
+            reach_cache[key_k] = shelter_reachability(road_frames[k], topo, snode, site)
+        reach[k] = reach_cache[key_k]
     site_peak = np.full(len(scell), np.nan, np.float32)
     site_peak[s_in] = peak.ravel()[scell[s_in]]
     np.savez_compressed(out / "shelters.npz", reachable=reach[:, s_in], shelter_index=np.flatnonzero(s_in).astype(np.int32),
@@ -606,6 +631,8 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
                        "device": {"requested": device, "used": used, "name": gpu_name if used != "cpu" else "cpu (NumPy)",
                                   "fallback_reason": fallback, "peak_vram_mb": max(vram) if vram else None}},
         "diagnostics": diags, "runtime_seconds": round(time.perf_counter() - t0, 1), "limitations": LIMITATIONS,
+        "timing": {"forcing_and_setup_s": round(t_init - t0, 2), "device_init_s": round(device_init_s, 2), **{k: round(v, 2) for k, v in init_info.items()},
+                   "solve_s": round(solve_s, 2), "post_processing_s": round(time.perf_counter() - t_post, 2)},
         "files": sorted(p.name for p in out.iterdir()) + ["run.json"],
     }
     (out / "run.json").write_text(json.dumps(doc, indent=1, allow_nan=False), encoding="utf-8")

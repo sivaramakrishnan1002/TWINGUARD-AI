@@ -59,3 +59,30 @@ run_scenario(static_root, runs_root, mode="event", event_key="2015-12-01", devic
 - **Fallback:** if torch or CUDA is unavailable, or the device string is unsupported, the run uses NumPy and records the reason. If a CUDA error occurs mid-run (for example out-of-memory or a driver error), that member and all later members rerun on NumPy, and the error text goes into `fallback_reason`.
 - **Request cache:** device-independent. A cached CPU run can answer a CUDA request and vice versa, since results agree within the tolerance above.
 - **CLI:** `python -m services.flood_engine.scenario_cli ... --device cuda`.
+
+## Follow-up: first /v3 CUDA run (2026-11-08)
+
+Lane B's first real `/v3` job was `evt-20261108T141229Z-fb36a1cd` (Dec 2015, 48 h, citywide 120 m, `cuda:0`, 16 MB VRAM, no fallback). It reported `runtime_seconds` 100.8, against 36.3 s in the table above. Note that the benchmark figure is end to end, not solver-only, but it was measured with torch and CUDA already warm in the benchmark process.
+
+### Cold-process breakdown
+
+Fresh `python` process, same 48 h case, same machine:
+
+| Phase | Before fix (s) | After fix (s) |
+|---|---:|---:|
+| `import torch` | 15.5 (first load from disk) | — |
+| Device init (torch import + CUDA context), now timed separately | 1.1 | 3.4 |
+| GPU solve (11,827 steps, ≈ 2 ms/step, kernel-launch bound) | 25–26 | 23.8 |
+| Post-processing (frames/flow/road/shelter writes, reachability, wards) | 12.9 | 7.7 |
+| **Engine `runtime_seconds`** | 39.0 with torch pre-imported; 58.1 with torch imported inside `run_scenario` | **34.8** (cold process, torch imported inside) |
+
+**Diagnosis.** In a cold child process, `run_scenario(device="cuda")` imports torch and creates the CUDA context inside the call, about 5–20 s depending on the OS file cache. That accounts for 39 → 58 s. The remaining ~40 s of the 100.8 s is consistent with machine load during that job: the AI-service process and a Chrome tab using the same GPU for the UI's 3D view were both active. The engine itself shows no regression.
+
+### Fixes (A26 follow-up)
+
+1. **Warm-up:** `hires_torch.warmup(device)` imports torch and creates the CUDA context once per process. A long-lived worker can call it at start-up, and later runs pay 0 s.
+2. **Timing block:** every run document now has `timing = {forcing_and_setup_s, device_init_s, torch_import_s, cuda_context_s, solve_s, post_processing_s}`, so slow runs can be attributed without re-profiling.
+3. **Faster writes:** `frames.npz`, `flow.npz` and `road_states.npz` are written with zlib level 1 (`scenario.savez_fast`, same `.npz` layout, read by `np.load` unchanged). About 3× faster writes for about 17% larger files (48 h citywide: frames 4.6 MB, flow 10.8 MB).
+4. **Reachability cache:** shelter reachability is reused for frames with identical road states and site depths (70 distinct of 97 frames in this case).
+
+Numerical results are unchanged: same arrays, same tests.

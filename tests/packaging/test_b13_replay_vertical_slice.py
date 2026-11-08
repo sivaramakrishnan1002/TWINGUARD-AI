@@ -34,5 +34,7 @@ def test_packaged_fixture_and_b11_route_enablement_are_bounded() -> None:
     assert fixture_path.is_relative_to(ROOT / "services/ai-service/app")
 
     # Packaging contains only the app tier; the B13 path has no database service or writable data mount.
+    # B47 adds exactly one writable mount: the git-ignored C4 v3 run store, used only by /v3.
     assert all("db" not in name.lower() and "postgres" not in name.lower() for name in compose["services"])
-    assert all(mount.get("read_only") is True for mount in compose["services"]["ai-service"].get("volumes", []))
+    writable = [m for m in compose["services"]["ai-service"].get("volumes", []) if m.get("read_only") is not True]
+    assert [(m["source"], m["target"]) for m in writable] == [("./data/features/v3/runs", "/app/data/v3/runs")]

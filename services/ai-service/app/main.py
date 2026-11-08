@@ -19,6 +19,9 @@ from app.database import get_layer_records
 from app.scenario_visualization.router import router as scenario_visualization_router
 from app.reservoir_snapshot.router import router as reservoir_snapshot_router
 from app.scenario_visualization.raster_router import router as scenario_raster_router
+from app.v3.router import V3Error, handle_v3_error, handle_validation_error, router as v3_router
+from fastapi.exceptions import RequestValidationError
+from fastapi.exception_handlers import request_validation_exception_handler
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -708,6 +711,7 @@ app = FastAPI(
 app.include_router(scenario_visualization_router)
 app.include_router(scenario_raster_router)
 app.include_router(reservoir_snapshot_router)
+app.include_router(v3_router)  # C4 v3 product API (OD-2026-11-07 / CR-019)
 app.add_middleware(
     _ExactAcceptCORSMiddleware,
     allow_origins=["http://127.0.0.1:8081"],
@@ -715,6 +719,19 @@ app.add_middleware(
     allow_headers=["Accept"],
     allow_credentials=False,
 )
+
+
+@app.exception_handler(V3Error)
+async def v3_error_handler(request: Request, exc: V3Error) -> JSONResponse:
+    return handle_v3_error(request, exc)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_error_handler(request: Request, exc: RequestValidationError):
+    """C4 v3 paths answer ApiError; every earlier contract keeps FastAPI's default 422 body."""
+    if request.url.path.startswith("/v3/"):
+        return handle_validation_error(request, exc)
+    return await request_validation_exception_handler(request, exc)
 
 
 @app.exception_handler(ReplayLookupFailure)

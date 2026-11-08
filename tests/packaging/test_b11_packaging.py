@@ -62,8 +62,21 @@ def test_ai_mounts_only_registered_artifacts_read_only() -> None:
         ("./data/features/visualization3d/batch2_v1", "/app/data/features/visualization3d/batch2_v1"),
         ("./data/features/forecast/batch2_v1", "/app/data/features/forecast/batch2_v1"),
         ("./data/features/simulation/batch2_v1", "/app/data/features/simulation/batch2_v1"),
-    )
-    assert set(ai["environment"]) == {"PYTHONDONTWRITEBYTECODE", "PYTHONPATH"}
+        # B47 / C4 v3: model grids and the product static bundle.
+        ("./data/features/live", "/app/data/features/live"),
+        ("./data/features/v3/product_static_v1", "/app/data/features/v3/product_static_v1"),
+    ) + [
+        # The only writable mount: the git-ignored C4 v3 run store.
+        {"type": "bind", "source": "./data/features/v3/runs", "target": "/app/data/v3/runs", "read_only": False,
+         "bind": {"create_host_path": True}},
+    ]
+    assert set(ai["environment"]) == {
+        "PYTHONDONTWRITEBYTECODE", "PYTHONPATH", "TWINGUARD_LIVE_SCHEDULE_MIN", "TWINGUARD_V3_RUNS",
+        "TWINGUARD_V3_PRODUCT_STATIC", "TWINGUARD_LIVE_STATIC", "TWINGUARD_V3_WEATHER_MIN_INTERVAL_S",
+    }
+    # OD-2026-11-07: no background polling; the draft scheduler stays disabled.
+    assert ai["environment"]["TWINGUARD_LIVE_SCHEDULE_MIN"] == "0"
+    assert int(ai["environment"]["TWINGUARD_V3_WEATHER_MIN_INTERVAL_S"]) >= 600
 
 
 def test_backend_mounts_only_a20_scenario_assets_read_only() -> None:
@@ -104,10 +117,14 @@ def test_build_inputs_are_version_pinned_and_do_not_mount_secrets() -> None:
 def test_frontend_is_static_only_and_ai_route_computation_stays_separate() -> None:
     nginx = (ROOT / "frontend/nginx.conf").read_text(encoding="utf-8").lower()
     assert "try_files" in nginx
-    # CR-018: the only proxy is the same-origin /api/ai/ route to the packaged AI service.
-    assert nginx.count("proxy_pass") == 1
+    # CR-018: the same-origin /api/ai/ route to the packaged AI service stays GET-only; C4 v3 (B47) adds one
+    # /api/ai/v3/ route that also allows the POST/PUT operations of the contract. No other proxy exists.
+    assert nginx.count("proxy_pass") == 2
     assert "location /api/ai/ {" in nginx
     assert "proxy_pass http://ai-service:8000/;" in nginx
-    assert "limit_except get" in nginx
+    assert "limit_except get { deny all; }" in nginx
+    assert "location /api/ai/v3/ {" in nginx
+    assert "proxy_pass http://ai-service:8000/v3/;" in nginx
+    assert "limit_except get post put { deny all; }" in nginx
     assert "proxy_pass" not in COMPOSE.read_text(encoding="utf-8").lower()
 

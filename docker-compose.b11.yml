@@ -48,9 +48,30 @@ services:
         source: ./data/features/simulation/batch2_v1
         target: /app/data/features/simulation/batch2_v1
         read_only: true
+      # B47 / C4 v3: model grids (A06 now, A25 when installed) and the product static bundle, read-only.
+      - type: bind
+        source: ./data/features/live
+        target: /app/data/features/live
+        read_only: true
+      - type: bind
+        source: ./data/features/v3/product_static_v1
+        target: /app/data/features/v3/product_static_v1
+        read_only: true
+      # Writable C4 v3 run store (runs, weather cache, scenario resources); git-ignored host folder.
+      - type: bind
+        source: ./data/features/v3/runs
+        target: /app/data/v3/runs
+        read_only: false
+        bind:
+          create_host_path: true
     environment:
       PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: /app/services/ai-service:/app
+      TWINGUARD_LIVE_SCHEDULE_MIN: "0"
+      TWINGUARD_V3_RUNS: /app/data/v3/runs
+      TWINGUARD_V3_PRODUCT_STATIC: /app/data/features/v3/product_static_v1
+      TWINGUARD_LIVE_STATIC: /app/data/features/live/a06_live_static_v1
+      TWINGUARD_V3_WEATHER_MIN_INTERVAL_S: "600"
     healthcheck:
       test:
         - CMD

@@ -61,3 +61,16 @@ See [CR-014](CR-014_OPEN_METEO_WEATHER_CONTEXT.md) for endpoint fields, timestam
 - B48: reference-design UI with Google 3D Tiles (ui session).
 - The G4 repair chain A24/I26/B46 is superseded.
 - Contract: C4 v3 in `docs/api/ai-service.yaml` § `x-c4-v3-product-api`, summarised in `contracts/c4_openapi_v3.md`.
+
+## OD-2026-11-08 — GPU use (recorded 2026-11-08; answers D7 for hardware)
+
+**Decision-maker:** project owner, relayed through the coordinator session. Recorded by the Integrator.
+
+- **Hardware:** NVIDIA GeForce RTX 3050 Laptop GPU, 4 GB VRAM, driver 621.01. This is the owner's evidence, and it supersedes earlier conflicting records. For example, A10 recorded that `nvidia-smi` lacked permissions and that the venv PyTorch build had no CUDA.
+- **Policy:** use the GPU whenever it helps. **CPU must remain a supported fallback.** Every GPU path selects the device at runtime and falls back cleanly when CUDA is unavailable, and tests must pass on CPU-only machines.
+- **Permitted per lane:**
+  - Lane A may add an optional CUDA backend (PyTorch or CuPy) to `services/flood_engine/`.
+  - Lane B may add a device option and a GPU job queue in `/v3`. Because of the 4 GB VRAM, keep one GPU job at a time and make no new API contract fields without an Integrator contract edit.
+  - The UI may request a high-performance WebGL context.
+- **Dependencies:** the Integrator reconciles any new pins (for example, a CUDA PyTorch or CuPy wheel) when lanes report them. GPU wheels go in an optional requirements file or an extra so that the CPU install stays unchanged. Lanes run `pip check` and record the exact wheel and CUDA versions.
+

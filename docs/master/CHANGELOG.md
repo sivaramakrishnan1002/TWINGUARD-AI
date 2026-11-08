@@ -679,3 +679,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 09:57:56 Integrator G4 re-review: G4.4 passes in the working tree; G4 stays not_ready pending B47 closeout and OpenAPI parity fixes; C4 v3 SummaryDelta added.
 
 - 2026-11-08 09:59:48 Correction 09:57 entry: B47 was already finished (d5a45e9). G4 re-review PASS_WITH_CAVEATS, set ready; C4 v3 section operations marked mounted (200); top-level promotion pending Lane B OpenAPI parity fixes.
+
+- 2026-11-08 10:09:31 OD-2026-11-08 recorded: owner authorizes GPU use (RTX 3050 Laptop, 4 GB, driver 621.01) with mandatory CPU fallback; Integrator to reconcile CUDA wheel pins when lanes report them.

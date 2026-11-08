@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as Cesium from 'cesium';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 import { lonLatToUtm, terrainHeight, utmToLonLat, type TerrainGrid } from '../api/geo';
-import { depthClass, estimatedLevels, LEVEL_HEIGHT_M, loadBoundary, loadWaterways, type FocusFile } from '../api/fixtures';
+import { depthClass, estimatedLevels, LEVEL_HEIGHT_M, loadBoundary, loadGazetteer, loadWaterways, type FocusFile, type GazPlace } from '../api/fixtures';
+import { DEPTH_CLASS_STYLE, EDGE_STYLE, HOME_VIEW, PLACES, googleTilesConfigured } from './constants';
+export { DEPTH_CLASS_STYLE, EDGE_STYLE, HOME_VIEW, PLACES, WATER_CLASS, WATER_EXAGGERATION, googleTilesConfigured, imagerySourceLabel, ionConfigured } from './constants';
 import type { DepthClass, DepthFrame, EdgeState, Incident, LonLat, RoadFeatureCollection, RouteOption, Shelter, StaticFeatureCollection } from '../api/v3types';
 
 /**
@@ -15,48 +17,15 @@ import type { DepthClass, DepthFrame, EdgeState, Incident, LonLat, RoadFeatureCo
  */
 
 export type ViewMode = '3d' | '2d' | 'satellite';
-export interface TwinLayers { water: boolean; buildings: boolean; roads: boolean; wards: boolean; shelters: boolean; incidents: boolean; google: boolean }
+export interface TwinLayers { water: boolean; hqWater: boolean; buildings: boolean; roads: boolean; wards: boolean; shelters: boolean; incidents: boolean; google: boolean }
 export interface PickInfo { kind: 'building' | 'road' | 'shelter' | 'incident' | 'ward' | 'ground' | 'river'; title: string; lines: [string, string][]; location: LonLat }
 export type TwinCommand = { type: 'home' | 'zoomIn' | 'zoomOut' | 'north' | 'tilt'; key: number };
 export interface CameraInfo { headingDeg: number; metersPer100px: number | null; heightM: number }
 
 /** Fallback EGM2008 undulation for Chennai until the datum is calibrated against the loaded surface. */
 const GEOID_N_M = -86;
-/** Water is drawn with this vertical exaggeration so sub-metre depths read at city scale (presentation only). */
-export const WATER_EXAGGERATION = 3;
 
-export const DEPTH_CLASS_STYLE: Record<DepthClass, { label: string; color: string }> = {
-  dry: { label: 'Dry', color: '#5b6b7a' },
-  lt_0_15: { label: '< 0.15 m', color: '#5fd0f0' },
-  '0_15_to_0_5': { label: '0.15 – 0.5 m', color: '#2f7cff' },
-  '0_5_to_1_0': { label: '0.5 – 1.0 m', color: '#ff9f43' },
-  gt_1_0: { label: '> 1.0 m', color: '#ff3b5c' },
-  unknown: { label: 'Unknown (outside model)', color: '#3a4652' },
-};
-export const EDGE_STYLE: Record<EdgeState, { label: string; color: string }> = {
-  ASSESSED_PASSABLE: { label: 'Assessed passable', color: '#3ddc84' },
-  ASSESSED_BLOCKED: { label: 'Assessed blocked', color: '#ff3b5c' },
-  UNKNOWN: { label: 'Unknown / not assessed', color: '#f5c542' },
-};
-export const WATER_CLASS: { min: number; label: string; color: string; alpha: number }[] = [
-  { min: 0.01, label: '0.01 – 0.15', color: '#8ff3ff', alpha: 0.42 },
-  { min: 0.15, label: '0.15 – 0.5', color: '#2fb4ff', alpha: 0.55 },
-  { min: 0.5, label: '0.5 – 1.0', color: '#2a5cff', alpha: 0.65 },
-  { min: 1.0, label: '> 1.0 (hotspot)', color: '#ff2f8a', alpha: 0.7 },
-];
 const SEVERITY_COLOR: Record<string, string> = { critical: '#ff3b5c', warning: '#ff9f43', watch: '#f5c542', info: '#5fd0f0' };
-/** Approximate locality centres for map callouts (static reference). */
-export const PLACES: { name: string; lon: number; lat: number }[] = [
-  { name: 'Anna Nagar', lon: 80.2101, lat: 13.085 }, { name: 'T. Nagar', lon: 80.2341, lat: 13.0418 }, { name: 'Adyar', lon: 80.2565, lat: 13.0012 },
-  { name: 'Guindy', lon: 80.2206, lat: 13.0067 }, { name: 'Velachery', lon: 80.2209, lat: 12.9815 }, { name: 'Porur', lon: 80.1565, lat: 13.0382 },
-  { name: 'Marina Beach', lon: 80.2824, lat: 13.05 }, { name: 'Tambaram', lon: 80.1275, lat: 12.9249 }, { name: 'Chromepet', lon: 80.1462, lat: 12.9516 },
-  { name: 'Pallavaram', lon: 80.1504, lat: 12.9675 }, { name: 'Perungudi', lon: 80.2451, lat: 12.9654 }, { name: 'Sholinganallur', lon: 80.2279, lat: 12.901 },
-  { name: 'Ambattur', lon: 80.1548, lat: 13.1143 }, { name: 'Avadi', lon: 80.0970, lat: 13.1147 }, { name: 'Madhavaram', lon: 80.2311, lat: 13.1488 },
-  { name: 'Tiruvottiyur', lon: 80.3014, lat: 13.1643 }, { name: 'Egmore', lon: 80.2615, lat: 13.0732 }, { name: 'Mylapore', lon: 80.2676, lat: 13.0368 },
-  { name: 'Kodambakkam', lon: 80.2245, lat: 13.0524 }, { name: 'Saidapet', lon: 80.2231, lat: 13.0213 },
-];
-/** Cinematic oblique home view framing the whole study boundary (looking north over the city). */
-export const HOME_VIEW = { lon: 80.215, lat: 12.71, height: 30000, heading: 8, pitch: -38 };
 
 const GOOGLE_KEY = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined)?.trim() || '';
 const ION_TOKEN = (import.meta.env.VITE_CESIUM_ION_TOKEN as string | undefined)?.trim() || '';
@@ -64,9 +33,6 @@ if (ION_TOKEN) Cesium.Ion.defaultAccessToken = ION_TOKEN;
 const ION_ASSETS = { googlePhotorealistic: 2275207, worldTerrain: 1, osmBuildings: 96188, satellite: 3830182, satelliteLabels: 3830183, roadmap: 3830184 } as const;
 /** Camera height (m) below which the Google photorealistic mesh replaces the citywide OSM buildings. */
 const GOOGLE_NEAR_M = 3200;
-export const googleTilesConfigured = () => ION_TOKEN.length > 0 || GOOGLE_KEY.length > 0;
-export const ionConfigured = () => ION_TOKEN.length > 0;
-export const imagerySourceLabel = () => (ION_TOKEN ? 'Google Maps 2D (Cesium ion)' : 'Esri World Imagery / CARTO');
 
 function depthAtUtm(frame: DepthFrame | null, e: number, n: number): number | null {
   if (!frame) return null;
@@ -108,6 +74,38 @@ const BOUNDS = { west: 79.99, south: 12.84, east: 80.36, north: 13.30 };
 const MAX_ZOOM_DISTANCE_M = 80000;
 /** One Cesium viewer (one WebGL context) shared by every tab; it is re-parented into the visible map host. */
 let SHARED: { v: Cesium.Viewer; el: HTMLDivElement; dusk: Cesium.PostProcessStage; google: Cesium.Cesium3DTileset | null; osm: Cesium.Cesium3DTileset | null } | null = null;
+/** Streaming settings shared by the citywide 3D tilesets (load fast, refine when the camera settles). */
+const TILESET_OPTIONS = {
+  showCreditsOnScreen: true, maximumScreenSpaceError: 16, skipLevelOfDetail: true, baseScreenSpaceError: 1024, skipScreenSpaceErrorFactor: 16, skipLevels: 1,
+  immediatelyLoadDesiredLevelOfDetail: false, loadSiblings: false, cullRequestsWhileMoving: true, cullRequestsWhileMovingMultiplier: 60,
+  foveatedScreenSpaceError: true, preferLeaves: false, progressiveResolutionHeightFraction: 0.5, cacheBytes: 512 * 1024 * 1024, dynamicScreenSpaceError: true,
+};
+let globeSettled = false;
+/** Active WebGL renderer and the quality tier chosen from it (discrete GPU = high). */
+export interface GpuInfo { renderer: string; vendor: string; tier: 'high' | 'standard' | 'low' }
+let GPU: GpuInfo | null = null;
+const gpuListeners = new Set<(g: GpuInfo) => void>();
+export const getGpuInfo = () => GPU;
+export function onGpuInfo(fn: (g: GpuInfo) => void) { gpuListeners.add(fn); if (GPU) fn(GPU); return () => { gpuListeners.delete(fn); }; }
+function detectGpu(v: Cesium.Viewer): GpuInfo {
+  const gl = (v.scene as unknown as { context: { _gl: WebGLRenderingContext } }).context._gl;
+  const ext = gl.getExtension('WEBGL_debug_renderer_info');
+  const renderer = String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+  const vendor = String(ext ? gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR));
+  const r = renderer.toLowerCase();
+  const tier = /swiftshader|llvmpipe|software|basic render/.test(r) ? 'low' : /nvidia|geforce|rtx|gtx|radeon rx|radeon pro|quadro|arc a/.test(r) ? 'high' : 'standard';
+  return { renderer, vendor, tier };
+}
+/** Scale rendering quality to the GPU: MSAA, bloom, resolution and tile detail. */
+function applyQuality(v: Cesium.Viewer, g: GpuInfo) {
+  const scene = v.scene;
+  scene.msaaSamples = g.tier === 'high' ? 4 : g.tier === 'standard' ? 2 : 1;
+  scene.postProcessStages.fxaa.enabled = g.tier !== 'high';
+  scene.postProcessStages.bloom.enabled = g.tier !== 'low';
+  v.resolutionScale = g.tier === 'low' ? 0.8 : 1;
+  scene.globe.maximumScreenSpaceError = g.tier === 'high' ? 1.5 : 2;
+  TILESET_OPTIONS.maximumScreenSpaceError = g.tier === 'high' ? 8 : g.tier === 'standard' ? 16 : 24;
+}
 const glow = (color: string, power = 0.22) => Cesium.Material.fromType('PolylineGlow', { color: Cesium.Color.fromCssColorString(color), glowPower: power, taperPower: 1 });
 
 function setupScene(v: Cesium.Viewer): Cesium.PostProcessStage {
@@ -153,7 +151,7 @@ function depthClassUniform(frame: DepthFrame | null) {
   if (frame) for (let r = 0; r < rows; r += 1) for (let c = 0; c < cols; c += 1) data.set(CLASS_RGBA[depthClass(frame.values[r][c])], (r * cols + c) * 4);
   return new Cesium.TextureUniform({ typedArray: data, width: cols, height: rows, minificationFilter: Cesium.TextureMinificationFilter.NEAREST, magnificationFilter: Cesium.TextureMagnificationFilter.NEAREST });
 }
-function buildingShader(frame: DepthFrame | null) {
+function buildingShader(frame: DepthFrame | null, groundEllipsoidM: number, night: boolean) {
   const g = frame?.grid;
   const [lon, lat] = g ? utmToLonLat(g.origin_x_m, g.origin_y_m) : [80, 13];
   const enuInv = Cesium.Matrix4.inverse(Cesium.Transforms.eastNorthUpToFixedFrame(Cesium.Cartesian3.fromDegrees(lon, lat)), new Cesium.Matrix4());
@@ -162,53 +160,78 @@ function buildingShader(frame: DepthFrame | null) {
       u_depth: { type: Cesium.UniformType.SAMPLER_2D, value: depthClassUniform(frame) },
       u_enuInv: { type: Cesium.UniformType.MAT4, value: enuInv },
       u_size: { type: Cesium.UniformType.VEC2, value: new Cesium.Cartesian2(g ? g.cols * g.cell_size_m : 1, g ? g.rows * g.cell_size_m : 1) },
+      u_ground: { type: Cesium.UniformType.FLOAT, value: groundEllipsoidM },
+      u_night: { type: Cesium.UniformType.FLOAT, value: night ? 1 : 0 },
     },
     lightingModel: Cesium.LightingModel.UNLIT,
     fragmentShaderText: `
+      float tgHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
-        vec4 local = u_enuInv * vec4(fsInput.attributes.positionWC, 1.0);
+        vec3 p = fsInput.attributes.positionWC;
+        float r = length(p);
+        float s = p.z / r;
+        float c2 = 1.0 - s * s;
+        float a = 6378137.0; float b = 6356752.3142;
+        float h = r - a * b / sqrt(b * b * c2 + a * a * s * s) - u_ground;
+        vec3 up = normalize(p);
+        vec3 nW = normalize(czm_inverseViewRotation * fsInput.attributes.normalEC);
+        float upness = abs(dot(nW, up));
+        bool roof = upness > 0.7;
+        // base palette: cool slate roofs, lighter walls with a soft vertical gradient and darker base (AO)
+        vec3 roofCol = vec3(0.20, 0.26, 0.33);
+        vec3 wallCol = mix(vec3(0.25, 0.31, 0.39), vec3(0.42, 0.49, 0.57), clamp(h / 45.0, 0.0, 1.0));
+        float ao = mix(0.55, 1.0, clamp(h / 6.0, 0.0, 1.0));
+        float sun = 0.75 + 0.25 * dot(nW, normalize(vec3(0.3, -0.5, 0.8)));
+        vec3 col = roof ? roofCol * (0.9 + 0.1 * sun) : wallCol * ao * sun;
+        // flood colouring by the building's model cell
+        vec4 local = u_enuInv * vec4(p, 1.0);
         vec2 uv = vec2(local.x / u_size.x, -local.y / u_size.y);
-        vec3 base = vec3(0.16, 0.22, 0.30) + 0.10 * clamp(fsInput.attributes.positionMC.z / 40.0, 0.0, 1.0);
-        vec3 n = normalize(fsInput.attributes.normalEC);
-        float shade = 0.55 + 0.45 * abs(n.z);
-        material.diffuse = base * shade;
+        bool flooded = false;
         if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0) {
-          vec4 c = texture(u_depth, uv);
-          if (c.a > 0.5) material.diffuse = mix(material.diffuse, c.rgb * shade * 1.15, 0.85);
+          vec4 fc = texture(u_depth, uv);
+          if (fc.a > 0.5) { flooded = true; col = mix(col, fc.rgb * (roof ? 0.95 : 0.8 * ao), 0.78); }
         }
+        // dusk window lights on walls
+        if (!roof && u_night > 0.5 && h > 2.5) {
+          vec3 t = normalize(cross(up, nW));
+          float along = dot(p, t);
+          vec2 cell = vec2(floor(along / 3.2), floor(h / 3.1));
+          vec2 f = vec2(fract(along / 3.2), fract(h / 3.1));
+          float win = step(0.28, f.x) * step(f.x, 0.72) * step(0.30, f.y) * step(f.y, 0.75);
+          float lit = step(0.45, tgHash(cell + floor(p.xy / 97.0)));
+          vec3 warm = mix(vec3(1.0, 0.78, 0.45), vec3(0.75, 0.9, 1.0), step(0.8, tgHash(cell * 1.7)));
+          col = mix(col, flooded ? col * 0.6 : warm, win * lit * 0.85);
+        }
+        material.diffuse = col;
+        material.emissive = (!roof && u_night > 0.5) ? col * 0.15 : vec3(0.0);
         material.alpha = 1.0;
       }`,
   });
 }
 
-/** Upsample a depth frame into an RGBA canvas over its WGS84 bbox; bilinear between valid cells, dry/NoData transparent. */
-export function depthFieldCanvas(frame: DepthFrame): { canvas: HTMLCanvasElement; bbox: [number, number, number, number] } | null {
+/** Max depth encoded in the water texture's red channel (m). */
+const WATER_DEPTH_SCALE = 2.5;
+/**
+ * Encode a depth frame as a WGS84 texture for the water shader: R = depth / 2.5 m (bilinear between valid
+ * model cells; dry and NoData = 0), G/B = flow direction from the water-surface gradient (terrain + depth),
+ * scaled by depth. Alpha is always 255 so browser premultiplication cannot destroy the data.
+ */
+export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null): { canvas: HTMLCanvasElement; bbox: [number, number, number, number] } | null {
   const g = frame.grid;
   const [w0, s0] = utmToLonLat(g.origin_x_m, g.origin_y_m - frame.rows * g.cell_size_m);
   const [e0, n0] = utmToLonLat(g.origin_x_m + frame.cols * g.cell_size_m, g.origin_y_m);
   const [w1] = utmToLonLat(g.origin_x_m, g.origin_y_m);
   const [e1] = utmToLonLat(g.origin_x_m + frame.cols * g.cell_size_m, g.origin_y_m - frame.rows * g.cell_size_m);
   const bbox: [number, number, number, number] = [Math.min(w0, w1), s0, Math.max(e0, e1), n0];
-  const W = Math.min(1400, frame.cols * 12);
+  const W = Math.min(1200, frame.cols * 10);
   const H = Math.round(W * ((bbox[3] - bbox[1]) / (bbox[2] - bbox[0])));
   const cv = document.createElement('canvas');
   cv.width = W; cv.height = H;
   const ctx = cv.getContext('2d');
   if (!ctx) return null;
-  const img = ctx.createImageData(W, H);
-  const stops = [
-    [0.03, [143, 243, 255, 0]], [0.08, [143, 243, 255, 120]], [0.15, [70, 200, 255, 150]], [0.3, [47, 140, 255, 175]],
-    [0.5, [42, 92, 255, 195]], [1.0, [120, 60, 255, 210]], [1.5, [255, 47, 138, 225]],
-  ] as [number, number[]][];
-  const colour = (d: number) => {
-    if (d <= stops[0][0]) return null;
-    for (let i = 1; i < stops.length; i += 1) if (d <= stops[i][0]) {
-      const [d0, c0] = stops[i - 1]; const [d1, c1] = stops[i]; const t = (d - d0) / (d1 - d0);
-      return c0.map((c, k) => c + (c1[k] - c) * t);
-    }
-    return stops[stops.length - 1][1];
-  };
   const val = (r: number, c: number) => (r < 0 || c < 0 || r >= frame.rows || c >= frame.cols ? null : frame.values[r][c]);
+  const depth = new Float32Array(W * H);
+  const surf = new Float32Array(W * H);
   for (let y = 0; y < H; y += 1) {
     const lat = bbox[3] - ((y + 0.5) / H) * (bbox[3] - bbox[1]);
     for (let x = 0; x < W; x += 1) {
@@ -222,18 +245,87 @@ export function depthFieldCanvas(frame: DepthFrame): { canvas: HTMLCanvasElement
         const vv = val(rr, cc);
         if (vv !== null && ww > 0) { sum += vv * ww; wsum += ww; }
       }
-      if (wsum < 0.35) continue;
-      const rgba = colour(sum / wsum);
-      if (!rgba) continue;
-      const i = (y * W + x) * 4;
-      img.data[i] = rgba[0]; img.data[i + 1] = rgba[1]; img.data[i + 2] = rgba[2]; img.data[i + 3] = rgba[3];
+      const d = wsum < 0.35 ? 0 : sum / wsum;
+      depth[y * W + x] = d;
+      surf[y * W + x] = terrainHeight(terrain, lon, lat) + d;
     }
+  }
+  const img = ctx.createImageData(W, H);
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    const i = y * W + x;
+    const d = depth[i];
+    let fx = 0; let fy = 0;
+    if (d > 0.01) {
+      const sx = surf[y * W + Math.min(W - 1, x + 1)] - surf[y * W + Math.max(0, x - 1)];
+      const sy = surf[Math.max(0, y - 1) * W + x] - surf[Math.min(H - 1, y + 1) * W + x]; // +y = north
+      const len = Math.hypot(sx, sy);
+      if (len > 1e-4) { const k = Math.min(1, d / 1.0); fx = (-sx / len) * k; fy = (-sy / len) * k; }
+    }
+    img.data[i * 4] = Math.round(Math.min(1, d / WATER_DEPTH_SCALE) * 255);
+    img.data[i * 4 + 1] = Math.round(128 + 127 * fx);
+    img.data[i * 4 + 2] = Math.round(128 + 127 * fy);
+    img.data[i * 4 + 3] = 255;
   }
   ctx.putImageData(img, 0, 0);
   return { canvas: cv, bbox };
 }
 
-export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shelters, incidents, route, flyTo, command, onCamera, onPick, onMapClick, className = '' }: {
+/** Animated flood-water material for the draped surface (ripples, Fresnel dusk sky, glints, flow streaks, shoreline foam). */
+function floodWaterMaterial(canvas: HTMLCanvasElement) {
+  return new Cesium.Material({
+    translucent: true,
+    fabric: {
+      type: 'TwinGuardFloodWater',
+      uniforms: { image0: canvas, image1: canvas, mixT: 1.0, normalMap: Cesium.buildModuleUrl('Assets/Textures/waterNormals.jpg'), time: 0.0, hq: 1.0, depthScale: WATER_DEPTH_SCALE },
+      source: `
+        czm_material czm_getMaterial(czm_materialInput materialInput) {
+          czm_material m = czm_getDefaultMaterial(materialInput);
+          vec2 st = materialInput.st;
+          vec4 d = mix(texture(image0, st), texture(image1, st), mixT);
+          float depth = d.r * depthScale;
+          float alpha = smoothstep(0.0, 0.05, depth);
+          if (alpha < 0.002) { m.alpha = 0.0; return m; }
+          vec2 flow = (d.gb - 0.5) * 2.0;
+          vec3 shallow = vec3(0.40, 0.42, 0.28);
+          vec3 mid = vec3(0.13, 0.36, 0.42);
+          vec3 deep = vec3(0.04, 0.16, 0.33);
+          vec3 base = depth < 0.3 ? mix(shallow, mid, depth / 0.3) : mix(mid, deep, clamp((depth - 0.3) / 1.2, 0.0, 1.0));
+          vec2 uv = st * vec2(850.0, 1100.0);
+          vec2 drift = flow * time * 0.05;
+          vec3 n1 = texture(normalMap, uv * 0.9 + vec2(time * 0.010, time * 0.006) - drift).xyz * 2.0 - 1.0;
+          vec3 n2 = texture(normalMap, uv * 1.7 - vec2(time * 0.007, -time * 0.011) - drift * 1.6).xyz * 2.0 - 1.0;
+          vec3 up = normalize(materialInput.normalEC);
+          vec3 zEC = normalize(vec3(czm_view[2].xyz));
+          vec3 east = normalize(cross(zEC, up));
+          vec3 north = cross(up, east);
+          vec2 slope = (n1.xy + n2.xy) * 0.35 * hq;
+          vec3 nEC = normalize(up + east * slope.x + north * slope.y);
+          vec3 v = normalize(-materialInput.positionToEyeEC);
+          float fres = pow(1.0 - max(dot(nEC, v), 0.0), 3.0);
+          vec3 sky = vec3(0.36, 0.46, 0.66);
+          vec3 col = mix(base, sky, 0.18 + 0.55 * fres);
+          vec3 L = normalize(czm_lightDirectionEC + vec3(0.0, 0.0, 0.4));
+          float spec = pow(max(dot(reflect(-L, nEC), v), 0.0), 70.0) * hq;
+          col += vec3(1.0, 0.88, 0.7) * spec * 0.7;
+          float speed = length(flow);
+          float streak = texture(normalMap, uv * 0.18 - flow * time * 0.25).r;
+          col += vec3(0.75, 0.88, 0.95) * smoothstep(0.66, 0.92, streak) * speed * 0.45 * hq;
+          float foamNoise = texture(normalMap, uv * 2.4 + vec2(time * 0.03)).g;
+          float foam = (1.0 - smoothstep(0.03, 0.14, depth)) * smoothstep(0.5, 0.78, foamNoise);
+          col = mix(col, vec3(0.88, 0.92, 0.9), foam * 0.55);
+          m.diffuse = col * 0.8;
+          m.emission = col * 0.22 + vec3(1.0, 0.9, 0.75) * spec * 0.3;
+          m.specular = 0.7;
+          m.shininess = 70.0;
+          m.normal = nEC;
+          m.alpha = alpha * mix(0.62, 0.92, clamp(depth / 0.8, 0.0, 1.0));
+          return m;
+        }`,
+    },
+  });
+}
+
+export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, wardShapes, highlightWard, shelters, incidents, route, flyTo, command, onCamera, onPick, onMapClick, className = '' }: {
   mode: ViewMode;
   layers: TwinLayers;
   terrain: TerrainGrid | null;
@@ -241,6 +333,9 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
   focus: FocusFile | null;
   roads?: RoadFeatureCollection | null;
   wards?: StaticFeatureCollection | null;
+  /** All ward polygons (for highlighting a searched ward even when the ward layer is off). */
+  wardShapes?: StaticFeatureCollection | null;
+  highlightWard?: number | null;
   shelters?: Shelter[] | null;
   incidents?: Incident[] | null;
   route?: RouteOption[] | null;
@@ -272,6 +367,7 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
   const [boundary, setBoundary] = useState<StaticFeatureCollection | null>(null);
   const [near, setNear] = useState(false);
   const [osmReady, setOsmReady] = useState(false);
+  const [pending, setPending] = useState(0);
   const nearRef = useRef(near);
   const boundaryRef = useRef<StaticFeatureCollection | null>(null);
   boundaryRef.current = boundary;
@@ -283,7 +379,53 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
 
   const ground = (lon: number, lat: number) => terrainHeight(terrain, lon, lat) + datum;
 
-  useEffect(() => { loadWaterways().then(setRivers); loadBoundary().then(setBoundary); }, []);
+  const [places, setPlaces] = useState<GazPlace[] | null>(null);
+  useEffect(() => { loadWaterways().then(setRivers); loadBoundary().then(setBoundary); loadGazetteer().then((g) => setPlaces(g?.places ?? null)); }, []);
+
+  /* locality labels from the gazetteer, decluttered by rank: more appear as you zoom in */
+  useEffect(() => {
+    const v = viewer.current;
+    if (!v || !places?.length) return;
+    const old = prims.current.labels;
+    if (old) v.scene.primitives.remove(old);
+    const curated = new Set(PLACES.map((p) => p.name.toLowerCase()));
+    const lc = new Cesium.LabelCollection({ scene: v.scene });
+    const far: Record<number, number> = { 1: 70000, 2: 16000, 3: 6000, 4: 3200 };
+    for (const p of places) {
+      if (curated.has(p.name.toLowerCase())) continue;
+      lc.add({
+        position: Cesium.Cartesian3.fromDegrees(p.lon, p.lat, ground(p.lon, p.lat) + 35), text: p.name,
+        font: p.rank <= 2 ? '600 14px Inter, Segoe UI, sans-serif' : '500 12px Inter, Segoe UI, sans-serif',
+        fillColor: Cesium.Color.fromCssColorString(p.rank <= 2 ? '#f2fbff' : '#cfe6f2'), outlineColor: Cesium.Color.fromCssColorString('#04101c'), outlineWidth: 3,
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE, horizontalOrigin: Cesium.HorizontalOrigin.CENTER, verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, far[p.rank] ?? 3200), disableDepthTestDistance: 4000,
+        translucencyByDistance: new Cesium.NearFarScalar((far[p.rank] ?? 3200) * 0.6, 1.0, far[p.rank] ?? 3200, 0.0),
+      });
+    }
+    v.scene.primitives.add(lc);
+    prims.current.labels = lc as unknown as Cesium.Primitive;
+    v.scene.requestRender();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [places, terrain, datum]);
+
+  /* highlighted ward (search / Areas list) */
+  useEffect(() => {
+    const v = viewer.current;
+    if (!v) return;
+    const old = prims.current.highlight;
+    if (old) v.scene.primitives.remove(old);
+    prims.current.highlight = null;
+    const f = highlightWard ? wardShapes?.features.find((x) => Number(x.properties.ward_id) === highlightWard) : null;
+    if (!f) { v.scene.requestRender(); return; }
+    const polys = (f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : (f.geometry.coordinates as number[][][][])) as number[][][][];
+    const p = new Cesium.GroundPolylinePrimitive({
+      geometryInstances: polys.map((rings) => new Cesium.GeometryInstance({ geometry: new Cesium.GroundPolylineGeometry({ positions: Cesium.Cartesian3.fromDegreesArray(rings[0].flat()), width: 5 }) })),
+      appearance: new Cesium.PolylineMaterialAppearance({ material: glow('#ffd166', 0.35) }), classificationType: Cesium.ClassificationType.BOTH, asynchronous: true,
+    });
+    v.scene.primitives.add(p);
+    prims.current.highlight = p;
+    v.scene.requestRender();
+  }, [highlightWard, wardShapes]);
 
   /* viewer lifecycle and scene mood */
   useEffect(() => {
@@ -298,10 +440,16 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
           baseLayer: false, animation: false, timeline: false, baseLayerPicker: false, geocoder: false, homeButton: false, sceneModePicker: false,
           navigationHelpButton: false, fullscreenButton: false, infoBox: false, selectionIndicator: false, scene3DOnly: false, requestRenderMode: true, maximumRenderTimeChange: Infinity,
           showRenderLoopErrors: false,
-          contextOptions: { webgl: { failIfMajorPerformanceCaveat: false, powerPreference: 'high-performance' } },
+          contextOptions: { webgl: { failIfMajorPerformanceCaveat: false, powerPreference: 'high-performance', antialias: true } },
         });
         created.scene.renderError.addEventListener(() => { if (!created.isDestroyed()) created.useDefaultRenderLoop = (created.canvas.clientWidth > 0); });
         SHARED = { v: created, el, dusk: setupScene(created), google: null, osm: null };
+        performance.mark('tg-viewer-ready');
+        GPU = detectGpu(created);
+        applyQuality(created, GPU);
+        console.info(`[TwinGuard] WebGL renderer: ${GPU.renderer} (${GPU.vendor}); quality tier ${GPU.tier}`);
+        gpuListeners.forEach((fn) => fn(GPU!));
+        const rmGlobe = created.scene.globe.tileLoadProgressEvent.addEventListener((n: number) => { if (n === 0 && created.scene.globe.tilesLoaded) { performance.mark('tg-globe-loaded'); rmGlobe(); } });
       } catch (e) {
         el.remove();
         setError(e instanceof Error ? e.message : 'WebGL is unavailable in this browser.');
@@ -344,6 +492,19 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
       else v.camera.flyToBoundingSphere(new Cesium.BoundingSphere(Cesium.Cartesian3.fromDegrees(cl, ca, ll.height), 1), { offset: new Cesium.HeadingPitchRange(v.camera.heading, v.camera.pitch, Math.min(range, MAX_ZOOM_DISTANCE_M)), duration: 0.6 });
     };
     const removeMove = v.camera.moveEnd.addEventListener(clamp);
+    let lastPending = -1;
+    let lastCheck = 0;
+    const removeProgress = v.scene.postRender.addEventListener(() => {
+      const now = performance.now();
+      if (now - lastCheck < 400) return;
+      lastCheck = now;
+      let n = v.scene.globe.tilesLoaded ? 0 : 1;
+      for (let i = 0; i < v.scene.primitives.length; i += 1) {
+        const p = v.scene.primitives.get(i) as { statistics?: { numberOfPendingRequests: number; numberOfTilesProcessing: number }; show?: boolean };
+        if (p?.statistics && p.show !== false) n += p.statistics.numberOfPendingRequests + p.statistics.numberOfTilesProcessing;
+      }
+      if (n !== lastPending) { lastPending = n; setPending(n); }
+    });
     setTimeout(report, 500);
     const handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
     handler.setInputAction((ev: { position: Cesium.Cartesian2 }) => {
@@ -361,7 +522,7 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     return () => {
-      removeCam(); removeMove(); handler.destroy();
+      removeCam(); removeMove(); removeProgress(); handler.destroy();
       for (const [k, p] of Object.entries(prims.current)) {
         if (k === 'google' || k === 'osm' || k === 'dusk' || !p) continue;
         if (v.scene.primitives.contains(p as Cesium.Primitive)) v.scene.primitives.remove(p as Cesium.Primitive);
@@ -482,7 +643,7 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
     if (!want) { if (existing) existing.show = false; v.scene.globe.show = true; setGoogleState('off'); v.scene.requestRender(); return; }
     if (existing) { existing.show = true; v.scene.globe.show = false; setGoogleState('on'); v.scene.requestRender(); return; }
     setGoogleState('loading');
-    const load = ION_TOKEN ? Cesium.Cesium3DTileset.fromIonAssetId(ION_ASSETS.googlePhotorealistic, { showCreditsOnScreen: true }) : Cesium.createGooglePhotorealistic3DTileset({ key: GOOGLE_KEY }, { showCreditsOnScreen: true });
+    const load = ION_TOKEN ? Cesium.Cesium3DTileset.fromIonAssetId(ION_ASSETS.googlePhotorealistic, TILESET_OPTIONS) : Cesium.createGooglePhotorealistic3DTileset({ key: GOOGLE_KEY }, TILESET_OPTIONS);
     load.then((ts) => {
       if (viewer.current !== v || v.isDestroyed() || (SHARED?.google && SHARED.google !== ts)) { ts.destroy(); return; }
       if (boundaryRef.current) ts.clippingPolygons = makeClip(boundaryRef.current);
@@ -501,11 +662,18 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
     if (!v || !ION_TOKEN || !boundary) return;
     let cancelled = false;
     const existing = prims.current.osm as Cesium.Cesium3DTileset | null | undefined;
-    if (existing && !existing.isDestroyed()) { existing.customShader = buildingShader(frame); setOsmReady(true); v.scene.requestRender(); return; }
-    Cesium.Cesium3DTileset.fromIonAssetId(ION_ASSETS.osmBuildings, { showCreditsOnScreen: true }).then((ts) => {
+    if (existing && !existing.isDestroyed()) { existing.customShader = buildingShader(frame, datum + 6, mode === '3d'); setOsmReady(true); v.scene.requestRender(); return; }
+    // load order: terrain + imagery first, citywide buildings once the globe has settled (or after 4 s)
+    const start = () => Cesium.Cesium3DTileset.fromIonAssetId(ION_ASSETS.osmBuildings, TILESET_OPTIONS);
+    const ready = globeSettled ? Promise.resolve() : new Promise<void>((res) => {
+      const t = window.setTimeout(res, 4000);
+      const rm = v.scene.globe.tileLoadProgressEvent.addEventListener((n: number) => { if (n === 0) { globeSettled = true; window.clearTimeout(t); rm(); res(); } });
+    });
+    ready.then(start).then((ts) => {
       if (cancelled || viewer.current !== v || v.isDestroyed()) { ts.destroy(); return; }
       ts.clippingPolygons = makeClip(boundary);
-      ts.customShader = buildingShader(frame);
+      ts.customShader = buildingShader(frame, datum + 6, mode === '3d');
+      const rmTiles = ts.allTilesLoaded.addEventListener(() => { performance.mark('tg-buildings-loaded'); rmTiles(); });
       v.scene.primitives.add(ts);
       prims.current.osm = ts;
       if (SHARED) SHARED.osm = ts;
@@ -514,7 +682,7 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
     }).catch(() => setOsmReady(false));
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boundary, frame]);
+  }, [boundary, frame, datum, mode]);
 
   /* OSM focus-area footprints, extruded and coloured by depth class: fallback when ion buildings are unavailable */
   useEffect(() => {
@@ -567,39 +735,76 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
     if (!apply()) { const remove = v.scene.postRender.addEventListener(() => { if (apply()) remove(); }); return remove; }
   }, [frame, focus, datum]);
 
-  /* simulated water: a smooth depth field rendered to a texture (dry = transparent) and draped on terrain / 3D tiles */
+  /* simulated water: depth field draped on the rendered ground with an animated water material.
+     Frame changes cross-fade the depth texture so the water visibly rises and falls between saved frames. */
+  const waterRef = useRef<{ material: Cesium.Material; canvas: HTMLCanvasElement; key: string } | null>(null);
+  const field = useMemo(() => (frame && typeof document !== 'undefined' ? depthFieldCanvas(frame, terrain) : null), [frame, terrain]);
+  const classifyOnTiles = googleOn && near;
   useEffect(() => {
     const v = viewer.current;
     if (!v) return;
+    if (!field) {
+      const old = prims.current.water; if (old) v.scene.primitives.remove(old); prims.current.water = null; waterRef.current = null; return;
+    }
+    const key = `${field.bbox.join(',')}|${classifyOnTiles}`;
+    const cur = waterRef.current;
+    if (cur && cur.key === key && prims.current.water) {
+      // tween from the shown depth to the new frame
+      const mat = cur.material;
+      mat.uniforms.image0 = cur.canvas;
+      mat.uniforms.image1 = field.canvas;
+      mat.uniforms.mixT = 0;
+      cur.canvas = field.canvas;
+      const start = performance.now();
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      const dur = reduce ? 1 : 1400;
+      const step = () => {
+        const t = Math.min(1, (performance.now() - start) / dur);
+        mat.uniforms.mixT = t * t * (3 - 2 * t);
+        v.scene.requestRender();
+        if (t < 1 && waterRef.current?.material === mat) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+      return;
+    }
     const old = prims.current.water;
     if (old) v.scene.primitives.remove(old);
-    prims.current.water = null;
-    if (!frame) return;
-    const field = depthFieldCanvas(frame);
-    if (!field) return;
-    const material = Cesium.Material.fromType('Image', { image: field.canvas, transparent: true });
+    const material = floodWaterMaterial(field.canvas);
     const p = new Cesium.GroundPrimitive({
-      geometryInstances: new Cesium.GeometryInstance({ geometry: new Cesium.RectangleGeometry({ rectangle: Cesium.Rectangle.fromDegrees(...field.bbox), vertexFormat: Cesium.MaterialAppearance.MaterialSupport.TEXTURED.vertexFormat }), id: { kind: 'ground', title: 'Simulated flood depth', location: { lon: (field.bbox[0] + field.bbox[2]) / 2, lat: (field.bbox[1] + field.bbox[3]) / 2 }, lines: [['Source', 'saved run depth grid'], ['Rendering', 'bilinear between model cells']] } as PickInfo }),
-      appearance: new Cesium.MaterialAppearance({ material, translucent: true, materialSupport: Cesium.MaterialAppearance.MaterialSupport.TEXTURED }),
-      classificationType: Cesium.ClassificationType.BOTH,
+      geometryInstances: new Cesium.GeometryInstance({ geometry: new Cesium.RectangleGeometry({ rectangle: Cesium.Rectangle.fromDegrees(...field.bbox), vertexFormat: Cesium.MaterialAppearance.MaterialSupport.ALL.vertexFormat }), id: { kind: 'ground', title: 'Simulated flood water', location: { lon: (field.bbox[0] + field.bbox[2]) / 2, lat: (field.bbox[1] + field.bbox[3]) / 2 }, lines: [['Source', 'saved run depth grid'], ['Rendering', 'bilinear between model cells, draped on ground']] } as PickInfo }),
+      appearance: new Cesium.MaterialAppearance({ material, translucent: true, materialSupport: Cesium.MaterialAppearance.MaterialSupport.ALL }),
+      // Terrain only, so water lies on the ground between buildings and never paints building roofs or walls;
+      // with Google 3D tiles shown up close it must drape on the tile mesh as well.
+      classificationType: classifyOnTiles ? Cesium.ClassificationType.BOTH : Cesium.ClassificationType.TERRAIN,
       asynchronous: true,
     });
     p.show = layers.water;
     v.scene.primitives.add(p);
     prims.current.water = p;
+    waterRef.current = { material, canvas: field.canvas, key };
     v.scene.requestRender();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frame]);
+  }, [field, classifyOnTiles]);
+
+  /* water clock and quality */
+  useEffect(() => {
+    const v = viewer.current;
+    if (!v) return;
+    const remove = v.scene.preRender.addEventListener(() => {
+      const w = waterRef.current;
+      if (w) { w.material.uniforms.time = performance.now() / 1000; w.material.uniforms.hq = layers.hqWater ? 1 : 0; }
+    });
+    return remove;
+  }, [layers.hqWater]);
 
   /* continuous rendering keeps the water animated (respecting reduced motion) */
   useEffect(() => {
     const v = viewer.current;
     if (!v) return;
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    v.scene.requestRenderMode = true;
-    void reduce;
+    v.scene.requestRenderMode = !(layers.water && layers.hqWater && frame && !reduce);
     v.scene.requestRender();
-  }, [layers.water, frame, googleOn]);
+  }, [layers.water, layers.hqWater, frame]);
 
   /* study boundary: clip globe and 3D tiles to the CMA, draw a glowing outline */
   useEffect(() => {
@@ -774,8 +979,8 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
     if (ts && !ts.isDestroyed()) ts.show = showGoogle;
     v.scene.globe.show = !showGoogle;
     set('water', layers.water);
-    set('osm', layers.buildings && osmReady && !showGoogle);
-    set('buildings', layers.buildings && !osmReady && !showGoogle);
+    set('osm', layers.buildings && osmReady);
+    set('buildings', layers.buildings && !osmReady);
     set('roads', layers.roads);
     set('wards', layers.wards);
     set('shelters', layers.shelters);
@@ -819,6 +1024,7 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, shel
     <div className={`tg-twin ${className}`}>
       <div className="tg-twin__canvas" ref={host} role="img" aria-label="3D city twin: 3D buildings, simulated water surface coloured by depth, rivers, three-state roads, shelters and generated incidents" />
       {error && <div className="tg-twin__error" role="status"><strong>3D view unavailable</strong><span>{error}</span></div>}
+      {pending > 0 && <div className="tg-twin__progress" role="status" aria-label={`Loading map tiles: ${pending} pending`}><i /><span>Loading map tiles · {pending}</span></div>}
       {googleTilesConfigured() && googleState === 'loading' && <div className="tg-twin__chip">Loading Google Photorealistic 3D Tiles…</div>}
       {googleTilesConfigured() && googleState === 'failed' && <div className="tg-twin__chip is-warn">Google 3D Tiles unavailable; showing OSM buildings.</div>}
     </div>

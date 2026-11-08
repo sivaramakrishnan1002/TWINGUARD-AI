@@ -12,7 +12,7 @@ const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 
 async function withModules(callback) {
-  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true }, define: { 'import.meta.env.VITE_GATE_G0_STATUS': JSON.stringify('unknown') } });
+  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true, hmr: false, watch: { ignored: () => true } }, envDir: path.join(frontendRoot, 'node_modules/.tg-test-env'), define: { 'import.meta.env.VITE_GATE_G0_STATUS': JSON.stringify('unknown') } });
   try {
     const client = await server.ssrLoadModule('/src/ui/weather/openMeteoClient.ts');
     const component = await server.ssrLoadModule('/src/ui/weather/OpenMeteoWeatherCard.tsx');

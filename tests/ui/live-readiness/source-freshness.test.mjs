@@ -12,7 +12,7 @@ const { createServer } = require('vite');
 const { renderToStaticMarkup } = require('react-dom/server');
 
 async function loadModules() {
-  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true } });
+  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true, hmr: false, watch: { ignored: () => true } }, envDir: path.join(frontendRoot, 'node_modules/.tg-test-env') });
   try {
     return {
       model: await server.ssrLoadModule('/src/ui/live-readiness/model.ts'),
@@ -104,7 +104,7 @@ test('stale and unavailable cards expose evidence without asserting a live conne
 });
 
 test('current product shows data freshness and never presents unfetched or saved data as live', async () => {
-  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true } });
+  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true, hmr: false, watch: { ignored: () => true } }, envDir: path.join(frontendRoot, 'node_modules/.tg-test-env') });
   try {
     const ui = await server.ssrLoadModule('/src/ui/product/ProductExperience.tsx');
     const markup = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'overview' }));

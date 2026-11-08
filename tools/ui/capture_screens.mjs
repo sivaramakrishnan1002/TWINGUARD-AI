@@ -9,6 +9,13 @@ import { tmpdir } from 'node:os';
 
 const BASE = process.argv[2] ?? 'http://localhost:5173/';
 const OUT = resolve(process.argv[3] ?? 'docs/ui/screenshots');
+const VIEWS = process.argv[4] === 'views';
+const RISE = process.argv[4] === 'rise';
+const CLOSE = { lon: 80.2105, lat: 12.9655, h: 650, heading: 25, pitch: -24 };
+const SHOTS = RISE ? [0, 1, 2, 3, 4].map((f) => ['twin', `10_velachery_rise_frame${f}`, CLOSE, f]) : VIEWS ? [
+  ['twin', '08_citywide_oblique', { lon: 80.215, lat: 12.71, h: 30000, heading: 8, pitch: -38 }],
+  ['twin', '09_velachery_closeup', { lon: 80.2105, lat: 12.9655, h: 650, heading: 25, pitch: -24 }],
+] : null;
 const TABS = [
   ['overview', '01_situation_overview'], ['simulation', '02_flood_simulation'], ['emergency', '03_emergency_support'], ['routing', '04_road_routing'],
   ['what-if', '05_what_if_simulation'], ['reservoirs', '06_reservoir_monitoring'], ['twin', '07_digital_twin_3d_city'],
@@ -44,8 +51,18 @@ const evaluate = async (expression) => (await send('Runtime.evaluate', { express
 await send('Page.enable');
 await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
 
-for (const [tab, name] of TABS) {
-  await send('Page.navigate', { url: `${BASE}?tab=${tab}` });
+for (const [tab, name, cam, frameIdx] of SHOTS ?? TABS) {
+  if (frameIdx === undefined || frameIdx === 0) await send('Page.navigate', { url: `${BASE}?tab=${tab}` });
+  if (cam && (frameIdx === undefined || frameIdx === 0)) {
+    for (let i = 0; i < 30 && !(await evaluate('!!window.__tgViewer')); i += 1) await sleep(1000);
+    await sleep(4000);
+    await evaluate(`(() => { const v = window.__tgViewer; const C = v.camera.position.constructor; const M = Math; v.camera.cancelFlight(); v.camera.setView({ destination: C.fromDegrees(${cam.lon}, ${cam.lat}, ${cam.h} - 86), orientation: { heading: ${cam.heading} * M.PI / 180, pitch: ${cam.pitch} * M.PI / 180, roll: 0 } }); return true; })()`);
+  }
+  if (frameIdx !== undefined) {
+    for (let i = 0; i < 20 && !(await evaluate(`document.querySelectorAll('.tg-timeline__track button').length > ${frameIdx}`)); i += 1) await sleep(1000);
+    await evaluate(`document.querySelectorAll('.tg-timeline__track button')[${frameIdx}].click()`);
+    await sleep(2500);
+  }
   const deadline = Date.now() + 90_000;
   let state = null;
   while (Date.now() < deadline) {

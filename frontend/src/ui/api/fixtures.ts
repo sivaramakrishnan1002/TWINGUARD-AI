@@ -24,7 +24,7 @@ const ROWS = 88;
 const CELL_KM2 = 0.36;
 export const LEVEL_HEIGHT_M = 3;
 
-const generated = import.meta.glob('../evidence/generated/{terrain_cma,wards,shelters,waterways,boundary,focus_*}.json', { import: 'default' });
+const generated = import.meta.glob('../evidence/generated/{terrain_cma,wards,shelters,waterways,boundary,gazetteer,focus_*}.json', { import: 'default' });
 const cache = new Map<string, Promise<unknown>>();
 function loadGenerated<R>(name: string): Promise<R | null> {
   const key = `../evidence/generated/${name}.json`;
@@ -55,6 +55,9 @@ export const FOCUS_AREAS: { id: T.FocusArea; label: string; centre: T.LonLat }[]
 export const loadFocus = (area: T.FocusArea) => loadGenerated<FocusFile>(`focus_${area}`);
 export const loadWaterways = () => loadGenerated<T.StaticFeatureCollection>('waterways');
 export const loadBoundary = () => loadGenerated<T.StaticFeatureCollection>('boundary');
+export interface GazPlace { name: string; alt: string[]; type: string; lon: number; lat: number; ward_id: number | null; zone: string | null; rank: number }
+export interface GazWard { ward_id: number; name: string; zone: string | null; lon: number; lat: number; bbox: [number, number, number, number] }
+export const loadGazetteer = () => loadGenerated<{ places: GazPlace[]; wards: GazWard[] }>('gazetteer');
 export async function loadTerrain(): Promise<TerrainGrid | null> {
   const t = await loadGenerated<{ west: number; north: number; step_deg: number; rows: number; cols: number; heights_dm: string }>('terrain_cma');
   return t ? { west: t.west, north: t.north, step: t.step_deg, rows: t.rows, cols: t.cols, dm: new Int16Array(decodeBase64(t.heights_dm)) } : null;

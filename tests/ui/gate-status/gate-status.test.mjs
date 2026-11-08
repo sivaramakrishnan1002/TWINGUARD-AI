@@ -17,7 +17,7 @@ async function renderAppWithBuildValue(value) {
     configFile: path.join(frontendRoot, 'vite.config.ts'),
     root: frontendRoot,
     appType: 'custom',
-    server: { middlewareMode: true },
+    server: { middlewareMode: true, hmr: false, watch: { ignored: () => true } }, envDir: path.join(frontendRoot, 'node_modules/.tg-test-env'),
     define: { 'import.meta.env.VITE_GATE_G0_STATUS': encoded },
   });
   try {

@@ -1,5 +1,7 @@
-import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
-import { FOCUS_AREAS } from '../api/fixtures';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { FOCUS_AREAS, loadGazetteer, type GazPlace, type GazWard } from '../api/fixtures';
+import { haversineM } from '../api/geo';
+import { buildIndex, type SearchHit } from './search';
 import type { FocusArea, LonLat, RouteOption } from '../api/v3types';
 import type { CameraInfo, PickInfo, TwinCommand, TwinLayers, ViewMode } from '../twin/Twin3D';
 import { useTwinData, type TwinData } from './state';
@@ -97,8 +99,9 @@ function Header({ data }: { data: TwinData }) {
 
 /* ───────── shared map stage ───────── */
 
-export const DEFAULT_LAYERS: TwinLayers = { water: true, buildings: true, roads: true, wards: false, shelters: true, incidents: true, google: true };
-export const LAYER_LABELS: Record<keyof TwinLayers, string> = { water: 'Flood depth (water)', buildings: '3D buildings', roads: 'Road network (3-state)', wards: 'Ward boundaries', shelters: 'Relief shelters', incidents: 'Generated incidents', google: 'Google Photorealistic 3D Tiles' };
+/** Google 3D tiles are opt-in: most of Chennai has no photogrammetry mesh, so OSM buildings over Google 2D imagery is the default. */
+export const DEFAULT_LAYERS: TwinLayers = { water: true, hqWater: true, buildings: true, roads: true, wards: false, shelters: true, incidents: true, google: false };
+export const LAYER_LABELS: Record<keyof TwinLayers, string> = { water: 'Flood depth (water)', hqWater: 'High-quality animated water', buildings: '3D buildings', roads: 'Road network (3-state)', wards: 'Ward boundaries', shelters: 'Relief shelters', incidents: 'Generated incidents', google: 'Google Photorealistic 3D Tiles' };
 
 export function MapStage({ data, title, layersInit, layers: controlled, onLayers, center, route, onPick, onMapClick, height = 'md', overlay, toolbarExtra, flyKey }: {
   data: TwinData;
@@ -123,6 +126,13 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
   const [cmd, setCmd] = useState<TwinCommand | null>(null);
   const [cam, setCam] = useState<CameraInfo | null>(null);
   const send = (type: TwinCommand['type']) => setCmd({ type, key: Date.now() });
+  const [highlight, setHighlight] = useState<number | null>(null);
+  const goTo = (hit: SearchHit) => {
+    setHighlight(hit.ward_id);
+    setFly({ lon: hit.lon, lat: hit.lat, range: hit.kind === 'ward' ? 5200 : 2600, key: `s-${hit.label}-${Date.now()}` });
+    const nearArea = FOCUS_AREAS.map((a) => ({ a, d: haversineM([a.centre.lon, a.centre.lat], [hit.lon, hit.lat]) })).sort((x, y) => x.d - y.d)[0];
+    if (nearArea.d < 5000 && nearArea.a.id !== data.focusArea) { firstArea.current = true; data.setFocusArea(nearArea.a.id); }
+  };
   const area = FOCUS_AREAS.find((a) => a.id === data.focusArea)!;
   const HOME = { lon: 80.2, lat: 13.02, range: 46000 };
   const [fly, setFly] = useState<{ lon: number; lat: number; range?: number; key: string }>(() => (center ? { ...center, key: 'init' } : { ...HOME, key: 'home' }));
@@ -144,16 +154,13 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
             {(Object.keys(LAYER_LABELS) as (keyof TwinLayers)[]).map((k) => <label key={k} className="tg-check"><input type="checkbox" checked={layers[k]} onChange={(e) => setLayers({ ...layers, [k]: e.target.checked })} />{LAYER_LABELS[k]}</label>)}
           </div>}
         </div>
-        <label className="tg-search"><Icon name="search" /><span className="tg-visually-hidden">Focus area</span>
-          <select aria-label="Focus area" value={data.focusArea} onChange={(e) => data.setFocusArea(e.target.value as FocusArea)}>
-            {FOCUS_AREAS.map((a) => <option key={a.id} value={a.id}>{a.label}, Chennai</option>)}
-          </select>
-        </label>
+        <AreaSearch onPick={goTo} />
+        <AreasMenu data={data} onPick={goTo} />
         {toolbarExtra}
       </div>
       <div className="tg-stage__map">
         <Suspense fallback={<div className="tg-twin tg-twin--loading" role="status">Loading 3D city…</div>}>
-          <Twin3D mode={mode} layers={layers} terrain={data.terrain} frame={layers.water || layers.buildings ? data.depth : null} focus={data.focus} roads={data.roads} wards={layers.wards ? data.wardShapes : null}
+          <Twin3D mode={mode} layers={layers} terrain={data.terrain} frame={layers.water || layers.buildings ? data.depth : null} focus={data.focus} roads={data.roads} wards={layers.wards ? data.wardShapes : null} wardShapes={data.wardShapes} highlightWard={highlight}
             shelters={data.shelters?.shelters ?? null} incidents={data.incidents} route={route} flyTo={fly} command={cmd} onCamera={setCam} onPick={onPick} onMapClick={onMapClick} />
         </Suspense>
         <span className="tg-stage__badge">DEMO / SIMULATION</span>
@@ -174,6 +181,93 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
   );
 }
 
+let gazCache: { places: GazPlace[]; wards: GazWard[] } | null = null;
+function useGazetteer() {
+  const [g, setG] = useState(gazCache);
+  useEffect(() => { if (!gazCache) loadGazetteer().then((x) => { gazCache = x ?? { places: [], wards: [] }; setG(gazCache); }); }, []);
+  return g;
+}
+const CURATED = [
+  { name: 'Velachery', lon: 80.2209, lat: 12.9815 }, { name: 'Adyar', lon: 80.2565, lat: 13.0012 }, { name: 'T. Nagar', lon: 80.2341, lat: 13.0418 },
+  { name: 'Porur', lon: 80.1565, lat: 13.0382 }, { name: 'Guindy', lon: 80.2206, lat: 13.0067 }, { name: 'Anna Nagar', lon: 80.2101, lat: 13.085 },
+  { name: 'Tiruvottiyur', lon: 80.3014, lat: 13.1643 }, { name: 'Marina Beach', lon: 80.2824, lat: 13.05 },
+];
+
+function AreaSearch({ onPick }: { onPick: (h: SearchHit) => void }) {
+  const gaz = useGazetteer();
+  const search = useMemo(() => buildIndex(gaz?.places ?? [], gaz?.wards ?? [], CURATED), [gaz]);
+  const [q, setQ] = useState('');
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const hits = useMemo(() => search(q), [search, q]);
+  const pick = (h: SearchHit) => { onPick(h); setQ(h.label); setOpen(false); };
+  return (
+    <div className="tg-search">
+      <Icon name="search" />
+      <input type="search" role="combobox" aria-label="Search area, locality or ward" placeholder="Search area or ward (e.g. Royapuram, Ward 178)" value={q}
+        aria-expanded={open && hits.length > 0} aria-autocomplete="list" aria-controls="tg-search-list" aria-activedescendant={open && hits[active] ? `tg-hit-${active}` : undefined}
+        onChange={(e) => { setQ(e.target.value); setOpen(true); setActive(0); }} onFocus={() => setOpen(true)} onBlur={() => window.setTimeout(() => setOpen(false), 150)}
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowDown') { e.preventDefault(); setActive((a) => Math.min(hits.length - 1, a + 1)); }
+          else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => Math.max(0, a - 1)); }
+          else if (e.key === 'Enter' && hits[active]) { e.preventDefault(); pick(hits[active]); }
+          else if (e.key === 'Escape') setOpen(false);
+        }} />
+      {open && q && <ul id="tg-search-list" role="listbox" className="tg-search__list">
+        {hits.map((h, i) => <li key={`${h.label}-${h.lon}-${i}`} id={`tg-hit-${i}`} role="option" aria-selected={i === active} className={i === active ? 'is-active' : ''} onMouseDown={(e) => { e.preventDefault(); pick(h); }}>
+          <Icon name={h.kind === 'ward' ? 'layers' : 'pin'} size={15} /><span><b>{h.label}</b><small>{h.sub}</small></span></li>)}
+        {!hits.length && <li className="tg-search__none" role="option" aria-selected={false}>{gaz ? 'No matching area in the CMA' : 'Loading places…'}</li>}
+      </ul>}
+    </div>
+  );
+}
+
+function AreasMenu({ data, onPick }: { data: TwinData; onPick: (h: SearchHit) => void }) {
+  const gaz = useGazetteer();
+  const [open, setOpen] = useState(false);
+  const [filter, setFilter] = useState('');
+  const byWard = new Map(data.wards.map((w) => [w.ward_id, w]));
+  const placesByWard = useMemo(() => {
+    const m = new Map<number, string[]>();
+    for (const p of gaz?.places ?? []) if (p.ward_id && p.rank <= 3) m.set(p.ward_id, [...(m.get(p.ward_id) ?? []), p.name]);
+    return m;
+  }, [gaz]);
+  const zones = useMemo(() => {
+    const m = new Map<string, GazWard[]>();
+    for (const w of gaz?.wards ?? []) m.set(w.zone ?? 'Other', [...(m.get(w.zone ?? 'Other') ?? []), w]);
+    return [...m.entries()];
+  }, [gaz]);
+  const f = filter.trim().toLowerCase();
+  return (
+    <div className="tg-menu">
+      <button type="button" className="tg-btn tg-btn--ghost" aria-expanded={open} onClick={() => setOpen(!open)}><Icon name="pin" />Areas ▾</button>
+      {open && <div className="tg-menu__panel tg-areas" role="dialog" aria-label="Areas by zone and ward">
+        <label className="tg-field"><span>Detailed area (roads, shelters)</span>
+          <select aria-label="Focus area" value={data.focusArea} onChange={(e) => data.setFocusArea(e.target.value as FocusArea)}>{FOCUS_AREAS.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}</select>
+        </label>
+        <input className="tg-areas__filter" type="search" aria-label="Filter wards" placeholder="Filter wards or localities" value={filter} onChange={(e) => setFilter(e.target.value)} />
+        <div className="tg-areas__list">
+          {zones.map(([zone, wards]) => {
+            const rows = wards.filter((w) => !f || w.name.toLowerCase().includes(f) || String(w.ward_id) === f || (placesByWard.get(w.ward_id) ?? []).some((n) => n.toLowerCase().includes(f)));
+            if (!rows.length) return null;
+            return <details key={zone} open={!!f}>
+              <summary>{zone}<small>{rows.length} wards</small></summary>
+              {rows.map((w) => {
+                const s = byWard.get(w.ward_id);
+                const tone = s?.risk_level === 'severe' ? 'is-bad' : s?.risk_level === 'high' ? 'is-warn' : s?.risk_level === 'moderate' ? 'is-info' : 'is-ok';
+                return <button type="button" key={w.ward_id} onClick={() => { onPick({ kind: 'ward', label: w.name, sub: zone, lon: w.lon, lat: w.lat, ward_id: w.ward_id, rank: 2, score: 0, bbox: w.bbox }); setOpen(false); }}>
+                  <span><b>{w.name}</b><small>{(placesByWard.get(w.ward_id) ?? []).slice(0, 3).join(', ') || '—'}</small></span>
+                  <span className={`tg-pill ${tone}`}>{s?.max_depth_m != null ? `${s.max_depth_m.toFixed(2)} m` : 'n/a'}</span>
+                </button>;
+              })}
+            </details>;
+          })}
+        </div>
+      </div>}
+    </div>
+  );
+}
+
 function ScaleBar({ metersPer100px }: { metersPer100px: number }) {
   const nice = [50, 100, 200, 250, 500, 1000, 2000, 2500, 5000, 10000, 20000, 50000];
   const target = metersPer100px * 1.4;
@@ -186,13 +280,9 @@ function MapLegend() {
   return (
     <div className="tg-legend" aria-label="Map legend">
       <strong>Flood Depth (m)</strong>
-      <ul>
-        <li><i style={{ background: '#ff2f8a' }} />&gt; 1.0 (hotspot)</li>
-        <li><i style={{ background: '#2a5cff' }} />0.5 – 1.0</li>
-        <li><i style={{ background: '#2fb4ff' }} />0.15 – 0.5</li>
-        <li><i style={{ background: '#8ff3ff' }} />0.01 – 0.15</li>
-        <li><i className="is-dry" />No flood</li>
-      </ul>
+      <div className="tg-legend__ramp" aria-hidden="true" />
+      <div className="tg-legend__ticks"><span>0.05</span><span>0.3</span><span>0.8</span><span>1.5+</span></div>
+      <ul><li><i className="is-dry" />No flood (transparent)</li></ul>
       <strong>Network</strong>
       <ul>
         <li><i className="is-line" style={{ background: '#36b9ff' }} />River / canal</li>
@@ -211,21 +301,38 @@ function MapLegend() {
   );
 }
 
+/** Evenly sampled frame indices (always including first and last) for long A25 runs (e.g. 49 frames). */
+export function sampleFrames(n: number, max: number): number[] {
+  if (n <= max) return Array.from({ length: n }, (_, i) => i);
+  const out = new Set<number>();
+  for (let k = 0; k < max; k += 1) out.add(Math.round((k * (n - 1)) / (max - 1)));
+  return [...out].sort((a, b) => a - b);
+}
+const hoursLabel = (f?: { elapsed_minutes?: number }) => `T+${Math.round(((f?.elapsed_minutes ?? 0) / 60) * 10) / 10}h`.replace('.0h', 'h');
+
 export function Timeline({ data, compact = false }: { data: TwinData; compact?: boolean }) {
   const frames = data.run?.frames ?? [];
   const cur = frames[data.frameIndex];
+  const ticks = sampleFrames(frames.length, compact ? 6 : 9);
+  const long = frames.length > ticks.length;
   return (
     <div className={`tg-timeline${compact ? ' is-compact' : ''}`}>
       <button type="button" className="tg-play" aria-pressed={data.playing} aria-label={data.playing ? 'Pause timeline' : 'Play timeline'} onClick={() => data.setPlaying(!data.playing)}>{data.playing ? '❚❚' : '▶'}</button>
-      <div className="tg-timeline__track" role="radiogroup" aria-label="Simulation frame">
-        {frames.map((f, i) => (
-          <button type="button" role="radio" key={f.index} aria-checked={i === data.frameIndex} className={i < data.frameIndex ? 'is-past' : i === data.frameIndex ? 'is-current' : ''} onClick={() => { data.setPlaying(false); data.setFrameIndex(i); }}>
-            <i aria-hidden="true" /><span>T+{Math.round((f.elapsed_minutes ?? 0) / 60)}h</span>
-          </button>
-        ))}
-        {!frames.length && <span className="tg-muted">Loading frames…</span>}
+      <div className="tg-timeline__body">
+        <div className="tg-timeline__track" role="radiogroup" aria-label="Simulation frame">
+          {ticks.map((i) => {
+            const f = frames[i];
+            return (
+              <button type="button" role="radio" key={f.index} aria-checked={i === data.frameIndex} className={i < data.frameIndex ? 'is-past' : i === data.frameIndex ? 'is-current' : ''} onClick={() => { data.setPlaying(false); data.setFrameIndex(i); }}>
+                <i aria-hidden="true" /><span>{hoursLabel(f)}</span>
+              </button>
+            );
+          })}
+          {!frames.length && <span className="tg-muted">Loading frames…</span>}
+        </div>
+        {long && <input className="tg-timeline__range" type="range" min={0} max={frames.length - 1} step={1} value={data.frameIndex} aria-label={`Simulation frame ${data.frameIndex + 1} of ${frames.length}`} onChange={(e) => { data.setPlaying(false); data.setFrameIndex(Number(e.target.value)); }} />}
       </div>
-      {!compact && <div className="tg-timeline__now"><small>Current frame</small><strong>{cur ? `${cur.valid_time_utc.slice(0, 16).replace('T', ' ')} UTC` : '—'}</strong></div>}
+      {!compact && <div className="tg-timeline__now"><small>{long ? `Frame ${data.frameIndex + 1}/${frames.length} · ${hoursLabel(cur)}` : 'Current frame'}</small><strong>{cur ? `${cur.valid_time_utc.slice(0, 16).replace('T', ' ')} UTC` : '—'}</strong></div>}
     </div>
   );
 }

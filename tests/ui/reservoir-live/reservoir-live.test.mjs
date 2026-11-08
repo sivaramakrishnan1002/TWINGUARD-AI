@@ -12,7 +12,7 @@ const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 
 async function withModules(callback) {
-  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', logLevel: 'silent', server: { middlewareMode: true, hmr: false } });
+  const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', logLevel: 'silent', server: { middlewareMode: true, hmr: false, watch: { ignored: () => true } }, envDir: path.join(frontendRoot, 'node_modules/.tg-test-env') });
   try {
     const client = await server.ssrLoadModule('/src/ui/reservoir-live/reservoirClient.ts');
     const panel = await server.ssrLoadModule('/src/ui/reservoir-live/ReservoirLivePanel.tsx');

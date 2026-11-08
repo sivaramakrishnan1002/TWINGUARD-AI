@@ -413,3 +413,36 @@
 .tg-delta.is-down { color: #3ddc84; }
 .tg-brand__text strong, .tg-brand__text small { white-space: nowrap; }
 .tg-top__tagline { max-width: 430px; }
+.tg-legend__ramp { height: 10px; border-radius: 4px; background: linear-gradient(90deg, #66694a, #21606b 30%, #123f5a 60%, #0a2954); box-shadow: 0 0 8px #22d3ff33; }
+.tg-legend__ticks { display: flex; justify-content: space-between; color: var(--tg-soft); font: 11px ui-monospace, Consolas, monospace; }
+
+/* B48 search and areas */
+.tg-search { position: relative; min-width: 300px; padding: 0 10px; }
+.tg-search input { width: 100%; min-height: 34px; border: 0; background: transparent; color: var(--tg-ink); font-size: 13px; outline: none; }
+.tg-search input::placeholder { color: var(--tg-soft); }
+.tg-search__list { position: absolute; z-index: 8; top: 40px; left: 0; right: 0; max-height: 360px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; border: 1px solid var(--tg-line-strong); border-radius: 9px; background: #061727f7; box-shadow: 0 12px 30px #000b; }
+.tg-search__list li { display: flex; align-items: center; gap: 9px; padding: 7px 9px; border-radius: 7px; cursor: pointer; }
+.tg-search__list li span { display: grid; }
+.tg-search__list li b { font-size: 13px; font-weight: 600; color: var(--tg-ink); }
+.tg-search__list li small { color: var(--tg-soft); font-size: 11.5px; text-transform: capitalize; }
+.tg-search__list li.is-active, .tg-search__list li:hover { background: #0d3550; }
+.tg-search__list .tg-icon { color: var(--tg-primary); }
+.tg-search__none { color: var(--tg-muted); cursor: default !important; }
+.tg-areas { width: 340px; max-height: 70vh; display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 8px; }
+.tg-areas__filter { min-height: 32px; padding: 4px 9px; border: 1px solid var(--tg-line-strong); border-radius: 7px; background: #06182a; color: var(--tg-ink); font-size: 13px; }
+.tg-areas__list { overflow-y: auto; display: grid; gap: 4px; }
+.tg-areas__list summary { display: flex; justify-content: space-between; padding: 6px 4px; color: var(--tg-ink); font-size: 13px; font-weight: 650; cursor: pointer; }
+.tg-areas__list summary small { color: var(--tg-soft); font-weight: 500; }
+.tg-areas__list button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 8px; border: 1px solid transparent; border-radius: 7px; background: transparent; text-align: left; cursor: pointer; }
+.tg-areas__list button:hover { border-color: var(--tg-line-strong); background: #0a2338; }
+.tg-areas__list button span:first-child { display: grid; min-width: 0; }
+.tg-areas__list button b { font-size: 12.5px; }
+.tg-areas__list button small { color: var(--tg-soft); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tg-pill.is-info { border-color: #1d5f7d; background: #0b2d40; color: #9fe6ff; }
+
+.tg-twin__progress { position: absolute; z-index: 4; left: 50%; top: 56px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 4px 10px; border: 1px solid var(--tg-line-strong); border-radius: 999px; background: #051524e6; color: var(--tg-muted); font: 600 11.5px ui-monospace, Consolas, monospace; }
+.tg-twin__progress i { width: 60px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--tg-primary), transparent); background-size: 200% 100%; animation: tg-progress 1.2s linear infinite; }
+@keyframes tg-progress { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+.tg-timeline__body { display: grid; gap: 4px; min-width: 0; }
+.tg-timeline__range { width: 100%; accent-color: var(--tg-primary); }

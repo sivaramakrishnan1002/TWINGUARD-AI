@@ -5,9 +5,10 @@ import { ApiRequestError } from '../api/v3types';
 import type * as T from '../api/v3types';
 import { fetchReservoirHistory, CFM_DASHBOARD_URL, type ReservoirSnapshot } from '../reservoir-live/reservoirClient';
 import { TRACKB_BACKTEST, TRACKB_REPLAY } from '../evidence/reports';
-import { DEPTH_CLASS_STYLE, EDGE_STYLE, WATER_EXAGGERATION, googleTilesConfigured, imagerySourceLabel, ionConfigured, type PickInfo, type TwinLayers } from '../twin/Twin3D';
+import { DEPTH_CLASS_STYLE, EDGE_STYLE, WATER_EXAGGERATION, googleTilesConfigured, imagerySourceLabel, ionConfigured } from '../twin/constants';
+import type { GpuInfo, PickInfo, TwinLayers } from '../twin/Twin3D';
 import { BarList, Columns, Donut, LineChart } from './Charts';
-import { DEFAULT_LAYERS, Icon, LAYER_LABELS, MapStage, Timeline, type ProductSection } from './ProductExperience';
+import { DEFAULT_LAYERS, Icon, LAYER_LABELS, MapStage, Timeline, sampleFrames, type ProductSection } from './ProductExperience';
 import { depthHistogram, frameArea, type TwinData } from './state';
 
 interface TabProps { data: TwinData; go: (s: ProductSection) => void }
@@ -68,17 +69,21 @@ export function focusStats(focus: FocusFile | null, depth: T.DepthFrame | null) 
   }
   return { counts, total: focus?.buildings.length ?? 0, osmLevels, affected: counts['0_15_to_0_5'] + counts['0_5_to_1_0'] + counts.gt_1_0 };
 }
+/** Inundated area (>= 0.10 m) for up to 12 evenly sampled frames of a run; labels match the sampled frames. */
 function useFrameAreas(data: TwinData, runId: string | null) {
-  const [areas, setAreas] = useState<(number | null)[]>([]);
+  const [state, setState] = useState<{ idx: number[]; labels: string[]; areas: (number | null)[] }>({ idx: [], labels: [], areas: [] });
   useEffect(() => {
     const run = data.runs.find((r) => r.run_id === runId);
-    if (!data.api || !run) { setAreas([]); return; }
+    if (!data.api || !run) { setState({ idx: [], labels: [], areas: [] }); return; }
     let live = true;
-    Promise.all(run.frames.map((f) => data.api!.depth(run.run_id, f.index).then((d) => frameArea(d, 0.1)).catch(() => null))).then((a) => live && setAreas(a));
+    const idx = sampleFrames(run.frames.length, 12);
+    const labels = idx.map((i) => `T+${Math.round((run.frames[i].elapsed_minutes ?? 0) / 60)}h`);
+    Promise.all(idx.map((i) => data.api!.depth(run.run_id, run.frames[i].index).then((d) => frameArea(d, 0.1)).catch(() => null))).then((a) => live && setState({ idx, labels, areas: a }));
     return () => { live = false; };
   }, [data.api, data.runs, runId]);
-  return areas;
+  return state;
 }
+const nearestIdx = (idx: number[], f: number) => (idx.length ? idx.reduce((best, v, k) => (Math.abs(v - f) < Math.abs(idx[best] - f) ? k : best), 0) : undefined);
 async function waitForRun(api: T.TwinGuardApi, accepted: T.SimulationAccepted, onProgress: (p: string) => void): Promise<T.SimulationRun> {
   for (let i = 0; i < 180; i += 1) {
     const run = await api.getSimulation(accepted.run_id);
@@ -89,11 +94,11 @@ async function waitForRun(api: T.TwinGuardApi, accepted: T.SimulationAccepted, o
   }
   throw new Error('Simulation did not finish in time.');
 }
-function RunSelect({ data, label = 'Simulation run', value, onChange }: { data: TwinData; label?: string; value?: string; onChange?: (id: string) => void }) {
+function RunSelect({ data, label = 'Simulation run', value, onChange, completedOnly = false }: { data: TwinData; label?: string; value?: string; onChange?: (id: string) => void; completedOnly?: boolean }) {
   return (
     <label className="tg-field"><span>{label}</span>
       <select aria-label={label} value={value ?? data.runId} onChange={(e) => (onChange ?? data.setRunId)(e.target.value)}>
-        {data.runs.map((r) => <option key={r.run_id} value={r.run_id}>{r.label ?? r.run_id}</option>)}
+        {data.runs.filter((r) => !completedOnly || r.state === 'completed').map((r) => <option key={r.run_id} value={r.run_id}>{r.label ?? r.run_id}{r.state !== 'completed' ? ` (${r.state})` : ''}</option>)}
         {!data.runs.length && <option value={data.runId}>Loading runs…</option>}
       </select>
     </label>
@@ -161,7 +166,7 @@ export function OverviewTab({ data, go }: TabProps) {
         <Panel title="Forecast & Event Timeline" icon="clock">
           <RunSelect data={data} />
           <div className="tg-event-steps">
-            {(data.run?.frames ?? []).map((f, i) => <button type="button" key={f.index} className={i === data.frameIndex ? 'is-current' : i < data.frameIndex ? 'is-past' : ''} onClick={() => data.setFrameIndex(i)}><i /><b>T+{Math.round((f.elapsed_minutes ?? 0) / 60)}h</b><small>{f.valid_time_utc.slice(5, 16).replace('T', ' ')}</small></button>)}
+            {sampleFrames(data.run?.frames.length ?? 0, 6).map((i) => { const f = data.run!.frames[i]; return <button type="button" key={f.index} className={i === data.frameIndex ? 'is-current' : i < data.frameIndex ? 'is-past' : ''} onClick={() => data.setFrameIndex(i)}><i /><b>T+{Math.round((f.elapsed_minutes ?? 0) / 60)}h</b><small>{f.valid_time_utc.slice(5, 16).replace('T', ' ')}</small></button>; })}
           </div>
         </Panel>
         <Panel title="Flood Extent & Depth" icon="waves" sub="(current frame)">
@@ -288,7 +293,7 @@ export function SimulationTab({ data }: TabProps) {
       </div>
       <div className="tg-row4">
         <Panel title="Inundation Area" icon="waves" sub="(≥ 0.10 m by frame)">
-          <LineChart title="Inundation area by frame" unit="km²" xLabels={(data.run?.frames ?? []).map((f) => `T+${Math.round((f.elapsed_minutes ?? 0) / 60)}h`)} series={[{ name: 'Area', values: areas.map((a) => a ?? 0), color: '#2fa8ff' }]} highlightIndex={data.frameIndex} height={170} />
+          <LineChart title="Inundation area by frame" unit="km²" xLabels={areas.labels} series={[{ name: 'Area', values: areas.areas.map((a) => a ?? 0), color: '#2fa8ff' }]} highlightIndex={nearestIdx(areas.idx, data.frameIndex)} height={170} />
         </Panel>
         <Panel title="Depth Distribution" icon="layers" sub="(model cells)">
           <Donut title="Depth distribution" centre={`${fmtN(frameArea(data.depth, 0.01), 0)}`} sub="km² wet" slices={[
@@ -463,6 +468,7 @@ export function RoutingTab({ data }: TabProps) {
 
 export function WhatIfTab({ data }: TabProps) {
   const [baseId, setBaseId] = useState(data.runId);
+  useEffect(() => { const done = data.runs.filter((r) => r.state === 'completed'); if (done.length && !done.some((r) => r.run_id === baseId)) setBaseId(done.some((r) => r.run_id === data.runId) ? data.runId : done[0].run_id); }, [data.runs, data.runId, baseId]);
   const [rainPct, setRainPct] = useState(130);
   const [release, setRelease] = useState<Record<T.ReservoirKey, number>>({ CHEMBARAMBAKKAM: 0, POONDI: 0, PUZHAL: 0, CHOLAVARAM: 0 });
   const [tide, setTide] = useState(0);
@@ -499,7 +505,7 @@ export function WhatIfTab({ data }: TabProps) {
     <div className="tg-layout tg-layout--three">
       <div className="tg-col">
         <Panel title="Scenario Builder" icon="branch">
-          <RunSelect data={data} label="Baseline run" value={baseId} onChange={setBaseId} />
+          <RunSelect data={data} label="Baseline run" value={baseId} onChange={setBaseId} completedOnly />
           <label className="tg-field"><span>Rainfall vs baseline <b>{rainPct}%</b></span><input type="range" min={0} max={300} step={5} value={rainPct} aria-label="Rainfall percent of baseline" onChange={(e) => setRainPct(Number(e.target.value))} /></label>
           <div className="tg-field"><span>Reservoir release (m³/s)</span>
             {(Object.keys(release) as T.ReservoirKey[]).map((k) => <label key={k} className="tg-inline-field"><small>{k.charAt(0) + k.slice(1).toLowerCase()}</small><input className="tg-num" type="number" min={0} max={3000} step={50} value={release[k]} aria-label={`${k} release m3/s`} onChange={(e) => setRelease({ ...release, [k]: Math.max(0, Math.min(3000, Number(e.target.value))) })} /><small>{(release[k] * 35.3147).toFixed(0)} cusecs</small></label>)}
@@ -528,7 +534,7 @@ export function WhatIfTab({ data }: TabProps) {
       </div>
       <div className="tg-row4">
         <Panel title="Inundation Growth (Area)" icon="waves" className="tg-span-2">
-          <LineChart title="Inundation area baseline vs scenario" unit="km²" xLabels={(base?.frames ?? []).map((f) => `T+${Math.round((f.elapsed_minutes ?? 0) / 60)}h`)} series={[{ name: 'Baseline', values: baseAreas.map((a) => a ?? 0), color: '#7fe3ff' }, ...(scen ? [{ name: 'Scenario', values: scenAreas.map((a) => a ?? 0), color: '#ff6b8a' }] : [])]} height={170} />
+          <LineChart title="Inundation area baseline vs scenario" unit="km²" xLabels={baseAreas.labels} series={[{ name: 'Baseline', values: baseAreas.areas.map((a) => a ?? 0), color: '#7fe3ff' }, ...(scen && scenAreas.areas.length === baseAreas.areas.length ? [{ name: 'Scenario', values: scenAreas.areas.map((a) => a ?? 0), color: '#ff6b8a' }] : [])]} height={170} />
         </Panel>
         <Panel title="Road Accessibility" icon="route" sub="(current map)"><RoadDonut roads={data.roads} /></Panel>
         <Panel title="Ward Risk Shift" icon="building">
@@ -601,6 +607,8 @@ export function ReservoirTab({ data }: TabProps) {
 /* ───────── 7 · Digital twin (3D city) ───────── */
 
 export function TwinTab({ data }: TabProps) {
+  const [gpu, setGpu] = useState<GpuInfo | null>(null);
+  useEffect(() => { let off: (() => void) | undefined; import('../twin/Twin3D').then((m) => { off = m.onGpuInfo(setGpu); }); return () => off?.(); }, []);
   const [layers, setLayers] = useState<TwinLayers>({ ...DEFAULT_LAYERS, wards: true });
   const [pick, setPick] = useState<PickInfo | null>(null);
   const stats = focusStats(data.focus, data.depth);
@@ -654,7 +662,7 @@ export function TwinTab({ data }: TabProps) {
           </ul>
         </Panel>
         <Panel title="3D Rendering" icon="cube">
-          <ul className="tg-fresh"><li><span>Water surface</span><b>×{WATER_EXAGGERATION}</b><small>vertical exaggeration of depth</small></li><li><span>Building height</span><b>{3} m/level</b><small>OSM levels or area estimate</small></li><li><span>Imagery</span><b>{imagerySourceLabel()}</b><small>dark-tinted in 3D mode</small></li></ul>
+          <ul className="tg-fresh"><li><span>GPU</span><b>{gpu ? (gpu.tier === 'high' ? 'High quality' : gpu.tier === 'standard' ? 'Standard' : 'Reduced') : '—'}</b><small>{gpu ? gpu.renderer : 'detecting…'}</small></li><li><span>Water surface</span><b>×{WATER_EXAGGERATION}</b><small>vertical exaggeration of depth</small></li><li><span>Building height</span><b>{3} m/level</b><small>OSM levels or area estimate</small></li><li><span>Imagery</span><b>{imagerySourceLabel()}</b><small>dark-tinted in 3D mode</small></li></ul>
         </Panel>
       </div>
       <div className="tg-row4">

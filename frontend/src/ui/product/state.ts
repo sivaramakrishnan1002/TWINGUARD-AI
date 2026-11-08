@@ -85,7 +85,8 @@ export function useTwinData(): TwinData {
   useEffect(() => {
     if (!api) return;
     refreshRuns().then((list) => {
-      if (api.kind === 'api' && list.length && !list.some((r) => r.run_id === runId)) setRunId(list[0].run_id);
+      const done = list.filter((r) => r.state === 'completed');
+      if (api.kind === 'api' && done.length && !done.some((r) => r.run_id === runId)) setRunId(done[0].run_id);
     }).catch((e) => setError(e instanceof Error ? e.message : String(e)));
     api.staticLayer('wards').then(setWardShapes).catch(() => setWardShapes(null));
     api.weather().then((w) => { setWeather(w); setWeatherError(null); }).catch((e) => setWeatherError(e instanceof Error ? e.message : 'Weather unavailable'));

@@ -175,7 +175,7 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
                        "run_id": job["run_id"], "forcing_sha256": provenance.get("forcing_sha256"),
                        "static_assets_version": grid.version, "inputs": inputs},
         "diagnostics": {"engine_run_id": doc["run_id"], "engine_cached": bool(doc.get("cached")), "layers": sorted(frames),
-                        "device": dev},
+                        "device": dev, "engine_timing": doc.get("timing"), "engine_runtime_s": doc.get("runtime_seconds")},
     }
     _write(run_dir / "result.json", result)
     _write(run_dir / "progress.json", {"progress_pct": 100.0}, best_effort=True)

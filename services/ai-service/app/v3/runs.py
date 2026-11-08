@@ -166,11 +166,14 @@ class RunManager:
 
     def estimate_s(self, request: dict) -> int:
         if config.a25_enabled():  # measured by Lane A: ~105 s per 24 h citywide 120 m member incl. products
-            per_hour = 4.4 if request.get("resolution", "citywide") == "citywide" else 20.0  # CPU; focus: 6-26 min per 48 h
+            citywide = request.get("resolution", "citywide") == "citywide"
             from . import device
             if device.resolve(device.engine_supports_gpu())["used"] == "cuda":
-                per_hour /= 2.0  # measured through /v3: 48 h citywide 120 m = 101 s engine on the RTX 3050 (CPU ~210 s)
-            return int(per_hour * request["duration_hours"] * config.a25_members()) + 15
+                # A26 after a64cc30 (cold child process): 48 h citywide 120 m ~35 s, 24 h ~17 s; nested focus ~2-3x citywide.
+                per_hour = 0.75 if citywide else 2.5
+            else:
+                per_hour = 4.4 if citywide else 20.0  # CPU; focus: 6-26 min per 48 h
+            return int(per_hour * request["duration_hours"] * config.a25_members()) + 10
         from .simulate import members
         hours = request["duration_hours"] + 24
         return int(ESTIMATE_S_PER_MEMBER_HOUR * hours * len(members())) + 2

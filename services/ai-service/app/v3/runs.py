@@ -172,8 +172,11 @@ class RunManager:
             citywide = request.get("resolution", "citywide") == "citywide"
             from . import device
             if device.resolve(device.engine_supports_gpu())["used"] == "cuda":
-                # A26 after a64cc30 (cold child process): 48 h citywide 120 m ~35 s, 24 h ~17 s; nested focus ~2-3x citywide.
-                per_hour = 0.75 if citywide else 2.5
+                # Measured via /v3 with A26 943ae77 (CUDA graphs), 48 h citywide 120 m: warm persistent worker 17 s end to end,
+                # cold per-run child 31 s. Nested focus ~2-3x citywide.
+                warm = config.worker_mode() == "persistent"
+                per_hour = (0.3 if warm else 0.45) * (1.0 if citywide else 2.5)
+                return int(per_hour * request["duration_hours"] * config.a25_members()) + (3 if warm else 10)
             else:
                 per_hour = 4.4 if citywide else 20.0  # CPU; focus: 6-26 min per 48 h
             return int(per_hour * request["duration_hours"] * config.a25_members()) + 10

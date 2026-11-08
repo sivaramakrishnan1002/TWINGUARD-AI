@@ -705,3 +705,7 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 15:16:26 Claimed B49 by Lane B
 
 - 2026-11-08 15:16:59 C4 v3: v3GetFlowFrame promoted to top-level paths (B49 commit 17bf87c); validator 31 paths/33 ops; tests 169 passed.
+
+- 2026-11-08 19:40:31 G5 reassessed: G5 stays not_ready; B13 set blocked_manual pending the owner's choice between option A (as written) and option B (revised packaged replay->engine->/v3->UI); proposal docs/master/G5_REASSESSMENT_2026-11-08.md.
+
+- 2026-11-08 19:40:40 Finished B49: done

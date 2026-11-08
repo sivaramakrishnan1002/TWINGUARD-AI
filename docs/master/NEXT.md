@@ -20,7 +20,7 @@
 
 ## Ready tasks by lane B
 
-- **B49 — Serve per-frame flow (GET /v3/simulations/{run_id}/flow)** (ready)
+- None.
 
 ## Ready tasks by lane I
 
@@ -28,7 +28,7 @@
 
 ## Blocked tasks
 
-- **B13 — E2E scenario** (blocked_prerequisite)
+- **B13 — E2E scenario** (blocked_manual)
 - **I04 — Release/backups** (blocked_manual)
 - **M4 — Create GitHub repo/push** (blocked_manual)
 - **M7 — Census/licence checks** (blocked_manual)
@@ -40,6 +40,7 @@
 
 - **B48 — Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session** (running)
 - **A26 — Optional CUDA backend for services/flood_engine (OD-2026-11-08)** (running)
+- **B49 — Serve per-frame flow (GET /v3/simulations/{run_id}/flow)** (running)
 
 ## Next gate
 

@@ -2089,7 +2089,7 @@
       "lane": "B",
       "title": "E2E scenario",
       "phase": "B",
-      "status": "blocked_prerequisite",
+      "status": "blocked_manual",
       "depends_on": [
         "B02",
         "B03",
@@ -2149,7 +2149,8 @@
         "docs/master/CR-012_G5_DATE_ONLY_OBSERVATION_REPLAY.md",
         "docs/trackb/B13_REPLAY_FIXTURE_EVIDENCE.md",
         "docs/master/G0_CHECKLIST.json",
-        "docs/master/GATE_G0_REPORT.md"
+        "docs/master/GATE_G0_REPORT.md",
+        "docs/master/G5_REASSESSMENT_2026-11-08.md"
       ],
       "session": null,
       "claimed_at": null,
@@ -2166,7 +2167,8 @@
         "2026-10-29 Integrator reconciliation after B11: verified B08 and B11 completion evidence; removed stale statements that B08 was unimplemented and B11 was blocked. The full-stack B13 path remains absent: B09 exposes health only, the B11 UI is static/no API calls, and backend business routes remain unexposed. Lane B must register a distinct bounded backend-route/UI replay vertical slice; Integrator API projection/change-control review is required before route availability. B13 remains blocked; B9 is pipeline REPLAY only. No implementation started.",
         "2026-10-31 reconciliation after I08: corrected stale B13 prerequisites. B18 now directly displays saved A20 C9 assets and I08 verified that path, but neither is the distinct B08 historical REPLAY result flowing through a mounted backend route. B09 still exposes health only for this purpose; B21/B23 C9 routes do not supply the B13 operation. Added B18 as a completed dependency. Kept B13 blocked pending a separately registered Lane B backend/UI replay vertical slice and Integrator OpenAPI/change-control review; no implementation started.",
         "2026-10-31 planning after B26/I08: current B08 A07/A09 results are SIMULATED; legacy replay JSONL has assumed date-only timestamps inconsistent with C3. Registered I21 before blocked Lane B B27 to propose a separate C4 v2 replay lookup and seek owner approval; B13 remains blocked pending verified date-only fixture and packaged backend/UI evidence.",
-        "2026-10-31 follow-up: CR-011 is approved conditionally. G5 scope recommendation retains the source-backed historical REPLAY vertical slice. B28 must prove the fixture, I22 publish the projections, and B27 provide runtime evidence; if no fixture qualifies, return for explicit owner scope decision."
+        "2026-10-31 follow-up: CR-011 is approved conditionally. G5 scope recommendation retains the source-backed historical REPLAY vertical slice. B28 must prove the fixture, I22 publish the projections, and B27 provide runtime evidence; if no fixture qualifies, return for explicit owner scope decision.",
+        "2026-11-08 Integrator G5 reassessment: all 16 dependencies are done; the stale blocked_prerequisite status is changed to blocked_manual, awaiting the owner's G5 scope decision. Option A keeps the POONDI date-only replay and needs a restored UI replay panel (B48 dropped B13ReplayView). Option B, recommended, is a revised packaged replay -> engine -> /v3 -> UI check (CR-020). See docs/master/G5_REASSESSMENT_2026-11-08.md."
       ]
     },
     {
@@ -6433,7 +6435,7 @@
       "lane": "B",
       "title": "Serve per-frame flow (GET /v3/simulations/{run_id}/flow)",
       "phase": "B",
-      "status": "running",
+      "status": "done",
       "depends_on": [
         "A27",
         "B47"
@@ -6453,18 +6455,22 @@
         "Move the operation from x-c4-v3-product-api.proposed_paths into the section's paths with schema-validated tests, then ask the Integrator to promote it to top-level paths.",
         "Keep the payload bounded (stride; consider gzip). Do not change existing /v3 responses."
       ],
-      "evidence": [],
+      "evidence": [
+        "services/ai-service/app/v3/router.py",
+        "tests/ai_service/test_v3_a25_adapter.py"
+      ],
       "session": "Lane B",
       "claimed_at": "2026-11-08T15:16:26+0530",
-      "finished_at": null,
-      "commit": null,
+      "finished_at": "2026-11-08T19:40:40+0530",
+      "commit": "9cb4054",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
         "2026-11-08 Registered by Integrator as the serving follow-on to A27.",
-        "2026-11-08 Unblocked by Integrator: A27 done (b90c0c6). Contract aligned to A27 readers: FlowFrame validated against products.flow_frame on the citywide 120 m and Velachery 30 m runs at strides 1/2/4/8. GridSpec.cell_size_m relaxed to a positive number, because strided grids report cell_size*stride. The proposed op takes only run_id, frame_index and stride. Map FlowUnavailable to 503, NotFound to 404 and ValueError to 422."
+        "2026-11-08 Unblocked by Integrator: A27 done (b90c0c6). Contract aligned to A27 readers: FlowFrame validated against products.flow_frame on the citywide 120 m and Velachery 30 m runs at strides 1/2/4/8. GridSpec.cell_size_m relaxed to a positive number, because strided grids report cell_size*stride. The proposed op takes only run_id, frame_index and stride. Map FlowUnavailable to 503, NotFound to 404 and ValueError to 422.",
+        "GET /v3/simulations/{run_id}/flow mounted (17bf87c, aligned in 9cb4054): FlowFrame from products.flow_frame with stride 1-8; 404 NotFound, 422 ValueError/validation, 503 FlowUnavailable (A06 or pre-2.1.0 runs); gzip when accepted (citywide frame 2.1 MB -> 42 KB, ~70 ms cached). Engine version in the run cache identity. tests/ai_service 144 passed (strided frames schema-validated); validator 31 paths / 33 ops PASS. Live on local AI service 127.0.0.1:8000."
       ]
     }
   ],

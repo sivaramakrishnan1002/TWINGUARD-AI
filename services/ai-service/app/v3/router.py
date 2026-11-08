@@ -300,15 +300,13 @@ def _incidents(doc: dict, frame_index: int | None) -> list[dict]:
 
 
 # ------------------------------------------------------------------------------------------------ status / overview / weather / events
-def _engine_label() -> str:
-    """Engine plus compute device (OD-2026-11-08); a dedicated device field awaits an Integrator contract edit."""
-    base = config.ENGINE_VERSION_A25 if config.a25_enabled() else config.ENGINE_VERSION
+def _device_status() -> dict:
+    """EngineStatus.device (OD-2026-11-08): requested setting, resolved device, GPU name, one GPU job at most."""
     try:
         dev = device.status()
-    except Exception:  # noqa: BLE001
-        return base + " [device: cpu]"
-    gpu = f", GPU {dev['name']}" if dev["cuda_available"] and dev["name"] else ""
-    return f"{base} [device: {dev['resolved']} (requested {dev['requested']}{gpu}; GPU jobs max {dev['gpu_jobs_max']})]"
+    except Exception:  # noqa: BLE001 - device reporting never breaks status
+        return {"requested": device.requested(), "resolved": "cpu", "name": None, "cuda_available": False, "gpu_jobs_max": 1}
+    return {k: dev[k] for k in ("requested", "resolved", "name", "cuda_available", "gpu_jobs_max")}
 
 
 @router.get("/status", operation_id="v3GetEngineStatus")
@@ -317,7 +315,8 @@ def get_status(response: Response) -> dict:
     queue = MANAGER.status()
     allowed = weather.next_allowed("point")
     return {
-        "engine_version": _engine_label(),
+        "engine_version": config.ENGINE_VERSION_A25 if config.a25_enabled() else config.ENGINE_VERSION,
+        "device": _device_status(),
         "static_available": static.grid_available("citywide") and static.product_available(),
         **queue,
         "weather_min_refresh_interval_s": config.weather_min_interval_s(),

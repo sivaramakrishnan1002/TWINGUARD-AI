@@ -170,9 +170,10 @@ def test_cuda_failure_falls_back_to_cpu_and_is_reported(env, monkeypatch):
     monkeypatch.setenv("TWINGUARD_V3_DEVICE", "auto")
     monkeypatch.setattr(device, "probe", lambda refresh=False: {"cuda_available": True, "name": "Test GPU", "backend": "torch"})
     client = env["client"]
-    assert "device: cuda" in client.get("/v3/status").json()["engine_version"]
+    status = assert_contract(client.get("/v3/status"), "/v3/status")
+    assert status["device"] == {"requested": "auto", "resolved": "cuda", "name": "Test GPU", "cuda_available": True, "gpu_jobs_max": 1}
     accepted = client.post("/v3/simulations", json=custom_request([7.0, 7.0])).json()
     assert MANAGER.wait_idle(60)
     run = assert_contract(client.get(RUN.format(run_id=accepted["run_id"])), RUN)
     assert run["state"] == "completed" and devices == ["cuda", "cpu"]
-    assert "fallback: CUDA run failed (RuntimeError)" in run["provenance"]["engine_version"]
+    assert run["provenance"]["device"] == {"used": "cpu", "name": None, "fallback_reason": "CUDA run failed (RuntimeError); rerun on CPU"}

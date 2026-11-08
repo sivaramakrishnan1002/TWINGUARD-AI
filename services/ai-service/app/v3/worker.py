@@ -87,7 +87,8 @@ def execute(run_dir: Path) -> dict:
         "frames": [{"index": k, "valid_time_utc": t, "elapsed_minutes": (k + 1) * req["frame_interval_minutes"]}
                    for k, t in enumerate(times)],
         "summary": summary,
-        "provenance": {"engine_version": f"{config.ENGINE_VERSION} [device: cpu]", "run_id": job["run_id"], "forcing_sha256": forcing.sha256(),
+        "provenance": {"engine_version": config.ENGINE_VERSION, "device": {"used": "cpu", "name": None, "fallback_reason": None},
+                       "run_id": job["run_id"], "forcing_sha256": forcing.sha256(),
                        "static_assets_version": product.version if product else None, "inputs": inputs},
         "diagnostics": {"members": out["members"], "runtime_seconds": out["runtime_seconds"], "reservoir": reservoir_detail},
     }
@@ -155,7 +156,9 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
         "grid": dict(doc["grid"]),
         "frames": doc["frames"],
         "summary": summary,
-        "provenance": {"engine_version": f"{config.ENGINE_VERSION_A25} ({provenance.get('engine_version', 'A25')}; {device_mod.label(dev)})",
+        "provenance": {"engine_version": f"{config.ENGINE_VERSION_A25} ({provenance.get('engine_version', 'A25')})",
+                       "device": {"used": dev["used"], "name": dev.get("name"),
+                                  "fallback_reason": dev["reason"] if dev["reason"] and "rerun on CPU" in dev["reason"] else None},
                        "run_id": job["run_id"], "forcing_sha256": provenance.get("forcing_sha256"),
                        "static_assets_version": grid.version, "inputs": inputs},
         "diagnostics": {"engine_run_id": doc["run_id"], "engine_cached": bool(doc.get("cached")), "layers": sorted(frames),

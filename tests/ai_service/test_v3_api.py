@@ -93,6 +93,7 @@ def test_status_and_events(env):
     client = env["client"]
     body = assert_contract(client.get("/v3/status"), "/v3/status")
     assert body["static_available"] is True and body["weather_min_refresh_interval_s"] >= 600
+    assert body["device"]["resolved"] == "cpu" and body["device"]["gpu_jobs_max"] == 1  # A06 pilot is CPU-only
     events = assert_contract(client.get("/v3/events"), "/v3/events")["events"]
     assert {"2015-12-01", "2023-12-04"} <= {e["event_key"] for e in events}
     assert all(e["source_mode"] == "REPLAY" for e in events)
@@ -136,6 +137,7 @@ def test_completed_run_and_cache(env, base_run):
     assert run["state"] == "completed" and run["source_mode"] == "SIMULATED" and len(run["frames"]) == 12
     assert run["summary"]["max_depth_m"] > 0.3 and run["summary"]["roads_blocked_km"] > 0
     assert any(i["source_mode"] == "SCENARIO_INPUT" for i in run["provenance"]["inputs"])
+    assert run["provenance"]["device"] == {"used": "cpu", "name": None, "fallback_reason": None}
     assert len(run["limitations"]) <= 5
     again = client.post("/v3/simulations", json=custom_request())
     assert again.status_code == 202 and again.json() == {**again.json(), "run_id": base_run, "state": "cached"}
@@ -410,7 +412,6 @@ def test_validator_rejects_bad_bodies():
 def test_trial_promotion_matches_contract_operations():
     """Same checks as test_api.py applies to top-level paths, run against the v3 section before promotion."""
     generated = main.app.openapi()
-    pending_renames = {"RouteRequest": "RouteSearchRequest"}  # v1 owns RouteRequest; Integrator renames the v3 schema
     for path, item in v3_section()["paths"].items():
         for method, contract_op in item.items():
             if method not in ("get", "post", "put"):
@@ -422,6 +423,6 @@ def test_trial_promotion_matches_contract_operations():
             if "requestBody" in contract_op:
                 want = contract_op["requestBody"]["content"]["application/json"]["schema"]["$ref"].split("/")[-1]
                 got = runtime["requestBody"]["content"]["application/json"]["schema"]["$ref"].split("/")[-1]
-                assert got == pending_renames.get(want, want), (path, want, got)
+                assert got == want, (path, want, got)
     v1 = generated["paths"]["/route"]["post"]["requestBody"]["content"]["application/json"]["schema"]["$ref"]
     assert v1.endswith("/RouteRequest")

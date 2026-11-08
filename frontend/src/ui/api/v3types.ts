@@ -10,7 +10,7 @@ export interface LonLat { lon: number; lat: number }
 export interface ApiError { detail: string; code: 'bad_request' | 'not_found' | 'conflict' | 'invalid' | 'rate_limited' | 'unavailable'; retry_after_s?: number | null }
 
 export interface ProvenanceInput { name: string; source: string; source_mode: SourceMode; fetched_at?: string | null; sha256?: string | null }
-export interface Provenance { engine_version: string; run_id: string; forcing_sha256?: string | null; static_assets_version?: string | null; inputs: ProvenanceInput[] }
+export interface Provenance { engine_version: string; run_id: string; forcing_sha256?: string | null; static_assets_version?: string | null; inputs: ProvenanceInput[]; device?: { used?: string; name?: string | null; fallback_reason?: string | null } | null }
 
 /** Contract enum is 30/90/100/120 m; saved A05/A06/A23 runs are 600 m (flagged to the Integrator). */
 export interface GridSpec { crs: 'EPSG:32644'; origin_x_m: number; origin_y_m: number; cell_size_m: number; rows: number; cols: number; bbox_wgs84: [number, number, number, number] }

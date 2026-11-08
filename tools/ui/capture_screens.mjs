@@ -51,7 +51,9 @@ const evaluate = async (expression) => (await send('Runtime.evaluate', { express
 await send('Page.enable');
 await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
 
-for (const [tab, name, cam, frameIdx] of SHOTS ?? TABS) {
+// optional: TG_TABS=routing,reservoirs to recapture only some tabs
+const ONLY = process.env.TG_TABS ? process.env.TG_TABS.split(',') : null;
+for (const [tab, name, cam, frameIdx] of (SHOTS ?? TABS).filter(([t]) => !ONLY || ONLY.includes(t))) {
   if (frameIdx === undefined || frameIdx === 0) await send('Page.navigate', { url: `${BASE}${BASE.includes('?') ? '&' : '?'}tab=${tab}` });
   if (cam && (frameIdx === undefined || frameIdx === 0)) {
     for (let i = 0; i < 30 && !(await evaluate('!!window.__tgViewer')); i += 1) await sleep(1000);

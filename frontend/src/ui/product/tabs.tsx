@@ -286,6 +286,8 @@ export function SimulationTab({ data }: TabProps) {
           <ul className="tg-fresh">
             <li><span>Run</span><b>{data.run?.state ?? '—'}</b><small>{data.run?.run_id}</small></li>
             <li><span>Engine</span><b>SIMULATED</b><small>{data.run?.provenance.engine_version}</small></li>
+            {data.run?.provenance.device?.used && <li><span>Compute</span><b>{data.run.provenance.device.used.toUpperCase()}</b><small>{data.run.provenance.device.name ?? ''}{data.run.provenance.device.fallback_reason ? ` · fallback: ${data.run.provenance.device.fallback_reason}` : ''}</small></li>}
+            <li><span>Water motion</span><b>{data.flow ? 'MODELLED /flow' : 'ESTIMATED'}</b><small>{data.flow ? `u/v velocity, frame ${data.flow.frame_index}, stride ${data.flow.stride}` : 'no flow output for this run; surface-slope estimate'}</small></li>
             <li><span>Grid</span><b>{data.run?.grid ? `${data.run.grid.cell_size_m} m` : '—'}</b><small>{data.run?.grid ? `${data.run.grid.cols} × ${data.run.grid.rows} · ${data.run.grid.crs}` : ''}</small></li>
             {(data.run?.limitations ?? []).slice(0, 3).map((l) => <li key={l}><span>Note</span><small>{l}</small></li>)}
           </ul>
@@ -655,9 +657,11 @@ export function TwinTab({ data }: TabProps) {
         <Panel title="City Twin Health" icon="shield">
           <ul className="tg-fresh">
             <li><span>Buildings ({area.label})</span><b>{stats.total.toLocaleString('en-IN')}</b><small>OSM footprints · {stats.osmLevels} with levels, rest estimated</small></li>
-                        <li><span>3D tiles</span><b>{googleTilesConfigured() ? 'Google' : 'OSM extrusion'}</b><small>{googleTilesConfigured() ? 'Photorealistic 3D Tiles; OSM buildings show depth colours' : 'no Cesium ion token configured'}</small></li>
+                        <li><span>3D buildings</span><b>{ionConfigured() ? 'OSM Buildings' : 'OSM extrusion'}</b><small>{ionConfigured() ? `Cesium OSM Buildings coloured by depth${layers.google && googleTilesConfigured() ? '; Google Photorealistic 3D Tiles on up close' : '; Google 3D Tiles off'}` : 'no Cesium ion token configured'}</small></li>
             <li><span>Terrain</span><b>{ionConfigured() ? 'Cesium World' : data.terrain ? 'GLO-30' : 'flat'}</b><small>{ionConfigured() ? 'ion asset 1 (GLO-30 DEM as fallback)' : 'project cleaned DEM'}</small></li>
-            <li><span>Flood run</span><b>SIMULATED</b><small>{data.run?.label}</small></li>
+            <li><span>Flood run</span><b>SIMULATED</b><small>{data.run?.label}{data.run ? ` · ${data.run.run_id}` : ''}</small></li>
+            <li><span>Rainfall input</span><b>{data.run?.provenance.inputs[0]?.source_mode ?? '—'}</b><small>{data.run?.provenance.inputs[0]?.source ?? ''}</small></li>
+            <li><span>Water motion</span><b>{data.flow ? 'MODELLED /flow' : 'ESTIMATED'}</b><small>{data.flow ? `u/v velocity, frame ${data.flow.frame_index}, stride ${data.flow.stride}` : 'no flow output for this run; surface-slope estimate'}</small></li>
             <li><span>Data service</span><b>{data.apiKind === 'api' ? 'C4 v3 API' : 'Saved results'}</b></li>
           </ul>
         </Panel>
@@ -678,7 +682,7 @@ export function TwinTab({ data }: TabProps) {
             <li><span>Roads blocked</span><b>{roadKm.ASSESSED_BLOCKED.toFixed(1)} km</b></li>
             <li><span>Roads unknown</span><b>{roadKm.UNKNOWN.toFixed(1)} km</b></li>
           </ul>
-          <p className="tg-source">Depth per building is sampled from its 600 m model cell.</p>
+          <p className="tg-source">Depth per building is sampled from its {data.depth?.grid.cell_size_m ?? data.run?.grid?.cell_size_m ?? '—'} m model cell.</p>
         </Panel>
       </div>
     </div>

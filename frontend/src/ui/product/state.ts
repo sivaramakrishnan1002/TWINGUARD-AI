@@ -48,6 +48,11 @@ export function focusBbox(f: FocusFile | null, area: T.FocusArea): [number, numb
   return [w, s, e, n];
 }
 
+/** OSM shelters without a usable name arrive as null/'nan'; label them rather than printing 'nan'. */
+function cleanShelters(r: T.ShelterReport): T.ShelterReport {
+  return { ...r, shelters: r.shelters.map((s) => (!s.name || /^(nan|none|null)$/i.test(String(s.name).trim()) ? { ...s, name: `Unnamed ${s.category ?? 'shelter'} (${s.shelter_id})` } : s)) };
+}
+
 export function useTwinData(): TwinData {
   const [api, setApi] = useState<T.TwinGuardApi | null>(null);
   const [nonce, setNonce] = useState(0);
@@ -97,7 +102,9 @@ export function useTwinData(): TwinData {
     if (!api) return;
     refreshRuns().then((list) => {
       const done = list.filter((r) => r.state === 'completed');
-      if (api.kind === 'api' && done.length && !done.some((r) => r.run_id === runId)) setRunId(done[0].run_id);
+      if (api.kind === 'api') { if (done.length && !done.some((r) => r.run_id === runId)) setRunId(done[0].run_id); }
+      // saved-results mode: a deep-linked API run id is not in the bundle, so show the default saved run instead of an error
+      else if (!list.some((r) => r.run_id === runId)) setRunId(list.some((r) => r.run_id === DEFAULT_RUN_ID) ? DEFAULT_RUN_ID : (done[0] ?? list[0])?.run_id ?? DEFAULT_RUN_ID);
     }).catch((e) => setError(e instanceof Error ? e.message : String(e)));
     api.staticLayer('wards').then(setWardShapes).catch(() => setWardShapes(null));
     api.weather().then((w) => { setWeather(w); setWeatherError(null); }).catch((e) => setWeatherError(e instanceof Error ? e.message : 'Weather unavailable'));
@@ -127,7 +134,7 @@ export function useTwinData(): TwinData {
     }
     api.wards(runId, frameIndex).then((w) => live && setWards(w.wards)).catch(() => live && setWards([]));
     api.incidents(runId, frameIndex, 'watch').then((i) => live && setIncidents(i.incidents)).catch(() => live && setIncidents([]));
-    api.shelters(runId, frameIndex, 1).then((s) => live && setShelters(s)).catch(() => live && setShelters(null));
+    api.shelters(runId, frameIndex, 1).then((s) => live && setShelters(cleanShelters(s))).catch(() => live && setShelters(null));
     return () => { live = false; };
   }, [api, runId, frameIndex]);
 

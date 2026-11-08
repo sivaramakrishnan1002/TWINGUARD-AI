@@ -100,8 +100,10 @@ function Header({ data }: { data: TwinData }) {
 /* ───────── shared map stage ───────── */
 
 /** Google 3D tiles are opt-in: most of Chennai has no photogrammetry mesh, so OSM buildings over Google 2D imagery is the default. */
-export const DEFAULT_LAYERS: TwinLayers = { water: true, hqWater: true, buildings: true, roads: true, wards: false, shelters: true, incidents: true, google: false };
-export const LAYER_LABELS: Record<keyof TwinLayers, string> = { water: 'Flood depth (water)', hqWater: 'High-quality animated water', buildings: '3D buildings', roads: 'Road network (3-state)', wards: 'Ward boundaries', shelters: 'Relief shelters', incidents: 'Generated incidents', google: 'Google Photorealistic 3D Tiles' };
+export const DEFAULT_LAYERS: TwinLayers = { water: true, hqWater: true, buildings: true, roads: true, wards: false, shelters: true, incidents: true, google: false, photoreal: false };
+export const LAYER_LABELS: Record<keyof TwinLayers, string> = { water: 'Flood depth (water)', hqWater: 'High-quality animated water', buildings: '3D buildings', roads: 'Road network (3-state)', wards: 'Ward boundaries', shelters: 'Relief shelters', incidents: 'Generated incidents', google: 'Google Photorealistic 3D Tiles', photoreal: 'Photoreal roofs (experimental)' };
+
+const MAP_INCIDENT_LIMIT = 60;
 
 export function MapStage({ data, title, layersInit, layers: controlled, onLayers, center, route, onPick, onMapClick, height = 'md', overlay, toolbarExtra, flyKey }: {
   data: TwinData;
@@ -122,6 +124,11 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
   const [own, setOwn] = useState<TwinLayers>({ ...DEFAULT_LAYERS, ...layersInit });
   const layers = controlled ?? own;
   const setLayers = (l: TwinLayers) => (onLayers ? onLayers(l) : setOwn(l));
+  // The map shows the most severe generated incidents only (peak frames can hold hundreds); the Emergency tab lists all of them.
+  const mapIncidents = useMemo(() => {
+    const rank = { critical: 3, warning: 2, watch: 1, info: 0 } as const;
+    return [...data.incidents].sort((a, b) => rank[b.severity] - rank[a.severity]).slice(0, MAP_INCIDENT_LIMIT);
+  }, [data.incidents]);
   const [menu, setMenu] = useState(false);
   const [cmd, setCmd] = useState<TwinCommand | null>(null);
   const [cam, setCam] = useState<CameraInfo | null>(null);
@@ -161,7 +168,7 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
       <div className="tg-stage__map">
         <Suspense fallback={<div className="tg-twin tg-twin--loading" role="status">Loading 3D city…</div>}>
           <Twin3D mode={mode} layers={layers} terrain={data.terrain} frame={layers.water || layers.buildings ? data.depth : null} flow={layers.water ? data.flow : null} focus={data.focus} roads={data.roads} wards={layers.wards ? data.wardShapes : null} wardShapes={data.wardShapes} highlightWard={highlight}
-            shelters={data.shelters?.shelters ?? null} incidents={data.incidents} route={route} flyTo={fly} command={cmd} onCamera={setCam} onPick={onPick} onMapClick={onMapClick} />
+            shelters={data.shelters?.shelters ?? null} incidents={mapIncidents} route={route} flyTo={fly} command={cmd} onCamera={setCam} onPick={onPick} onMapClick={onMapClick} />
         </Suspense>
         <span className="tg-stage__badge">DEMO / SIMULATION</span>
         <div className="tg-tools" role="toolbar" aria-label="Map tools">

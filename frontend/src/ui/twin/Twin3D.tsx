@@ -17,7 +17,7 @@ import type { DepthClass, DepthFrame, EdgeState, FlowFrame, Incident, LonLat, Ro
  */
 
 export type ViewMode = '3d' | '2d' | 'satellite';
-export interface TwinLayers { water: boolean; hqWater: boolean; buildings: boolean; roads: boolean; wards: boolean; shelters: boolean; incidents: boolean; google: boolean }
+export interface TwinLayers { water: boolean; hqWater: boolean; buildings: boolean; roads: boolean; wards: boolean; shelters: boolean; incidents: boolean; google: boolean; photoreal: boolean }
 export interface PickInfo { kind: 'building' | 'road' | 'shelter' | 'incident' | 'ward' | 'ground' | 'river'; title: string; lines: [string, string][]; location: LonLat }
 export type TwinCommand = { type: 'home' | 'zoomIn' | 'zoomOut' | 'north' | 'tilt'; key: number };
 export interface CameraInfo { headingDeg: number; metersPer100px: number | null; heightM: number }
@@ -151,7 +151,7 @@ function depthClassUniform(frame: DepthFrame | null) {
   if (frame) for (let r = 0; r < rows; r += 1) for (let c = 0; c < cols; c += 1) data.set(CLASS_RGBA[depthClass(frame.values[r][c])], (r * cols + c) * 4);
   return new Cesium.TextureUniform({ typedArray: data, width: cols, height: rows, minificationFilter: Cesium.TextureMinificationFilter.NEAREST, magnificationFilter: Cesium.TextureMagnificationFilter.NEAREST });
 }
-function buildingShader(frame: DepthFrame | null, groundEllipsoidM: number, night: boolean) {
+function buildingShader(frame: DepthFrame | null, groundEllipsoidM: number, night: boolean, photoreal = false) {
   const g = frame?.grid;
   const [lon, lat] = g ? utmToLonLat(g.origin_x_m, g.origin_y_m) : [80, 13];
   const enuInv = Cesium.Matrix4.inverse(Cesium.Transforms.eastNorthUpToFixedFrame(Cesium.Cartesian3.fromDegrees(lon, lat)), new Cesium.Matrix4());
@@ -162,6 +162,7 @@ function buildingShader(frame: DepthFrame | null, groundEllipsoidM: number, nigh
       u_size: { type: Cesium.UniformType.VEC2, value: new Cesium.Cartesian2(g ? g.cols * g.cell_size_m : 1, g ? g.rows * g.cell_size_m : 1) },
       u_ground: { type: Cesium.UniformType.FLOAT, value: groundEllipsoidM },
       u_night: { type: Cesium.UniformType.FLOAT, value: night ? 1 : 0 },
+      u_photo: { type: Cesium.UniformType.FLOAT, value: photoreal ? 1 : 0 },
     },
     lightingModel: Cesium.LightingModel.UNLIT,
     fragmentShaderText: `
@@ -183,6 +184,15 @@ function buildingShader(frame: DepthFrame | null, groundEllipsoidM: number, nigh
         float ao = mix(0.55, 1.0, clamp(h / 6.0, 0.0, 1.0));
         float sun = 0.75 + 0.25 * dot(nW, normalize(vec3(0.3, -0.5, 0.8)));
         vec3 col = roof ? roofCol * (0.9 + 0.1 * sun) : wallCol * ao * sun;
+        if (u_photo > 0.5) {
+          // experimental: satellite imagery draped on the tileset gives real roof colours; graded towards dusk.
+          // Walls keep the procedural shading (vertical projection of imagery would only streak them).
+          vec3 img = material.diffuse;
+          float lum = dot(img, vec3(0.299, 0.587, 0.114));
+          vec3 dusk = mix(vec3(lum), img, 0.65) * mix(1.0, 0.62, u_night) + vec3(0.0, 0.015, 0.04) * u_night;
+          if (roof) col = dusk;
+          else col = mix(col, col * (0.85 + 0.3 * lum), 0.5);
+        }
         // flood colouring by the building's model cell
         vec4 local = u_enuInv * vec4(p, 1.0);
         vec2 uv = vec2(local.x / u_size.x, -local.y / u_size.y);
@@ -688,7 +698,7 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
     if (!v || !ION_TOKEN || !boundary) return;
     let cancelled = false;
     const existing = prims.current.osm as Cesium.Cesium3DTileset | null | undefined;
-    if (existing && !existing.isDestroyed()) { existing.customShader = buildingShader(frame, datum + 6, mode === '3d'); setOsmReady(true); v.scene.requestRender(); return; }
+    if (existing && !existing.isDestroyed()) { existing.customShader = buildingShader(frame, datum + 6, mode === '3d', layers.photoreal); setOsmReady(true); v.scene.requestRender(); return; }
     // load order: terrain + imagery first, citywide buildings once the globe has settled (or after 4 s)
     const start = () => Cesium.Cesium3DTileset.fromIonAssetId(ION_ASSETS.osmBuildings, TILESET_OPTIONS);
     const ready = globeSettled ? Promise.resolve() : new Promise<void>((res) => {
@@ -698,7 +708,7 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
     ready.then(start).then((ts) => {
       if (cancelled || viewer.current !== v || v.isDestroyed()) { ts.destroy(); return; }
       ts.clippingPolygons = makeClip(boundary);
-      ts.customShader = buildingShader(frame, datum + 6, mode === '3d');
+      ts.customShader = buildingShader(frame, datum + 6, mode === '3d', layers.photoreal);
       const rmTiles = ts.allTilesLoaded.addEventListener(() => { performance.mark('tg-buildings-loaded'); rmTiles(); });
       v.scene.primitives.add(ts);
       prims.current.osm = ts;
@@ -708,7 +718,24 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
     }).catch(() => setOsmReady(false));
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boundary, frame, datum, mode]);
+  }, [boundary, frame, datum, mode, layers.photoreal]);
+
+  /* experimental photoreal roofs: drape the ion satellite imagery on the OSM buildings tileset (roof colour source) */
+  useEffect(() => {
+    const v = viewer.current;
+    const ts = prims.current.osm as Cesium.Cesium3DTileset | null | undefined;
+    if (!v || !ts || ts.isDestroyed() || !osmReady) return;
+    const layersOnTiles = ts.imageryLayers;
+    if (!layers.photoreal) { layersOnTiles.removeAll(true); v.scene.requestRender(); return; }
+    if (layersOnTiles.length) return;
+    let live = true;
+    Cesium.IonImageryProvider.fromAssetId(ION_ASSETS.satellite).then((provider) => {
+      if (!live || ts.isDestroyed()) return;
+      layersOnTiles.add(new Cesium.ImageryLayer(provider));
+      v.scene.requestRender();
+    }).catch(() => { /* imagery unavailable: roofs keep the procedural palette */ });
+    return () => { live = false; };
+  }, [layers.photoreal, osmReady]);
 
   /* OSM focus-area footprints, extruded and coloured by depth class: fallback when ion buildings are unavailable */
   useEffect(() => {

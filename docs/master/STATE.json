@@ -6203,7 +6203,7 @@
       "lane": "A",
       "title": "High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards)",
       "phase": "A",
-      "status": "running",
+      "status": "done_with_caveats",
       "depends_on": [
         "A23",
         "A10",
@@ -6229,17 +6229,20 @@
         "Recompute three-state road edges (ASSESSED_PASSABLE/ASSESSED_BLOCKED/UNKNOWN, A21 rule) and shelter reachability per frame for B47 to serve. Static assets go to a versioned bundle (e.g. data/features/live/a25_static_v1/).",
         "Keep data/raw read-only and raw audit 157/157; never overwrite prior outputs; focused tests; short Limitations section only."
       ],
-      "evidence": [],
+      "evidence": [
+        "pipelines/a25_hires/REPORT.md"
+      ],
       "session": "A25 high-res flood (Lane A)",
       "claimed_at": "2026-11-07T12:55:35+0530",
-      "finished_at": null,
-      "commit": null,
+      "finished_at": "2026-11-08T14:48:43+0530",
+      "commit": "a4b2cbc",
       "heavy": true,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths."
+        "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths.",
+        "Citywide 120 m (77,296 cells) and 90 m (136,096), 30 m focus VELACHERY/ADYAR/T_NAGAR/PORUR (200x200, nested to citywide). 11 runs: 3 events x 48 h citywide, 4 focus x 48 h, what-if, custom 15-min, 3-member, 90 m; mass balance <= 9.4e-5. Runtime: 24 h citywide 120 m 45-105 s, 48 h 190-250 s; 48 h focus 350-530 s. Per-building depth for 382,294 footprints (61 osm_height, 8,348 osm_levels, 373,885 estimated). GCC wards 1-200 from DataMeet (CC BY-SA 2.5 IN). Three-state roads and shelter reachability per frame. Entry point services.flood_engine.scenario.run_scenario; readers services.flood_engine.products. Raw audit 157/157."
       ]
     },
     {
@@ -6572,12 +6575,5 @@
       "freeze_evidence": "docs/master/GATE_G0_REPORT.md"
     }
   ],
-  "locks": [
-    {
-      "task": "A25",
-      "lane": "A",
-      "start_time": "2026-11-07T12:55:35+0530",
-      "expected_duration": "set by claimant"
-    }
-  ]
+  "locks": []
 }

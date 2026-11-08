@@ -689,3 +689,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 10:17:38 GPU pin reconciled: optional requirements-gpu.txt (torch==2.14.1, cu126) matches the B47 GPU image; pip check clean; CPU install unchanged.
 
 - 2026-11-08 10:18:12 Registered A26 (Lane A optional CUDA flood-engine backend, OD-2026-11-08), depends on A25.
+
+- 2026-11-08 14:48:43 Finished A25: done_with_caveats

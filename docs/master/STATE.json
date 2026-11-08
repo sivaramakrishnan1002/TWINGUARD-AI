@@ -6433,7 +6433,7 @@
       "lane": "B",
       "title": "Serve per-frame flow (GET /v3/simulations/{run_id}/flow)",
       "phase": "B",
-      "status": "ready",
+      "status": "running",
       "depends_on": [
         "A27",
         "B47"
@@ -6454,8 +6454,8 @@
         "Keep the payload bounded (stride; consider gzip). Do not change existing /v3 responses."
       ],
       "evidence": [],
-      "session": null,
-      "claimed_at": null,
+      "session": "Lane B",
+      "claimed_at": "2026-11-08T15:16:26+0530",
       "finished_at": null,
       "commit": null,
       "heavy": false,

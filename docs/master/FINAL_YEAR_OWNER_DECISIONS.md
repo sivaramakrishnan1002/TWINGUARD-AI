@@ -88,3 +88,13 @@ See [CR-014](CR-014_OPEN_METEO_WEATHER_CONTEXT.md) for endpoint fields, timestam
 - **Fallback:** NumPy remains the default and fallback.
 - **Dependencies:** none beyond `requirements-gpu.txt`.
 - **Report:** `docs/FLOOD_ENGINE_GPU_BENCHMARK.md`.
+
+## OD-2026-11-08c — Persistent GPU engine worker (recorded 2026-11-08)
+
+**Decision-maker:** the coordinator session, under the owner's delegation, relayed to the Integrator.
+
+- **Decision:** the AI service keeps a persistent engine worker warm, so runs skip CUDA start-up. Lane B implemented it in B47 commits dec0abe and df96bf2.
+- **Setting:** `TWINGUARD_V3_WORKER` = `persistent` | `per_run` | `auto`. The default `auto` resolves to persistent when runs resolve to CUDA, otherwise per-run.
+- **Fallback:** CPU remains the supported fallback (OD-2026-11-08).
+- **Measured:** a warm 48 h citywide run takes 17 s end to end, against 31 s cold. tests/ai_service: 148 passed.
+- **Contract:** additive optional `EngineStatus.worker` {mode, state, device, pid, jobs_done, restarts, warmup} in C4 v3.

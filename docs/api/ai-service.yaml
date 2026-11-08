@@ -9275,6 +9275,87 @@
                 "cuda_available": true,
                 "gpu_jobs_max": 1
               }
+            },
+            "worker": {
+              "type": "object",
+              "description": "Engine worker process state (OD-2026-11-08c persistent GPU worker). Optional, additive. Selected by TWINGUARD_V3_WORKER = persistent | per_run | auto.",
+              "required": [
+                "mode",
+                "state"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "persistent",
+                    "per_run",
+                    "inline"
+                  ]
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "warm",
+                    "cold",
+                    "starting",
+                    "down"
+                  ]
+                },
+                "device": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "cuda",
+                    "cpu",
+                    null
+                  ],
+                  "description": "Device the persistent worker resolved; null when not applicable."
+                },
+                "pid": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "jobs_done": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "restarts": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "warmup": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "description": "CUDA warm-up timings in seconds, or {\"error\": text} when warm-up failed; null when not run.",
+                  "additionalProperties": {
+                    "type": [
+                      "number",
+                      "string"
+                    ]
+                  }
+                }
+              },
+              "example": {
+                "mode": "persistent",
+                "state": "warm",
+                "device": "cuda",
+                "pid": 18324,
+                "jobs_done": 3,
+                "restarts": 0,
+                "warmup": {
+                  "compile_s": 4.1,
+                  "first_step_s": 0.38
+                }
+              }
             }
           },
           "example": {

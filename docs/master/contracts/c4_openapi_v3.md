@@ -89,3 +89,4 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
   - The runtime still accepts optional `resolution`/`focus_area` query parameters that the contract does not define. B49 should drop them, or ask to add them.
   - The contract now has 20 operations.
 - **2026-11-08 flow drift resolved:** B49 commit 9cb4054 removes the undocumented `resolution`/`focus_area` parameters. Runtime parameters are now `run_id`, `frame_index` and `stride`, and responses are 200/404/422/503, matching the contract. Tests: 170 passed.
+- **2026-11-08 worker field (OD-2026-11-08c):** optional `EngineStatus.worker` = {mode persistent|per_run|inline, state warm|cold|starting|down, device cuda|cpu|null, pid, jobs_done, restarts, warmup}. Additive, matching B47 commit dec0abe.

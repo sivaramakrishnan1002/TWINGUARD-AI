@@ -2089,7 +2089,7 @@
       "lane": "B",
       "title": "E2E scenario: packaged replay -> engine -> /v3 -> UI (G5, CR-020)",
       "phase": "B",
-      "status": "ready",
+      "status": "running",
       "depends_on": [
         "B02",
         "B03",
@@ -2157,8 +2157,8 @@
         "docs/master/G5_REASSESSMENT_2026-11-08.md",
         "docs/master/CR-020_G5_PRODUCT_PIPELINE_REPLAY.md"
       ],
-      "session": null,
-      "claimed_at": null,
+      "session": "Lane B",
+      "claimed_at": "2026-11-08T20:39:40+0530",
       "finished_at": null,
       "commit": null,
       "heavy": false,

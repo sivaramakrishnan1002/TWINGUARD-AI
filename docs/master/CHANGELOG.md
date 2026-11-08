@@ -721,3 +721,7 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 20:30:43 Finished B48: done_with_caveats
 
 - 2026-11-08 20:31:14 B13 ready: B48 confirmed the G5 run view and labels (25d8cc1); stale 600 m limitation text flagged for B13.
+
+- 2026-11-08 20:39:40 Claimed B13 by Lane B
+
+- 2026-11-08 20:40:13 OD-2026-11-08c recorded (persistent GPU worker); C4 v3 EngineStatus.worker added (optional, additive).

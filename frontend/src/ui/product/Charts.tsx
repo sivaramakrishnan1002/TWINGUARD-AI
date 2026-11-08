@@ -56,3 +56,50 @@ export function BarList({ title, rows, unit, max: forcedMax }: { title: string; 
     </div>
   );
 }
+
+export function Donut({ title, centre, sub, slices, size = 150 }: { title: string; centre: string; sub?: string; slices: { label: string; value: number; color: string }[]; size?: number }) {
+  const total = slices.reduce((s, x) => s + Math.max(0, x.value), 0);
+  const r = 42;
+  const c = 2 * Math.PI * r;
+  let offset = 0;
+  return (
+    <figure className="tg-donut">
+      <svg viewBox="0 0 120 120" width={size} height={size} role="img" aria-label={`${title}: ${slices.map((s) => `${s.label} ${total ? Math.round((s.value / total) * 100) : 0}%`).join(', ')}`}>
+        <circle cx="60" cy="60" r={r} fill="none" stroke="#132a3a" strokeWidth="14" />
+        {total > 0 && slices.map((s) => {
+          const len = (Math.max(0, s.value) / total) * c;
+          const el = <circle key={s.label} cx="60" cy="60" r={r} fill="none" stroke={s.color} strokeWidth="14" strokeDasharray={`${len} ${c - len}`} strokeDashoffset={-offset} transform="rotate(-90 60 60)" />;
+          offset += len;
+          return el;
+        })}
+        <text x="60" y={sub ? 58 : 64} textAnchor="middle" className="tg-donut__centre">{centre}</text>
+        {sub && <text x="60" y="74" textAnchor="middle" className="tg-donut__sub">{sub}</text>}
+      </svg>
+      <figcaption>
+        {slices.map((s) => <span key={s.label}><i style={{ background: s.color }} />{s.label}<b>{total ? `${((s.value / total) * 100).toFixed(1)}%` : '—'}</b></span>)}
+      </figcaption>
+    </figure>
+  );
+}
+
+export function Columns({ title, labels, values, unit, color = '#2fa8ff', height = 150, highlight }: { title: string; labels: string[]; values: (number | null)[]; unit: string; color?: string; height?: number; highlight?: number }) {
+  const W = 520;
+  const H = height;
+  const pad = { l: 40, r: 8, t: 10, b: 24 };
+  const max = niceMax(Math.max(0, ...values.map((v) => v ?? 0)));
+  const bw = (W - pad.l - pad.r) / Math.max(1, values.length);
+  return (
+    <figure className="tg-chart">
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${title} (${unit}): ${values.map((v, i) => `${labels[i]} ${v ?? 'n/a'}`).join(', ')}`}>
+        {[0, 0.5, 1].map((f) => <g key={f}><line x1={pad.l} x2={W - pad.r} y1={H - pad.b - f * (H - pad.t - pad.b)} y2={H - pad.b - f * (H - pad.t - pad.b)} className="tg-chart__grid" /><text x={pad.l - 6} y={H - pad.b - f * (H - pad.t - pad.b) + 4} textAnchor="end" className="tg-chart__tick">{fmt(f * max)}</text></g>)}
+        {values.map((v, i) => {
+          const h = v === null ? 0 : (v / max) * (H - pad.t - pad.b);
+          return <g key={i}>
+            <rect x={pad.l + i * bw + bw * 0.18} y={H - pad.b - h} width={bw * 0.64} height={Math.max(0, h)} rx="2" fill={i === highlight ? '#7fe3ff' : color} opacity={v === null ? 0.25 : 1} />
+            {(labels.length <= 12 || i % Math.ceil(labels.length / 12) === 0) && <text x={pad.l + i * bw + bw / 2} y={H - 7} textAnchor="middle" className="tg-chart__tick">{labels[i]}</text>}
+          </g>;
+        })}
+      </svg>
+    </figure>
+  );
+}

@@ -47,7 +47,8 @@ test('Open-Meteo request is fixed to the Chennai weather-context scope and carri
     assert.equal(request.url.searchParams.get('latitude'), '13.0827');
     assert.equal(request.url.searchParams.get('longitude'), '80.2707');
     assert.equal(request.url.searchParams.get('timezone'), 'Asia/Kolkata');
-    assert.equal(request.url.searchParams.get('current'), 'precipitation,rain,temperature_2m,relative_humidity_2m');
+    assert.equal(request.url.searchParams.get('current'), 'precipitation,rain,temperature_2m,relative_humidity_2m,wind_speed_10m');
+    assert.equal(request.url.searchParams.get('wind_speed_unit'), 'kmh');
     assert.equal(request.url.searchParams.get('hourly'), 'precipitation');
     assert.equal(request.url.searchParams.get('forecast_hours'), '24');
     assert.equal(request.options.method, 'GET');

@@ -99,8 +99,10 @@ test('panel renders idle, live and failure states without demo substitution', as
     assert.equal(kept.status, 'refresh-failed');
     assert.match(kept.message, /not presented as current/);
     const section = renderToStaticMarkup(React.createElement(product.ProductExperience, { initialSection: 'reservoirs' }));
-    assert.match(section, /PUBLIC CFM-DSS DASHBOARD · LIVE FETCH/);
-    // The live panel sits beside saved REPLAY evidence, which stays labelled as replay, not live.
+    // B48 reservoir tab: the CFM-DSS snapshot is fetched only on request and labelled PUBLISHED_SNAPSHOT;
+    // the saved REPLAY evidence stays labelled as replay, not live.
+    assert.match(section, /Fetch published snapshot/);
+    assert.match(section, /PUBLISHED_SNAPSHOT · freshness unknown/);
     assert.match(section, /2015 REPLAY alert sequence/);
     assert.match(section, /REPLAY of past data, not a live feed/);
   });

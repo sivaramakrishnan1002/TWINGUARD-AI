@@ -103,18 +103,14 @@ test('stale and unavailable cards expose evidence without asserting a live conne
   assert.doesNotMatch(liveMarkup, />LIVE<\/strong>/);
 });
 
-test('current product labels saved outputs as SIMULATED and unconnected live inputs as unavailable', async () => {
+test('current product shows data freshness and never presents unfetched or saved data as live', async () => {
   const server = await createServer({ configFile: path.join(frontendRoot, 'vite.config.ts'), root: frontendRoot, appType: 'custom', server: { middlewareMode: true } });
   try {
     const ui = await server.ssrLoadModule('/src/ui/product/ProductExperience.tsx');
-    const markup = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'system' }));
-    assert.match(markup, /Saved research outputs · SIMULATED/);
-    assert.match(markup, /No refresh; not observations/);
-    assert.match(markup, /IMD rainfall connector · Unavailable/);
-    assert.match(markup, /Flood-model recomputation · Unavailable/);
-    assert.match(markup, /Freshness unknown/);
-    assert.match(markup, /NoData/);
-    assert.match(markup, /Unknown, not dry/);
+    const markup = renderToStaticMarkup(React.createElement(ui.ProductExperience, { initialSection: 'overview' }));
+    assert.match(markup, /Confidence &amp; Data Freshness/);
+    assert.match(markup, /DATA: CONNECTING|DATA: SAVED RESULTS|DATA: C4 v3 API/);
+    assert.match(markup, /Not fetched\. Snapshots are read only when you ask\./);
     assert.doesNotMatch(markup, /LIVE · current/);
   } finally {
     await server.close();

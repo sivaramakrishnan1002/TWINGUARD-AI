@@ -13,6 +13,8 @@ export interface OpenMeteoWeatherSnapshot {
     rainMm: number | null;
     temperatureC: number | null;
     relativeHumidityPercent: number | null;
+    /** 10 m wind speed in km/h; null when the provider omits it. */
+    windSpeedKmh: number | null;
   };
   hourly: Array<{ validTimeLocal: string; precipitationMm: number | null }>;
   fetchedAt: string;
@@ -26,7 +28,8 @@ export function chennaiForecastUrl(): string {
   url.search = new URLSearchParams({
     latitude: String(CHENNAI_POINT.latitude),
     longitude: String(CHENNAI_POINT.longitude),
-    current: 'precipitation,rain,temperature_2m,relative_humidity_2m',
+    current: 'precipitation,rain,temperature_2m,relative_humidity_2m,wind_speed_10m',
+    wind_speed_unit: 'kmh',
     hourly: 'precipitation',
     timezone: 'Asia/Kolkata',
     timeformat: 'iso8601',
@@ -96,6 +99,7 @@ export function parseChennaiWeather(value: unknown, fetchedAt: string): OpenMete
       rainMm: requireNullableNonNegative(current.rain, 'current rain'),
       temperatureC: requireNullableFinite(current.temperature_2m, 'temperature'),
       relativeHumidityPercent: nullableBounded(current.relative_humidity_2m, 0, 100),
+      windSpeedKmh: currentUnits.wind_speed_10m === 'km/h' ? nullableBounded(current.wind_speed_10m, 0, 400) : null,
     },
     hourly: hourlyRows,
     fetchedAt: receivedAt.toISOString(),

@@ -1,6 +1,6 @@
 # C4 v3 — product simulation and decision API (proposed)
 
-**Status:** proposed and unfrozen. Contract-first design under CR-019 / OD-2026-11-07. The machine-readable source is `docs/api/ai-service.yaml`, top-level key `x-c4-v3-product-api` (OpenAPI 3.1 path items and component schemas, with an example for every response). No operation is mounted yet: each carries `x-current-runtime-status: unimplemented`.
+**Status:** proposed and unfrozen. Contract-first design under CR-019 / OD-2026-11-07. The machine-readable source is `docs/api/ai-service.yaml`, top-level key `x-c4-v3-product-api` (OpenAPI 3.1 path items and component schemas, with an example for every response). All 19 operations are mounted by B47 (commit d5a45e9) and carry `x-current-runtime-status: 200` inside the section.
 
 C4 v0 (frozen), v1 (CR-008) and v2 (CR-012) are unchanged. C7/C8 remain frozen. v3 is additive and lives under `/v3` on the AI service. The UI reaches it through the same-origin `/api/ai/` proxy (CR-018).
 
@@ -58,3 +58,12 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
 - One simulation runs at a time; at most 4 more can queue. An identical request or identical forcing returns `state: cached`.
 - `mode=forecast` and `GET /v3/weather?refresh=true` fetch Open-Meteo on demand, subject to the 600 s minimum interval and response caching. There is no background polling, and the draft scheduler stays disabled.
 - Depth frames are JSON arrays rounded to 0.01 m. B47 may add a binary Float32 variant only as an additive change to this contract.
+
+## Change log
+
+- **2026-11-07:** `GridSpec.cell_size_m` adds 600 (the interim A06/A23 grid).
+- **2026-11-08:** `Comparison.delta` now uses `SummaryDelta`, with nullable fields and no minimums, so what-if decreases can be negative.
+- **2026-11-08 promotion status:** all 19 operations are mounted by B47 (commit d5a45e9). Promotion into top-level `paths` waits on two things:
+  - the runtime OpenAPI declaring each contract error response;
+  - request-body models being named `SimulationRequest`, `RouteRequest` and `ResourceSet`, which `tests/ai_service/test_api.py` requires.
+

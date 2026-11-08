@@ -4180,7 +4180,7 @@
   },
   "x-c4-v3-product-api": {
     "version": "C4 v3 (proposed, unfrozen) \u2014 OD-2026-11-07 / CR-019",
-    "status": "contract-first design for parallel Lane B (B47) and UI (B48) work; no operation is mounted yet",
+    "status": "mounted by B47 (commit d5a45e9, 2026-11-08); proposed/unfrozen; promotion into top-level paths pending runtime OpenAPI parity (error responses, request-model names)",
     "base_path": "/v3 on the AI service; the packaged UI reaches it through the same-origin /api/ai/ proxy (CR-018)",
     "promotion_rule": "Lane B moves an operation from this section into top-level `paths` (with x-current-runtime-status 200) only when it is mounted and its focused tests pass; tests/ai_service/test_api.py requires every top-level path to exist at runtime.",
     "conventions": {
@@ -4237,7 +4237,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "responses": {
             "200": {
@@ -4260,7 +4260,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "responses": {
             "200": {
@@ -4293,7 +4293,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "responses": {
             "200": {
@@ -4316,7 +4316,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -4371,7 +4371,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "description": "One run executes at a time; further requests queue (max 4). mode=forecast fetches Open-Meteo on demand subject to the 600 s minimum interval and response caching (OD-2026-11-07).",
           "requestBody": {
@@ -4463,7 +4463,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -4507,7 +4507,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -4562,7 +4562,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -4679,7 +4679,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -4793,7 +4793,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -4858,7 +4858,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -4955,7 +4955,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -5034,7 +5034,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -5114,7 +5114,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -5179,7 +5179,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -5253,7 +5253,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "requestBody": {
             "required": true,
@@ -5326,7 +5326,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "responses": {
             "200": {
@@ -5347,7 +5347,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "requestBody": {
             "required": true,
@@ -5410,7 +5410,7 @@
           "tags": [
             "c4-v3"
           ],
-          "x-current-runtime-status": "unimplemented",
+          "x-current-runtime-status": 200,
           "x-owner": "Lane B (B47)",
           "parameters": [
             {
@@ -7352,7 +7352,7 @@
               "$ref": "#/x-c4-v3-product-api/components/schemas/WhatIfModifiers"
             },
             "delta": {
-              "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationSummary"
+              "$ref": "#/x-c4-v3-product-api/components/schemas/SummaryDelta"
             },
             "ward_changes": {
               "type": "array",
@@ -7787,6 +7787,65 @@
                 }
               }
             ]
+          }
+        },
+        "SummaryDelta": {
+          "type": "object",
+          "description": "what-if minus baseline for each SimulationSummary field; negative values are decreases. null = not comparable (either side unknown).",
+          "properties": {
+            "max_depth_m": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "flooded_area_km2": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "buildings_affected": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "population_exposed": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "roads_blocked_km": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "wards_affected": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "peak_time_utc": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Peak time of the what-if run (a time, not a difference); null when there is no peak."
+            }
+          },
+          "example": {
+            "max_depth_m": -0.21,
+            "flooded_area_km2": -8.4,
+            "buildings_affected": -3120,
+            "population_exposed": -40500,
+            "roads_blocked_km": -12.0,
+            "wards_affected": -6,
+            "peak_time_utc": null
           }
         }
       }

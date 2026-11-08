@@ -6203,7 +6203,7 @@
       "lane": "A",
       "title": "High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards)",
       "phase": "A",
-      "status": "ready",
+      "status": "running",
       "depends_on": [
         "A23",
         "A10",
@@ -6230,8 +6230,8 @@
         "Keep data/raw read-only and raw audit 157/157; never overwrite prior outputs; focused tests; short Limitations section only."
       ],
       "evidence": [],
-      "session": null,
-      "claimed_at": null,
+      "session": "A25 high-res flood (Lane A)",
+      "claimed_at": "2026-11-07T12:55:35+0530",
       "finished_at": null,
       "commit": null,
       "heavy": true,
@@ -6247,7 +6247,7 @@
       "lane": "B",
       "title": "Simulation and decision API (C4 v3)",
       "phase": "B",
-      "status": "ready",
+      "status": "done_with_caveats",
       "depends_on": [
         "B08",
         "B44",
@@ -6276,17 +6276,24 @@
         "Move each operation into top-level paths with x-current-runtime-status 200 only when mounted and tested (request the Integrator for the docs/api edit). Package services/flood_engine into the AI image read-only with a writable run store.",
         "Focused tests per operation (happy path, 404/409/422/429/503), API validator, full suite and raw audit pass. Never return or accept the Google Maps key."
       ],
-      "evidence": [],
-      "session": null,
-      "claimed_at": null,
-      "finished_at": null,
-      "commit": null,
+      "evidence": [
+        "services/ai-service/app/v3/router.py",
+        "tests/ai_service/test_v3_api.py",
+        "tests/ai_service/test_v3_a25_adapter.py",
+        "services/ai-service/README.md"
+      ],
+      "session": "Lane B",
+      "claimed_at": "2026-11-07T12:56:12+0530",
+      "finished_at": "2026-11-08T09:49:25+0530",
+      "commit": "d5a45e9",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths."
+        "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths.",
+        "Mounted all 19 C4 v3 paths (21 ops) under /v3 (packaged /api/ai/v3/): A25 engine when a25_static_v1 installed (120 m / 30 m focus), else A06 600 m. Focused tests 39 passed (schema-validated); full suite 420 passed, 1 skipped, 5 UI-label subtests failing in test_frontend_demo_only (B48 in progress, stale dist); validate_api_contracts PASS; raw audit 157/157. Caveats: (1) Integrator to promote ops to top-level paths and add a SummaryDelta schema (Comparison.delta can be negative); (2) packaging test expects UI's uncommitted /api/ai/v3/ nginx block; (3) Docker engine was not running, so the AI image build is unverified (compose config validates).",
+        "2026-11-08 Integrator G4 re-review: all 19 C4 v3 operations are mounted (commit d5a45e9), and a forecast->depth->roads->shelters->incidents probe on the synthetic fixture validates against the contract. G4 is set ready (PASS_WITH_CAVEATS). Follow-up before promotion into top-level paths: declare contract error responses in FastAPI responses= and name the request models SimulationRequest/RouteRequest/ResourceSet (test_api.py parity). See GATE_G4_REPORT.md (2026-11-08)."
       ]
     },
     {
@@ -6294,7 +6301,7 @@
       "lane": "B",
       "title": "Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) \u2014 ui session",
       "phase": "B",
-      "status": "ready",
+      "status": "running",
       "depends_on": [
         "B45",
         "B37"
@@ -6320,8 +6327,8 @@
         "Production build and UI tests pass; screenshots of each tab recorded under docs/ui/ or docs/figures/."
       ],
       "evidence": [],
-      "session": null,
-      "claimed_at": null,
+      "session": "ui",
+      "claimed_at": "2026-11-07T12:57:20+0530",
       "finished_at": null,
       "commit": null,
       "heavy": false,
@@ -6382,7 +6389,7 @@
       ],
       "tests": [],
       "target_day": 25,
-      "status": "not_ready"
+      "status": "ready"
     },
     {
       "id": "G5",
@@ -6526,5 +6533,12 @@
       "freeze_evidence": "docs/master/GATE_G0_REPORT.md"
     }
   ],
-  "locks": []
+  "locks": [
+    {
+      "task": "A25",
+      "lane": "A",
+      "start_time": "2026-11-07T12:55:35+0530",
+      "expected_duration": "set by claimant"
+    }
+  ]
 }

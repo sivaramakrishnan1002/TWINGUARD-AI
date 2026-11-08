@@ -667,3 +667,15 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-07 12:21:07 Finished A23: done_with_caveats
 
 - 2026-11-07 12:41:53 OD-2026-11-07 / CR-019 recorded: registered A25 (Lane A), B47 (Lane B API), B48 (ui session); A24/I26/B46 parked as superseded; G4 requires B47; C4 v3 contract in docs/api/ai-service.yaml x-c4-v3-product-api; CR-015 probe disclosure noted.
+
+- 2026-11-07 12:55:35 Claimed A25 by A25 high-res flood (Lane A)
+
+- 2026-11-07 12:56:12 Claimed B47 by Lane B
+
+- 2026-11-07 12:57:20 Claimed B48 by ui
+
+- 2026-11-08 09:49:25 Finished B47: done_with_caveats
+
+- 2026-11-08 09:57:56 Integrator G4 re-review: G4.4 passes in the working tree; G4 stays not_ready pending B47 closeout and OpenAPI parity fixes; C4 v3 SummaryDelta added.
+
+- 2026-11-08 09:59:48 Correction 09:57 entry: B47 was already finished (d5a45e9). G4 re-review PASS_WITH_CAVEATS, set ready; C4 v3 section operations marked mounted (200); top-level promotion pending Lane B OpenAPI parity fixes.

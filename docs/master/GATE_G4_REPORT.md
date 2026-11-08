@@ -51,3 +51,28 @@ The C4 v0 operations `POST /forecast` and `POST /route` (new computation) stay 5
 ## Decision
 
 G4 is **FAIL** and stays `not_ready`. The science chain is complete as simulated, assumption-labelled research output. The gate's API requirement is not met: forecast operations are 501, and there is no shelter API. Repairs A24 → I26 → B46 are registered. No lane-owned file, database, Docker volume, tag or push was changed or created by this review.
+
+
+## G4 re-review after B47 — 2026-11-08
+
+**Current gate decision: PASS_WITH_CAVEATS**
+
+On 2026-11-07, OD-2026-11-07 / CR-019 replaced the G4 repair chain A24/I26/B46 with B47, the C4 v3 simulation and decision API. G4 now requires A05, A10 and B47. Under the owner's relaxed caveat policy, `done_with_caveats` counts as done. B47 was finished as `done_with_caveats` at 2026-11-08 09:49 IST with commit `d5a45e9`. This supersedes the 2026-11-07 FAIL above, which stays as history. `STATE.json` records G4 as `ready`.
+
+| # | Criterion | Decision | Evidence |
+|---|---|---|---|
+| G4.1–G4.3 | Forecast, chain and shelter science | PASS_WITH_CAVEATS (unchanged) | See the criterion table above |
+| G4.4 | Forecast-through-shelter API | PASS_WITH_CAVEATS | **Mounted operations:** B47 (`services/ai-service/app/v3/`, mounted in `app/main.py`, commit d5a45e9) exposes all 19 C4 v3 operations; runtime and contract operation sets match exactly (Lane B's "21 operations" count is a miscount). **Integrator probe:** on B47's synthetic fixture (no network, temp run store), `POST /v3/simulations {"mode":"forecast"}` completed run `sim-20261108T042702Z-0a74b15b` with 12 frames and an Open-Meteo input labelled `MODEL_FORECAST`. On that run, `/depth`, `/roads` (three states only), `/shelters` (3 shelters, 2 reachable, capacities `assumed`) and `/incidents` (22, all `generated: true`) each returned 200, and each body validated against `x-c4-v3-product-api`. **Tests:** `pytest tests/ai_service tests/master` gives 164 passed. Lane B reports 39 focused v3 tests, a full suite of 420 passed and 1 skipped, the validator passing and the raw audit at 157/157. |
+
+**Caveats (short, thesis-style):**
+- The Integrator probe used the synthetic fixture. Runs on project data use the interim 600 m A06/A23 grid until A25's 120 m/30 m bundle is installed.
+- Shelter capacities are assumptions and incidents are generated, both labelled as such.
+- The 5 failing subtests in `tests/packaging/test_frontend_demo_only.py` that Lane B reports are UI labels tied to B48, not the API.
+
+**Contract follow-up (not a gate blocker):** the v3 operations stay in `x-c4-v3-product-api`, now marked `x-current-runtime-status: 200`. A trial promotion into top-level `paths` (reverted) failed `tests/ai_service/test_api.py::test_generated_openapi_matches_contract_routes_and_operation_ids` (line 111), for two reasons:
+- 17 of the 19 runtime operations do not declare the contract's error responses in FastAPI's `responses=`.
+- The request bodies are named `V3SimulationRequest`, `V3RouteRequest` and `V3ResourceSet` instead of `SimulationRequest`, `RouteRequest` and `ResourceSet`.
+
+Both are Lane B code fixes. The Integrator promotes the operations once they are fixed.
+
+**Contract change made in this re-review:** `Comparison.delta` now uses a new `SummaryDelta` schema. It has the same fields, all nullable, without non-negative minimums, and `peak_time_utc` is a nullable date-time, so what-if decreases can be negative. The validator passes.

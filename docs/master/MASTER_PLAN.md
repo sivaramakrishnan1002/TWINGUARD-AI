@@ -9,9 +9,9 @@ Build an auditable flood digital twin for the Chennai Metropolitan Area. Current
 ## Current coordinated state (generated)
 
 - G0: `ready`; C1-C8: frozen at v0.
-- Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `not_ready` ([report](GATE_G4_REPORT.md)); G5 `not_ready`; G6 `not_ready`.
-- Running tasks: none.
-- Selector-ready tasks: A: A25; B: B47, B48; I: none.
+- Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `ready` ([report](GATE_G4_REPORT.md)); G5 `not_ready`; G6 `not_ready`.
+- Running tasks: A25, B48.
+- Selector-ready tasks: A: none; B: none; I: none.
 
 <!-- CURRENT STATE END -->
 
@@ -185,8 +185,8 @@ Gate days are planning targets, not calendar commitments. No gate is declared pa
 | A24 | G4 repair: versioned shelter-allocation result schema and A05 forecast artifact selector evidence | A | A05, A10 | parked |
 | I26 | G4 repair: CR-019 additive read-only forecast and shelter API projection | I | A24 | parked |
 | B46 | G4 repair: mount read-only saved forecast and shelter-allocation endpoints | B | I26, A24, B08 | parked |
-| A25 | High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards) | A | A23, A10, A21 | ready |
-| B47 | Simulation and decision API (C4 v3) | B | B08, B44, B45 | ready |
-| B48 | Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session | B | B45, B37 | ready |
+| A25 | High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards) | A | A23, A10, A21 | running |
+| B47 | Simulation and decision API (C4 v3) | B | B08, B44, B45 | done_with_caveats |
+| B48 | Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session | B | B45, B37 | running |
 
 <!-- TASK TABLE END -->

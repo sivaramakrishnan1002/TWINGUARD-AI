@@ -16,12 +16,11 @@
 
 ## Ready tasks by lane A
 
-- **A25 — High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards)** (ready)
+- None.
 
 ## Ready tasks by lane B
 
-- **B47 — Simulation and decision API (C4 v3)** (ready)
-- **B48 — Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session** (ready)
+- None.
 
 ## Ready tasks by lane I
 
@@ -39,8 +38,9 @@
 
 ## Running tasks
 
-- None.
+- **A25 — High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards)** (running)
+- **B48 — Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session** (running)
 
 ## Next gate
 
-G4 is next (`not_ready`); review its registered prerequisites and evidence before closure.
+G5 is next (`not_ready`); review its registered prerequisites and evidence before closure.

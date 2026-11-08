@@ -136,9 +136,13 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
         dev = {**dev, "used": "cpu", "name": None, "reason": f"CUDA run failed ({type(error).__name__}); rerun on CPU"}
         kwargs["device"] = "cpu"
         doc = scenario.run_scenario(config.a25_root(), engine_runs, **kwargs)
-    used = ((doc.get("provenance") or {}).get("device") or {})
-    if isinstance(used, dict) and used.get("used") in ("cpu", "cuda"):  # trust the engine's own report when present
-        dev = {**dev, "used": used["used"], "name": used.get("name", dev.get("name"))}
+    engine_dev = (doc.get("provenance") or {}).get("device") or {}
+    if isinstance(engine_dev, dict) and str(engine_dev.get("used", "")).startswith(("cpu", "cuda")):
+        # Trust the engine's own report (A26 records "cuda:N" and its internal NumPy fallback); C4 v3 enum is cuda|cpu.
+        on_gpu = str(engine_dev["used"]).startswith("cuda")
+        reason = engine_dev.get("fallback_reason") or (dev["reason"] if dev["reason"] and "rerun on CPU" in dev["reason"] else None)
+        dev = {**dev, "used": "cuda" if on_gpu else "cpu", "name": engine_dev.get("name") if on_gpu else None,
+               "reason": reason, "engine_fallback": engine_dev.get("fallback_reason")}
     engine_dir = engine_runs / doc["run_id"]
     grid = static.grid(req["resolution"], req.get("focus_area"))
     with np.load(engine_dir / "frames.npz", allow_pickle=False) as z:
@@ -166,8 +170,8 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
         "frames": doc["frames"],
         "summary": summary,
         "provenance": {"engine_version": f"{config.ENGINE_VERSION_A25} ({provenance.get('engine_version', 'A25')})",
-                       "device": {"used": dev["used"], "name": dev.get("name"),
-                                  "fallback_reason": dev["reason"] if dev["reason"] and "rerun on CPU" in dev["reason"] else None},
+                       "device": {"used": dev["used"], "name": dev.get("name") if dev["used"] == "cuda" else None,
+                                  "fallback_reason": dev.get("engine_fallback") or (dev["reason"] if dev["reason"] and "rerun on CPU" in dev["reason"] else None)},
                        "run_id": job["run_id"], "forcing_sha256": provenance.get("forcing_sha256"),
                        "static_assets_version": grid.version, "inputs": inputs},
         "diagnostics": {"engine_run_id": doc["run_id"], "engine_cached": bool(doc.get("cached")), "layers": sorted(frames),

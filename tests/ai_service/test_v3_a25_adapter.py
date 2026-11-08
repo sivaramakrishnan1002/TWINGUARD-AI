@@ -249,3 +249,26 @@ def run_and_wait_a25(client, body) -> str:
     run = client.get(RUN.format(run_id=accepted.json()["run_id"])).json()
     assert run["state"] == "completed", run.get("error")
     return run["run_id"]
+
+
+def test_engine_device_report_is_normalised(env, monkeypatch):
+    """A26 reports "cuda:0" and its own NumPy fallback; /v3 exposes the C4 v3 enum cuda|cpu."""
+    from app.v3 import device
+
+    inner = fake_run_scenario(env["calls"])
+    reports = iter([{"used": "cuda:0", "name": "Test GPU", "fallback_reason": None},
+                    {"used": "cpu", "name": "cpu (NumPy)", "fallback_reason": "CUDA error: out of memory; ran on NumPy"}])
+
+    def a26_engine(static_root, runs_root, *, device="cpu", **kw):
+        doc = inner(static_root, runs_root, **kw)
+        doc["provenance"]["device"] = {"requested": device, **next(reports)}
+        return doc
+
+    monkeypatch.setattr(scenario, "run_scenario", a26_engine)
+    monkeypatch.setattr(device, "probe", lambda refresh=False: {"cuda_available": True, "name": "Test GPU", "backend": "torch"})
+    client = env["client"]
+    gpu = client.get(RUN.format(run_id=run_and_wait_a25(client, custom_request([9.0, 1.0])))).json()
+    assert gpu["provenance"]["device"] == {"used": "cuda", "name": "Test GPU", "fallback_reason": None}
+    cpu = client.get(RUN.format(run_id=run_and_wait_a25(client, custom_request([9.0, 2.0])))).json()
+    assert cpu["provenance"]["device"] == {"used": "cpu", "name": None, "fallback_reason": "CUDA error: out of memory; ran on NumPy"}
+    assert_contract(client.get(RUN.format(run_id=cpu["run_id"])), RUN)

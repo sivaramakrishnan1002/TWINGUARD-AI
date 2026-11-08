@@ -6349,7 +6349,7 @@
       "lane": "A",
       "title": "Per-frame flow velocity and water-surface export for UI flow animation",
       "phase": "A",
-      "status": "ready",
+      "status": "done",
       "depends_on": [
         "A25"
       ],
@@ -6372,17 +6372,20 @@
         "Tests: sidecar round-trip within the encoding tolerance, speed consistent with discharge/depth, dry-cell and NoData handling, stride subsampling, and the reader on a run without flow output. Raw audit unchanged.",
         "Do not edit services/ai-service/ (B49 serves it) or frontend/ (B48 consumes it)."
       ],
-      "evidence": [],
-      "session": null,
-      "claimed_at": null,
-      "finished_at": null,
-      "commit": null,
+      "evidence": [
+        "pipelines/a25_hires/A27_FLOW.md"
+      ],
+      "session": "A27 flow export (Lane A)",
+      "claimed_at": "2026-11-08T14:52:29+0530",
+      "finished_at": "2026-11-08T15:10:51+0530",
+      "commit": "b90c0c6",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-08 Registered by Integrator at the coordinator's request. Owner priority: before A26 (realistic flowing water for the demo). Contract: proposed C4 v3 GET /v3/simulations/{run_id}/flow (FlowFrame) under x-c4-v3-product-api.proposed_paths."
+        "2026-11-08 Registered by Integrator at the coordinator's request. Owner priority: before A26 (realistic flowing water for the demo). Contract: proposed C4 v3 GET /v3/simulations/{run_id}/flow (FlowFrame) under x-c4-v3-product-api.proposed_paths.",
+        "flow.npz per run (int16 x0.01; u east, v north, EPSG:32644; wse EGM2008 relative to per-cell offset), ~1.9-2.3x frames.npz. products.flow_frame/velocity_frame/wse_frame (stride 1-8) match C4 v3 FlowFrame; pre-A27 runs raise FlowUnavailable (503). Existing outputs bit-identical (tests + real 48 h citywide and Velachery reruns evt-20261108T092709Z-ba7ef063, evt-20261108T093021Z-a4857cea). Engine 2.1.0. 10 flood_engine tests pass; raw audit 157/157."
       ]
     },
     {
@@ -6390,7 +6393,7 @@
       "lane": "A",
       "title": "Optional CUDA backend for services/flood_engine (OD-2026-11-08)",
       "phase": "A",
-      "status": "ready",
+      "status": "running",
       "depends_on": [
         "A25"
       ],
@@ -6412,8 +6415,8 @@
         "Tests pass on CPU-only machines (GPU tests skip when CUDA is absent). Use only the torch pin in requirements-gpu.txt; report any new dependency to the Integrator. Do not edit services/ai-service/ (Lane B picks up device= automatically)."
       ],
       "evidence": [],
-      "session": null,
-      "claimed_at": null,
+      "session": "A26 CUDA backend (Lane A)",
+      "claimed_at": "2026-11-08T15:11:48+0530",
       "finished_at": null,
       "commit": null,
       "heavy": true,
@@ -6657,5 +6660,12 @@
       "freeze_evidence": "docs/master/GATE_G0_REPORT.md"
     }
   ],
-  "locks": []
+  "locks": [
+    {
+      "task": "A26",
+      "lane": "A",
+      "start_time": "2026-11-08T15:11:48+0530",
+      "expected_duration": "set by claimant"
+    }
+  ]
 }

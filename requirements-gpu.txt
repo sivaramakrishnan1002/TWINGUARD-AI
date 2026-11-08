@@ -1,0 +1,6 @@
+# Optional GPU extra (OD-2026-11-08). NOT part of the default/CPU install; CPU remains the supported fallback.
+# Install on top of requirements.txt only on a machine with an NVIDIA driver supporting CUDA 12.6:
+#   .venv\Scripts\python.exe -m pip install -r requirements-gpu.txt
+# Same pin as services/ai-service/Dockerfile (TWINGUARD_GPU=1 build arg, docker-compose.gpu.yml).
+--index-url https://download.pytorch.org/whl/cu126
+torch==2.14.1

@@ -685,3 +685,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 10:10:54 C4 v3 promoted: RouteRequest renamed RouteSearchRequest; all 19 /v3 operations listed in top-level paths of docs/api/ai-service.yaml (B47 baa47f6 parity fixes); test_api parity passes.
 
 - 2026-11-08 10:11:49 C4 v3: added optional EngineStatus.device and Provenance.device (OD-2026-11-08 GPU reporting), approved for B47.
+
+- 2026-11-08 10:17:38 GPU pin reconciled: optional requirements-gpu.txt (torch==2.14.1, cu126) matches the B47 GPU image; pip check clean; CPU install unchanged.

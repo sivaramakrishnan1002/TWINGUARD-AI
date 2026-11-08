@@ -34,3 +34,12 @@ Result: **exit 0; resolver PASS**. This is a dry run only and did not install or
 ## Boundary
 
 No packages were installed, no Lane A/B files or A16 artifacts were changed, and no G0/contract status was changed. I13 itself did not freeze contracts or change G0. The subsequent G0 closeout is recorded in `docs/master/GATE_G0_REPORT.md`.
+
+## OD-2026-11-08 GPU pin reconciliation — 2026-11-08
+
+**Reported by Lane B (B47, commit e847149):** `torch==2.14.1` from the PyTorch `cu126` index. It is installed only in the optional GPU AI image (`services/ai-service/Dockerfile` with `--build-arg TWINGUARD_GPU=1`, run through `docker-compose.gpu.yml`). The default CPU image is unchanged.
+
+- **Recorded pin:** new optional `requirements-gpu.txt` (`--index-url https://download.pytorch.org/whl/cu126`, `torch==2.14.1`). It is not referenced by `requirements.txt`, `requirements-A.txt` or `requirements-trackb.txt`, so CPU installs are unchanged. The Dockerfile carries the same pin inline, and the two must be changed together.
+- **Local `.venv`:** already has `torch 2.14.1+cu126`. `torch.cuda.is_available()` returns `True`. `nvidia-smi` reports `NVIDIA GeForce RTX 3050 Laptop GPU, 621.01, 4096 MiB`, which matches the owner's OD-2026-11-08 hardware statement. Until now this torch install was unpinned in any manifest; `requirements-gpu.txt` now records it.
+- **Conflict check:** torch requires filelock, fsspec, jinja2, networkx, setuptools, sympy and typing-extensions. None of these is pinned in the root, Lane A or Track B manifests. Installed versions are filelock 3.32.3, fsspec 2026.7.0, Jinja2 3.1.6, networkx 3.6.1, setuptools 78.1.0, sympy 1.14.0 and typing_extensions 4.16.0. `.venv\Scripts\python.exe -m pip check`: "No broken requirements found."
+- **Not done:** no GPU image was built and nothing was installed by the Integrator. Building the GPU image (network access and the NVIDIA Container Toolkit) is Lane B's packaging evidence. CPU fallback stays mandatory under OD-2026-11-08.

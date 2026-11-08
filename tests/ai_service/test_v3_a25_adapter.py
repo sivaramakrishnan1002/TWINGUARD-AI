@@ -127,6 +127,8 @@ def test_a25_engine_is_selected_and_served(env):
     run = assert_contract(client.get(RUN.format(run_id=accepted["run_id"])), RUN)
     assert run["state"] == "completed" and env["calls"][-1]["members"] == 1 and env["calls"][-1]["citywide_cell_m"] == 120
     assert run["summary"]["wards_affected"] == 2 and "A25" in run["provenance"]["engine_version"]
+    assert run["limitations"][0].startswith("A25 local-inertial model on a 600 m citywide grid")  # fixture grid is 600 m
+    assert not any("A06" in note for note in run["limitations"]) and len(run["limitations"]) <= 5
     depth = assert_contract(client.get(RUN.format(run_id=run["run_id"]) + "/depth?frame_index=11"), RUN + "/depth")
     assert depth["values"][0][0] == 0.6 and depth["values"][0][-1] is None
     assert client.get(RUN.format(run_id=run["run_id"]) + "/depth?layer=velocity_mps").json()["max_value"] == 0.4

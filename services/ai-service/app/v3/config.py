@@ -21,6 +21,22 @@ LIMITATIONS = [
     "Road states, shelter capacities, incidents and resource plans are derived demo indicators, not official guidance.",
     "Building and population exposure use the model cell containing each building or population cell.",
 ]
+LIMITATIONS_A06 = LIMITATIONS  # 600 m A06/A23 pilot (fallback engine)
+
+
+def limitations_for(engine: str, resolution: str, cell_size_m: float | None) -> list[str]:
+    """Thesis limitation notes (<= 5) matching the engine and grid the run actually used (B13 finding)."""
+    if engine != "a25":
+        return list(LIMITATIONS_A06)
+    size = int(cell_size_m) if cell_size_m else (30 if resolution == "focus" else a25_citywide_cell_m())
+    scope = "focus-area" if resolution == "focus" else "citywide"
+    return [
+        f"A25 local-inertial model on a {size} m {scope} grid (Copernicus GLO-30 DEM); no storm-drain network or hydraulic validation.",
+        "Event rainfall is archived IMERG/ERA5 (REPLAY) and forecast rainfall is Open-Meteo model output, not gauge observation.",
+        "Reservoir releases enter at one river cell per reservoir and tide is a constant sea-level offset; not routed river hydraulics.",
+        "Road states, shelter capacities, incidents and resource plans are derived demo indicators, not official guidance.",
+        "Building and population exposure use the model cell containing each building; most building heights are estimated.",
+    ]
 
 
 def env_path(name: str, default: str) -> Path:

@@ -138,7 +138,7 @@ def test_completed_run_and_cache(env, base_run):
     assert run["summary"]["max_depth_m"] > 0.3 and run["summary"]["roads_blocked_km"] > 0
     assert any(i["source_mode"] == "SCENARIO_INPUT" for i in run["provenance"]["inputs"])
     assert run["provenance"]["device"] == {"used": "cpu", "name": None, "fallback_reason": None}
-    assert len(run["limitations"]) <= 5
+    assert len(run["limitations"]) <= 5 and run["limitations"][0].startswith("Coarse 600 m local-inertial pilot (A06/A23)")
     again = client.post("/v3/simulations", json=custom_request())
     assert again.status_code == 202 and again.json() == {**again.json(), "run_id": base_run, "state": "cached"}
     listing = assert_contract(client.get("/v3/simulations?limit=1"), "/v3/simulations")

@@ -156,7 +156,8 @@ class RunManager:
                 "label": identity.get("label") or request["mode"], "created_at": now_iso(), "completed_at": None,
                 "progress_pct": 0.0, "error": None, "frame_interval_minutes": request["frame_interval_minutes"],
                 "frames": [], "provenance": {"engine_version": config.ENGINE_VERSION, "run_id": run_id, "inputs": []},
-                "limitations": config.LIMITATIONS, "_key": key, "_engine": identity.get("engine", "a06"),
+                "limitations": config.limitations_for(identity.get("engine", "a06"), request.get("resolution", "citywide"), None),
+                "_key": key, "_engine": identity.get("engine", "a06"),
             }
             _write(path / "job.json", {"run_id": run_id, "request": request, **(job_extra or {})})
             _write(path / "run.json", doc)
@@ -299,4 +300,8 @@ MANAGER = RunManager()
 
 
 def public(doc: dict) -> dict:
-    return {k: v for k, v in doc.items() if not k.startswith("_")}
+    out = {k: v for k, v in doc.items() if not k.startswith("_")}
+    # Limitations follow the engine and grid actually used (also corrects runs stored before this fix).
+    out["limitations"] = config.limitations_for(doc.get("_engine", "a06"), (doc.get("request") or {}).get("resolution", "citywide"),
+                                                (doc.get("grid") or {}).get("cell_size_m"))
+    return out

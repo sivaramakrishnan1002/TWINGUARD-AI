@@ -6313,7 +6313,7 @@
       "lane": "B",
       "title": "Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) \u2014 ui session",
       "phase": "B",
-      "status": "running",
+      "status": "done_with_caveats",
       "depends_on": [
         "B45",
         "B37"
@@ -6339,18 +6339,21 @@
         "Production build and UI tests pass; screenshots of each tab recorded under docs/ui/ or docs/figures/.",
         "Flow animation (added 2026-11-08): once B49 serves GET /v3/simulations/{run_id}/flow, animate the water with the per-frame u/v velocity (e.g. particles or a flow-direction texture) and water-surface elevation on the 3D surface; fall back to depth-only animation when flow returns 503."
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/ui/screenshots/README.md"
+      ],
       "session": "ui",
       "claimed_at": "2026-11-07T12:57:20+0530",
-      "finished_at": null,
-      "commit": null,
+      "finished_at": "2026-11-08T20:30:43+0530",
+      "commit": "25d8cc1",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
         "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths.",
-        "2026-11-08 Integrator: added the flow-animation consumption item above (A27 -> B49 -> B48), at the coordinator's request."
+        "2026-11-08 Integrator: added the flow-animation consumption item above (A27 -> B49 -> B48), at the coordinator's request.",
+        "7-tab reference-design UI on live C4 v3 (/api/ai/v3) with fixture fallback; CesiumJS citywide OSM buildings by depth, water animated by real /flow u/v (estimate fallback on 503), search/gazetteer, GPU-tier rendering; UI tests 43/43. Caveats: water draped on ground (not true-elevation mesh); OSM buildings without height tags render low; Google 3D tiles have no Chennai mesh (opt-in only); photoreal roofs experimental/off by default; main chunk 4.5 MB -> 270 kB but 3D engine chunk still 1.15 MB gzip; no rain ripples."
       ]
     },
     {

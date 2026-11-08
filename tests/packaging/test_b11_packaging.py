@@ -155,6 +155,7 @@ def test_gpu_image_pins_match_requirements_gpu() -> None:
     index = next(line.split(None, 1)[1] for line in lines if line.startswith("--index-url"))
     pins = sorted(line for line in lines if not line.startswith("--"))
     dockerfile = (ROOT / "services/ai-service/Dockerfile").read_text(encoding="utf-8")
-    gpu_install = re.search(r'if \[ "\$TWINGUARD_GPU" = "1" \]; then \\s*(python -m pip install[^;]+);', dockerfile).group(1)
+    gpu_lines = dockerfile.split('if [ "$TWINGUARD_GPU" = "1" ]; then', 1)[1].splitlines()
+    gpu_install = next(line for line in gpu_lines if "pip install" in line).split(";")[0]
     assert sorted(re.findall(r"\b[\w.-]+==[\w.+-]+", gpu_install)) == pins
     assert f"--index-url {index}" in gpu_install

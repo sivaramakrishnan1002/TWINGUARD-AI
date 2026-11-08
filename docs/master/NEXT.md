@@ -28,7 +28,7 @@
 
 ## Blocked tasks
 
-- **B13 — E2E scenario** (blocked_manual)
+- **B13 — E2E scenario: packaged replay -> engine -> /v3 -> UI (G5, CR-020)** (blocked_prerequisite)
 - **I04 — Release/backups** (blocked_manual)
 - **M4 — Create GitHub repo/push** (blocked_manual)
 - **M7 — Census/licence checks** (blocked_manual)
@@ -39,8 +39,6 @@
 ## Running tasks
 
 - **B48 — Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session** (running)
-- **A26 — Optional CUDA backend for services/flood_engine (OD-2026-11-08)** (running)
-- **B49 — Serve per-frame flow (GET /v3/simulations/{run_id}/flow)** (running)
 
 ## Next gate
 

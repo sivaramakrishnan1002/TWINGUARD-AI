@@ -1,6 +1,6 @@
 # G5 reassessment and revised-B13 proposal — 2026-11-08
 
-**Status:** Integrator proposal. **G5 stays `not_ready`.** Changing G5's definition (in `GATES.md` and CR-012) needs a project-owner decision. This document does not execute any lane's work.
+**Status:** decided. The owner chose **option B** on 2026-11-08 (CR-020, OD-2026-11-08b). The original Integrator proposal follows. **G5 stays `not_ready`.** Changing G5's definition (in `GATES.md` and CR-012) needs a project-owner decision. This document does not execute any lane's work.
 
 ## Current G5 definition and evidence
 

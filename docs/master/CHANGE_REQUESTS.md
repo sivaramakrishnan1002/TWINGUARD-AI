@@ -45,3 +45,7 @@ A23 disclosed extra preparatory Open-Meteo requests beyond the single retained 3
 ## CR-019 — Product rebaseline: reference UI, Google 3D Tiles, C4 v3 API
 
 Approved by the project owner as OD-2026-11-07. Tasks A25 (Lane A simulation), B47 (Lane B API) and B48 (UI session) are registered with disjoint file ownership. The contract is C4 v3 in `docs/api/ai-service.yaml` § `x-c4-v3-product-api`. A24/I26/B46 are superseded. See `CR-019_PRODUCT_REBASELINE_UI_API.md`.
+
+## CR-020 — G5 revised to the product pipeline
+
+Approved by the project owner on 2026-11-08 (option B of `G5_REASSESSMENT_2026-11-08.md`). The new G5 path is one archived 2015-12-01 event input -> engine run -> `/v3` -> packaged UI, with source and derived output kept distinct. It supersedes CR-012's G5 scope; the POONDI replay route remains as an optional secondary check. B13's acceptance is revised accordingly. See `CR-020_G5_PRODUCT_PIPELINE_REPLAY.md`.

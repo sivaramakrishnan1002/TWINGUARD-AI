@@ -74,3 +74,17 @@ See [CR-014](CR-014_OPEN_METEO_WEATHER_CONTEXT.md) for endpoint fields, timestam
   - The UI may request a high-performance WebGL context.
 - **Dependencies:** the Integrator reconciles any new pins (for example, a CUDA PyTorch or CuPy wheel) when lanes report them. GPU wheels go in an optional requirements file or an extra so that the CPU install stays unchanged. Lanes run `pip check` and record the exact wheel and CUDA versions.
 
+## OD-2026-11-08b — G5 scope revised (recorded 2026-11-08)
+
+**Decision-maker:** project owner ("B"), relayed through the coordinator session. Recorded by the Integrator.
+
+- **Revised G5:** G5 becomes the product-pipeline end-to-end check: an archived event input goes through an engine run, `/v3` and the packaged UI.
+- **CR-012:** its POONDI date-only replay is kept only as an optional secondary check.
+- **Records:** CR-020 and the revised B13 acceptance in `STATE.json`.
+
+**A26 GPU benchmark (OD-2026-11-08 follow-up):** Lane A's A26 (commit 887d089) measures 2.25-3.67x end-to-end speed-up on the RTX 3050 Laptop GPU.
+- **Match with NumPy:** mass balance <= 6e-5, peak-depth differences < 1 mm, flooded IoU >= 0.9995.
+- **Memory:** peak VRAM 4-30 MB.
+- **Fallback:** NumPy remains the default and fallback.
+- **Dependencies:** none beyond `requirements-gpu.txt`.
+- **Report:** `docs/FLOOD_ENGINE_GPU_BENCHMARK.md`.

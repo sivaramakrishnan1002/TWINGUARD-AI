@@ -1,5 +1,7 @@
 # CR-012 — G5/B13 source-backed date-only observation replay
 
+> **Superseded as the G5 scope by CR-020 (2026-11-08).** The `GET /replay-alerts/{event_id}` route and its C3 date-only rules remain in force as an optional secondary check with no UI requirement. See `CR-020_G5_PRODUCT_PIPELINE_REPLAY.md`.
+
 **Status: project-owner approved for the bounded G5/B13 scope revision.** Recorded 2026-10-31. This changes G5/B13 acceptance from retrieval of an existing saved historical alert outcome to replaying one actual archived source observation through processing, a mounted read-only backend route, and the packaged UI. It does not change G0, frozen C1-C8, C3 semantics, or C9 status.
 
 ## Owner decision recorded

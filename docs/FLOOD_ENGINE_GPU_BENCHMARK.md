@@ -86,3 +86,43 @@ Fresh `python` process, same 48 h case, same machine:
 4. **Reachability cache:** shelter reachability is reused for frames with identical road states and site depths (70 distinct of 97 frames in this case).
 
 Numerical results are unchanged: same arrays, same tests.
+
+## Follow-up 2: event-dependent slowness and CUDA graphs (2026-11-08)
+
+Lane B's re-check, `evt-20261108T144322Z-8e5ed75e` (2021-11-11, 48 h, citywide 120 m, `cuda`), took 147.1 s: device init 15.4 s, solve 117.6 s, post-processing 14.1 s.
+
+### Cause
+
+- **Same work:** the step count is almost the same as for Dec 2015 (12,469 vs 11,827), so the event is not harder. Each step was slower: 9.4 ms against 2 ms.
+- **What the GPU was doing:** sampled every 4 s during a reproduction, it sat mostly at P3 (255–735 MHz) with 3–46% utilisation, throttle reason `0x1` (GPU idle).
+- **Why it idled:** the eager solver issues about 60 small kernels plus one host sync per step from Python, so the GPU waits between kernels and the driver lowers its clocks.
+- **CPU contention:** the CPU was 64–100% loaded by other applications, which slows the launch loop further. Per-step time therefore depends on machine load (2–9 ms), not on the event.
+- **Power:** the laptop was on mains power, not battery.
+- **Device init:** the 10–15 s is the first CUDA runtime initialisation in a fresh process, through `torch.cuda.is_available()` and the device query. It is paid once per process.
+
+### Fix: CUDA-graph step
+
+`hires_torch.run` now captures one complete time step as a CUDA graph and replays it, giving one launch per step instead of about 60.
+
+- `dt` and the rain rate are device scalars updated before each replay, and all state tensors are updated in place.
+- The boundary flux is summed with a mask multiply, so the step has no host syncs and no dynamic shapes. One host read per step remains, for the CFL depth.
+- Set `TWINGUARD_CUDA_GRAPH=0`, or let a failed capture trigger the fallback, to use the previous eager kernels.
+- `diagnostics.kernel_mode` reports `cuda_graph` or `eager`.
+- Graph replay is bit-identical to eager on the test grid (frames, flow, steps; tested), and NumPy parity is unchanged.
+
+| 48 h citywide 120 m, `cuda` | Steps | Solve before | Solve with CUDA graph | ms/step |
+|---|---:|---:|---:|---:|
+| 2021-11-11 (Lane B run) | 12,469 | 117.6 s | — | 9.4 |
+| 2021-11-11 (this machine, eager) | 12,469 | 62.4 s | — | 5.0 |
+| 2021-11-11 (this machine, graph) | 12,525 | — | **12.8 s** | **1.0** |
+| 2015-12-01 (this machine, graph) | 11,827 | 23.8 s | **21.2 s** | 1.8 |
+
+Mass balance is ≤ 2e-6 in all of these runs.
+
+Post-processing (about 8–20 s, NumPy on the CPU) is now the larger share and grows with CPU load from other applications. The CPU was at 100% during the graph benchmark.
+
+### Recommendations for /v3
+
+- **Long-lived worker:** call `hires_torch.warmup("cuda:0")` once, so the 10–15 s CUDA init is not paid per run.
+- **Timing:** log `timing` and `diagnostics.kernel_mode` with each run.
+- **Expected warm times:** a 48 h citywide run takes ≈ 25–45 s end to end, depending on CPU load.

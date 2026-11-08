@@ -8,6 +8,7 @@ float64, so the only per-step host sync is the max depth needed for the CFL time
 from __future__ import annotations
 
 import math
+import os
 
 import numpy as np
 
@@ -166,6 +167,76 @@ def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, fra
         peak_frame[changed] = frame_index
         peak = torch.maximum(peak, hn)
 
+    # ---- one time step on static tensors (CUDA-graph capturable: no host syncs, no dynamic shapes) ----------
+    dt_t = torch.ones((), dtype=f32, device=dev)
+    rs_t = torch.zeros((), dtype=f32, device=dev)
+    rain_field = torch.zeros((ny, nx), dtype=f32, device=dev)
+    rain_k = [-1]
+    hmax_t = torch.zeros((), dtype=f32, device=dev)
+    bmaskf = bmask.to(f32)
+    inf_vals = torch.full((len(bidx_np),), float("inf"), dtype=f32, device=dev)
+    dx4 = dx / 4.0
+
+    def step():
+        if bidx_np.size:
+            h.view(-1).index_copy_(0, bidx, hb)
+        eta = z + h
+        cap = h * p * dx4 / dt_t
+        if bidx_np.size:
+            cap.view(-1).index_copy_(0, bidx, inf_vals)
+        nqx = face_flux(qx, eta[:, :-1], eta[:, 1:], z[:, :-1], z[:, 1:], n2x, okx, dt_t)
+        nqx = torch.maximum(torch.minimum(nqx, cap[:, :-1]), -cap[:, 1:])
+        nqy = face_flux(qy, eta[:-1, :], eta[1:, :], z[:-1, :], z[1:, :], n2y, oky, dt_t)
+        nqy = torch.maximum(torch.minimum(nqy, cap[:-1, :]), -cap[1:, :])
+        qx.copy_(nqx)
+        qy.copy_(nqy)
+        d = torch.zeros_like(h)
+        d[:, :-1] += qx
+        d[:, 1:] -= qx
+        d[:-1, :] += qy
+        d[1:, :] -= qy
+        d = d * (dt_t / dx)
+        vol = h * p
+        if spatial:
+            rd = rain_field * dt_t * actf
+            vol = vol + rd
+            tot[0] += rd.sum(dtype=torch.float64)
+        else:
+            vol = vol + (rs_t * dt_t) * actf
+        if has_src:
+            vol = vol + src * dt_t
+        infil_d = torch.minimum(vol, infil * dt_t)
+        vol = vol - infil_d - d
+        tot[1] += infil_d.sum(dtype=torch.float64)
+        tot[2] += (d * bmaskf).sum(dtype=torch.float64)
+        h.copy_(torch.clamp(vol, min=0.0) / p * actf)
+        if bidx_np.size:
+            h.view(-1).index_copy_(0, bidx, hb)
+        hmax_t.copy_((h * actf).max())
+
+    step_fn = step
+    graph_mode = "eager"
+    if dev.type == "cuda" and os.environ.get("TWINGUARD_CUDA_GRAPH", "1") != "0":
+        try:  # capture one step; replay = one launch per step instead of ~60 (keeps the GPU busy and its clocks up)
+            state = [x.clone() for x in (h, qx, qy, tot, hmax_t, rain_field)]
+            side = torch.cuda.Stream(dev)
+            side.wait_stream(torch.cuda.current_stream(dev))
+            with torch.cuda.stream(side):
+                for _ in range(2):
+                    step()
+            torch.cuda.current_stream(dev).wait_stream(side)
+            for x, b in zip((h, qx, qy, tot, hmax_t, rain_field), state):
+                x.copy_(b)
+            graph = torch.cuda.CUDAGraph()
+            with torch.cuda.graph(graph):
+                step()
+            step_fn = graph.replay
+            graph_mode = "cuda_graph"
+        except Exception as error:  # noqa: BLE001 - fall back to eager kernels
+            for x, b in zip((h, qx, qy, tot, hmax_t, rain_field), state):
+                x.copy_(b)
+            graph_mode = f"eager (graph capture failed: {type(error).__name__})"
+
     record(0)
     if record_flow:
         record_flow_frame(0, torch.zeros_like(h), torch.zeros_like(h))
@@ -184,46 +255,21 @@ def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, fra
             min_dt = min(min_dt, dt)
         if boundary_stage_fn is not None:
             set_boundary(t)
-        eta = z + h
-        cap = h * p * (dx / (4.0 * dt))
-        cap.view(-1)[bidx] = float("inf")
-        qx = face_flux(qx, eta[:, :-1], eta[:, 1:], z[:, :-1], z[:, 1:], n2x, okx, dt)
-        qx = torch.minimum(qx, cap[:, :-1])
-        qx = torch.maximum(qx, -cap[:, 1:])
-        qy = face_flux(qy, eta[:-1, :], eta[1:, :], z[:-1, :], z[1:, :], n2y, oky, dt)
-        qy = torch.minimum(qy, cap[:-1, :])
-        qy = torch.maximum(qy, -cap[1:, :])
-        d = torch.zeros_like(h)
-        d[:, :-1] += qx
-        d[:, 1:] -= qx
-        d[:-1, :] += qy
-        d[1:, :] -= qy
-        d = d * (dt / dx)
-        vol = h * p
+        dt_t.fill_(dt)
         k = int(t // rain_interval_s)
-        if k < len(rain_np):
-            if spatial:
-                rf = rain_cache.get(k)
-                if rf is None:
-                    rain_cache.clear()
-                    rf = rain_cache[k] = torch.as_tensor(rain_np[k] * np.float32(1.0 / 1000.0 / rain_interval_s), dtype=f32, device=dev)
-                rd = rf * dt * actf
-                vol = vol + rd
-                tot[0] += rd.sum(dtype=torch.float64)
-            else:
-                rs = float(rain_np[k]) / 1000.0 / rain_interval_s
-                if rs:
-                    vol = vol + float(np.float32(rs * dt)) * actf
-                    rain_m3 += rs * dt * n_act * area
-        if has_src:
-            vol = vol + src * dt
-        infil_d = torch.minimum(vol, infil * dt)
-        vol = vol - infil_d - d
-        tot[1] += infil_d.sum(dtype=torch.float64)
-        tot[2] += d[bmask].sum(dtype=torch.float64)
-        h = torch.clamp(vol, min=0.0) / p * actf
-        h.view(-1)[bidx] = hb
-        hmax = float((h * actf).max())  # CFL depth over active cells only, as in the NumPy reference
+        if spatial:
+            if k != rain_k[0]:
+                rain_k[0] = k
+                if k < len(rain_np):
+                    rain_field.copy_(torch.as_tensor(rain_np[k] * np.float32(1.0 / 1000.0 / rain_interval_s), dtype=f32))
+                else:
+                    rain_field.zero_()
+        else:
+            rs = float(rain_np[k]) / 1000.0 / rain_interval_s if k < len(rain_np) else 0.0
+            rs_t.fill_(rs)
+            rain_m3 += rs * dt * n_act * area
+        step_fn()
+        hmax = float(hmax_t)  # CFL depth over active cells only, as in the NumPy reference (the one sync per step)
         t += dt
         steps += 1
         if steps % 10 == 0:
@@ -255,7 +301,7 @@ def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, fra
     pf[peak_np <= 0] = -1
     diag = {**totals, "final_storage_m3": storage, "steps": steps, "min_dt_s": min_dt, "threads": 0,
             "mass_balance_relative_error": abs(residual) / max(inputs, 1e-9), "inflow_m3s": inflow_m3s,
-            "device": str(dev), "peak_vram_mb": round(torch.cuda.max_memory_allocated(dev) / 2**20, 1) if dev.type == "cuda" else None}
+            "device": str(dev), "kernel_mode": graph_mode, "peak_vram_mb": round(torch.cuda.max_memory_allocated(dev) / 2**20, 1) if dev.type == "cuda" else None}
     return HiresResult(frames, [int(round(k * frame_interval_s / 60)) for k in range(nframes)],
                        np.where(act_np, peak_np, np.nan).astype(np.float32), pf,
                        np.where(act_np, peak_speed.cpu().numpy(), np.nan).astype(np.float32), diag, flow_u, flow_v, flow_wse)

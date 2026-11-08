@@ -107,3 +107,15 @@ def test_warmup_is_paid_once():
     hires_torch.warmup("cuda:0")
     again = hires_torch.warmup("cuda:0")
     assert again == {"torch_import_s": 0.0, "cuda_context_s": 0.0}
+
+
+@needs_cuda
+def test_cuda_graph_replay_matches_eager(monkeypatch):
+    g = _grid()
+    graph = hires_torch.run(g, [40.0, 60.0, 5.0], 3600, 3 * 3600, 1800, inflows=[(6, 1, 20.0)], stage_m=0.3)
+    monkeypatch.setenv("TWINGUARD_CUDA_GRAPH", "0")
+    eager = hires_torch.run(g, [40.0, 60.0, 5.0], 3600, 3 * 3600, 1800, inflows=[(6, 1, 20.0)], stage_m=0.3)
+    assert graph.diagnostics["kernel_mode"] == "cuda_graph" and eager.diagnostics["kernel_mode"] == "eager"
+    np.testing.assert_array_equal(graph.frames_cm, eager.frames_cm)
+    np.testing.assert_array_equal(graph.flow_u, eager.flow_u)
+    assert graph.diagnostics["steps"] == eager.diagnostics["steps"]

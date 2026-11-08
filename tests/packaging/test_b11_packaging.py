@@ -144,3 +144,17 @@ def test_gpu_is_opt_in_and_cpu_stays_default() -> None:
         ["docker", "compose", "-p", "twinguard-b11", "-f", str(COMPOSE), "-f", str(ROOT / "docker-compose.gpu.yml"), "config", "--quiet"],
         cwd=ROOT, capture_output=True, text=True, check=False)
     assert result.returncode == 0, result.stderr
+
+
+def test_gpu_image_pins_match_requirements_gpu() -> None:
+    """The optional GPU image installs exactly the torch pin and index recorded in requirements-gpu.txt."""
+    import re
+
+    lines = [line.strip() for line in (ROOT / "requirements-gpu.txt").read_text(encoding="utf-8").splitlines()
+             if line.strip() and not line.strip().startswith("#")]
+    index = next(line.split(None, 1)[1] for line in lines if line.startswith("--index-url"))
+    pins = sorted(line for line in lines if not line.startswith("--"))
+    dockerfile = (ROOT / "services/ai-service/Dockerfile").read_text(encoding="utf-8")
+    gpu_install = re.search(r'if \[ "\$TWINGUARD_GPU" = "1" \]; then \\s*(python -m pip install[^;]+);', dockerfile).group(1)
+    assert sorted(re.findall(r"\b[\w.-]+==[\w.+-]+", gpu_install)) == pins
+    assert f"--index-url {index}" in gpu_install

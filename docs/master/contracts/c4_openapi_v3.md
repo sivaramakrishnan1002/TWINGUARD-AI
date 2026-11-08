@@ -71,4 +71,8 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
   - All 19 operations are copied into top-level `paths` with `x-current-runtime-status: 200`, after B47 declared the contract error responses and renamed its request models to the contract names (commit baa47f6).
   - The schemas stay under `x-c4-v3-product-api`.
   - The `test_api.py` runtime-parity test passes.
+- **2026-11-08 device fields (OD-2026-11-08), additive and optional:**
+  - `EngineStatus.device` = {requested auto|cuda|cpu, resolved cuda|cpu, name, cuda_available, gpu_jobs_max = 1}.
+  - `Provenance.device` = {used cuda|cpu, name, fallback_reason}.
+  - Requested by Lane B (B47).
 

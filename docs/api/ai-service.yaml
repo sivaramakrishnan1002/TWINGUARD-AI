@@ -6888,6 +6888,40 @@
                   }
                 }
               }
+            },
+            "device": {
+              "type": "object",
+              "description": "Device the run actually used (OD-2026-11-08). Optional, additive.",
+              "required": [
+                "used"
+              ],
+              "properties": {
+                "used": {
+                  "type": "string",
+                  "enum": [
+                    "cuda",
+                    "cpu"
+                  ]
+                },
+                "name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "fallback_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Set when a CUDA attempt failed and the run was recomputed on CPU."
+                }
+              },
+              "example": {
+                "used": "cpu",
+                "name": null,
+                "fallback_reason": "CUDA out of memory (4 GB); rerun on cpu"
+              }
             }
           },
           "example": {
@@ -8893,6 +8927,54 @@
                 "null"
               ],
               "format": "date-time"
+            },
+            "device": {
+              "type": "object",
+              "description": "Compute device (OD-2026-11-08). Optional, additive; CPU is always a supported fallback.",
+              "required": [
+                "requested",
+                "resolved",
+                "cuda_available",
+                "gpu_jobs_max"
+              ],
+              "properties": {
+                "requested": {
+                  "type": "string",
+                  "enum": [
+                    "auto",
+                    "cuda",
+                    "cpu"
+                  ],
+                  "description": "TWINGUARD_V3_DEVICE setting."
+                },
+                "resolved": {
+                  "type": "string",
+                  "enum": [
+                    "cuda",
+                    "cpu"
+                  ]
+                },
+                "name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "cuda_available": {
+                  "type": "boolean"
+                },
+                "gpu_jobs_max": {
+                  "type": "integer",
+                  "const": 1
+                }
+              },
+              "example": {
+                "requested": "auto",
+                "resolved": "cuda",
+                "name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+                "cuda_available": true,
+                "gpu_jobs_max": 1
+              }
             }
           },
           "example": {

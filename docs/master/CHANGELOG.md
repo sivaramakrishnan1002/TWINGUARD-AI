@@ -683,3 +683,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 10:09:31 OD-2026-11-08 recorded: owner authorizes GPU use (RTX 3050 Laptop, 4 GB, driver 621.01) with mandatory CPU fallback; Integrator to reconcile CUDA wheel pins when lanes report them.
 
 - 2026-11-08 10:10:54 C4 v3 promoted: RouteRequest renamed RouteSearchRequest; all 19 /v3 operations listed in top-level paths of docs/api/ai-service.yaml (B47 baa47f6 parity fixes); test_api parity passes.
+
+- 2026-11-08 10:11:49 C4 v3: added optional EngineStatus.device and Provenance.device (OD-2026-11-08 GPU reporting), approved for B47.

@@ -4,7 +4,7 @@
 
 ## Change
 
-- **New G5 scope:** an end-to-end replay of one source-identified archived input. The saved 2015-12-01 event rainfall (REPLAY), optionally plus a cached Open-Meteo snapshot (MODEL_FORECAST), goes through a flood-engine run, the C4 v3 `/v3` API, and the packaged UI. Source input stays distinct from simulated output.
+- **New G5 scope:** an end-to-end replay of one source-identified archived input. The saved 2015-12-01 event rainfall (REPLAY; A25 catalogue `data/features/live/a25_static_v1/shared/events.json`, SHA-256 `e402c3f5…37d61`, 351.54 mm over 72 h), optionally plus a cached Open-Meteo snapshot (MODEL_FORECAST), goes through a flood-engine run, the C4 v3 `/v3` API, and the packaged UI. Source input stays distinct from simulated output.
 - **Superseded:** CR-012's G5 scope (the POONDI date-only reservoir observation as the gate path). The CR-012 route, `GET /replay-alerts/{event_id}`, stays mounted and is kept as an **optional secondary check** with no UI requirement. CR-012's C3 date-only rules still bind that route.
 - **Kept from the old G5:** deterministic, hash-recorded selection; separation of source and derived; fail-closed behaviour; read-only data boundaries; no observed, live-warning or safety claim (OD-2026-11-07 badge policy).
 

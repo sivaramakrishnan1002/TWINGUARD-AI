@@ -715,3 +715,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 19:42:23 B49 done (9cb4054): flow runtime parameters now match C4 v3; G5 plan contract item 8 partly resolved.
 
 - 2026-11-08 19:43:59 CR-020 recorded (owner option B): G5 revised to the product pipeline; GATES.md and CR-012 updated; B13 acceptance revised (8 criteria; owners Lane B / UI B48 / Integrator), blocked_prerequisite on B48 confirmation. A26 closed (887d089); GPU benchmark 2.25-3.67x recorded and linked.
+
+- 2026-11-08 20:18:27 B13 item 1 input: A25 events.json (e402c3f5...37d61) named as the G5 source file.

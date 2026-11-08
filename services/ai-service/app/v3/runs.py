@@ -41,6 +41,12 @@ def now_iso() -> str:
 def _write(path: Path, doc: dict) -> None:
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(doc, allow_nan=False), encoding="utf-8")
+    for attempt in range(20):  # Windows: the target may be open by a reader for a moment
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            time.sleep(0.05 * (attempt + 1))
     os.replace(tmp, path)
 
 

@@ -17,10 +17,19 @@ from . import analysis, config, simulate, static, weather
 from . import device as device_mod
 
 
-def _write(path: Path, doc: dict) -> None:
+def _write(path: Path, doc: dict, best_effort: bool = False) -> None:
+    """Atomic write. On Windows os.replace fails while the API process is reading the target, so retry briefly;
+    best-effort writes (progress) are skipped instead of failing the run."""
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(doc, allow_nan=False), encoding="utf-8")
-    os.replace(tmp, path)
+    for attempt in range(20):
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            time.sleep(0.05 * (attempt + 1))
+    if not best_effort:
+        os.replace(tmp, path)
 
 
 def execute(run_dir: Path) -> dict:
@@ -32,7 +41,7 @@ def execute(run_dir: Path) -> dict:
     def progress(pct: float) -> None:
         if pct - last[0] >= 1.0 or pct >= 100:
             last[0] = pct
-            _write(run_dir / "progress.json", {"progress_pct": round(min(pct, 99.0), 1)})
+            _write(run_dir / "progress.json", {"progress_pct": round(min(pct, 99.0), 1)}, best_effort=True)
 
     progress(0.0)
     if job.get("engine") == "a25":
@@ -93,7 +102,7 @@ def execute(run_dir: Path) -> dict:
         "diagnostics": {"members": out["members"], "runtime_seconds": out["runtime_seconds"], "reservoir": reservoir_detail},
     }
     _write(run_dir / "result.json", result)
-    _write(run_dir / "progress.json", {"progress_pct": 100.0})
+    _write(run_dir / "progress.json", {"progress_pct": 100.0}, best_effort=True)
     return result
 
 
@@ -165,7 +174,7 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
                         "device": dev},
     }
     _write(run_dir / "result.json", result)
-    _write(run_dir / "progress.json", {"progress_pct": 100.0})
+    _write(run_dir / "progress.json", {"progress_pct": 100.0}, best_effort=True)
     return result
 
 

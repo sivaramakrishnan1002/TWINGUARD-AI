@@ -19,11 +19,21 @@ The interactive API description is at `http://127.0.0.1:8000/docs`; the generate
 - **Open-Meteo.** Fetched only for a user-triggered `GET /v3/weather` or `mode=forecast` run. Responses are cached with at least 600 s between fetches; the API answers 429 with `Retry-After` otherwise. There is no background polling, and the unmounted `/live` draft's scheduler was removed.
 - **Static bundle.** Roads, buildings and shelters come from `data/features/v3/product_static_v1`, rebuilt with `.\.venv\Scripts\python.exe services\ai-service\app\v3\build_static.py`.
 
-Serve locally with the project data:
+Serve locally with the project data from `D:\TIWNGUARD`. This is the same app the packaged `/api/ai/` proxy targets, on `http://127.0.0.1:8000`:
 
 ```powershell
-$env:TWINGUARD_V3_RUNS="data\features\v3\runs"; $env:TWINGUARD_V3_PRODUCT_STATIC="data\features\v3\product_static_v1"; $env:TWINGUARD_LIVE_STATIC="data\features\live\a06_live_static_v1"; $env:TWINGUARD_V3_A25_STATIC="data\features\live\a25_static_v1"; $env:PYTHONPATH="."; .\.venv\Scripts\python.exe -m uvicorn app.main:app --app-dir services\ai-service --host 127.0.0.1 --port 8000
+.\.venv\Scripts\python.exe servicesi-serviceun_local.py
 ```
+
+`run_local.py` sets the local defaults, and any of them can be overridden by an environment variable of the same name:
+- `TWINGUARD_V3_RUNS` = `dataeatures3uns`
+- `TWINGUARD_V3_PRODUCT_STATIC` = `dataeatures3\product_static_v1`
+- `TWINGUARD_LIVE_STATIC` = `dataeatures\live06_live_static_v1`
+- `TWINGUARD_V3_A25_STATIC` = `dataeatures\live25_static_v1`
+- `TWINGUARD_V3_DEVICE` = `auto`
+- `TWINGUARD_LIVE_SCHEDULE_MIN` = `0`
+
+`TWINGUARD_AI_HOST` and `TWINGUARD_AI_PORT` change the bind address. The Vite dev server proxies `/api/ai/*` to `http://127.0.0.1:8000` by default; set `TWINGUARD_AI_URL` before `npm run dev` only if the service runs elsewhere. In the Claude desktop app, the `.claude/launch.json` entry `ai-service` runs this same script.
 
 In the packaged stack (`docker compose -f docker-compose.b11.yml up --build`), the UI reaches `/v3` same-origin at `http://127.0.0.1:8081/api/ai/v3/`. GET, POST and PUT are allowed only on that prefix.
 

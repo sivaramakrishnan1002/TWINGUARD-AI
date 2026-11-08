@@ -46,7 +46,7 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
   - `resolution` ∈ {citywide (90–120 m), focus (30 m)}
   - `focus_area` ∈ {VELACHERY, ADYAR, T_NAGAR, PORUR}
   - `frame_interval_minutes` ∈ {15, 30}
-- `RouteRequest`:
+- `RouteSearchRequest` (renamed from `RouteRequest` on 2026-11-08, because C4 v1 owns that name):
   - `run_id`, `frame_index`
   - `origin` and `destination` as `LonLat`
   - `policy` ∈ {avoid_blocked, avoid_blocked_and_unknown, shortest_dry}
@@ -66,4 +66,9 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
 - **2026-11-08 promotion status:** all 19 operations are mounted by B47 (commit d5a45e9). Promotion into top-level `paths` waits on two things:
   - the runtime OpenAPI declaring each contract error response;
   - request-body models being named `SimulationRequest`, `RouteRequest` and `ResourceSet`, which `tests/ai_service/test_api.py` requires.
+- **2026-11-08 promotion:**
+  - The v3 `RouteRequest` schema is renamed `RouteSearchRequest`, because C4 v1's `/route` body already uses `RouteRequest`.
+  - All 19 operations are copied into top-level `paths` with `x-current-runtime-status: 200`, after B47 declared the contract error responses and renamed its request models to the contract names (commit baa47f6).
+  - The schemas stay under `x-c4-v3-product-api`.
+  - The `test_api.py` runtime-parity test passes.
 

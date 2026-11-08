@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "TwinGuard AI Service",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "description": "C4 v0 remains the frozen G0 baseline; C4 v1 selectors follow CR-008. The AI service implements health, layers, B08 exact saved-artifact selectors, and B21 C9 metadata GETs in the local B11 package. The CR-010 C9 v1 raster-byte GET is verified in that same local package by B25 (commit 0aebc59); it serves only exact saved A20 research/simulation bytes. Forecast, uncertainty, route computation, and scenario computation remain HTTP 501. No live or deployment-wide operation is implied; C9 remains proposed and unfrozen. C4 v2 / CR-012 defines a test-scoped, read-only date-only replay projection; it is not mounted until B27 evidence passes. C4 v3 (OD-2026-11-07 / CR-019) is a proposed, unmounted product-API section under `x-c4-v3-product-api`; operations move into `paths` only when mounted and tested."
   },
   "paths": {
@@ -689,6 +689,1268 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CfmReservoirUnavailable"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/status": {
+      "get": {
+        "operationId": "v3GetEngineStatus",
+        "summary": "Engine, queue and weather-cache status",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/EngineStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/overview": {
+      "get": {
+        "operationId": "v3GetOverview",
+        "summary": "Tab 1 Situation Overview aggregate",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/Overview"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/events": {
+      "get": {
+        "operationId": "v3ListEvents",
+        "summary": "Historical events available as saved forcing",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/EventList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/weather": {
+      "get": {
+        "operationId": "v3GetWeather",
+        "summary": "Cached Open-Meteo Chennai weather (on demand, min interval 600 s)",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "refresh",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "Fetch now if the minimum interval has elapsed; otherwise return the cache. Never polls in the background."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/Weather"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited: the Open-Meteo minimum fetch interval or the run-start interval has not elapsed. Retry-After header is set.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/simulations": {
+      "post": {
+        "operationId": "v3CreateSimulation",
+        "summary": "Tabs 2/5: start an event, custom-rainfall, forecast or what-if simulation",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "description": "One run executes at a time; further requests queue (max 4). mode=forecast fetches Open-Meteo on demand subject to the 600 s minimum interval and response caching (OD-2026-11-07).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted or served from cache",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationAccepted"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or invalid selector.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict: another run is in progress or the resource version changed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed validation (field ranges, units or enums).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited: the Open-Meteo minimum fetch interval or the run-start interval has not elapsed. Retry-After header is set.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "v3ListSimulations",
+        "summary": "List completed and in-progress runs, newest first",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/simulations/{run_id}": {
+      "get": {
+        "operationId": "v3GetSimulation",
+        "summary": "Run status, timeline frames, summary and provenance",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+            },
+            "example": "sim-20261107T063000Z-3fa9c2d1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationRun"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/simulations/{run_id}/depth": {
+      "get": {
+        "operationId": "v3GetDepthFrame",
+        "summary": "Tabs 2/7: depth grid for one frame (or peak) for draped/extruded water",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+            },
+            "example": "sim-20261107T063000Z-3fa9c2d1"
+          },
+          {
+            "name": "frame_index",
+            "in": "query",
+            "required": false,
+            "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "layer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "depth_mean",
+                "depth_p05",
+                "depth_p95",
+                "velocity_mps"
+              ],
+              "default": "depth_mean"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "citywide",
+                "focus"
+              ],
+              "default": "citywide"
+            }
+          },
+          {
+            "name": "focus_area",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "VELACHERY",
+                "ADYAR",
+                "T_NAGAR",
+                "PORUR"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/DepthFrame"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed validation (field ranges, units or enums).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/simulations/{run_id}/buildings": {
+      "get": {
+        "operationId": "v3GetBuildingDepths",
+        "summary": "Tab 7: per-building max depth (382,294 OSM footprints), paged",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+            },
+            "example": "sim-20261107T063000Z-3fa9c2d1"
+          },
+          {
+            "name": "frame_index",
+            "in": "query",
+            "required": false,
+            "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "required": false,
+            "description": "WGS84 filter 'min_lon,min_lat,max_lon,max_lat'.",
+            "schema": {
+              "type": "string",
+              "pattern": "^-?[0-9.]+,-?[0-9.]+,-?[0-9.]+,-?[0-9.]+$"
+            },
+            "example": "80.20,12.97,80.23,13.00"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5000,
+              "default": 1000
+            }
+          },
+          {
+            "name": "min_depth_m",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/BuildingDepthPage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed validation (field ranges, units or enums).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/simulations/{run_id}/wards": {
+      "get": {
+        "operationId": "v3GetWardSummaries",
+        "summary": "Per-ward (GCC 200 wards) flood summary",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+            },
+            "example": "sim-20261107T063000Z-3fa9c2d1"
+          },
+          {
+            "name": "frame_index",
+            "in": "query",
+            "required": false,
+            "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/WardSummaryList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/simulations/{run_id}/roads": {
+      "get": {
+        "operationId": "v3GetRoadStates",
+        "summary": "Tab 4: three-state road edges as GeoJSON",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+            },
+            "example": "sim-20261107T063000Z-3fa9c2d1"
+          },
+          {
+            "name": "frame_index",
+            "in": "query",
+            "required": false,
+            "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "required": false,
+            "description": "WGS84 filter 'min_lon,min_lat,max_lon,max_lat'.",
+            "schema": {
+              "type": "string",
+              "pattern": "^-?[0-9.]+,-?[0-9.]+,-?[0-9.]+,-?[0-9.]+$"
+            },
+            "example": "80.20,12.97,80.23,13.00"
+          },
+          {
+            "name": "blocked_depth_threshold_m",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1.0,
+              "default": 0.3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/RoadFeatureCollection"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed validation (field ranges, units or enums).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/simulations/{run_id}/shelters": {
+      "get": {
+        "operationId": "v3GetShelterReport",
+        "summary": "Tab 3: shelter reachability and allocation",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+            },
+            "example": "sim-20261107T063000Z-3fa9c2d1"
+          },
+          {
+            "name": "frame_index",
+            "in": "query",
+            "required": false,
+            "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "capacity_factor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "enum": [
+                0.5,
+                1.0,
+                2.0
+              ],
+              "default": 1.0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ShelterReport"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/simulations/{run_id}/incidents": {
+      "get": {
+        "operationId": "v3GetIncidents",
+        "summary": "Tab 3: incidents generated from simulation results (labelled generated)",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+            },
+            "example": "sim-20261107T063000Z-3fa9c2d1"
+          },
+          {
+            "name": "frame_index",
+            "in": "query",
+            "required": false,
+            "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "min_severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "info",
+                "watch",
+                "warning",
+                "critical"
+              ],
+              "default": "watch"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/IncidentList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/simulations/{run_id}/emergency-plan": {
+      "get": {
+        "operationId": "v3GetEmergencyPlan",
+        "summary": "Tab 3: assign scenario resources to generated incidents",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+            },
+            "example": "sim-20261107T063000Z-3fa9c2d1"
+          },
+          {
+            "name": "frame_index",
+            "in": "query",
+            "required": false,
+            "description": "Timeline frame (0-based). Omit for the peak (maximum-over-time) view.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/EmergencyPlan"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/simulations/{run_id}/comparison": {
+      "get": {
+        "operationId": "v3GetComparison",
+        "summary": "Tab 5: what-if run compared with its baseline",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(sim|evt|whatif)-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+            },
+            "example": "sim-20261107T063000Z-3fa9c2d1"
+          },
+          {
+            "name": "baseline_run_id",
+            "in": "query",
+            "required": false,
+            "description": "Defaults to the what-if base_run_id.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/Comparison"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or invalid selector.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/routes": {
+      "post": {
+        "operationId": "v3SearchRoute",
+        "summary": "Tab 4: from->to route search over three-state roads",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/RouteSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/RouteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or invalid selector.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed validation (field ranges, units or enums).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/scenario-resources": {
+      "get": {
+        "operationId": "v3GetScenarioResources",
+        "summary": "Tab 3: owner-set emergency resources (boats, teams, vehicles)",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ResourceSet"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "v3PutScenarioResources",
+        "summary": "Replace owner-set scenario resources (local store; not dispatch data)",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/x-c4-v3-product-api/components/schemas/ResourceSet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ResourceSet"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict: another run is in progress or the resource version changed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed validation (field ranges, units or enums).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/static/{layer}": {
+      "get": {
+        "operationId": "v3GetStaticLayer",
+        "summary": "Static reference layers: wards, buildings (paged), shelters",
+        "tags": [
+          "c4-v3"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B47)",
+        "parameters": [
+          {
+            "name": "layer",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "wards",
+                "buildings",
+                "shelters",
+                "focus_areas"
+              ]
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "required": false,
+            "description": "WGS84 filter 'min_lon,min_lat,max_lon,max_lat'.",
+            "schema": {
+              "type": "string",
+              "pattern": "^-?[0-9.]+,-?[0-9.]+,-?[0-9.]+,-?[0-9.]+$"
+            },
+            "example": "80.20,12.97,80.23,13.00"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5000,
+              "default": 1000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/StaticFeatureCollection"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run, ward, building, shelter or resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine, static assets, cache or upstream source unavailable; no partial body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
                 }
               }
             }
@@ -4180,9 +5442,9 @@
   },
   "x-c4-v3-product-api": {
     "version": "C4 v3 (proposed, unfrozen) \u2014 OD-2026-11-07 / CR-019",
-    "status": "mounted by B47 (commit d5a45e9, 2026-11-08); proposed/unfrozen; promotion into top-level paths pending runtime OpenAPI parity (error responses, request-model names)",
+    "status": "promoted 2026-11-08: all 19 operations mounted by B47 (d5a45e9, baa47f6) and listed in top-level paths; schemas remain in this section; proposed/unfrozen",
     "base_path": "/v3 on the AI service; the packaged UI reaches it through the same-origin /api/ai/ proxy (CR-018)",
-    "promotion_rule": "Lane B moves an operation from this section into top-level `paths` (with x-current-runtime-status 200) only when it is mounted and its focused tests pass; tests/ai_service/test_api.py requires every top-level path to exist at runtime.",
+    "promotion_rule": "Promoted. Top-level `paths` holds the authoritative operation copies; keep this section in sync (B47 tests read either). New v3 operations follow the same rule: add here first, promote when mounted and tested.",
     "conventions": {
       "times": "RFC 3339 UTC (Z). Date-only historical sources keep source_date semantics from C3.",
       "units": "depth/height/tide m; distance m; duration s; rainfall mm per interval; flow m3/s; area km2; population people.",
@@ -5260,7 +6522,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/x-c4-v3-product-api/components/schemas/RouteRequest"
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/RouteSearchRequest"
                 }
               }
             }
@@ -6642,73 +7904,6 @@
             ]
           }
         },
-        "RouteRequest": {
-          "type": "object",
-          "required": [
-            "run_id",
-            "origin",
-            "destination"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "run_id": {
-              "type": "string"
-            },
-            "frame_index": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 0,
-              "description": "null = peak."
-            },
-            "origin": {
-              "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
-            },
-            "destination": {
-              "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
-            },
-            "policy": {
-              "type": "string",
-              "enum": [
-                "avoid_blocked",
-                "avoid_blocked_and_unknown",
-                "shortest_dry"
-              ],
-              "default": "avoid_blocked"
-            },
-            "profile": {
-              "type": "string",
-              "enum": [
-                "car",
-                "emergency_vehicle",
-                "walk"
-              ],
-              "default": "car"
-            },
-            "blocked_depth_threshold_m": {
-              "type": "number",
-              "minimum": 0.1,
-              "maximum": 1.0,
-              "default": 0.3
-            }
-          },
-          "example": {
-            "run_id": "sim-20261107T063000Z-3fa9c2d1",
-            "frame_index": 12,
-            "origin": {
-              "lon": 80.2209,
-              "lat": 12.9815
-            },
-            "destination": {
-              "lon": 80.2707,
-              "lat": 13.0827
-            },
-            "policy": "avoid_blocked",
-            "profile": "car",
-            "blocked_depth_threshold_m": 0.3
-          }
-        },
         "RouteOption": {
           "type": "object",
           "required": [
@@ -7846,6 +9041,73 @@
             "roads_blocked_km": -12.0,
             "wards_affected": -6,
             "peak_time_utc": null
+          }
+        },
+        "RouteSearchRequest": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "origin",
+            "destination"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "frame_index": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "null = peak."
+            },
+            "origin": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
+            },
+            "destination": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/LonLat"
+            },
+            "policy": {
+              "type": "string",
+              "enum": [
+                "avoid_blocked",
+                "avoid_blocked_and_unknown",
+                "shortest_dry"
+              ],
+              "default": "avoid_blocked"
+            },
+            "profile": {
+              "type": "string",
+              "enum": [
+                "car",
+                "emergency_vehicle",
+                "walk"
+              ],
+              "default": "car"
+            },
+            "blocked_depth_threshold_m": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1.0,
+              "default": 0.3
+            }
+          },
+          "example": {
+            "run_id": "sim-20261107T063000Z-3fa9c2d1",
+            "frame_index": 12,
+            "origin": {
+              "lon": 80.2209,
+              "lat": 12.9815
+            },
+            "destination": {
+              "lon": 80.2707,
+              "lat": 13.0827
+            },
+            "policy": "avoid_blocked",
+            "profile": "car",
+            "blocked_depth_threshold_m": 0.3
           }
         }
       }

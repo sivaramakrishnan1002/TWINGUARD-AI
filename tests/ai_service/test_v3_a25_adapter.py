@@ -136,3 +136,43 @@ def test_a25_what_if_uses_engine_run_id_and_guard(env, monkeypatch):
     monkeypatch.setenv("TWINGUARD_V3_ENGINE", "a06")  # base computed by A25 cannot seed an A06 what-if
     response = client.post("/v3/simulations", json={"mode": "what_if", "what_if": {"base_run_id": base, "rainfall_scale_pct": 50}})
     assert response.status_code == 409
+
+
+# ------------------------------------------------------------------------------------------------- OD-2026-11-08 GPU
+def test_device_resolution_cpu_default_and_cuda_when_available(monkeypatch):
+    from app.v3 import device
+
+    monkeypatch.setenv("TWINGUARD_V3_DEVICE", "cpu")
+    assert device.resolve(True)["used"] == "cpu"
+    monkeypatch.setenv("TWINGUARD_V3_DEVICE", "auto")
+    monkeypatch.setattr(device, "probe", lambda refresh=False: {"cuda_available": True, "name": "Test GPU", "backend": "torch"})
+    assert device.resolve(True) == {"requested": "auto", "used": "cuda", "name": "Test GPU", "reason": None}
+    assert device.resolve(False)["used"] == "cpu"  # engine without a GPU backend
+    monkeypatch.setattr(device, "probe", lambda refresh=False: {"cuda_available": False, "name": None, "backend": None})
+    assert device.resolve(True)["used"] == "cpu"
+    monkeypatch.setenv("TWINGUARD_V3_DEVICE", "cuda")
+    assert device.resolve(True)["reason"] == "CUDA not available"
+
+
+def test_cuda_failure_falls_back_to_cpu_and_is_reported(env, monkeypatch):
+    from app.v3 import device
+
+    devices = []
+    inner = fake_run_scenario(env["calls"])
+
+    def gpu_engine(static_root, runs_root, *, device="cpu", **kw):
+        devices.append(device)
+        if device == "cuda":
+            raise RuntimeError("CUDA out of memory")
+        return inner(static_root, runs_root, **kw)
+
+    monkeypatch.setattr(scenario, "run_scenario", gpu_engine)
+    monkeypatch.setenv("TWINGUARD_V3_DEVICE", "auto")
+    monkeypatch.setattr(device, "probe", lambda refresh=False: {"cuda_available": True, "name": "Test GPU", "backend": "torch"})
+    client = env["client"]
+    assert "device: cuda" in client.get("/v3/status").json()["engine_version"]
+    accepted = client.post("/v3/simulations", json=custom_request([7.0, 7.0])).json()
+    assert MANAGER.wait_idle(60)
+    run = assert_contract(client.get(RUN.format(run_id=accepted["run_id"])), RUN)
+    assert run["state"] == "completed" and devices == ["cuda", "cpu"]
+    assert "fallback: CUDA run failed (RuntimeError)" in run["provenance"]["engine_version"]

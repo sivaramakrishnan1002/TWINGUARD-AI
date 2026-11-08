@@ -128,3 +128,19 @@ def test_frontend_is_static_only_and_ai_route_computation_stays_separate() -> No
     assert "limit_except get post put { deny all; }" in nginx
     assert "proxy_pass" not in COMPOSE.read_text(encoding="utf-8").lower()
 
+
+
+def test_gpu_is_opt_in_and_cpu_stays_default() -> None:
+    """OD-2026-11-08: the base stack needs no GPU; docker-compose.gpu.yml opts in with gpus: all."""
+    ai = _compose()["services"]["ai-service"]
+    assert "gpus" not in ai and "deploy" not in ai
+    assert "TWINGUARD_GPU" not in str(ai.get("build", {}).get("args", {}))
+    dockerfile = (ROOT / "services/ai-service/Dockerfile").read_text(encoding="utf-8")
+    assert "ARG TWINGUARD_GPU=0" in dockerfile and "torch==2.14.1" in dockerfile
+    gpu = yaml.safe_load((ROOT / "docker-compose.gpu.yml").read_text(encoding="utf-8"))["services"]["ai-service"]
+    assert gpu["gpus"] == "all" and gpu["build"]["args"]["TWINGUARD_GPU"] == "1"
+    assert gpu["environment"]["TWINGUARD_V3_DEVICE"] == "auto"
+    result = subprocess.run(
+        ["docker", "compose", "-p", "twinguard-b11", "-f", str(COMPOSE), "-f", str(ROOT / "docker-compose.gpu.yml"), "config", "--quiet"],
+        cwd=ROOT, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr

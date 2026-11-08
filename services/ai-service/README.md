@@ -28,3 +28,17 @@ $env:TWINGUARD_V3_RUNS="data\features\v3\runs"; $env:TWINGUARD_V3_PRODUCT_STATIC
 In the packaged stack (`docker compose -f docker-compose.b11.yml up --build`), the UI reaches `/v3` same-origin at `http://127.0.0.1:8081/api/ai/v3/`. GET, POST and PUT are allowed only on that prefix.
 
 **Limitations.** These are simplified local-inertial models with no storm-drain network and no hydraulic validation. Reservoir and tide what-ifs are forcing proxies. Road states, shelter capacities, incidents and resource plans are derived demo indicators, and incidents are labelled `generated`.
+
+### GPU (optional, OD-2026-11-08)
+
+`TWINGUARD_V3_DEVICE` can be `auto` (the default), `cuda` or `cpu`. `auto` uses CUDA only when it is available and the A25 engine's `run_scenario` accepts a `device` argument; otherwise runs use the CPU, and the A06 pilot is always CPU.
+- **One GPU job at a time.** /v3 runs one simulation at a time, which fits the 4 GB card.
+- **CPU fallback.** A CUDA error retries the run once on the CPU and is recorded in the run's `provenance.engine_version`.
+- **Reporting.** `GET /v3/status` reports the resolved device in `engine_version`, pending a contract field.
+- **Docker.** The stack is CPU-only by default. To enable the GPU, install the NVIDIA Container Toolkit (or use Docker Desktop with WSL 2 GPU support), then run:
+
+```powershell
+docker compose -f docker-compose.b11.yml -f docker-compose.gpu.yml up --build
+```
+
+This builds the AI image with CUDA PyTorch (`--build-arg TWINGUARD_GPU=1`) and adds `gpus: all`.

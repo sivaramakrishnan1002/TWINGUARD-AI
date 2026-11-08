@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 
 from . import analysis, config, simulate, static, weather
+from . import device as device_mod
 
 
 def _write(path: Path, doc: dict) -> None:
@@ -86,7 +87,7 @@ def execute(run_dir: Path) -> dict:
         "frames": [{"index": k, "valid_time_utc": t, "elapsed_minutes": (k + 1) * req["frame_interval_minutes"]}
                    for k, t in enumerate(times)],
         "summary": summary,
-        "provenance": {"engine_version": config.ENGINE_VERSION, "run_id": job["run_id"], "forcing_sha256": forcing.sha256(),
+        "provenance": {"engine_version": f"{config.ENGINE_VERSION} [device: cpu]", "run_id": job["run_id"], "forcing_sha256": forcing.sha256(),
                        "static_assets_version": product.version if product else None, "inputs": inputs},
         "diagnostics": {"members": out["members"], "runtime_seconds": out["runtime_seconds"], "reservoir": reservoir_detail},
     }
@@ -109,11 +110,25 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
         fetch_now = bool(job.get("fetch_forecast"))
         bounds = static.grid("citywide").bounds_lonlat
         fetch = lambda _bounds: weather.forecast_snapshot(fetch_now, bounds)  # noqa: E731 - cached, >= 600 s apart
-    doc = scenario.run_scenario(
-        config.a25_root(), engine_runs, mode=req["mode"], event_key=req.get("event_key"), custom_rainfall=req.get("custom_rainfall"),
-        what_if=what_if, duration_hours=req["duration_hours"], resolution=req["resolution"], focus_area=req.get("focus_area"),
-        frame_interval_minutes=req["frame_interval_minutes"], members=config.a25_members(),
-        citywide_cell_m=config.a25_citywide_cell_m(), fetch_forecast=fetch, progress=progress)
+    kwargs = dict(mode=req["mode"], event_key=req.get("event_key"), custom_rainfall=req.get("custom_rainfall"),
+                  what_if=what_if, duration_hours=req["duration_hours"], resolution=req["resolution"], focus_area=req.get("focus_area"),
+                  frame_interval_minutes=req["frame_interval_minutes"], members=config.a25_members(),
+                  citywide_cell_m=config.a25_citywide_cell_m(), fetch_forecast=fetch, progress=progress)
+    accepts = device_mod.engine_accepts_device(scenario.run_scenario)
+    dev = device_mod.resolve(accepts)
+    if accepts:
+        kwargs["device"] = dev["used"]
+    try:
+        doc = scenario.run_scenario(config.a25_root(), engine_runs, **kwargs)
+    except Exception as error:  # noqa: BLE001 - CUDA failures (OOM, driver) fall back to CPU once
+        if dev["used"] != "cuda":
+            raise
+        dev = {**dev, "used": "cpu", "name": None, "reason": f"CUDA run failed ({type(error).__name__}); rerun on CPU"}
+        kwargs["device"] = "cpu"
+        doc = scenario.run_scenario(config.a25_root(), engine_runs, **kwargs)
+    used = ((doc.get("provenance") or {}).get("device") or {})
+    if isinstance(used, dict) and used.get("used") in ("cpu", "cuda"):  # trust the engine's own report when present
+        dev = {**dev, "used": used["used"], "name": used.get("name", dev.get("name"))}
     engine_dir = engine_runs / doc["run_id"]
     grid = static.grid(req["resolution"], req.get("focus_area"))
     with np.load(engine_dir / "frames.npz", allow_pickle=False) as z:
@@ -140,10 +155,11 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
         "grid": dict(doc["grid"]),
         "frames": doc["frames"],
         "summary": summary,
-        "provenance": {"engine_version": f"{config.ENGINE_VERSION_A25} ({provenance.get('engine_version', 'A25')})",
+        "provenance": {"engine_version": f"{config.ENGINE_VERSION_A25} ({provenance.get('engine_version', 'A25')}; {device_mod.label(dev)})",
                        "run_id": job["run_id"], "forcing_sha256": provenance.get("forcing_sha256"),
                        "static_assets_version": grid.version, "inputs": inputs},
-        "diagnostics": {"engine_run_id": doc["run_id"], "engine_cached": bool(doc.get("cached")), "layers": sorted(frames)},
+        "diagnostics": {"engine_run_id": doc["run_id"], "engine_cached": bool(doc.get("cached")), "layers": sorted(frames),
+                        "device": dev},
     }
     _write(run_dir / "result.json", result)
     _write(run_dir / "progress.json", {"progress_pct": 100.0})

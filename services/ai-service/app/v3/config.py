@@ -79,7 +79,7 @@ def run_min_interval_s() -> float:
 
 
 def run_timeout_s() -> float:
-    return float(os.environ.get("TWINGUARD_V3_RUN_TIMEOUT_S", "2400"))
+    return float(os.environ.get("TWINGUARD_V3_RUN_TIMEOUT_S", "5400"))
 
 
 def members_setting() -> str:

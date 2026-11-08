@@ -160,7 +160,7 @@ class RunManager:
 
     def estimate_s(self, request: dict) -> int:
         if config.a25_enabled():  # measured by Lane A: ~105 s per 24 h citywide 120 m member incl. products
-            per_hour = 4.4 if request.get("resolution", "citywide") == "citywide" else 6.0
+            per_hour = 4.4 if request.get("resolution", "citywide") == "citywide" else 20.0  # focus: 6-26 min per 48 h
             return int(per_hour * request["duration_hours"] * config.a25_members()) + 15
         from .simulate import members
         hours = request["duration_hours"] + 24

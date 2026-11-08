@@ -18,7 +18,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from . import analysis, config, resources, static, weather
+from . import analysis, config, device, resources, static, weather
 from .runs import MANAGER, QueueFull, TooSoon, public
 
 router = APIRouter(prefix="/v3", tags=["v3"])
@@ -300,13 +300,24 @@ def _incidents(doc: dict, frame_index: int | None) -> list[dict]:
 
 
 # ------------------------------------------------------------------------------------------------ status / overview / weather / events
+def _engine_label() -> str:
+    """Engine plus compute device (OD-2026-11-08); a dedicated device field awaits an Integrator contract edit."""
+    base = config.ENGINE_VERSION_A25 if config.a25_enabled() else config.ENGINE_VERSION
+    try:
+        dev = device.status()
+    except Exception:  # noqa: BLE001
+        return base + " [device: cpu]"
+    gpu = f", GPU {dev['name']}" if dev["cuda_available"] and dev["name"] else ""
+    return f"{base} [device: {dev['resolved']} (requested {dev['requested']}{gpu}; GPU jobs max {dev['gpu_jobs_max']})]"
+
+
 @router.get("/status", operation_id="v3GetEngineStatus")
 def get_status(response: Response) -> dict:
     _no_store(response)
     queue = MANAGER.status()
     allowed = weather.next_allowed("point")
     return {
-        "engine_version": config.ENGINE_VERSION_A25 if config.a25_enabled() else config.ENGINE_VERSION,
+        "engine_version": _engine_label(),
         "static_available": static.grid_available("citywide") and static.product_available(),
         **queue,
         "weather_min_refresh_interval_s": config.weather_min_interval_s(),
@@ -400,6 +411,8 @@ def create_simulation(body: SimulationRequest, response: Response) -> dict:
         identity = {"label": "Open-Meteo forecast", "forcing": plan["forcing_sha256"] or f"fetch-{datetime.now(timezone.utc).timestamp()}"}
         job_extra = {"fetch_forecast": plan["fetch"]}
     identity["engine"] = engine
+    # GPU results would match CPU only within tolerance, so the compute device is part of the cache identity.
+    identity["device"] = device.resolve(device.engine_supports_gpu())["used"] if engine == "a25" else "cpu"
     job_extra["engine"] = engine
     try:
         doc, state = MANAGER.submit(request, identity, job_extra)

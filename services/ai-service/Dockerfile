@@ -11,11 +11,20 @@ RUN python -m pip install --no-cache-dir \
     uvicorn==0.54.0 \
     pydantic==2.14.1 \
     rasterio==1.5.2 \
-    "psycopg[binary]==3.3.6"     numpy==2.5.3     scipy==1.18.1
+    "psycopg[binary]==3.3.6" \
+    numpy==2.5.3 \
+    scipy==1.18.1
+# OD-2026-11-08: optional CUDA PyTorch for the flood-engine GPU backend. Off by default (CPU image unchanged);
+# build with --build-arg TWINGUARD_GPU=1 and run with docker-compose.gpu.yml (NVIDIA Container Toolkit).
+ARG TWINGUARD_GPU=0
+RUN if [ "$TWINGUARD_GPU" = "1" ]; then \
+        python -m pip install --no-cache-dir torch==2.14.1 --index-url https://download.pytorch.org/whl/cu126; \
+    fi
 COPY ai-service/app /app/services/ai-service/app
 COPY trackb/connectors/tn_reservoir /app/services/trackb/connectors/tn_reservoir
 # B47: Lane A flood engine, packaged read-only; runs are written only to the mounted /app/data/v3/runs store.
 COPY flood_engine /app/services/flood_engine
-RUN chmod -R a-w /app/services/flood_engine     && mkdir -p /app/data/v3/runs
+RUN chmod -R a-w /app/services/flood_engine \
+    && mkdir -p /app/data/v3/runs
 EXPOSE 8000
 CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

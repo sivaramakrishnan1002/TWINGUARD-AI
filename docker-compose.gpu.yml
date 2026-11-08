@@ -1,0 +1,17 @@
+# Optional GPU override for the B11 stack (OD-2026-11-08). CPU remains the default; without this file the stack
+# runs unchanged on machines with no NVIDIA GPU.
+#
+# Prerequisites: NVIDIA driver plus the NVIDIA Container Toolkit (Docker Desktop on Windows: WSL 2 backend with GPU
+# support). Then:
+#   docker compose -f docker-compose.b11.yml -f docker-compose.gpu.yml up --build
+# The AI image is built with CUDA PyTorch (TWINGUARD_GPU=1). /v3 runs one simulation at a time, so the 4 GB card holds
+# at most one GPU job; a CUDA failure is retried on CPU. GET /v3/status reports the resolved device.
+services:
+  ai-service:
+    image: local/twinguard-b11-ai-gpu:0.1.0
+    build:
+      args:
+        TWINGUARD_GPU: "1"
+    environment:
+      TWINGUARD_V3_DEVICE: auto
+    gpus: all

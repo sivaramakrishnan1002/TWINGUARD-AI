@@ -6433,7 +6433,7 @@
       "lane": "B",
       "title": "Serve per-frame flow (GET /v3/simulations/{run_id}/flow)",
       "phase": "B",
-      "status": "blocked_prerequisite",
+      "status": "ready",
       "depends_on": [
         "A27",
         "B47"
@@ -6463,7 +6463,8 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-08 Registered by Integrator as the serving follow-on to A27."
+        "2026-11-08 Registered by Integrator as the serving follow-on to A27.",
+        "2026-11-08 Unblocked by Integrator: A27 done (b90c0c6). Contract aligned to A27 readers: FlowFrame validated against products.flow_frame on the citywide 120 m and Velachery 30 m runs at strides 1/2/4/8. GridSpec.cell_size_m relaxed to a positive number, because strided grids report cell_size*stride. The proposed op takes only run_id, frame_index and stride. Map FlowUnavailable to 503, NotFound to 404 and ValueError to 422."
       ]
     }
   ],

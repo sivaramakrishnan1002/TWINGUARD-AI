@@ -6964,14 +6964,8 @@
             },
             "cell_size_m": {
               "type": "number",
-              "enum": [
-                30,
-                90,
-                100,
-                120,
-                600
-              ],
-              "description": "30 = A25 focus areas; 90-120 = A25 citywide; 600 = interim A06/A23 engine grid served until A25 bundles exist (additive, Lane B request 2026-11-07)."
+              "minimum": 1,
+              "description": "Cell size in metres. Engine grids are 30 (A25 focus), 90 or 120 (A25 citywide), 100, or 600 (interim A06/A23). Strided responses (e.g. FlowFrame with stride n) report cell_size_m * n, e.g. 240 or 480. Relaxed from an enum on 2026-11-08 (additive)."
             },
             "rows": {
               "type": "integer"
@@ -9204,7 +9198,7 @@
             "cols",
             "wet_threshold_m"
           ],
-          "description": "Per-frame depth-averaged flow for UI flow animation (A27 engine output, served by B49). Values are cell-centred on the run's GridSpec; u is eastward (+x) and v is northward (+y) in EPSG:32644. With stride > 1 the grid is subsampled and `grid` describes the subsampled lattice.",
+          "description": "Per-frame depth-averaged flow for UI flow animation (A27 engine output, served by B49). Values are cell-centred on the run's GridSpec; u is eastward (+x) and v is northward (+y) in EPSG:32644. With stride > 1 the grid is subsampled and `grid` describes the subsampled lattice. Storage (A27, engine 2.1.0, flow.npz): u, v and wse are int16 in 0.01 units, NoData -32768; wse_m = (wse + wse_offset_cm) * 0.01 with a per-cell offset. The API returns decoded metres and m/s. Values are the central ensemble member. Focus-area runs have their own run_id, so this operation takes no resolution parameter.",
           "properties": {
             "run_id": {
               "type": "string"
@@ -9331,7 +9325,7 @@
               "v": "m/s",
               "wse": "m"
             },
-            "wse_vertical_datum": "EGM2008",
+            "wse_vertical_datum": "EGM2008 (Copernicus GLO-30 heights)",
             "wet_threshold_m": 0.01,
             "u": [
               [
@@ -9414,33 +9408,6 @@
                 "default": 1
               },
               "description": "Subsample every n-th cell to reduce payload for animation."
-            },
-            {
-              "name": "resolution",
-              "in": "query",
-              "required": false,
-              "schema": {
-                "type": "string",
-                "enum": [
-                  "citywide",
-                  "focus"
-                ],
-                "default": "citywide"
-              }
-            },
-            {
-              "name": "focus_area",
-              "in": "query",
-              "required": false,
-              "schema": {
-                "type": "string",
-                "enum": [
-                  "VELACHERY",
-                  "ADYAR",
-                  "T_NAGAR",
-                  "PORUR"
-                ]
-              }
             }
           ],
           "responses": {
@@ -9478,7 +9445,7 @@
                       "v": "m/s",
                       "wse": "m"
                     },
-                    "wse_vertical_datum": "EGM2008",
+                    "wse_vertical_datum": "EGM2008 (Copernicus GLO-30 heights)",
                     "wet_threshold_m": 0.01,
                     "u": [
                       [
@@ -9542,7 +9509,7 @@
               }
             },
             "503": {
-              "description": "Run has no flow output (e.g. computed before A27) or its files are unreadable; no partial body.",
+              "description": "Run has no flow.npz (engine < 2.1.0, i.e. computed before A27) or it is unreadable; no partial body.",
               "content": {
                 "application/json": {
                   "schema": {

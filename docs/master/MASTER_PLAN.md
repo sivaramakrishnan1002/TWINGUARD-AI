@@ -10,8 +10,8 @@ Build an auditable flood digital twin for the Chennai Metropolitan Area. Current
 
 - G0: `ready`; C1-C8: frozen at v0.
 - Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `ready` ([report](GATE_G4_REPORT.md)); G5 `not_ready`; G6 `not_ready`.
-- Running tasks: B48.
-- Selector-ready tasks: A: A27, A26; B: none; I: none.
+- Running tasks: B48, A26.
+- Selector-ready tasks: A: none; B: B49; I: none.
 
 <!-- CURRENT STATE END -->
 
@@ -63,6 +63,7 @@ Gate days are planning targets, not calendar commitments. No gate is declared pa
 Some lane reports live with their owned code, because their lanes do not own `docs/`:
 
 - **A25** high-resolution flood engine (120/90 m citywide, 30 m focus; commit a4b2cbc): [pipelines/a25_hires/REPORT.md](../../pipelines/a25_hires/REPORT.md)
+- **A27** per-frame flow velocity and water-surface export (engine 2.1.0 `flow.npz`; commit b90c0c6): [pipelines/a25_hires/A27_FLOW.md](../../pipelines/a25_hires/A27_FLOW.md)
 
 
 <!-- TASK TABLE START -->
@@ -194,8 +195,8 @@ Some lane reports live with their owned code, because their lanes do not own `do
 | A25 | High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards) | A | A23, A10, A21 | done_with_caveats |
 | B47 | Simulation and decision API (C4 v3) | B | B08, B44, B45 | done_with_caveats |
 | B48 | Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session | B | B45, B37 | running |
-| A27 | Per-frame flow velocity and water-surface export for UI flow animation | A | A25 | ready |
-| A26 | Optional CUDA backend for services/flood_engine (OD-2026-11-08) | A | A25 | ready |
-| B49 | Serve per-frame flow (GET /v3/simulations/{run_id}/flow) | B | A27, B47 | blocked_prerequisite |
+| A27 | Per-frame flow velocity and water-surface export for UI flow animation | A | A25 | done |
+| A26 | Optional CUDA backend for services/flood_engine (OD-2026-11-08) | A | A25 | running |
+| B49 | Serve per-frame flow (GET /v3/simulations/{run_id}/flow) | B | A27, B47 | ready |
 
 <!-- TASK TABLE END -->

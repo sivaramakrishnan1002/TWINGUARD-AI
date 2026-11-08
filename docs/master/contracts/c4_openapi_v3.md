@@ -79,4 +79,9 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
   - `GET /v3/simulations/{run_id}/flow?frame_index=&stride=&resolution=&focus_area=` returns `FlowFrame`.
   - `FlowFrame` holds cell-centred u and v (m/s; u eastward, v northward, EPSG:32644), water-surface elevation (m, with its vertical datum), `wet_threshold_m`, and nulls outside the domain. Dry cells have u = v = 0 and wse = null.
   - It is listed under `x-c4-v3-product-api.proposed_paths`, not mounted. B49 moves it into the section's `paths` when mounted and tested; the Integrator then promotes it.
+- **2026-11-08 flow alignment with A27 (b90c0c6):**
+  - `GridSpec.cell_size_m` is relaxed from an enum to a positive number, because strided flow grids report `cell_size × stride` (e.g. 480 m at stride 4 on the 120 m grid).
+  - The proposed flow operation now takes only `run_id`, `frame_index` and `stride`; focus runs have their own run IDs.
+  - `FlowFrame` documents A27's int16 storage (0.01 units, −32768 NoData, per-cell `wse_offset_cm`). The API returns decoded values.
+  - Validated against `products.flow_frame` output for the citywide 120 m and Velachery 30 m runs at strides 1, 2, 4 and 8.
 

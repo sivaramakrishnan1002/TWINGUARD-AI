@@ -6395,7 +6395,7 @@
       "lane": "A",
       "title": "Optional CUDA backend for services/flood_engine (OD-2026-11-08)",
       "phase": "A",
-      "status": "running",
+      "status": "done",
       "depends_on": [
         "A25"
       ],
@@ -6416,18 +6416,21 @@
         "Write a CPU vs GPU speed-up report (grid sizes, members, wall time, peak VRAM, hardware/driver/torch versions) to docs/FLOOD_ENGINE_GPU_BENCHMARK.md.",
         "Tests pass on CPU-only machines (GPU tests skip when CUDA is absent). Use only the torch pin in requirements-gpu.txt; report any new dependency to the Integrator. Do not edit services/ai-service/ (Lane B picks up device= automatically)."
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/FLOOD_ENGINE_GPU_BENCHMARK.md"
+      ],
       "session": "A26 CUDA backend (Lane A)",
       "claimed_at": "2026-11-08T15:11:48+0530",
-      "finished_at": null,
-      "commit": null,
+      "finished_at": "2026-11-08T19:41:46+0530",
+      "commit": "887d089",
       "heavy": true,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
         "2026-11-08 Registered by Integrator at Lane B's request (relayed by the coordinator) under OD-2026-11-08. Lane A owns services/flood_engine; depends on A25. B47's /v3 already passes device= once run_scenario accepts it.",
-        "2026-11-08 Unblocked by Integrator: A25 is done_with_caveats (a4b2cbc). Owner priority: claim A27 first, then A26; both write services/flood_engine/, so the selector holds A26 until A27 is no longer running."
+        "2026-11-08 Unblocked by Integrator: A25 is done_with_caveats (a4b2cbc). Owner priority: claim A27 first, then A26; both write services/flood_engine/, so the selector holds A26 until A27 is no longer running.",
+        "device='cpu'|'cuda'|'cuda:N' on run_scenario and CLI --device; hires_torch.available(); provenance.device {requested, used, name, fallback_reason, peak_vram_mb}. Speed-up 2.25-3.67x (end-to-end incl. CPU post-processing), peak VRAM 4-30 MB on RTX 3050 4 GB; agreement: identical steps and mass balance, mean |d| < 1 mm, p99 < 1 mm, <0.01% cells > 5 cm, IoU >= 0.9995. GPU tests skip without CUDA (verified with CUDA_VISIBLE_DEVICES=-1). No new dependency beyond requirements-gpu.txt torch pin. 22 engine tests pass; raw audit 157/157."
       ]
     },
     {
@@ -6667,12 +6670,5 @@
       "freeze_evidence": "docs/master/GATE_G0_REPORT.md"
     }
   ],
-  "locks": [
-    {
-      "task": "A26",
-      "lane": "A",
-      "start_time": "2026-11-08T15:11:48+0530",
-      "expected_duration": "set by claimant"
-    }
-  ]
+  "locks": []
 }

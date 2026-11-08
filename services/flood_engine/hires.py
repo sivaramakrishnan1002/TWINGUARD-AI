@@ -21,6 +21,11 @@ import numpy as np
 
 G = 9.80665
 NODATA_CM = 65535
+# A27 flow sidecar encoding: int16 centi-units (0.01 m/s, 0.01 m); -32768 = NoData.
+FLOW_NODATA = -32768
+FLOW_SCALE = 0.01
+WET_THRESHOLD_M = 0.01
+WSE_VERTICAL_DATUM = "EGM2008 (Copernicus GLO-30 heights)"
 F32 = np.float32
 
 
@@ -43,6 +48,12 @@ class HiresResult:
     peak_frame: np.ndarray           # int16 frame index of peak (-1 = never wet)
     peak_speed_mps: np.ndarray       # float32, sampled at frame times
     diagnostics: dict = field(default_factory=dict)
+    # A27 (record_flow=True): per-frame cell-centred depth-averaged velocity and water-surface elevation,
+    # int16 in units of FLOW_SCALE. u eastward (+x), v northward (+y); FLOW_NODATA outside the domain (u, v, wse)
+    # and for dry cells (wse only; dry u = v = 0).
+    flow_u: np.ndarray | None = None
+    flow_v: np.ndarray | None = None
+    flow_wse: np.ndarray | None = None
 
 
 def _face_flux(q, eta_a, eta_b, z_a, z_b, n2, ok, dt, dx, hf, tmp):
@@ -73,7 +84,7 @@ def _strips(n_rows: int, n_parts: int) -> list[tuple[int, int]]:
 
 def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, frame_interval_s: float,
         stage_m: float = 0.0, inflows=None, max_dt: float = 60.0, cfl: float = 0.7,
-        boundary_stage_fn=None, progress=None, threads: int | None = None) -> HiresResult:
+        boundary_stage_fn=None, progress=None, threads: int | None = None, record_flow: bool = True) -> HiresResult:
     """Simulate ``duration_s`` seconds.
 
     rain_mm: [intervals] (uniform) or [intervals, rows, cols], mm per interval; intervals beyond the array are dry.
@@ -131,6 +142,12 @@ def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, fra
     peak = np.zeros_like(z)
     peak_frame = np.full((ny, nx), -1, dtype=np.int16)
     peak_speed = np.zeros_like(z)
+    if record_flow:
+        flow_u = np.full((nframes, ny, nx), FLOW_NODATA, dtype=np.int16)
+        flow_v = np.full((nframes, ny, nx), FLOW_NODATA, dtype=np.int16)
+        flow_wse = np.full((nframes, ny, nx), FLOW_NODATA, dtype=np.int16)
+    else:
+        flow_u = flow_v = flow_wse = None
     totals = {"rain_m3": 0.0, "inflow_m3": 0.0, "infiltration_m3": 0.0, "boundary_net_out_m3": 0.0}
 
     n_threads = max(1, min(threads or min(8, os.cpu_count() or 1), max(1, ny // 16)))
@@ -147,6 +164,20 @@ def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, fra
         cm = np.minimum(np.round(h * F32(100.0)), F32(NODATA_CM - 1)).astype(np.uint16)
         cm[~act] = NODATA_CM
         frames[k] = cm
+
+    def record_flow_frame(k, ux, uy):
+        """ux, uy: cell-centred discharge per width (m2/s); qy > 0 flows to the next row (south)."""
+        wet = act & (h >= WET_THRESHOLD_M)
+        hs = np.maximum(h, F32(WET_THRESHOLD_M))
+        u = np.where(wet, ux / hs, F32(0.0))
+        v = np.where(wet, -uy / hs, F32(0.0))
+        enc = lambda a: np.clip(np.round(a / FLOW_SCALE), -32767, 32767).astype(np.int16)  # noqa: E731
+        fu, fv = enc(u), enc(v)
+        fw = enc(z + h)
+        fu[~act] = FLOW_NODATA
+        fv[~act] = FLOW_NODATA
+        fw[~wet] = FLOW_NODATA
+        flow_u[k], flow_v[k], flow_wse[k] = fu, fv, fw
 
     def update_peak(frame_index):
         hn = h * actf
@@ -207,6 +238,8 @@ def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, fra
 
     pairs = list(zip(strips, [(fa, fb) for fa, fb in _strips(ny - 1, len(strips))]))
     record(0)
+    if record_flow:
+        record_flow_frame(0, np.zeros_like(h), np.zeros_like(h))
     t = 0.0
     next_frame = 1
     steps = 0
@@ -260,6 +293,8 @@ def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, fra
                 speed[h <= 0.01] = 0.0
                 np.maximum(peak_speed, speed * actf, out=peak_speed)
                 record(next_frame)
+                if record_flow:
+                    record_flow_frame(next_frame, ux, uy)
                 next_frame += 1
                 if progress:
                     progress(t / duration_s)
@@ -277,4 +312,4 @@ def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, fra
     peak_frame[peak <= 0] = -1
     return HiresResult(frames, [int(round(k * frame_interval_s / 60)) for k in range(nframes)],
                        np.where(act, peak, np.nan).astype(np.float32), peak_frame,
-                       np.where(act, peak_speed, np.nan).astype(np.float32), diag)
+                       np.where(act, peak_speed, np.nan).astype(np.float32), diag, flow_u, flow_v, flow_wse)

@@ -5,6 +5,7 @@ Lane B maps each /v3 operation to one function here; every function returns plai
 from __future__ import annotations
 
 import json
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -18,6 +19,10 @@ ROAD_STATES = ("ASSESSED_PASSABLE", "ASSESSED_BLOCKED", "UNKNOWN")
 
 class NotFound(LookupError):
     pass
+
+
+class FlowUnavailable(LookupError):
+    """The run has no A27 flow sidecar (computed before A27) or it is unreadable -> serve as 503."""
 
 
 def _run(runs_root, run_id) -> dict:
@@ -281,3 +286,90 @@ def static_layer(static_root, layer: str, bbox=None, cursor=None, limit: int = 1
         return {**base, "source": "OpenStreetMap building footprints", "attribution": "© OpenStreetMap contributors (ODbL)",
                 "features": feats, "next_cursor": str(start + limit) if start + limit < len(sel) else None}
     raise ValueError("layer must be wards, buildings, shelters or focus_areas")
+
+
+# ---------------------------------------------------------------------------------------------- A27 flow
+def _flow_arrays(runs_root, run_id, frame_index: int):
+    doc = _run(runs_root, run_id)
+    path = Path(runs_root) / run_id / "flow.npz"
+    if not path.exists():
+        raise FlowUnavailable(f"{run_id} has no flow output")
+    n = len(doc["frames"])
+    if not isinstance(frame_index, int) or not 0 <= frame_index < n:
+        raise ValueError(f"frame_index must be 0..{n - 1}")
+    try:
+        st = path.stat()
+        arrays = _load_flow(str(path), st.st_mtime_ns, st.st_size)
+    except (OSError, KeyError, ValueError) as error:
+        raise FlowUnavailable(f"{run_id} flow output is unreadable") from error
+    u, v, w, offset, scale, nodata, wet = arrays
+    w = w[frame_index]
+    if offset is not None:  # wse stored relative to a per-cell offset
+        w = np.where(w == nodata, nodata, w.astype(np.int32) + offset.astype(np.int32))
+    return doc, u[frame_index], v[frame_index], w, scale, nodata, wet
+
+
+@lru_cache(maxsize=2)
+def _load_flow(path: str, mtime_ns: int, size: int):
+    """Decompress a flow sidecar once per (file, version); animation then reads frames from memory."""
+    with np.load(path, allow_pickle=False) as b:
+        offset = b["wse_offset_cm"] if "wse_offset_cm" in b.files else None
+        return b["u"], b["v"], b["wse"], offset, float(b["scale"]), int(b["nodata"]), float(b["wet_threshold_m"])
+
+
+def _decode(a, scale, nodata, stride):
+    a = a[::stride, ::stride]
+    out = np.where(a == nodata, np.nan, a.astype(np.float64) * scale)
+    obj = np.round(out, 2).astype(object)
+    obj[np.isnan(out)] = None
+    return out, obj.tolist()
+
+
+def _stride_grid(grid: dict, stride: int, rows: int, cols: int) -> dict:
+    if stride == 1:
+        return dict(grid)
+    cell = grid["cell_size_m"]
+    shift = cell / 2 - stride * cell / 2  # subsampled cells are centred on the sampled original cell centres
+    return {**grid, "origin_x_m": grid["origin_x_m"] + shift, "origin_y_m": grid["origin_y_m"] - shift,
+            "cell_size_m": cell * stride, "rows": rows, "cols": cols}
+
+
+def _check_stride(stride):
+    if not isinstance(stride, int) or not 1 <= stride <= 8:
+        raise ValueError("stride must be 1..8")
+
+
+def velocity_frame(runs_root, run_id, frame_index: int, stride: int = 1) -> dict:
+    """u, v (m/s) for one frame: null outside the domain, 0 where dry."""
+    _check_stride(stride)
+    doc, u, v, _, scale, nodata, wet = _flow_arrays(runs_root, run_id, frame_index)
+    ua, ul = _decode(u, scale, nodata, stride)
+    va, vl = _decode(v, scale, nodata, stride)
+    sp = np.hypot(ua, va)
+    fin = sp[np.isfinite(sp)]
+    return {"run_id": run_id, "frame_index": frame_index, "valid_time_utc": doc["frames"][frame_index]["valid_time_utc"],
+            "stride": stride, "rows": len(ul), "cols": len(ul[0]) if ul else 0, "grid": _stride_grid(doc["grid"], stride, len(ul), len(ul[0]) if ul else 0),
+            "units": {"u": "m/s", "v": "m/s"}, "wet_threshold_m": wet, "u": ul, "v": vl,
+            "speed_max_mps": round(float(fin.max()), 2) if fin.size else None}
+
+
+def wse_frame(runs_root, run_id, frame_index: int, stride: int = 1) -> dict:
+    """Water-surface elevation (m, EGM2008) for one frame: null where dry or outside the domain."""
+    _check_stride(stride)
+    doc, _, _, w, scale, nodata, wet = _flow_arrays(runs_root, run_id, frame_index)
+    _, wl = _decode(w, scale, nodata, stride)
+    datum = (doc.get("flow") or {}).get("wse_vertical_datum", hires.WSE_VERTICAL_DATUM)
+    return {"run_id": run_id, "frame_index": frame_index, "valid_time_utc": doc["frames"][frame_index]["valid_time_utc"],
+            "stride": stride, "rows": len(wl), "cols": len(wl[0]) if wl else 0, "grid": _stride_grid(doc["grid"], stride, len(wl), len(wl[0]) if wl else 0),
+            "units": {"wse": "m"}, "wse_vertical_datum": datum, "wet_threshold_m": wet, "wse": wl}
+
+
+def flow_frame(runs_root, run_id, frame_index: int, stride: int = 1) -> dict:
+    """C4 v3 FlowFrame (proposed GET /v3/simulations/{run_id}/flow). Raises FlowUnavailable for pre-A27 runs."""
+    vel = velocity_frame(runs_root, run_id, frame_index, stride)
+    ws = wse_frame(runs_root, run_id, frame_index, stride)
+    return {"run_id": run_id, "frame_index": frame_index, "valid_time_utc": vel["valid_time_utc"], "source_mode": "SIMULATED",
+            "grid": vel["grid"], "stride": stride, "rows": vel["rows"], "cols": vel["cols"],
+            "units": {"u": "m/s", "v": "m/s", "wse": "m"}, "wse_vertical_datum": ws["wse_vertical_datum"],
+            "wet_threshold_m": vel["wet_threshold_m"], "u": vel["u"], "v": vel["v"], "wse": ws["wse"],
+            "speed_max_mps": vel["speed_max_mps"]}

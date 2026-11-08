@@ -18,7 +18,7 @@ import numpy as np
 
 from . import hires
 
-ENGINE_VERSION = "twinguard-flood-engine/2.0.0"
+ENGINE_VERSION = "twinguard-flood-engine/2.1.0"  # 2.1: A27 flow sidecar
 STATIC_VERSION = "a25_static_v1"
 FLOOD_M = 0.10            # SimulationSummary "flooded" / "affected" threshold (C4 v3)
 BLOCKED_M = 0.30          # A08/A21 road threshold (ASSESSED_BLOCKED at or above)
@@ -468,6 +468,22 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
         peaks["depth_p05"] = np.where(bundle.a["active"], stack.min(axis=0), np.nan)  # bracket members, not statistical quantiles
         peaks["depth_p95"] = np.where(bundle.a["active"], stack.max(axis=0), np.nan)
     np.savez_compressed(out / "frames.npz", depth_cm=central.frames_cm, frame_minutes=np.asarray(central.frame_minutes, np.int32))
+    flow_meta = None
+    if central.flow_u is not None:  # A27 sidecar (central member)
+        # wse is stored relative to a per-cell bed offset (int16 cm, stored once) so it compresses like depth:
+        # wse_m = (wse_offset_cm + wse) * scale where wse != nodata.
+        offset = np.round(bundle.a["z"].astype(np.float64) / hires.FLOW_SCALE).astype(np.int32)
+        rel = central.flow_wse.astype(np.int32) - offset[None]
+        rel = np.where(central.flow_wse == hires.FLOW_NODATA, hires.FLOW_NODATA, np.clip(rel, -32767, 32767)).astype(np.int16)
+        np.savez_compressed(out / "flow.npz", u=central.flow_u, v=central.flow_v, wse=rel,
+                            wse_offset_cm=np.clip(offset, -32767, 32767).astype(np.int16),
+                            scale=np.float32(hires.FLOW_SCALE), nodata=np.int16(hires.FLOW_NODATA),
+                            wet_threshold_m=np.float32(hires.WET_THRESHOLD_M))
+        flow_meta = {"file": "flow.npz", "encoding": "int16 x 0.01 (wse relative to per-cell wse_offset_cm); -32768 = NoData",
+                     "units": {"u": "m/s", "v": "m/s", "wse": "m"},
+                     "axes": "cell-centred depth-averaged; u eastward (+x), v northward (+y), EPSG:32644",
+                     "wse_vertical_datum": hires.WSE_VERTICAL_DATUM, "wet_threshold_m": hires.WET_THRESHOLD_M,
+                     "nodata": "u, v, wse null outside the domain; dry cells (depth < wet_threshold_m) have u = v = 0 and wse null"}
     np.savez_compressed(out / "peak.npz", peak_frame=central.peak_frame, velocity_mps=central.peak_speed_mps,
                         **{k: v.astype(np.float32) for k, v in peaks.items()})
 
@@ -542,7 +558,7 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
         "label": labels[mode] + ("" if resolution == "citywide" else f" · {focus_area} 30 m"),
         "created_at": created, "completed_at": _now(), "progress_pct": 100, "error": None, "cached": False,
         "grid": bundle.grid, "frame_interval_minutes": int(frame_interval_minutes), "frames": frames, "summary": summary,
-        "members": [m[0] for m in MEMBERS[members]], "layers": sorted(peaks) + ["velocity_mps"],
+        "members": [m[0] for m in MEMBERS[members]], "layers": sorted(peaks) + ["velocity_mps"], "flow": flow_meta,
         "forcing": {"start_utc": _iso(start), "interval_minutes": int(forcing["interval_s"] // 60), "total_mm_domain_mean": round(float(rain.sum() if rain.ndim == 1 else np.nanmean(rain.sum(axis=0)[act])), 2),
                     "tide_offset_m": forcing["stage_m"], "reservoir_release_m3s": forcing["releases"], "inflow_cells_used": len(inflows)},
         "parent_run_id": parent_run["run_id"] if parent_run else None,

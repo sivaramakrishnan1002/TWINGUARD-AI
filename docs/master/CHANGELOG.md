@@ -709,3 +709,7 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 19:40:31 G5 reassessed: G5 stays not_ready; B13 set blocked_manual pending the owner's choice between option A (as written) and option B (revised packaged replay->engine->/v3->UI); proposal docs/master/G5_REASSESSMENT_2026-11-08.md.
 
 - 2026-11-08 19:40:40 Finished B49: done
+
+- 2026-11-08 19:41:46 Finished A26: done
+
+- 2026-11-08 19:42:23 B49 done (9cb4054): flow runtime parameters now match C4 v3; G5 plan contract item 8 partly resolved.

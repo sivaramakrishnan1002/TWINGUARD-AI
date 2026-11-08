@@ -61,7 +61,7 @@ The task ID stays B13, with its scope revised. Acceptance:
    - The Google key does not appear in any request or response.
 8. **Contract tidy-up at closeout:**
    - The Integrator corrects the stale `unexposed` annotation on `/replay-alerts/{event_id}` together with `tests/master/test_api_contract_projection.py`.
-   - Lane B drops (or the Integrator adds) the flow operation's undocumented `resolution`/`focus_area` query parameters.
+   - ~~Lane B drops the flow operation's undocumented `resolution`/`focus_area` query parameters.~~ Resolved in B49 commit 9cb4054 (verified against the generated OpenAPI on 2026-11-08).
 
 G5 closes when B13 meets these criteria and the Integrator review passes.
 

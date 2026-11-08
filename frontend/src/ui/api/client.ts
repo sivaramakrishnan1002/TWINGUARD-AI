@@ -35,6 +35,7 @@ export function createHttpApi(fetcher: Fetcher = fetch): TwinGuardApi {
     listSimulations: () => get<T.SimulationList>('/simulations?limit=50'),
     getSimulation: (id) => get<T.SimulationRun>(`/simulations/${encodeURIComponent(id)}`),
     depth: (id, frame, layer: DepthLayer = 'depth_mean') => get<T.DepthFrame>(`/simulations/${encodeURIComponent(id)}/depth${q({ frame_index: frame, layer })}`),
+    flow: (id, frame, stride = 4) => get<T.FlowFrame>(`/simulations/${encodeURIComponent(id)}/flow${q({ frame_index: frame, stride })}`),
     buildings: (id, frame, bbox) => get<T.BuildingDepthPage>(`/simulations/${encodeURIComponent(id)}/buildings${q({ frame_index: frame, bbox: bboxParam(bbox), limit: 5000 })}`),
     wards: (id, frame) => get<T.WardSummaryList>(`/simulations/${encodeURIComponent(id)}/wards${q({ frame_index: frame })}`),
     roads: (id, frame, bbox, threshold) => get<T.RoadFeatureCollection>(`/simulations/${encodeURIComponent(id)}/roads${q({ frame_index: frame, bbox: bboxParam(bbox), blocked_depth_threshold_m: threshold })}`),

@@ -76,6 +76,25 @@ export interface DepthFrame {
   max_value?: number | null;
 }
 
+/** C4 v3 FlowFrame (B49): depth-averaged velocity and water-surface elevation for one saved frame.
+ *  u = eastward, v = northward (m/s); row 0 is north. null = outside the model domain; dry cells have u = v = 0 and wse = null. */
+export interface FlowFrame {
+  run_id: string;
+  frame_index: number;
+  valid_time_utc?: string | null;
+  source_mode?: SourceMode;
+  grid: GridSpec;
+  stride: number;
+  rows: number;
+  cols: number;
+  u: (number | null)[][];
+  v: (number | null)[][];
+  wse?: (number | null)[][];
+  wse_vertical_datum?: string;
+  wet_threshold_m?: number;
+  speed_max_mps?: number | null;
+}
+
 export type DepthClass = 'dry' | 'lt_0_15' | '0_15_to_0_5' | '0_5_to_1_0' | 'gt_1_0' | 'unknown';
 export interface BuildingDepth {
   building_id: string;
@@ -231,6 +250,8 @@ export interface TwinGuardApi {
   listSimulations(): Promise<SimulationList>;
   getSimulation(runId: string): Promise<SimulationRun>;
   depth(runId: string, frameIndex: number | null, layer?: DepthLayer): Promise<DepthFrame>;
+  /** Real flow velocities (503 for runs saved without flow output). */
+  flow(runId: string, frameIndex: number, stride?: number): Promise<FlowFrame>;
   buildings(runId: string, frameIndex: number | null, bbox: [number, number, number, number]): Promise<BuildingDepthPage>;
   wards(runId: string, frameIndex: number | null): Promise<WardSummaryList>;
   roads(runId: string, frameIndex: number | null, bbox: [number, number, number, number], threshold?: number): Promise<RoadFeatureCollection>;

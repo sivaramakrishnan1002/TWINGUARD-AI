@@ -52,7 +52,7 @@ await send('Page.enable');
 await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
 
 for (const [tab, name, cam, frameIdx] of SHOTS ?? TABS) {
-  if (frameIdx === undefined || frameIdx === 0) await send('Page.navigate', { url: `${BASE}?tab=${tab}` });
+  if (frameIdx === undefined || frameIdx === 0) await send('Page.navigate', { url: `${BASE}${BASE.includes('?') ? '&' : '?'}tab=${tab}` });
   if (cam && (frameIdx === undefined || frameIdx === 0)) {
     for (let i = 0; i < 30 && !(await evaluate('!!window.__tgViewer')); i += 1) await sleep(1000);
     await sleep(4000);

@@ -244,6 +244,7 @@
 .tg-legend--right { left: auto; right: 10px; bottom: 34px; }
 .tg-legend strong { font-size: 12.5px; margin-top: 2px; }
 .tg-legend ul { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
+.tg-legend__note { margin: 0; font-size: 11px; color: var(--tg-soft); max-width: 190px; }
 .tg-legend li { display: flex; align-items: center; gap: 8px; color: var(--tg-muted); }
 .tg-legend i { width: 18px; height: 11px; border-radius: 3px; flex: none; }
 .tg-legend i.is-dry { background: #10283a; border: 1px solid #2b4a60; }

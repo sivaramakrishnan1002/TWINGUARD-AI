@@ -5,7 +5,7 @@ import { lonLatToUtm, terrainHeight, utmToLonLat, type TerrainGrid } from '../ap
 import { depthClass, estimatedLevels, LEVEL_HEIGHT_M, loadBoundary, loadGazetteer, loadWaterways, type FocusFile, type GazPlace } from '../api/fixtures';
 import { DEPTH_CLASS_STYLE, EDGE_STYLE, HOME_VIEW, PLACES, googleTilesConfigured } from './constants';
 export { DEPTH_CLASS_STYLE, EDGE_STYLE, HOME_VIEW, PLACES, WATER_CLASS, WATER_EXAGGERATION, googleTilesConfigured, imagerySourceLabel, ionConfigured } from './constants';
-import type { DepthClass, DepthFrame, EdgeState, Incident, LonLat, RoadFeatureCollection, RouteOption, Shelter, StaticFeatureCollection } from '../api/v3types';
+import type { DepthClass, DepthFrame, EdgeState, FlowFrame, Incident, LonLat, RoadFeatureCollection, RouteOption, Shelter, StaticFeatureCollection } from '../api/v3types';
 
 /**
  * B48 3D city twin (CesiumJS).
@@ -214,9 +214,10 @@ const WATER_DEPTH_SCALE = 2.5;
 /**
  * Encode a depth frame as a WGS84 texture for the water shader: R = depth / 2.5 m (bilinear between valid
  * model cells; dry and NoData = 0), G/B = flow direction from the water-surface gradient (terrain + depth),
- * scaled by depth. Alpha is always 255 so browser premultiplication cannot destroy the data.
+ * scaled by depth. When a real FlowFrame (u east, v north, m/s) for the same run and frame is given, G/B carry
+ * the modelled velocity instead (bilinear, 1 m/s = full scale, sqrt-compressed so slow sheet flow still drifts). Alpha is always 255 so browser premultiplication cannot destroy the data.
  */
-export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null): { canvas: HTMLCanvasElement; bbox: [number, number, number, number] } | null {
+export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null, flow: FlowFrame | null = null): { canvas: HTMLCanvasElement; bbox: [number, number, number, number] } | null {
   const g = frame.grid;
   const [w0, s0] = utmToLonLat(g.origin_x_m, g.origin_y_m - frame.rows * g.cell_size_m);
   const [e0, n0] = utmToLonLat(g.origin_x_m + frame.cols * g.cell_size_m, g.origin_y_m);
@@ -232,6 +233,23 @@ export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null)
   const val = (r: number, c: number) => (r < 0 || c < 0 || r >= frame.rows || c >= frame.cols ? null : frame.values[r][c]);
   const depth = new Float32Array(W * H);
   const surf = new Float32Array(W * H);
+  const useFlow = !!flow && flow.run_id === frame.run_id && (frame.frame_index == null || flow.frame_index === frame.frame_index);
+  const fu = new Float32Array(useFlow ? W * H : 0);
+  const fv = new Float32Array(useFlow ? W * H : 0);
+  const fg = flow?.grid;
+  const flowAt = (e: number, n: number): [number, number] => {
+    const fc = (e - fg!.origin_x_m) / fg!.cell_size_m - 0.5;
+    const fr = (fg!.origin_y_m - n) / fg!.cell_size_m - 0.5;
+    const c0 = Math.floor(fc); const r0 = Math.floor(fr); const dx = fc - c0; const dy = fr - r0;
+    let su = 0; let sv = 0; let ws = 0;
+    for (const [rr, cc, ww] of [[r0, c0, (1 - dx) * (1 - dy)], [r0, c0 + 1, dx * (1 - dy)], [r0 + 1, c0, (1 - dx) * dy], [r0 + 1, c0 + 1, dx * dy]] as [number, number, number][]) {
+      if (rr < 0 || cc < 0 || rr >= flow!.rows || cc >= flow!.cols || ww <= 0) continue;
+      const uu = flow!.u[rr]?.[cc]; const vv = flow!.v[rr]?.[cc];
+      if (uu == null || vv == null) continue;
+      su += uu * ww; sv += vv * ww; ws += ww;
+    }
+    return ws > 0 ? [su / ws, sv / ws] : [0, 0];
+  };
   for (let y = 0; y < H; y += 1) {
     const lat = bbox[3] - ((y + 0.5) / H) * (bbox[3] - bbox[1]);
     for (let x = 0; x < W; x += 1) {
@@ -247,7 +265,8 @@ export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null)
       }
       const d = wsum < 0.35 ? 0 : sum / wsum;
       depth[y * W + x] = d;
-      surf[y * W + x] = terrainHeight(terrain, lon, lat) + d;
+      if (useFlow) { if (d > 0.01) { const [uu, vv] = flowAt(e, n); fu[y * W + x] = uu; fv[y * W + x] = vv; } }
+      else surf[y * W + x] = terrainHeight(terrain, lon, lat) + d;
     }
   }
   const img = ctx.createImageData(W, H);
@@ -255,7 +274,12 @@ export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null)
     const i = y * W + x;
     const d = depth[i];
     let fx = 0; let fy = 0;
-    if (d > 0.01) {
+    if (useFlow) {
+      if (d > 0.01) {
+        const sp = Math.hypot(fu[i], fv[i]);
+        if (sp > 1e-4) { const k = Math.min(1, Math.sqrt(sp / 1.0)); fx = (fu[i] / sp) * k; fy = (fv[i] / sp) * k; }
+      }
+    } else if (d > 0.01) {
       const sx = surf[y * W + Math.min(W - 1, x + 1)] - surf[y * W + Math.max(0, x - 1)];
       const sy = surf[Math.max(0, y - 1) * W + x] - surf[Math.min(H - 1, y + 1) * W + x]; // +y = north
       const len = Math.hypot(sx, sy);
@@ -271,12 +295,12 @@ export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null)
 }
 
 /** Animated flood-water material for the draped surface (ripples, Fresnel dusk sky, glints, flow streaks, shoreline foam). */
-function floodWaterMaterial(canvas: HTMLCanvasElement) {
+function floodWaterMaterial() {
   return new Cesium.Material({
     translucent: true,
     fabric: {
       type: 'TwinGuardFloodWater',
-      uniforms: { image0: canvas, image1: canvas, mixT: 1.0, normalMap: Cesium.buildModuleUrl('Assets/Textures/waterNormals.jpg'), time: 0.0, hq: 1.0, depthScale: WATER_DEPTH_SCALE },
+      uniforms: { image0: Cesium.Material.DefaultImageId, image1: Cesium.Material.DefaultImageId, mixT: 1.0, normalMap: Cesium.buildModuleUrl('Assets/Textures/waterNormals.jpg'), time: 0.0, hq: 1.0, depthScale: WATER_DEPTH_SCALE },
       source: `
         czm_material czm_getMaterial(czm_materialInput materialInput) {
           czm_material m = czm_getDefaultMaterial(materialInput);
@@ -325,11 +349,13 @@ function floodWaterMaterial(canvas: HTMLCanvasElement) {
   });
 }
 
-export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, wardShapes, highlightWard, shelters, incidents, route, flyTo, command, onCamera, onPick, onMapClick, className = '' }: {
+export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads, wards, wardShapes, highlightWard, shelters, incidents, route, flyTo, command, onCamera, onPick, onMapClick, className = '' }: {
   mode: ViewMode;
   layers: TwinLayers;
   terrain: TerrainGrid | null;
   frame: DepthFrame | null;
+  /** Real per-frame flow velocities (B49); null falls back to the surface-gradient estimate. */
+  flow?: FlowFrame | null;
   focus: FocusFile | null;
   roads?: RoadFeatureCollection | null;
   wards?: StaticFeatureCollection | null;
@@ -738,7 +764,7 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, ward
   /* simulated water: depth field draped on the rendered ground with an animated water material.
      Frame changes cross-fade the depth texture so the water visibly rises and falls between saved frames. */
   const waterRef = useRef<{ material: Cesium.Material; canvas: HTMLCanvasElement; key: string } | null>(null);
-  const field = useMemo(() => (frame && typeof document !== 'undefined' ? depthFieldCanvas(frame, terrain) : null), [frame, terrain]);
+  const field = useMemo(() => (frame && typeof document !== 'undefined' ? depthFieldCanvas(frame, terrain, flow) : null), [frame, terrain, flow]);
   const classifyOnTiles = googleOn && near;
   useEffect(() => {
     const v = viewer.current;
@@ -769,7 +795,10 @@ export function Twin3D({ mode, layers, terrain, frame, focus, roads, wards, ward
     }
     const old = prims.current.water;
     if (old) v.scene.primitives.remove(old);
-    const material = floodWaterMaterial(field.canvas);
+    const material = floodWaterMaterial();
+    // canvases are assigned after construction: Cesium deep-clones the fabric and cannot clone an HTMLCanvasElement
+    material.uniforms.image0 = field.canvas;
+    material.uniforms.image1 = field.canvas;
     const p = new Cesium.GroundPrimitive({
       geometryInstances: new Cesium.GeometryInstance({ geometry: new Cesium.RectangleGeometry({ rectangle: Cesium.Rectangle.fromDegrees(...field.bbox), vertexFormat: Cesium.MaterialAppearance.MaterialSupport.ALL.vertexFormat }), id: { kind: 'ground', title: 'Simulated flood water', location: { lon: (field.bbox[0] + field.bbox[2]) / 2, lat: (field.bbox[1] + field.bbox[3]) / 2 }, lines: [['Source', 'saved run depth grid'], ['Rendering', 'bilinear between model cells, draped on ground']] } as PickInfo }),
       appearance: new Cesium.MaterialAppearance({ material, translucent: true, materialSupport: Cesium.MaterialAppearance.MaterialSupport.ALL }),

@@ -160,7 +160,7 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
       </div>
       <div className="tg-stage__map">
         <Suspense fallback={<div className="tg-twin tg-twin--loading" role="status">Loading 3D city…</div>}>
-          <Twin3D mode={mode} layers={layers} terrain={data.terrain} frame={layers.water || layers.buildings ? data.depth : null} focus={data.focus} roads={data.roads} wards={layers.wards ? data.wardShapes : null} wardShapes={data.wardShapes} highlightWard={highlight}
+          <Twin3D mode={mode} layers={layers} terrain={data.terrain} frame={layers.water || layers.buildings ? data.depth : null} flow={layers.water ? data.flow : null} focus={data.focus} roads={data.roads} wards={layers.wards ? data.wardShapes : null} wardShapes={data.wardShapes} highlightWard={highlight}
             shelters={data.shelters?.shelters ?? null} incidents={data.incidents} route={route} flyTo={fly} command={cmd} onCamera={setCam} onPick={onPick} onMapClick={onMapClick} />
         </Suspense>
         <span className="tg-stage__badge">DEMO / SIMULATION</span>
@@ -174,7 +174,7 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
         </div>
         <button type="button" className="tg-compass" aria-label="Reset to north" title="Reset to north" onClick={() => send('north')} style={{ transform: `rotate(${-(cam?.headingDeg ?? 0)}deg)` }}><span>N</span></button>
         {cam?.metersPer100px != null && <ScaleBar metersPer100px={cam.metersPer100px} />}
-        <MapLegend />
+        <MapLegend flow={data.flow && layers.water ? { speedMax: data.flow.speed_max_mps ?? null } : null} />
         {overlay}
       </div>
     </section>
@@ -276,13 +276,16 @@ function ScaleBar({ metersPer100px }: { metersPer100px: number }) {
   return <div className="tg-scale" aria-label={`Scale ${m >= 1000 ? `${m / 1000} km` : `${m} m`}`}><span>0</span><i style={{ width: px }} /><span>{m >= 1000 ? `${m / 1000} km` : `${m} m`}</span></div>;
 }
 
-function MapLegend() {
+function MapLegend({ flow }: { flow: { speedMax: number | null } | null }) {
   return (
     <div className="tg-legend" aria-label="Map legend">
       <strong>Flood Depth (m)</strong>
       <div className="tg-legend__ramp" aria-hidden="true" />
       <div className="tg-legend__ticks"><span>0.05</span><span>0.3</span><span>0.8</span><span>1.5+</span></div>
       <ul><li><i className="is-dry" />No flood (transparent)</li></ul>
+      <p className="tg-legend__note" data-flow-source={flow ? 'modelled' : 'estimated'}>
+        {flow ? `Water motion: modelled velocity${flow.speedMax != null && flow.speedMax >= 0.05 ? ` (max ${flow.speedMax.toFixed(1)} m/s)` : ''}` : 'Water motion: estimated from surface slope'}
+      </p>
       <strong>Network</strong>
       <ul>
         <li><i className="is-line" style={{ background: '#36b9ff' }} />River / canal</li>

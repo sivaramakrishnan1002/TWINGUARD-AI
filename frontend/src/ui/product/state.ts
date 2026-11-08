@@ -16,6 +16,8 @@ export interface TwinData {
   playing: boolean;
   setPlaying: (p: boolean) => void;
   depth: T.DepthFrame | null;
+  /** Real flow velocities for the shown frame (null: not available for this run, fall back to the estimate). */
+  flow: T.FlowFrame | null;
   wards: T.WardSummary[];
   wardShapes: T.StaticFeatureCollection | null;
   incidents: T.Incident[];
@@ -50,10 +52,19 @@ export function useTwinData(): TwinData {
   const [api, setApi] = useState<T.TwinGuardApi | null>(null);
   const [nonce, setNonce] = useState(0);
   const [runs, setRuns] = useState<T.SimulationRun[]>([]);
-  const [runId, setRunId] = useState(DEFAULT_RUN_ID);
-  const [frameIndex, setFrameIndex] = useState(3);
+  const [runId, setRunId] = useState(() => {
+    // ?run=<run_id> deep link (demos, screenshots); unknown ids fall back to the first completed run
+    try { const r = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('run') : null; if (r && /^[a-z]+-[0-9TZ]+-[a-f0-9]+$/.test(r)) return r; } catch { /* non-browser */ }
+    return DEFAULT_RUN_ID;
+  });
+  const [frameIndex, setFrameIndex] = useState(() => {
+    try { const f = typeof window !== 'undefined' ? Number(new URLSearchParams(window.location.search).get('frame')) : NaN; if (Number.isInteger(f) && f >= 0) return f; } catch { /* non-browser */ }
+    return 3;
+  });
   const [playing, setPlaying] = useState(false);
   const [depth, setDepth] = useState<T.DepthFrame | null>(null);
+  const [flow, setFlow] = useState<T.FlowFrame | null>(null);
+  const flowCache = useRef(new Map<string, T.FlowFrame | null>());
   const [wards, setWards] = useState<T.WardSummary[]>([]);
   const [wardShapes, setWardShapes] = useState<T.StaticFeatureCollection | null>(null);
   const [incidents, setIncidents] = useState<T.Incident[]>([]);
@@ -106,6 +117,14 @@ export function useTwinData(): TwinData {
     const cached = depthCache.current.get(key);
     if (cached) setDepth(cached);
     else api.depth(runId, frameIndex).then((d) => { depthCache.current.set(key, d); if (live) setDepth(d); }).catch((e) => { if (live) { setDepth(null); setError(e instanceof Error ? e.message : String(e)); } });
+    if (flowCache.current.has(key)) setFlow(flowCache.current.get(key) ?? null);
+    else {
+      setFlow(null);
+      api.flow(runId, frameIndex, 4)
+        .then((f) => { flowCache.current.set(key, f); if (live) setFlow(f); })
+        // 503 = run saved without flow output (pre engine 2.1.0) or fixtures: the water uses the surface-gradient estimate
+        .catch(() => { flowCache.current.set(key, null); if (live) setFlow(null); });
+    }
     api.wards(runId, frameIndex).then((w) => live && setWards(w.wards)).catch(() => live && setWards([]));
     api.incidents(runId, frameIndex, 'watch').then((i) => live && setIncidents(i.incidents)).catch(() => live && setIncidents([]));
     api.shelters(runId, frameIndex, 1).then((s) => live && setShelters(s)).catch(() => live && setShelters(null));
@@ -139,7 +158,7 @@ export function useTwinData(): TwinData {
 
   return {
     api, apiKind: api ? api.kind : 'connecting', runs, run, runId, setRunId, frameIndex, setFrameIndex, playing, setPlaying,
-    depth, wards, wardShapes, incidents, shelters, focusArea, setFocusArea, focus, roads, terrain, weather, weatherError, refreshWeather,
+    depth, flow, wards, wardShapes, incidents, shelters, focusArea, setFocusArea, focus, roads, terrain, weather, weatherError, refreshWeather,
     error, reload: () => setNonce((n) => n + 1), refreshRuns,
   };
 }

@@ -307,6 +307,7 @@ export async function createFixtureApi(): Promise<T.TwinGuardApi> {
     },
     async listSimulations() { return { runs: await Promise.all(RUNS.map((r) => runFor(r.id))), next_cursor: null }; },
     getSimulation: runFor,
+    async flow() { throw unavailable('Flow velocities are not saved in the A05 batch2_v1 grids; the water animation uses the surface-gradient estimate.'); },
     async depth(runId, frame, layer = 'depth_mean') {
       const { k, g } = await grids(runId);
       if (layer === 'velocity_mps') throw new T.ApiRequestError(422, { detail: 'Velocity is not saved in A05 batch2_v1.', code: 'invalid' });

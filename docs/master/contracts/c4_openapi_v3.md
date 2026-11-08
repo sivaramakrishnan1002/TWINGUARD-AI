@@ -84,4 +84,8 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
   - The proposed flow operation now takes only `run_id`, `frame_index` and `stride`; focus runs have their own run IDs.
   - `FlowFrame` documents A27's int16 storage (0.01 units, −32768 NoData, per-cell `wse_offset_cm`). The API returns decoded values.
   - Validated against `products.flow_frame` output for the citywide 120 m and Velachery 30 m runs at strides 1, 2, 4 and 8.
+- **2026-11-08 flow promoted:**
+  - `GET /v3/simulations/{run_id}/flow` (`v3GetFlowFrame`) is mounted by B49 (commit 17bf87c) and moved from `proposed_paths` into the section's `paths` and the top-level `paths`, with `x-current-runtime-status: 200`.
+  - The runtime still accepts optional `resolution`/`focus_area` query parameters that the contract does not define. B49 should drop them, or ask to add them.
+  - The contract now has 20 operations.
 

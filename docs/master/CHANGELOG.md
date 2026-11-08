@@ -701,3 +701,7 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 15:11:48 Claimed A26 by A26 CUDA backend (Lane A)
 
 - 2026-11-08 15:13:17 B49 unblocked (A27 done); C4 v3 FlowFrame aligned with A27 readers (GridSpec.cell_size_m relaxed; flow op params run_id/frame_index/stride).
+
+- 2026-11-08 15:16:26 Claimed B49 by Lane B
+
+- 2026-11-08 15:16:59 C4 v3: v3GetFlowFrame promoted to top-level paths (B49 commit 17bf87c); validator 31 paths/33 ops; tests 169 passed.

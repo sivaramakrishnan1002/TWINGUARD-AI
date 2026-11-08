@@ -40,6 +40,7 @@ def main(argv=None) -> int:
     ap.add_argument("--members", type=int, choices=[1, 3], default=1)
     ap.add_argument("--cell-m", type=int, choices=[90, 120], default=120)
     ap.add_argument("--threads", type=int)
+    ap.add_argument("--device", default="cpu", help="cpu (default) | cuda | cuda:N (A26; falls back to cpu)")
     a = ap.parse_args(argv)
     what_if = None
     if a.mode == "what_if":
@@ -51,12 +52,12 @@ def main(argv=None) -> int:
     try:
         doc = run_scenario(a.static, a.runs, mode=a.mode, event_key=a.event_key, custom_rainfall=json.loads(a.custom) if a.custom else None,
                            what_if=what_if, duration_hours=a.hours, resolution=a.resolution, focus_area=a.focus_area,
-                           frame_interval_minutes=a.frame_minutes, members=a.members, citywide_cell_m=a.cell_m, threads=a.threads)
+                           frame_interval_minutes=a.frame_minutes, members=a.members, citywide_cell_m=a.cell_m, threads=a.threads, device=a.device)
     except (ScenarioError, RuntimeError, ValueError, OSError) as error:
         print(json.dumps({"state": "failed", "error": f"{type(error).__name__}: {str(error)[:300]}"}))
         return 1
     print(json.dumps({"run_id": doc["run_id"], "state": doc["state"], "cached": doc.get("cached", False),
-                      "runtime_seconds": doc.get("runtime_seconds"), "summary": doc["summary"]}))
+                      "runtime_seconds": doc.get("runtime_seconds"), "device": doc["provenance"].get("device"), "summary": doc["summary"]}))
     return 0
 
 

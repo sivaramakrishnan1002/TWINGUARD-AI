@@ -368,6 +368,27 @@ def _shelter_nodes(static_root: Path, topo: dict, shelters: dict) -> np.ndarray:
 
 
 # ----------------------------------------------------------------------------------------------- run
+def resolve_device(device: str | None) -> tuple[str, str | None, str | None]:
+    """-> (device used, GPU name, fallback reason). Accepts "cpu", "cuda", "cuda:N"; anything else falls back to CPU."""
+    if device in (None, "", "cpu"):
+        return "cpu", None, None
+    if not (device == "cuda" or (device.startswith("cuda:") and device[5:].isdigit())):
+        return "cpu", None, f"unsupported device {device!r}"
+    from .hires_torch import available
+    ok, info = available()
+    if not ok:
+        return "cpu", None, info
+    return ("cuda:0" if device == "cuda" else device), info, None
+
+
+def _release_cuda() -> None:
+    try:
+        import torch
+        torch.cuda.empty_cache()
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def request_key(request: dict) -> str:
     canon = json.dumps(request, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canon.encode()).hexdigest()
@@ -395,8 +416,12 @@ def find_cached(runs_root: Path, key: str) -> dict | None:
 def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = None, custom_rainfall: dict | None = None,
                  what_if: dict | None = None, duration_hours: int = 24, resolution: str = "citywide", focus_area: str | None = None,
                  frame_interval_minutes: int = 30, members: int = 1, citywide_cell_m: int = 120, threads: int | None = None,
-                 fetch_forecast=None, progress=None, use_cache: bool = True) -> dict:
+                 fetch_forecast=None, progress=None, use_cache: bool = True, device: str = "cpu") -> dict:
     """Run one simulation and write it under ``runs_root/<run_id>/``. Returns the SimulationRun document.
+
+    ``device``: "cpu" (NumPy, default) or "cuda" / "cuda:N" (A26 torch float32). CUDA falls back to NumPy when torch
+    or CUDA is unavailable or a CUDA error occurs; ``provenance.device`` records requested/used/fallback_reason.
+    The request cache is device-independent (CPU and CUDA agree within the documented tolerance).
 
     ``progress`` is called as progress(pct) with 0-100 across all members (simulation phase only).
     Safe to call in a child process; writes are atomic (``.tmp-<run_id>`` then rename).
@@ -446,10 +471,24 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
                                          parent_run["frame_interval_minutes"] * 60.0, forcing["stage_m"])
     results = []
     n_members = len(MEMBERS[members])
+    used, gpu_name, fallback = resolve_device(device)
+    vram = []
     for i_member, (label, nm, fi) in enumerate(MEMBERS[members]):
         cb = (lambda f, i=i_member: progress(round(100.0 * (i + f) / n_members, 1))) if progress else None
-        r = hires.run(bundle.hires_grid(nm, fi), rain, forcing["interval_s"], duration_s, frame_s, stage_m=forcing["stage_m"],
-                      inflows=inflows, boundary_stage_fn=boundary_fn, threads=threads, progress=cb)
+        args = (bundle.hires_grid(nm, fi), rain, forcing["interval_s"], duration_s, frame_s)
+        kw = dict(stage_m=forcing["stage_m"], inflows=inflows, boundary_stage_fn=boundary_fn, progress=cb)
+        r = None
+        if used != "cpu":
+            try:
+                from . import hires_torch
+                r = hires_torch.run(*args, **kw, device=used)
+                vram.append(r.diagnostics.get("peak_vram_mb") or 0.0)
+            except Exception as error:  # CUDA OOM / driver / runtime errors -> NumPy for this and later members
+                fallback = f"{type(error).__name__}: {str(error)[:200]}"
+                used = "cpu"
+                _release_cuda()
+        if r is None:
+            r = hires.run(*args, **kw, threads=threads)
         if not np.isfinite(r.peak_m[bundle.a["active"]]).all() or np.nanmin(r.peak_m) < 0:
             raise RuntimeError(f"invalid depths in member {label}")
         if boundary_fn is None and r.diagnostics["mass_balance_relative_error"] > 0.01:
@@ -563,7 +602,9 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
                     "tide_offset_m": forcing["stage_m"], "reservoir_release_m3s": forcing["releases"], "inflow_cells_used": len(inflows)},
         "parent_run_id": parent_run["run_id"] if parent_run else None,
         "provenance": {"engine_version": ENGINE_VERSION, "run_id": run_id, "forcing_sha256": forcing_sha, "static_assets_version": STATIC_VERSION,
-                       "static_bundle": bundle.name, "static_bundle_sha256": bundle.meta.get("bundle_sha256"), "inputs": forcing["inputs"]},
+                       "static_bundle": bundle.name, "static_bundle_sha256": bundle.meta.get("bundle_sha256"), "inputs": forcing["inputs"],
+                       "device": {"requested": device, "used": used, "name": gpu_name if used != "cpu" else "cpu (NumPy)",
+                                  "fallback_reason": fallback, "peak_vram_mb": max(vram) if vram else None}},
         "diagnostics": diags, "runtime_seconds": round(time.perf_counter() - t0, 1), "limitations": LIMITATIONS,
         "files": sorted(p.name for p in out.iterdir()) + ["run.json"],
     }

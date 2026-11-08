@@ -61,14 +61,36 @@ def _no_store(response: Response) -> None:
     response.headers["Cache-Control"] = "no-store"
 
 
+class ApiError(BaseModel):
+    """C4 v3 ApiError body."""
+    model_config = ConfigDict(extra="forbid")
+    detail: str
+    code: Literal["bad_request", "not_found", "conflict", "invalid", "rate_limited", "unavailable"]
+    retry_after_s: int | None = Field(default=None, ge=0)
+
+
+ERROR_TEXT = {
+    400: "Malformed request or invalid selector.",
+    404: "Run, ward, building, shelter or resource not found.",
+    409: "Conflict: another run is in progress or the resource version changed.",
+    422: "Request failed validation (field ranges, units or enums).",
+    429: "Rate limited: the Open-Meteo minimum fetch interval or the run-start interval has not elapsed. Retry-After header is set.",
+    503: "Engine, static assets, cache or upstream source unavailable; no partial body.",
+}
+
+
+def errors(*codes: int) -> dict:
+    return {code: {"model": ApiError, "description": ERROR_TEXT[code]} for code in codes}
+
+
 # ------------------------------------------------------------------------------------------------ request models
-class V3LonLat(BaseModel):
+class LonLat(BaseModel):
     model_config = ConfigDict(extra="forbid")
     lon: float = Field(ge=79.9, le=80.5)
     lat: float = Field(ge=12.7, le=13.4)
 
 
-class V3CustomRainfall(BaseModel):
+class CustomRainfall(BaseModel):
     model_config = ConfigDict(extra="forbid")
     start_time_utc: datetime
     interval_minutes: Literal[15, 30, 60]
@@ -83,7 +105,7 @@ class V3CustomRainfall(BaseModel):
         return self
 
 
-class V3WhatIfModifiers(BaseModel):
+class WhatIfModifiers(BaseModel):
     model_config = ConfigDict(extra="forbid")
     base_run_id: str
     rainfall_scale_pct: float = Field(default=100, ge=0, le=300)
@@ -100,12 +122,12 @@ class V3WhatIfModifiers(BaseModel):
         return self
 
 
-class V3SimulationRequest(BaseModel):
+class SimulationRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     mode: Literal["event", "custom", "forecast", "what_if"]
     event_key: str | None = None
-    custom_rainfall: V3CustomRainfall | None = None
-    what_if: V3WhatIfModifiers | None = None
+    custom_rainfall: CustomRainfall | None = None
+    what_if: WhatIfModifiers | None = None
     duration_hours: int = Field(default=24, ge=6, le=72)
     resolution: Literal["citywide", "focus"] = "citywide"
     focus_area: Literal["VELACHERY", "ADYAR", "T_NAGAR", "PORUR"] | None = None
@@ -124,37 +146,37 @@ class V3SimulationRequest(BaseModel):
         return self
 
 
-class V3RouteRequest(BaseModel):
+class RouteSearchRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     run_id: str
     frame_index: int | None = Field(default=None, ge=0)
-    origin: V3LonLat
-    destination: V3LonLat
+    origin: LonLat
+    destination: LonLat
     policy: Literal["avoid_blocked", "avoid_blocked_and_unknown", "shortest_dry"] = "avoid_blocked"
     profile: Literal["car", "emergency_vehicle", "walk"] = "car"
     blocked_depth_threshold_m: float = Field(default=0.3, ge=0.1, le=1.0)
 
 
-class V3ResourceBase(BaseModel):
+class ResourceBase(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: str = Field(min_length=1, max_length=120)
-    location: V3LonLat
+    location: LonLat
 
 
-class V3Resource(BaseModel):
+class Resource(BaseModel):
     model_config = ConfigDict(extra="forbid")
     resource_id: str = Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9._:-]+$")
     type: Literal["boat", "rescue_team", "vehicle", "ambulance", "pump"]
     count: int = Field(ge=0, le=500)
-    base: V3ResourceBase
+    base: ResourceBase
     source_mode: Literal["SCENARIO_INPUT"] | None = None
 
 
-class V3ResourceSet(BaseModel):
+class ResourceSet(BaseModel):
     model_config = ConfigDict(extra="forbid")
     version: int | None = Field(default=None, ge=0)
     updated_at: datetime | None = None
-    resources: list[V3Resource] = Field(max_length=200)
+    resources: list[Resource] = Field(max_length=200)
 
     @model_validator(mode="after")
     def unique(self):
@@ -292,7 +314,7 @@ def get_status(response: Response) -> dict:
     }
 
 
-@router.get("/overview", operation_id="v3GetOverview")
+@router.get("/overview", operation_id="v3GetOverview", responses=errors(503))
 def get_overview(response: Response) -> dict:
     _no_store(response)
     _grid()
@@ -313,7 +335,7 @@ def get_overview(response: Response) -> dict:
     }
 
 
-@router.get("/weather", operation_id="v3GetWeather")
+@router.get("/weather", operation_id="v3GetWeather", responses=errors(429, 503))
 def get_weather(response: Response, refresh: bool = Query(default=False)) -> dict:
     _no_store(response)
     try:
@@ -332,8 +354,8 @@ def list_events(response: Response) -> dict:
 
 
 # ------------------------------------------------------------------------------------------------ simulations
-@router.post("/simulations", status_code=202, operation_id="v3CreateSimulation")
-def create_simulation(body: V3SimulationRequest, response: Response) -> dict:
+@router.post("/simulations", status_code=202, operation_id="v3CreateSimulation", responses=errors(400, 404, 409, 422, 429, 503))
+def create_simulation(body: SimulationRequest, response: Response) -> dict:
     _no_store(response)
     request = body.model_dump(mode="json", exclude_none=True)
     engine = "a25" if config.a25_enabled() else "a06"
@@ -398,7 +420,7 @@ def _cached_forecast(request: dict, forcing_sha: str | None) -> dict | None:
     return None
 
 
-@router.get("/simulations", operation_id="v3ListSimulations")
+@router.get("/simulations", operation_id="v3ListSimulations", responses=errors(400, 422))
 def list_simulations(response: Response, cursor: str | None = Query(default=None),
                      limit: int = Query(default=12, ge=1, le=50)) -> dict:
     _no_store(response)
@@ -408,13 +430,13 @@ def list_simulations(response: Response, cursor: str | None = Query(default=None
     return {"runs": [public(d) for d in page], "next_cursor": str(start + limit) if start + limit < len(runs) else None}
 
 
-@router.get("/simulations/{run_id}", operation_id="v3GetSimulation")
+@router.get("/simulations/{run_id}", operation_id="v3GetSimulation", responses=errors(404, 503))
 def get_simulation(run_id: str, response: Response) -> dict:
     _no_store(response)
     return public(_run(run_id, completed=False))
 
 
-@router.get("/simulations/{run_id}/depth", operation_id="v3GetDepthFrame")
+@router.get("/simulations/{run_id}/depth", operation_id="v3GetDepthFrame", responses=errors(404, 422, 503))
 def get_depth(run_id: str, response: Response, frame_index: int | None = Query(default=None, ge=0),
               layer: Literal["depth_mean", "depth_p05", "depth_p95", "velocity_mps"] = Query(default="depth_mean"),
               resolution: Literal["citywide", "focus"] = Query(default="citywide"),
@@ -438,7 +460,7 @@ def get_depth(run_id: str, response: Response, frame_index: int | None = Query(d
             "values": values, "max_value": analysis.r2(max(float(finite.max()), 0.0)) if finite.size else None}
 
 
-@router.get("/simulations/{run_id}/buildings", operation_id="v3GetBuildingDepths")
+@router.get("/simulations/{run_id}/buildings", operation_id="v3GetBuildingDepths", responses=errors(400, 404, 422, 503))
 def get_buildings(run_id: str, response: Response, frame_index: int | None = Query(default=None, ge=0),
                   bbox: str | None = Query(default=None, pattern=BBOX), cursor: str | None = Query(default=None),
                   limit: int = Query(default=1000, ge=1, le=5000), min_depth_m: float | None = Query(default=None, ge=0)) -> dict:
@@ -508,7 +530,7 @@ def _ward_rows(doc: dict, frame_index: int | None) -> list[dict]:
     return rows
 
 
-@router.get("/simulations/{run_id}/wards", operation_id="v3GetWardSummaries")
+@router.get("/simulations/{run_id}/wards", operation_id="v3GetWardSummaries", responses=errors(404, 422, 503))
 def get_wards(run_id: str, response: Response, frame_index: int | None = Query(default=None, ge=0)) -> dict:
     _no_store(response)
     doc = _run(run_id)
@@ -518,7 +540,7 @@ def get_wards(run_id: str, response: Response, frame_index: int | None = Query(d
     return {"run_id": run_id, "frame_index": frame_index, "source_mode": "SIMULATED", "wards": _ward_rows(doc, frame_index)}
 
 
-@router.get("/simulations/{run_id}/roads", operation_id="v3GetRoadStates")
+@router.get("/simulations/{run_id}/roads", operation_id="v3GetRoadStates", responses=errors(404, 422, 503))
 def get_roads(run_id: str, response: Response, frame_index: int | None = Query(default=None, ge=0),
               bbox: str | None = Query(default=None, pattern=BBOX),
               blocked_depth_threshold_m: float = Query(default=0.3, ge=0.1, le=1.0)) -> dict:
@@ -546,7 +568,7 @@ def get_roads(run_id: str, response: Response, frame_index: int | None = Query(d
     return {"type": "FeatureCollection", "run_id": run_id, "frame_index": frame_index, "features": features}
 
 
-@router.get("/simulations/{run_id}/shelters", operation_id="v3GetShelterReport")
+@router.get("/simulations/{run_id}/shelters", operation_id="v3GetShelterReport", responses=errors(404, 422, 503))
 def get_shelters(run_id: str, response: Response, frame_index: int | None = Query(default=None, ge=0),
                  capacity_factor: float = Query(default=1.0)) -> dict:
     _no_store(response)
@@ -559,7 +581,7 @@ def get_shelters(run_id: str, response: Response, frame_index: int | None = Quer
             "shelters": shelters, "totals": totals}
 
 
-@router.get("/simulations/{run_id}/incidents", operation_id="v3GetIncidents")
+@router.get("/simulations/{run_id}/incidents", operation_id="v3GetIncidents", responses=errors(404, 422, 503))
 def get_incidents(run_id: str, response: Response, frame_index: int | None = Query(default=None, ge=0),
                   min_severity: Literal["info", "watch", "warning", "critical"] = Query(default="watch")) -> dict:
     _no_store(response)
@@ -570,7 +592,7 @@ def get_incidents(run_id: str, response: Response, frame_index: int | None = Que
     return {"run_id": run_id, "source_mode": "SIMULATED", "incidents": items}
 
 
-@router.get("/simulations/{run_id}/emergency-plan", operation_id="v3GetEmergencyPlan")
+@router.get("/simulations/{run_id}/emergency-plan", operation_id="v3GetEmergencyPlan", responses=errors(404, 422, 503))
 def get_emergency_plan(run_id: str, response: Response, frame_index: int | None = Query(default=None, ge=0)) -> dict:
     _no_store(response)
     doc = _run(run_id)
@@ -584,7 +606,7 @@ def get_emergency_plan(run_id: str, response: Response, frame_index: int | None 
             "resource_set_version": resource_set["version"], "assignments": assignments, "unassigned_incidents": unassigned}
 
 
-@router.get("/simulations/{run_id}/comparison", operation_id="v3GetComparison")
+@router.get("/simulations/{run_id}/comparison", operation_id="v3GetComparison", responses=errors(400, 404, 503))
 def get_comparison(run_id: str, response: Response, baseline_run_id: str | None = Query(default=None)) -> dict:
     _no_store(response)
     doc = _run(run_id)
@@ -616,8 +638,8 @@ def get_comparison(run_id: str, response: Response, baseline_run_id: str | None 
 
 
 # ------------------------------------------------------------------------------------------------ routes
-@router.post("/routes", operation_id="v3SearchRoute")
-def search_route(body: V3RouteRequest, response: Response) -> dict:
+@router.post("/routes", operation_id="v3SearchRoute", responses=errors(400, 404, 422, 503))
+def search_route(body: RouteSearchRequest, response: Response) -> dict:
     _no_store(response)
     doc = _run(body.run_id)
     frame_index = _frame_index(doc, body.frame_index)
@@ -648,19 +670,19 @@ def get_resources(response: Response) -> dict:
     return resources.get()
 
 
-@router.put("/scenario-resources", operation_id="v3PutScenarioResources")
-def put_resources(body: V3ResourceSet, response: Response) -> dict:
+@router.put("/scenario-resources", operation_id="v3PutScenarioResources", responses=errors(400, 409, 422, 503))
+def put_resources(body: ResourceSet, response: Response) -> dict:
     _no_store(response)
     try:
         return resources.put(body.version, [r.model_dump(mode="json", exclude_none=True) for r in body.resources])
     except resources.VersionConflict:
-        raise V3Error(409, "V3Resource set version changed; GET the current version and retry.") from None
+        raise V3Error(409, "Resource set version changed; GET the current version and retry.") from None
     except OSError:
-        raise V3Error(503, "V3Resource store is not writable.") from None
+        raise V3Error(503, "Resource store is not writable.") from None
 
 
 # ------------------------------------------------------------------------------------------------ static layers
-@router.get("/static/{layer}", operation_id="v3GetStaticLayer")
+@router.get("/static/{layer}", operation_id="v3GetStaticLayer", responses=errors(400, 404, 422, 503))
 def get_static_layer(layer: Literal["wards", "buildings", "shelters", "focus_areas"], response: Response,
                      bbox: str | None = Query(default=None, pattern=BBOX), cursor: str | None = Query(default=None),
                      limit: int = Query(default=1000, ge=1, le=5000)) -> dict:

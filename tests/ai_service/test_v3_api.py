@@ -405,3 +405,23 @@ def test_validator_rejects_bad_bodies():
     schema = section()["schemas"]["Incident"]
     assert validate({"incident_id": "x", "generated": False, "type": "building_flooding", "severity": "watch",
                      "location": {"lon": 80.2, "lat": 13.0}, "valid_time_utc": "2026-01-01T00:00:00Z"}, schema)
+
+
+def test_trial_promotion_matches_contract_operations():
+    """Same checks as test_api.py applies to top-level paths, run against the v3 section before promotion."""
+    generated = main.app.openapi()
+    pending_renames = {"RouteRequest": "RouteSearchRequest"}  # v1 owns RouteRequest; Integrator renames the v3 schema
+    for path, item in v3_section()["paths"].items():
+        for method, contract_op in item.items():
+            if method not in ("get", "post", "put"):
+                continue
+            runtime = generated["paths"][path][method]
+            assert runtime["operationId"] == contract_op["operationId"]
+            missing = set(contract_op["responses"]) - set(runtime["responses"])
+            assert not missing, (method, path, missing)
+            if "requestBody" in contract_op:
+                want = contract_op["requestBody"]["content"]["application/json"]["schema"]["$ref"].split("/")[-1]
+                got = runtime["requestBody"]["content"]["application/json"]["schema"]["$ref"].split("/")[-1]
+                assert got == pending_renames.get(want, want), (path, want, got)
+    v1 = generated["paths"]["/route"]["post"]["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+    assert v1.endswith("/RouteRequest")

@@ -317,6 +317,7 @@ def get_status(response: Response) -> dict:
     return {
         "engine_version": config.ENGINE_VERSION_A25 if config.a25_enabled() else config.ENGINE_VERSION,
         "device": _device_status(),
+        "worker": MANAGER.worker_status(),
         "static_available": static.grid_available("citywide") and static.product_available(),
         **queue,
         "weather_min_refresh_interval_s": config.weather_min_interval_s(),

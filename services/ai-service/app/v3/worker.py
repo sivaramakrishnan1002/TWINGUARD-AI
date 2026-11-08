@@ -96,7 +96,8 @@ def execute(run_dir: Path) -> dict:
         "frames": [{"index": k, "valid_time_utc": t, "elapsed_minutes": (k + 1) * req["frame_interval_minutes"]}
                    for k, t in enumerate(times)],
         "summary": summary,
-        "provenance": {"engine_version": config.ENGINE_VERSION, "device": {"used": "cpu", "name": None, "fallback_reason": None},
+        "provenance": {"engine_version": config.ENGINE_VERSION,
+                       "device": {"used": "cpu", "name": None, "fallback_reason": os.environ.get("TWINGUARD_V3_FALLBACK_REASON")},
                        "run_id": job["run_id"], "forcing_sha256": forcing.sha256(),
                        "static_assets_version": product.version if product else None, "inputs": inputs},
         "diagnostics": {"members": out["members"], "runtime_seconds": out["runtime_seconds"], "reservoir": reservoir_detail},
@@ -126,6 +127,9 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
                   citywide_cell_m=config.a25_citywide_cell_m(), fetch_forecast=fetch, progress=progress)
     accepts = device_mod.engine_accepts_device(scenario.run_scenario)
     dev = device_mod.resolve(accepts)
+    forced = os.environ.get("TWINGUARD_V3_FALLBACK_REASON")
+    if forced:  # rerun after a persistent-worker crash or CUDA failure: CPU, with the reason recorded
+        dev = {**dev, "used": "cpu", "name": None, "reason": forced}
     if accepts:
         kwargs["device"] = dev["used"]
     try:
@@ -171,11 +175,12 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
         "summary": summary,
         "provenance": {"engine_version": f"{config.ENGINE_VERSION_A25} ({provenance.get('engine_version', 'A25')})",
                        "device": {"used": dev["used"], "name": dev.get("name") if dev["used"] == "cuda" else None,
-                                  "fallback_reason": dev.get("engine_fallback") or (dev["reason"] if dev["reason"] and "rerun on CPU" in dev["reason"] else None)},
+                                  "fallback_reason": dev.get("engine_fallback") or (dev["reason"] if dev["reason"] and ("rerun on CPU" in dev["reason"] or forced) else None)},
                        "run_id": job["run_id"], "forcing_sha256": provenance.get("forcing_sha256"),
                        "static_assets_version": grid.version, "inputs": inputs},
         "diagnostics": {"engine_run_id": doc["run_id"], "engine_cached": bool(doc.get("cached")), "layers": sorted(frames),
-                        "device": dev, "engine_timing": doc.get("timing"), "engine_runtime_s": doc.get("runtime_seconds")},
+                        "device": dev, "engine_timing": doc.get("timing"), "engine_runtime_s": doc.get("runtime_seconds"),
+                        "engine_kernel_mode": ((doc.get("diagnostics") or {}).get("central") or {}).get("kernel_mode")},
     }
     _write(run_dir / "result.json", result)
     _write(run_dir / "progress.json", {"progress_pct": 100.0}, best_effort=True)
@@ -183,6 +188,9 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
 
 
 def main(argv: list[str]) -> int:
+    if argv and argv[0] == "--serve":  # persistent engine worker (gpu_worker.PersistentWorker)
+        from .gpu_worker import serve
+        return serve()
     started = time.time()
     try:
         execute(Path(argv[0]))

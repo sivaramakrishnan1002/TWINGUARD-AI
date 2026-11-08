@@ -91,6 +91,9 @@ class RunManager:
                 self.docs[doc["run_id"]] = doc
                 if doc["state"] == "completed":
                     self.keys[doc["_key"]] = doc["run_id"]
+            if not config.inline_worker() and config.worker_mode() == "persistent":
+                from .gpu_worker import WORKER
+                WORKER.ensure_started_async()
         return root
 
     def run_dir(self, run_id: str) -> Path:
@@ -234,7 +237,21 @@ class RunManager:
                 return True, None
             except Exception as error:  # noqa: BLE001
                 return False, f"{type(error).__name__}: {str(error)[:200]}"
+        if config.worker_mode() == "persistent":
+            from .gpu_worker import WORKER
+            ok, error, worker_failed = WORKER.run(path, config.run_timeout_s())
+            if ok or not worker_failed:
+                return ok, error
+            log.warning("v3 run %s: persistent worker failed (%s); rerunning on CPU", run_id, error)
+            return self._per_run(path, {"TWINGUARD_V3_DEVICE": "cpu",
+                                        "TWINGUARD_V3_FALLBACK_REASON": f"{error}; rerun on CPU"[:200]})
+        return self._per_run(path)
+
+    def _per_run(self, path: Path, overrides: dict | None = None) -> tuple[bool, str | None]:
+        """One child process per run (the original path; also the CPU fallback for the persistent worker)."""
+        run_id = path.name
         env = dict(os.environ)
+        env.update(overrides or {})
         env["PYTHONPATH"] = os.pathsep.join([str(SERVICE_ROOT), str(SERVICE_ROOT.parents[1]), env.get("PYTHONPATH", "")])
         try:
             proc = subprocess.run([sys.executable, "-m", "app.v3.worker", str(path)], capture_output=True, text=True,  # noqa: S603
@@ -248,6 +265,14 @@ class RunManager:
             return False, "simulation timed out"
         except Exception as error:  # noqa: BLE001
             return False, type(error).__name__
+
+    def worker_status(self) -> dict:
+        if config.inline_worker():
+            return {"mode": "inline", "state": "warm", "device": None, "pid": None, "jobs_done": None, "restarts": 0, "warmup": None}
+        if config.worker_mode() == "persistent":
+            from .gpu_worker import WORKER
+            return WORKER.status()
+        return {"mode": "per_run", "state": "cold", "device": None, "pid": None, "jobs_done": None, "restarts": 0, "warmup": None}
 
     def status(self) -> dict:
         with self.lock:

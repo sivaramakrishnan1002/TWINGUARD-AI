@@ -86,6 +86,18 @@ def members_setting() -> str:
     return os.environ.get("TWINGUARD_V3_MEMBERS", "3")
 
 
+def worker_mode() -> str:
+    """TWINGUARD_V3_WORKER = persistent | per_run | auto (default: persistent when runs resolve to CUDA)."""
+    value = os.environ.get("TWINGUARD_V3_WORKER", "auto").strip().lower()
+    if value in ("persistent", "per_run"):
+        return value
+    from . import device
+    try:
+        return "persistent" if device.resolve(device.engine_supports_gpu())["used"] == "cuda" else "per_run"
+    except Exception:  # noqa: BLE001
+        return "per_run"
+
+
 def inline_worker() -> bool:
     """Tests may run simulations in a thread instead of a child process."""
     return os.environ.get("TWINGUARD_V3_INLINE_WORKER", "0") == "1"

@@ -35,6 +35,7 @@
 - **M8 — Mentor review dates** (blocked_manual)
 - **B40 — Implement authorized IMD rainfall/weather connector** (blocked_prerequisite)
 - **B42 — Prove observation-triggered recomputation through API and UI** (blocked_prerequisite)
+- **A26 — Optional CUDA backend for services/flood_engine (OD-2026-11-08)** (blocked_prerequisite)
 
 ## Running tasks
 

@@ -188,5 +188,6 @@ Gate days are planning targets, not calendar commitments. No gate is declared pa
 | A25 | High-resolution flood simulation for 3D (citywide 90-120 m, 30 m focus areas, buildings, wards) | A | A23, A10, A21 | running |
 | B47 | Simulation and decision API (C4 v3) | B | B08, B44, B45 | done_with_caveats |
 | B48 | Reference-design UI with Google Photorealistic 3D Tiles (7 tabs) — ui session | B | B45, B37 | running |
+| A26 | Optional CUDA backend for services/flood_engine (OD-2026-11-08) | A | A25 | blocked_prerequisite |
 
 <!-- TASK TABLE END -->

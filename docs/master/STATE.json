@@ -6338,6 +6338,45 @@
       "notes": [
         "2026-11-07 Registered by Integrator under OD-2026-11-07 / CR-019. Caveat policy: done_with_caveats counts as done; keep only a short Limitations section. Ownership is disjoint per CR-019; do not edit other owners' paths."
       ]
+    },
+    {
+      "id": "A26",
+      "lane": "A",
+      "title": "Optional CUDA backend for services/flood_engine (OD-2026-11-08)",
+      "phase": "A",
+      "status": "blocked_prerequisite",
+      "depends_on": [
+        "A25"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/master/FINAL_YEAR_OWNER_DECISIONS.md",
+        "requirements-gpu.txt"
+      ],
+      "outputs": [
+        "services/flood_engine/",
+        "tests/flood_engine/",
+        "docs/FLOOD_ENGINE_GPU_BENCHMARK.md"
+      ],
+      "acceptance": [
+        "Add run_scenario(..., device='cpu'|'cuda') using torch CUDA float32. NumPy CPU stays the default and the automatic fallback when CUDA or torch is unavailable or a CUDA error occurs; record the fallback reason so B47 can fill Provenance.device.",
+        "GPU results match the NumPy reference within a stated tolerance (max/mean absolute depth difference) on the A25 citywide and focus grids, with mass balance <= 1% on both devices.",
+        "Stay VRAM-aware for the 4 GB RTX 3050 Laptop GPU: tile the domain or batch members so peak memory stays below the limit, and report the peak memory used.",
+        "Write a CPU vs GPU speed-up report (grid sizes, members, wall time, peak VRAM, hardware/driver/torch versions) to docs/FLOOD_ENGINE_GPU_BENCHMARK.md.",
+        "Tests pass on CPU-only machines (GPU tests skip when CUDA is absent). Use only the torch pin in requirements-gpu.txt; report any new dependency to the Integrator. Do not edit services/ai-service/ (Lane B picks up device= automatically)."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": true,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-08 Registered by Integrator at Lane B's request (relayed by the coordinator) under OD-2026-11-08. Lane A owns services/flood_engine; depends on A25. B47's /v3 already passes device= once run_scenario accepts it."
+      ]
     }
   ],
   "gates": [

@@ -477,16 +477,12 @@ def get_depth(run_id: str, response: Response, frame_index: int | None = Query(d
 
 @router.get("/simulations/{run_id}/flow", operation_id="v3GetFlowFrame", responses=errors(404, 422, 503))
 def get_flow(run_id: str, request: Request, frame_index: int = Query(ge=0),
-             stride: int = Query(default=1, ge=1, le=8),
-             resolution: Literal["citywide", "focus"] = Query(default="citywide"),
-             focus_area: Literal["VELACHERY", "ADYAR", "T_NAGAR", "PORUR"] | None = Query(default=None)):
+             stride: int = Query(default=1, ge=1, le=8)):
     """B49: per-frame depth-averaged u/v and water-surface elevation from the A27 flow sidecar (FlowFrame).
 
     Served gzip-compressed when the client accepts it (a citywide frame is ~1 MB of JSON before compression).
     """
-    doc = _run(run_id)
-    if resolution != doc["request"]["resolution"] or (resolution == "focus" and focus_area != doc["request"].get("focus_area")):
-        raise V3Error(422, f"Run was computed at resolution={doc['request']['resolution']}.")
+    doc = _run(run_id)  # focus-area runs have their own run_id, so no resolution selector is needed
     frame_index = _frame_index(doc, frame_index)
     engine_run = doc.get("_engine_run_id")
     if doc.get("_engine", "a06") != "a25" or not engine_run:
@@ -497,7 +493,7 @@ def get_flow(run_id: str, request: Request, frame_index: int = Query(ge=0),
     except products.FlowUnavailable:
         raise V3Error(503, "This run has no flow output (computed before engine 2.1.0 / A27); run a new simulation.") from None
     except products.NotFound:
-        raise V3Error(503, "Engine output for this run is missing.") from None
+        raise V3Error(404, "Engine output for this run was not found.") from None
     except ValueError as error:
         raise V3Error(422, str(error)[:200]) from None
     body["run_id"] = run_id

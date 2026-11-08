@@ -210,15 +210,26 @@ def test_flow_frame_from_a27_sidecar(env):
     assert body["speed_max_mps"] == 0.27 and body["rows"] == ROWS and body["cols"] == COLS
     dry = client.get(url + "?frame_index=0").json()
     assert dry["u"][0][0] == 0 and dry["wse"][0][0] is None  # dry: u = v = 0, wse null
-    coarse = client.get(url + "?frame_index=3&stride=2").json()
-    assert coarse["stride"] == 2 and coarse["rows"] == (ROWS + 1) // 2 and coarse["cols"] == (COLS + 1) // 2
-    for query in ("", "?frame_index=99", "?frame_index=1&stride=9", "?frame_index=1&resolution=focus&focus_area=ADYAR"):
+    for stride in (2, 4, 8):  # strided lattices validate now that GridSpec.cell_size_m is any positive number
+        coarse = assert_contract(client.get(url + f"?frame_index=3&stride={stride}"), RUN + "/flow")
+        assert coarse["stride"] == stride and coarse["grid"]["cell_size_m"] == 600 * stride
+        assert coarse["rows"] == -(-ROWS // stride) and coarse["cols"] == -(-COLS // stride)
+    for query in ("", "?frame_index=99", "?frame_index=1&stride=9", "?frame_index=1&stride=0", "?frame_index=-1"):
         bad = client.get(url + query)
         assert bad.status_code == 422, query
         assert_contract(bad, RUN + "/flow")
     missing = client.get(RUN.format(run_id="evt-20260101T000000Z-deadbeef") + "/flow?frame_index=0")
     assert missing.status_code == 404
     assert_contract(missing, RUN + "/flow")
+    engine_dir = Path(config.runs_dir()) / "_a25" / MANAGER.get(run_id)["_engine_run_id"]
+    renamed = engine_dir.with_name(engine_dir.name + ".moved")
+    engine_dir.rename(renamed)  # engine output gone -> products.NotFound -> 404
+    try:
+        gone = client.get(url + "?frame_index=1")
+        assert gone.status_code == 404
+        assert_contract(gone, RUN + "/flow")
+    finally:
+        renamed.rename(engine_dir)
 
 
 def test_flow_unavailable_for_runs_without_sidecar(env):

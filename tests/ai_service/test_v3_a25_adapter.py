@@ -274,3 +274,41 @@ def test_engine_device_report_is_normalised(env, monkeypatch):
     cpu = client.get(RUN.format(run_id=run_and_wait_a25(client, custom_request([9.0, 2.0])))).json()
     assert cpu["provenance"]["device"] == {"used": "cpu", "name": None, "fallback_reason": "CUDA error: out of memory; ran on NumPy"}
     assert_contract(client.get(RUN.format(run_id=cpu["run_id"])), RUN)
+
+
+# ------------------------------------------------------------------------------------------------- B51 live + A28
+def test_live_cycle_passes_reservoir_snapshot_to_a28(env, monkeypatch):
+    from datetime import datetime, timezone
+
+    from test_v3_live import Clock, FakeOpenMeteo, FakeReservoir
+    from app.v3 import live
+
+    seen = {}
+    inner = fake_run_scenario(env["calls"])
+
+    def a28_engine(static_root, runs_root, *, mode, reservoir_snapshot=None, run_time=None, fetch_forecast=None, device="cpu", **kw):
+        seen.update(mode=mode, reservoir=reservoir_snapshot, run_time=run_time, snapshot=fetch_forecast(None))
+        doc = inner(static_root, runs_root, mode=mode, **kw)
+        doc["reservoir_coupling"] = {"rule_id": "A28-RES-STORAGE-v1", "status": "applied", "releases_m3s": {"POONDI": 0.0}}
+        doc["provenance"]["inputs"] += [
+            {"name": "reservoir_snapshot", "source": "CFM-DSS public dashboard", "source_mode": "PUBLISHED_SNAPSHOT", "fetched_at": None},
+            {"name": "reservoir_outlet_inflow", "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
+             "source_mode": "SCENARIO_INPUT", "fetched_at": None}]
+        return doc
+
+    monkeypatch.setattr(scenario, "run_scenario", a28_engine)
+    clock = Clock(datetime(2026, 11, 10, 6, 0, tzinfo=timezone.utc))
+    sched = live.LiveScheduler(clock=clock, fetch_forecast=FakeOpenMeteo(clock), fetch_reservoir=FakeReservoir(clock),
+                               forecast_calls=lambda b: 240)
+    monkeypatch.setattr(live, "SCHEDULER", sched)
+    monkeypatch.setenv("TWINGUARD_V3_LIVE", "1")
+    run_id = sched.run_cycle("catch_up")
+    assert run_id and seen["mode"] == "forecast" and seen["snapshot"].usable
+    assert seen["reservoir"]["records"][0]["reservoir_id"] == "POONDI" and seen["run_time"].isoformat().startswith("2026-11-10T06:00")
+    client = env["client"]
+    run = assert_contract(client.get(RUN.format(run_id=run_id)), RUN)
+    assert run["run_kind"] == "LIVE_FORECAST" and run["live"]["reservoir_coupling_rule"] == "A28-RES-STORAGE-v1 (applied)"
+    latest = assert_contract(client.get("/v3/live/latest"), "/v3/live/latest")
+    names = [i["name"] for i in latest["inputs"]]
+    assert "reservoir_outlet_inflow" in names and "reservoirs" not in names  # engine's own reservoir inputs, no duplicate
+    assert next(i for i in latest["inputs"] if i["name"] == "reservoir_outlet_inflow")["source_mode"] == "SCENARIO_INPUT"

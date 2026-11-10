@@ -9,6 +9,7 @@ import json
 import os
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -134,6 +135,13 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
                   what_if=what_if, duration_hours=req["duration_hours"], resolution=req["resolution"], focus_area=req.get("focus_area"),
                   frame_interval_minutes=req["frame_interval_minutes"], members=config.a25_members(),
                   citywide_cell_m=config.a25_citywide_cell_m(), fetch_forecast=fetch, progress=progress)
+    if req["mode"] == "live" and job.get("live_reservoir") is not None:
+        import inspect
+        params = inspect.signature(scenario.run_scenario).parameters
+        if "reservoir_snapshot" in params:  # A28 coupling: storage -> assumed outlet inflow (never an observed release)
+            kwargs["reservoir_snapshot"] = job["live_reservoir"]
+            if "run_time" in params and job.get("live_run_time"):
+                kwargs["run_time"] = datetime.fromisoformat(job["live_run_time"].replace("Z", "+00:00"))
     accepts = device_mod.engine_accepts_device(scenario.run_scenario)
     dev = device_mod.resolve(accepts)
     forced = os.environ.get("TWINGUARD_V3_FALLBACK_REASON")
@@ -189,7 +197,8 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
                        "static_assets_version": grid.version, "inputs": inputs},
         "diagnostics": {"engine_run_id": doc["run_id"], "engine_cached": bool(doc.get("cached")), "layers": sorted(frames),
                         "device": dev, "engine_timing": doc.get("timing"), "engine_runtime_s": doc.get("runtime_seconds"),
-                        "engine_kernel_mode": ((doc.get("diagnostics") or {}).get("central") or {}).get("kernel_mode")},
+                        "engine_kernel_mode": ((doc.get("diagnostics") or {}).get("central") or {}).get("kernel_mode"),
+                        "reservoir_coupling": doc.get("reservoir_coupling"), "forecast_check": doc.get("forecast_check")},
     }
     _write(run_dir / "result.json", result)
     _write(run_dir / "progress.json", {"progress_pct": 100.0}, best_effort=True)

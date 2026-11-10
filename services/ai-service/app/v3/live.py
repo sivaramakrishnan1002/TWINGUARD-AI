@@ -33,7 +33,7 @@ MANUAL_MIN_INTERVAL_S = 600
 DAILY_CALL_BUDGET = 5000
 RESERVOIR_MAX_AGE_S = 24 * 3600
 HORIZON_HOURS = 72
-COUPLING_RULE_STUB = "A28-pending: zero reservoir inflow (stub, assumption)"
+COUPLING_RULE_STUB = "A28-pending: zero reservoir inflow (stub, assumption)"  # engines without A28 (A06 pilot)
 LIVE_REQUEST = {"mode": "live", "duration_hours": HORIZON_HOURS, "resolution": "citywide", "frame_interval_minutes": 30}
 
 
@@ -284,8 +284,9 @@ class LiveScheduler:
                 sources["cfm_dss"]["last_error"] = f"{type(error).__name__}"[:120]
         self.save(st)
 
-        # 3 coupling (A28 rule when available; stub until then)
+        # 3 coupling: the engine applies A28 (A28-RES-STORAGE-v1) to the snapshot; the A06 pilot has none (stub label).
         coupling_rule = COUPLING_RULE_STUB
+        reservoir_body = {"records": reservoir["records"], "received_at": reservoir.get("received_at")} if reservoir else None
 
         # 4 engine run
         engine = "a25" if config.a25_enabled() else "a06"
@@ -305,8 +306,9 @@ class LiveScheduler:
         run_id = None
         for attempt in range(3):
             try:
-                doc, _state = MANAGER.submit(dict(LIVE_REQUEST), identity,
-                                             {"engine": engine, "live_snapshot": str(snap_path), "live": live_block})
+                doc, _state = MANAGER.submit(dict(LIVE_REQUEST), {**identity, "reservoir": (reservoir or {}).get("sha256")},
+                                             {"engine": engine, "live_snapshot": str(snap_path), "live": live_block,
+                                              "live_reservoir": reservoir_body, "live_run_time": iso(now)})
                 run_id = doc["run_id"]
                 break
             except TooSoon as error:
@@ -327,6 +329,11 @@ class LiveScheduler:
         if not doc or doc["state"] != "completed":
             self._fail(st, now, "engine", f"live run {doc['state'] if doc else 'missing'}: {(doc or {}).get('error') or ''}".strip(), run_id)
             return None
+
+        coupling = _engine_coupling(MANAGER.run_dir(run_id))
+        if coupling:
+            live_block = {**live_block, "reservoir_coupling_rule": f"{coupling.get('rule_id')} ({str(coupling.get('status', '')).split(':')[0]})"}
+            MANAGER.annotate(run_id, live=live_block)
 
         # 5 publish + retention
         with self.state_lock:
@@ -352,8 +359,10 @@ class LiveScheduler:
             return None
         live = doc.get("live") or {}
         prov = doc.get("provenance") or {}
-        inputs = [{k: i.get(k) for k in ("name", "source", "source_mode", "fetched_at")}
-                  for i in prov.get("inputs", []) + doc.get("_live_inputs", []) if i.get("source_mode") != "STATIC_REFERENCE"]
+        engine_inputs = [i for i in prov.get("inputs", []) if i.get("source_mode") != "STATIC_REFERENCE"]
+        has_reservoir = any(i.get("name") == "reservoir_snapshot" for i in engine_inputs)  # A28 engine reports its own
+        extra = [] if has_reservoir else doc.get("_live_inputs", [])
+        inputs = [{k: i.get(k) for k in ("name", "source", "source_mode", "fetched_at")} for i in engine_inputs + extra]
         return {"run_id": run_id, "run_kind": "LIVE_FORECAST", "state": "completed",
                 "issued_at": live.get("issued_at") or doc["created_at"], "completed_at": doc.get("completed_at"),
                 "forecast_valid_from": live.get("forecast_valid_from"), "forecast_valid_to": live.get("forecast_valid_to"),
@@ -390,6 +399,13 @@ class LiveScheduler:
                                    "next_allowed_at": iso(manual_next) if manual_next and manual_next > now else None},
                 "sources": sources, "last_error": st.get("last_error"),
                 "retention": {"keep_last": KEEP_LAST, "stored": len(st.get("runs", []))}, "disclaimer": DISCLAIMER}
+
+
+def _engine_coupling(run_dir: Path) -> dict | None:
+    try:
+        return (json.loads((run_dir / "result.json").read_text(encoding="utf-8")).get("diagnostics") or {}).get("reservoir_coupling")
+    except (OSError, ValueError):
+        return None
 
 
 def _past_hours() -> int:

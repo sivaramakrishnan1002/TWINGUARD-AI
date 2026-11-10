@@ -1,150 +1,177 @@
-# TwinGuard AI: a research-stage flood digital twin for Chennai
+# TwinGuard: an integrated rainfall–reservoir flood digital twin with three-state routing and shelter decisions for Chennai
 
-**Status: INTERNAL DRAFT — not peer reviewed, not approved for submission, and not operational guidance.**
+*Bachelor's final-year project paper · Round 4 (A29), November 2026*
 
 ## Abstract
 
-TwinGuard AI is a research prototype for organizing flood-related data and testing how rainfall scenarios, coarse inundation simulation, population exposure, road access, and hypothetical shelter allocation can be connected for Chennai. Lane A Batch 2 produced hindcast/scenario depth fields, impact summaries, a time-dependent road graph, route comparisons, shelter-allocation experiments, and model explanations. These are reproducible research artifacts, not a validated flood-warning system.
+Urban flood response needs more than a hazard map. Decision makers need to see how forecast rain and reservoir state become street-level water, which buildings and people are affected, which roads remain usable, and where shelters can be reached, and they need to test "what if" before it happens. We present TwinGuard, an integrated rainfall + reservoir → flood simulation → 3D digital twin → impact, three-state routing and shelter decision pipeline with what-if scenarios for Chennai, India.
 
-The model chain has important evidence limits. The A05 rainfall inputs produce perfect-foresight and product-disagreement scenarios; this is not operational forecast skill. A06 is an assumption-based 600 m local-inertial simulation calibrated against two November 2015 map extents; independent hydraulic validation is unavailable. Routing and allocation use simulated ensemble states and simplified graph/capacity assumptions. Flood-depth observations and real route outcomes are unavailable. A14 therefore found H1 not testable with currently accepted event labels. A20 adds a manifest over already-saved coarse rasters; it does not implement a 3D user interface or service.
+The pipeline works as follows:
+- **Inputs:** historical, user-defined or live three-model numerical weather forecasts (Open-Meteo), plus public reservoir storage (CFM-DSS) through a documented assumption rule.
+- **Engine:** a local-inertial shallow-water solver at 120 m citywide and 30 m in four focus areas, on CPU or a 4 GB laptop GPU (a 72 h live forecast in 18.3 s on GPU against 154.6 s on CPU).
+- **Outputs:** depth and velocity fields; per-building impact for 382,294 footprints and per-ward summaries for 200 wards; roads classified as passable, blocked or unknown; and shelter reachability.
+- **Delivery:** a versioned 36-operation API and a seven-tab 3D control room, with an automatic 3-hour live-forecast cycle.
 
-## 1. Scope and evidence rules
+On 108,000 simulated origin–destination cases, three-state routing raised route availability from 8–18% (fail-closed) to 98–99.7%, while flagging 86% of cases as needing verification. The contribution is the integrated, provenance-labelled system. Component accuracy is not validated against independent observations.
 
-This draft synthesizes completed Lane A Batch 2 evidence through A15, with A20 cited only for visualization-data readiness. It does not repeat processing or make a new scientific analysis. A11 (priority zones) remains blocked because a defensible, sourced vulnerability proxy or authorized acceptance-criteria revision is still needed; A13 (decision lab) consequently remains blocked. A16 remains manually blocked.
+## 1. Introduction
 
-Evidence labels used below:
+Chennai floods repeatedly from intense north-east-monsoon rain and from releases of its upstream reservoirs, as in December 2015, November 2021 and Cyclone Michaung in December 2023. Existing tools tend to address one link of the chain: flood mapping, inundation modelling, evacuation routing, or shelter planning (Li et al., 2025). Our aim was to build a single, reproducible chain that a student project can run on one laptop, and that:
 
-- **SOURCE / OBSERVED INPUT:** a collected source product or record. “Observed” describes the input product only; it does not mean that model output was observed or independently validated.
-- **DERIVED:** a transformed product, including raster indexes or SAR-derived label candidates.
-- **SIMULATED:** an output from the A06/A05 numerical scenario chain or a downstream experiment using it.
-- **ASSUMPTION:** a selected parameter or rule without local measurement/validation, such as roughness, infiltration, closure threshold, or hypothetical facility capacity.
-- **REPLAY:** a replay of historical inputs in a software pipeline. Replay is not live operation.
-- **UNKNOWN / NoData:** missing or unassessed information. It is never interpreted here as dry, zero, or passable.
+1. accepts historical, user-defined and live forecast rainfall, and couples reservoir state;
+2. simulates citywide and neighbourhood-scale inundation fast enough for interactive use;
+3. turns water depth and flow into impacts on buildings, people, roads and wards;
+4. keeps uncertainty about road state explicit rather than hidden; and
+5. presents everything in a 3D digital twin with what-if scenarios and a live mode, with every value labelled by its provenance.
 
-For each numeric result the source report or artifact, run/version, units, time basis, coverage, and provenance are included where the source records them. Reported values below are transcribed from those existing records; no new value has been calculated for this paper.
+## 2. Related work
 
-## 2. Project context and data status
+- **Flood modelling:** the local-inertial approximation of the shallow-water equations (Bates et al., 2010) is a standard way to simulate urban inundation efficiently. We use it with Bates face depths, a donor-volume limiter, and a fixed-stage sea boundary.
+- **Road impact:** depth–disruption functions relate water depth to vehicle speed (Pregnolato et al., 2017).
+- **Evacuation and logistics:** flood evacuation planning, covering hazard modelling, shelter choice and routing, is reviewed by Li et al. (2025). Coupled flood–road network evacuation for dam-failure flooding is shown by An et al. (2025).
+- **Uncertain road states:** recent work treats road accessibility under flooding as uncertain and values verification or sensing, through Bayesian active verification of lifeline roads (Li, Song & Li, 2026) and Bayesian-network flood sensing (Pan, Mohammadi & Taylor, 2026).
 
-The prototype joins rainfall products and model inputs with elevation, land cover, mapped waterways, population estimates, OSM roads/facilities, and historical flood references. The current accepted event-flood vector references are the 12 and 24 November 2015 UNOSAT layers. These are two dates from the same flood episode, not an independent held-out event. The 2021 NRSC and 2023 NDEM references remain map/PDF products without an accepted digitized validation layer; the December 2015 peak has no accepted official vector extent. OpenCity flood points have unclear dates and approximate locations, so they support only cautious spatial cross-checks. Tier D SAR-derived candidates are not accepted labels.
+Our three-state road ledger (passable, blocked, unknown) is closest to this last line of work. A preregistered literature review ([A21 review](literature/ROUTING_UNKNOWN_EVIDENCE_2025_2026.md)) found no basis for claiming it as a new method on its own. Our contribution is therefore the integration of these components into one Chennai-specific, provenance-labelled pipeline with a 3D digital twin and live operation.
 
-Input and label limitations are detailed in [A14 temporal/modality feasibility](PHASE19_21_TEMPORAL_EXPERIMENTS.md) and the validation summary [through A15](VALIDATION_REPORT.md). In particular, those reports distinguish map-reproduction checks from independent flood validation.
+## 3. Data
 
-## 3. Methods and reproducible evidence
-
-### 3.1 Rainfall scenarios and depth fields
-
-A05 reused the A06 NumPy solver and 20 parameter members across three 72-hour UTC event windows, five rainfall scenarios per window, and saved horizons of 6, 12, 24, 48, and 72 hours. The event keys refer to windows 2015-11-30 00:00–2015-12-02 23:00 UTC, 2021-11-11 00:00–2021-11-13 23:00 UTC, and 2023-12-02 00:00–2023-12-04 23:00 UTC. Its reproducible package is `data/features/forecast/batch2_v1/`, with `forecast_summary.json` recording the run, input hashes, scenarios, and member outputs. The grid is 600 m, EPSG:32644, with 2,430 valid cells; output GeoTIFFs are float32 with −9999 NoData. The 2015 `perfect_foresight_imerg` case uses observed daily IMERG totals shaped with an ERA5 hourly pattern. The rain-error quantiles are descriptive product differences, not calibrated forecast errors. Archived numerical weather prediction forecasts are unavailable for 2015. See [Phase 11](PHASE11_FORECAST_BATCH2.md) and [A15 validation](VALIDATION_REPORT.md).
-
-A06 ran the assumption-based local-inertial solver for two November 2015 UNOSAT map dates, with 20 parameter members per date. The 600 m grid and 3 km spatial-block folds were chosen for runtime. Land-cover roughness/infiltration, simplified open-water and waterway sinks, boundary behavior, and building porosity are assumptions; there is no storm-drain network, external catchment inflow, or surveyed hydraulic calibration. The source outputs and diagnostics are under `data/features/simulation/batch2_v1/`. Depth products are documented in metres, but A15 found that the TIFF band unit metadata is unset. See [Phase 12](PHASE12_SIMULATION.md) and [A15 validation](VALIDATION_REPORT.md).
-
-### 3.2 Impact and graph experiments
-
-A07 translated depth ensembles to screened population, facilities, and road-segment impacts. A08 created time-dependent graph snapshots. A09 compared route-selection methods in an observing-system simulation experiment (OSSE), hiding one simulated member as the comparison truth. A10 allocated modelled population to OSM shelter candidates and to schools/colleges treated as hypothetical candidate shelters. Each downstream product inherits its source model assumptions and coverage limits; it is not observed impact or verified accessibility. See [impact](PHASE13_IMPACT_BATCH2_V4.md), [routing](ROUTING_BATCH2.md), and [shelter allocation](SHELTER_ALLOCATION_BATCH2.md).
-
-### 3.3 Explanation and temporal feasibility
-
-A12 reports grouped permutation importance and marginal partial-dependence diagnostics for the Phase 9C model, plus summaries of already-produced A06 parameter-member spread. These are model explanations and sensitivity summaries, not causal effects or new validation. A14 assessed whether the currently accepted labels support the registered temporal/modality hypothesis; it did not fit a new model because an independent held-out event label was unavailable. See [explainability](EXPLAINABILITY_BATCH2.md) and [temporal experiments](PHASE19_21_TEMPORAL_EXPERIMENTS.md).
-
-## 4. Results
-
-### 4.1 A05: rainfall scenario results
-
-The table gives the source-reported 72-hour rainfall total and selected depth summaries for the perfect-foresight IMERG scenario. These are **SIMULATED**, not measured flood depths. The windows and horizons are UTC; “24 h” and “72 h” are saved lead-time states. The depth mean is over 2,430 eligible 600 m cells; mapped area is based on the report’s ensemble-mean depth cut. The 20-member spread is not calibrated statistical uncertainty.
-
-| Event key | 72 h rainfall (mm) | 24 h mean depth (m) | 24 h area ≥0.10 m (km²) | 72 h mean depth (m) | 72 h area ≥0.10 m (km²) | Run/version and evidence |
-|---|---:|---:|---:|---:|---:|---|
-| 2015-12-02 | 351.54 | 0.0215 | 50.40 | 0.0418 | 59.76 | A05 `batch2_v1`, 20 A06 parameter members; [Phase 11 report](PHASE11_FORECAST_BATCH2.md), summary `data/features/forecast/batch2_v1/forecast_summary.json`. |
-| 2021-11-13 | 22.27 | 0.0035 | 6.48 | 0.0021 | 4.68 | Same run/grid/coverage; [Phase 11 report](PHASE11_FORECAST_BATCH2.md), same summary. |
-| 2023-12-04 | 279.07 | 0.0058 | 6.48 | 0.0480 | 86.76 | Same run/grid/coverage; [Phase 11 report](PHASE11_FORECAST_BATCH2.md), same summary. |
-
-The 2015 rainfall scenario includes the 1 December IMERG daily peak, but there is no accepted official vector extent for the 1–8 December flood peak. The 2021 NRSC PDF is not an accepted georeferenced raster and the 2023 NDEM map is preliminary. No A05 value in this table is a forecast-skill score or independent flood validation.
-
-### 4.2 A06: coarse simulation and within-episode map reproduction
-
-All values below are spatial-fold averages ± fold-to-fold standard deviation from the same November 2015 map episode. The model output is **SIMULATED**; the UNOSAT extents are calibration/map references, not field-measured depth. The model used 20 parameter members, five buffered 3 km spatial folds, 600 m EPSG:32644 cells, and 2,430 valid cells. Source report: [Phase 12](PHASE12_SIMULATION.md); run/version `data/features/simulation/batch2_v1/`, seed `20261026`.
-
-| Map date | ROC-AUC | PR-AUC | Brier score | ECE | F1 | IoU | Source and time/coverage details |
-|---|---:|---:|---:|---:|---:|---:|---|
-| 2015-11-12 | 0.673 ± 0.045 | 0.143 ± 0.043 | 0.064 ± 0.019 | 0.029 ± 0.019 | 0.214 ± 0.085 | 0.122 ± 0.052 | [Phase 12 report](PHASE12_SIMULATION.md), `selected_model_spatialcv.json`; event-map extent; same-episode 3 km blocked folds. |
-| 2015-11-24 | 0.698 ± 0.018 | 0.169 ± 0.057 | 0.078 ± 0.015 | 0.042 ± 0.046 | 0.241 ± 0.077 | 0.139 ± 0.048 | Same source/run/grid/folds; [Phase 12 report](PHASE12_SIMULATION.md), `selected_model_spatialcv.json`. |
-
-These scores describe reproducing spatial patterns of the calibration maps within buffered folds. They do not measure independent hydraulic accuracy or generalization to another event. The member quantiles are parameter spread, not calibrated confidence coverage. The 40 runs were finite and nonnegative; maximum relative mass-balance error was 0.264% (source report, metres/depth grid and 72-hour UTC event windows; `simulation_summary.json`).
-
-### 4.3 A07: impact-screen examples
-
-At a 0.30 m edge-depth screen (an assumption), A07 reported mean modelled population in depth-screened cells and mean road length screened over the parameter members. It used the `perfect_foresight_imerg` scenario and UTC lead times on the 600 m model grid. The output is **SIMULATED**; population is the known-data WorldPop model estimate, not a census count. `NoData` population cells remain unknown. Source/run: [Phase 13 impact report](PHASE13_IMPACT_BATCH2_V4.md), `batch2_v4_contract`, 75 event/scenario/horizon cases and 4,500 member-threshold rows.
-
-| Event key | Lead (h after UTC window start) | Mean population in depth-screened cells (people) | Mean road length screened (km) | Hazard coverage | Provenance |
-|---|---:|---:|---:|---:|---|
-| 2015-12-02 | 24 | 34,055.4 | 96.93 | 1.000 | [Phase 13 report](PHASE13_IMPACT_BATCH2_V4.md), `impact_results.jsonl`, `batch2_v4_contract`; simulated perfect-foresight scenario; 600 m / 2,430 eligible cells. |
-| 2015-12-02 | 48 | 221,131.2 | 734.00 | 1.000 | Same run/scenario/grid and source artifact. |
-| 2021-11-13 | 72 | 864.6 | 1.65 | 1.000 | Same run/scenario/grid and source artifact. |
-
-The source inventory reports 405,601 of 566,307 road features midpoint-assessed on the model grid; 160,706 were outside or unassessed. A value of full raster hazard coverage does not mean all source road edges were covered. The impact report describes access cascades as a coarse component proxy, not origin-destination routing or proof that a facility is operating.
-
-### 4.4 A08/A09: graph and route experiment
-
-The routing graph contains 508,854 nodes, 566,307 road segments, and 1,071,656 directed arcs. A08 wrote 1,500 snapshots across 15 event/scenario cases, 20 parameter members, and five saved UTC horizons (6, 12, 24, 48, and 72 hours). Of the directed arcs, 768,688 (71.73%) mapped to A07 depth cells; 302,968 (28.27%) were unassessed or ambiguous. These are counts of the simulated OSM graph snapshot package, not route-safety measures. A08 keeps unknown depth separate from dry/passable. Ordinary road threshold (0.30 m), underpass/tunnel proxy (0.15 m), speed-reduction curves, and class-default speeds are assumptions; bridges remain unassessed because deck elevation is unavailable. Evidence: [A08 routing report](ROUTING_GRAPH_BATCH2.md), `data/features/routing/time_dependent_batch2/`.
-
-A09 compared four methods over six graph-node OD probes, three event windows, and three UTC snapshots, producing 216 **SIMULATED OSSE** route records (`revision_3`, seed `20261027`; [routing report](ROUTING_BATCH2.md), `route_results.jsonl`). One A06/A05 member was held out as simulated truth; this is not observation-based validation.
-
-| Method | Records with paths (of 54) | Paths with probability (of 54) | Mean expected travel time (s), conditional on whole-route success | Held-out simulated-member failures / assessed paths | Evidence |
-|---|---:|---:|---:|---:|---|
-| Static free-flow | 54 | 0 | Not assessed | 0 / 0 | [Routing report](ROUTING_BATCH2.md), `comparison_metrics.csv`; every sampled static path crossed at least one unassessed edge. |
-| Current flood-aware | 18 | 18 | 1,409.31 | 2 / 18 | Same run and artifact; discrete 6 h state. |
-| Horizon-aware snapshot | 18 | 18 | 1,412.42 | 2 / 18 | Same run and artifact; discrete 6/24/72 h states. |
-| Uncertainty-aware | 15 | 15 | 1,355.84 | 0 / 15 | Same run and artifact; ensemble member fraction, not calibrated real-world reliability. |
-
-The 39 non-existent uncertainty-aware paths in the 54 route cases show that filtering to assessed/open graph edges can leave no route. The 54 static topological paths have no computed accessibility probability because hazard coverage is incomplete. Results do not establish that any route is safe, usable, or superior in real floods.
-
-### 4.5 A10: hypothetical shelter allocation
-
-A10 version `batch2_v3` evaluates 540 combinations (three events × three saved UTC horizons × 20 members × three capacity factors) over the 600 m EPSG:32644 active grid. Candidate capacities are assumptions: 100 people per mapped shelter, 250 per school, and 500 per college at capacity factor 1.0. Schools and colleges are hypothetical shelter candidates; actual capacity and operational status were not verified. The modelled known WorldPop demand is not a census count, and seven demand cells with unknown population remain flagged as unknown. Source: [A10 allocation report](SHELTER_ALLOCATION_BATCH2.md), `data/features/decision/shelters/batch2_v3/`.
-
-| Capacity factor | Assumed candidate capacity (people) | Mean known modelled demand (people) | Mean served (people) | Mean total unserved (people) | Time basis and evidence |
-|---:|---:|---:|---:|---:|---|
-| 0.5 | 108,475 | 4,836,739.34 | 68,546.65 | 4,768,192.69 | Mean over 180 event/time/member cases per factor; A10 `batch2_v3`, [allocation report](SHELTER_ALLOCATION_BATCH2.md). |
-| 1.0 | 216,950 | 4,836,739.34 | 136,975.33 | 4,699,764.01 | Same coverage and case weighting. |
-| 2.0 | 433,900 | 4,836,739.34 | 273,757.83 | 4,562,981.51 | Same coverage and case weighting. |
-
-These are outputs of a hypothetical component/distance allocation, not evacuation capacity or guidance. The method does not verify that sites can operate as shelters or that people can reach them safely.
-
-### 4.6 A12/A14/A15: explanation and validation limits
-
-| Finding | Quantitative result and interpretation | Source, run/version, units, time and coverage |
+| Layer | Source | Use |
 |---|---|---|
-| A12 permutation importance | `built_up_fraction` was the largest listed grouped permutation effect, with mean PR-AUC decrease 0.02734 ± 0.00515 (dimensionless). This is a model diagnostic, not a causal effect. | [Explainability report](EXPLAINABILITY_BATCH2.md), `experiments/explainability/batch2_v1/`; seed `20261027`; one held-out spatial fold for the Phase 9C default RF trained against the single-event SAR-derived label. |
-| A12 simulation-member sensitivity | For the 2015-11-12 calibration event, mean peak depth ranged 0.0091–0.0146 m and area ≥0.10 m ranged 42.48–83.88 km² across the saved 20-member parameter set. | Same report and version; 20 existing saved members, not a rerun or probability interval; [explainability report](EXPLAINABILITY_BATCH2.md). |
-| A14 H1 feasibility | 10,419 accepted Tier A geometries comprise 4,704 event-flood and 3,710 event-flood geometries on 12/24 Nov 2015 plus 1,360/645 baseline-water geometries on 1 Sep/14 Oct. Metrics: **not computed**; no model was fit. | [Temporal experiment report](PHASE19_21_TEMPORAL_EXPERIMENTS.md), `experiments/temporal_models/batch2_v1/`; four dates in the same 2015 episode. The counts do not create independent event-year validation. |
-| A15 validation | No independent flood-depth observations or real route outcomes were available. A05 had no archived NWP forecasts or observed lead-time depths. | [Validation report](VALIDATION_REPORT.md), reviewed A05/A06/A09 artifacts; no independent event/depth sample or observed route sample to score. |
+| Terrain | Copernicus GLO-30, conditioned with burned river channels | Bed elevation (EPSG:32644) |
+| Land cover | ESA WorldCover 2021 | Manning roughness, infiltration |
+| Population | WorldPop 2021 | Exposure |
+| Buildings, roads, facilities | OpenStreetMap (382,294 buildings; 566,307 road segments) | Impact, routing, shelters |
+| Wards | GCC 200-ward boundaries (DataMeet/Transparent Chennai, CC BY-SA 2.5 IN) | Ward summaries |
+| Event rainfall | GPM IMERG daily with ERA5 hourly shape | Historical replay (2015, 2021, 2023) |
+| Forecast rainfall | Open-Meteo: ECMWF IFS, UKMO 10 km, ICON | Live and forecast runs |
+| Reservoirs | CFM-DSS public dashboard (daily level and storage) | Outlet inflow by assumption rule |
+| Flood labels | UNOSAT November 2015 (accepted); NRSC Dec 2023 (preliminary) | Training and cross-check |
 
-The A14 conclusion is specifically that H1 is **not testable with the current accepted event labels**. It is not a result that a modality performs well or poorly. The validation report also flags unset GeoTIFF band unit metadata: source reports describe depths in metres, but the raster files themselves do not encode the unit.
+The 157 raw files are hash-audited (157/157 matches). Flood labels passed through a pre-registered acceptance rule. SAR-derived labels failed it, so only the UNOSAT references are used ([G1 report](master/GATE_G1_REPORT.md)).
 
-### 4.7 A20 visualization-readiness boundary
+## 4. Methods
 
-A20 created a deterministic manifest indexing 45 saved A05 raster references and four A06 context groups, retaining the existing 600 m EPSG:32644 grid and NoData masks. It records exact saved UTC times; a per-cell A06 peak map has no single valid instant. The index does not resample or create intermediate quantitative values. Evidence: [A20 readiness report](FLOOD_3D_SCENARIO_READINESS.md), manifest `data/features/visualization3d/batch2_v1/manifest.json`.
+### 4.1 Flood engine
 
-This is visualization-ready data indexing only. No 3D UI or service integration, building water level, fine-scale flow, live operation, or hydraulic validation is completed. G0 remains not ready; C1–C8 remain v0/unfrozen; CR-006 is not complete.
+The engine (`services/flood_engine/hires.py`) solves the local-inertial equations on a regular grid:
+- **Physics:** Manning friction from land cover; plan-area porosity from building coverage; land-cover infiltration rates; per-cell rainfall; point inflows at river cells for reservoir releases; a sea boundary at a fixed stage (tide offset).
+- **Time stepping:** CFL-limited, with depth frames saved every 15 or 30 minutes.
+- **Grids:** citywide 120 m (440 × 343 cells, 77,296 active) and 30 m focus grids for Velachery, Adyar, T. Nagar and Porur (200 × 200 each). Focus grids take their boundary water surface from the matching citywide run.
+- **Ensemble:** an optional 3-member set (Manning × {1, 0.75, 2}, infiltration × {1, 1.5, 0.5}) gives p05/p95 bracket members.
+- **Outputs:** per-frame depth, depth-averaged velocity (u, v) and water-surface elevation ([A27](../pipelines/a25_hires/A27_FLOW.md)).
 
-## 5. Discussion
+**GPU backend.** A torch float32 implementation records each time step once as a CUDA graph and replays it, with NumPy as default and automatic fallback ([GPU benchmark](FLOOD_ENGINE_GPU_BENCHMARK.md)).
 
-The current project evidence demonstrates a connected research workflow: saved rainfall scenarios feed a coarse model, model depth screens feed impact and graph experiments, and those feeds support controlled allocation and route comparisons. Reproducibility is improved by versioned output folders, source hashes, explicit event/time semantics, fixed seeds, and explicit unknown coverage.
+### 4.2 Forcing and reservoir coupling
 
-The workflow is not yet a validated digital twin in the operational sense. A05 is a hindsight/scenario wrapper, not evidence of advance forecast skill. A06 reproduces some of the same 2015 map patterns under spatial blocking, but has no independent hydraulic observations, and its physical assumptions and 600 m grid limit interpretation. A07–A10/A09 transform those assumptions into downstream results; those results inherit rather than remove the upstream uncertainty. Incomplete edge-to-cell mapping limits flood-aware routing, while assumed speeds, thresholds, and shelter capacities add further uncertainty. Model-explanation effects cannot be interpreted causally, and the available accepted labels cannot test H1 across events.
+- **Forecast rain:** sampled on a 0.05° lattice for three weather models, mapped to grid cells by nearest native model cell, and aligned on interval-end hourly labels. A 24 h past window is discarded as spin-up.
+- **Reservoir coupling** (rule `A28-RES-STORAGE-v1`, an explicit assumption because CFM-DSS publishes no release data):
+  - below 90% storage, no release;
+  - from 90% to 100%, a linear ramp to Q_ctrl;
+  - at 100% or more, spill at 2 × Q_ctrl;
+  - Q_ctrl is Chembarambakkam 170, Poondi 140, Puzhal 60 and Cholavaram 30 m³/s;
+  - missing or stale (> 48 h) snapshots give zero inflow ([A28](../pipelines/a25_hires/A28_RESERVOIR_COUPLING.md)).
 
-## 6. Limitations and evidence needed next
+### 4.3 Impact, three-state routing and shelters
 
-1. **Independent event labels:** QA-accepted, date-matched flood extents for another event are needed for out-of-event model validation. The 2021 NRSC and 2023 NDEM PDFs require georeferencing/digitization and QA; December 2015 official vector extent remains absent.
-2. **Hydraulic observations:** gauge or surveyed flood-depth/water-level observations with time, datum, and location are needed to evaluate depth magnitude and timing independently.
-3. **Forecast evidence:** archived weather forecasts or forecast-time rainfall products are needed to measure actual lead-time forecast skill; perfect-foresight hindsight cannot do so.
-4. **Routing evidence:** verified road closure/passability observations, bridge/underpass elevations, and trip outcomes are needed before assessing real-world route performance.
-5. **Exposure and facilities:** population remains a model estimate with NoData; shelter capacities and operations are hypothetical/unverified. A defensible, sourced vulnerability proxy is required for A11; its acceptance/status must be resolved by the authorized owner before A13.
-6. **Integration and contracts:** A20 does not implement a 3D service/UI. G0 and frozen contracts are prerequisites for the downstream integration tasks, and remain unresolved.
+- **Buildings:** each building takes the peak depth and time of peak of its centroid cell.
+- **Ward risk:** each ward's class combines its 95th-percentile land depth and its flooded fraction (≥ 0.10 m).
+- **Road states:** each road segment is `ASSESSED_PASSABLE` (midpoint depth < 0.30 m), `ASSESSED_BLOCKED` (≥ 0.30 m) or `UNKNOWN` (no depth coverage, or a bridge or tunnel). The speed factor follows Pregnolato et al. (2017).
+- **Routing:** first uses passable edges only. If no route exists, it searches passable plus unknown edges, minimising unknown distance, and labels the result `CONDITIONAL / NEEDS VERIFICATION` ([A21](ROUTING_THREE_STATE_BATCH3.md)).
+- **Shelters:** a shelter is reachable when its site is dry (< 0.15 m) and it connects to the main passable network. Capacities (shelter 100, school 250, college 500, community hall 150 people) are assumptions.
 
-## 7. Reproducibility and editorial checks
+### 4.4 Susceptibility model
 
-This document is a synthesis only; no model was run and no data or owner output was changed. Quantitative statements above are paired with a source report/artifact and the available run/version, units, UTC basis, spatial coverage, and provenance. Unknown and NoData values are not converted to zero. Forecast, simulation, impact, routing, allocation, explanation, and replay products retain their source labels and caveats.
+Phase 9B/9C random-forest ensembles were trained on the November 2015 UNOSAT labels. They were evaluated by spatially blocked 5-fold cross-validation (3 km blocks plus buffer) at true prevalence, against eight calibrated baselines ([G2 report](master/GATE_G2_REPORT.md)).
 
-Reproducibility records remain in the cited source reports and JSON/CSV/GeoTIFF artifacts. A15 summarizes the relevant source hashes, commands, runs, and checks; see [A15 validation](VALIDATION_REPORT.md). This draft has not passed academic peer review, supervisor review, or any authorized publication review.
+### 4.5 Software system
 
-Documentation closeout for A17: 30 local report citations and 9 explicit artifact paths checked in this file; the companion final report checked 19 local citations and 5 artifact paths. The applicable Lane A suite (`.venv\Scripts\python.exe -m pytest tests\visualization3d tests\phase8 tests\phase9 tests\phase9b tests\phase9c tests\phase10 tests\phase11 tests\phase12 tests\phase13 tests\routing tests\decision tests\explainability tests\labels tests\temporal_models -q`) passed **121 tests**. The read-only raw audit (`.venv\Scripts\python.exe tools\audit_raw_logs.py`) reported 157 files / 30,544,672,450 bytes, 157 hash matches, zero missing comparable hashes, and zero mismatches. PyTorch `2.14.1+cu126` reported CUDA available on the NVIDIA GeForce RTX 3050 Laptop GPU; no GPU computation was applicable or run for this writing task, and no package was installed.
+- **API:** a FastAPI service exposes the C4 v3 contract, 36 operations covering simulations, depth, flow, wards, buildings, roads, routes, shelters, incidents, the emergency plan, what-if comparison, static layers and live mode ([contract](master/contracts/c4_openapi_v3.md)).
+- **UI:** a React/CesiumJS interface with seven tabs (Situation Overview, Flood Simulation, Emergency Support, Road Routing, What-if Simulation, Reservoir Monitoring, Digital Twin 3D City) over Google Photorealistic 3D Tiles.
+- **Live mode:** a scheduler runs a 72 h forecast every 3 hours, with a 600 s manual-refresh limit, a daily Open-Meteo budget, and last-good fallback (CR-021).
+- **Packaging:** nginx, the AI service and the backend are packaged with Docker Compose (B11).
+
+## 5. Results
+
+### 5.1 Susceptibility
+
+| Metric | Value | Source |
+|---|---|---|
+| Phase 9B ensemble vs terrain-logistic baseline | PR-AUC +0.183 ± 0.054 (5/5 folds) | [Phase 9B v2](PHASE9B_MODEL_UPGRADE_V2.md) |
+| Phase 9C exposure-free model | PR-AUC 0.219 (elevation 0.069; waterway distance 0.074; random 0.063) | [Phase 9C final](PHASE9C_ADDENDUM_CR004_FINAL.md) |
+| Out-of-event, Dec 2023 NRSC (preliminary map) | PR-AUC 0.121 (lift 2.76), ROC-AUC 0.778, n = 574,018 cells | [2023 check](PHASE9C_OUT_OF_EVENT_2023.md) |
+
+### 5.2 Citywide and focus simulations
+
+| Scenario | Grid | Flooded ≥ 0.10 m | Buildings affected | People exposed | Mass balance | run_id |
+|---|---|---:|---:|---:|---:|---|
+| Dec 2015, 48 h | 120 m | 406.7 km² | 94,034 | 1,793,134 | 1e-6 | `evt-20261107T120140Z-b0df587c` |
+| Nov 2021, 48 h | 120 m | 241.6 km² | 52,261 | 1,068,723 | 2e-6 | `evt-20261107T120550Z-acee1c29` |
+| Dec 2023, 48 h | 120 m | 233.5 km² | 52,870 | 1,067,561 | 0 | `evt-20261107T172118Z-1f3e8383` |
+| Dec 2015, 48 h, Velachery | 30 m | 15.3 km² | 11,210 | 132,830 | 8.1e-5 | `evt-20261107T172655Z-b8175ee2` |
+| What-if: rain 130%, Chembarambakkam 850 m³/s, tide +0.5 m | 120 m | 481.0 km² | 113,535 | 2,130,253 | 1.8e-5 | `whatif-20261108T045006Z-3e52ff0a` |
+
+Source: [A25 report](../pipelines/a25_hires/REPORT.md). These magnitudes are upper-end, because the model has no storm drains (§7). In Dec 2015, Ward 189 (Perungudi, the Pallikaranai marsh area) comes out in the highest risk class, with 69% of its area flooded and 2.8 m maximum depth (same run).
+
+### 5.3 Engine performance
+
+| Case (citywide 120 m unless noted) | CPU (NumPy) | GPU (CUDA graph, RTX 3050 4 GB) | Agreement |
+|---|---:|---:|---|
+| 24 h event | 62.8 s | 17.1 s | Identical steps; mean depth difference < 1 mm |
+| 48 h event (2021) | 230.9 s total (A25 batch) | 12.8 s solve (1.0 ms per step); 62.4 s with eager kernels before CUDA graphs | Mass balance ≤ 2e-6 |
+| 72 h live forecast | 154.6 s | 18.3 s | Identical peak grids at 0.01 m |
+| 24 h focus 30 m (nested) | 104.9 s | 46.6 s | Flooded IoU 1.0 |
+
+Peak VRAM is 4–30 MB. Sources: [GPU benchmark](FLOOD_ENGINE_GPU_BENCHMARK.md), [A28 live check](../pipelines/a25_hires/A28_RESERVOIR_COUPLING.md).
+
+### 5.4 Three-state routing
+
+| Measure (108,000 primary simulated OD cases) | Fail-closed | Three-state |
+|---|---:|---:|
+| Route available (95% cluster-bootstrap interval) | 8.1–18.3% | 98.0–99.7% |
+| Routes needing verification | — | 85.88% (92,750) |
+| Arcs to verify to cover every conditional case | — | 50 (greedy queue) |
+
+Source: [three-state routing](ROUTING_THREE_STATE_BATCH3.md), commit f33797b. On the fully assessed held-out simulated member, both methods had zero simulated blocked outcomes. These are simulation outcomes, not observed road outcomes.
+
+### 5.5 End-to-end system
+
+- **Packaged historical replay:** the 2015 event flows through nginx, the API, the engine and the UI (`evt-20261108T152128Z-59eba744`). All seven API outputs were schema-valid and byte-identical on repeat. An in-container CPU computation took 161 s. Packaged UI screenshots: [flood simulation](ui/screenshots/17_g5_packaged_flood_simulation.webp), [digital twin](ui/screenshots/17_g5_packaged_digital_twin.webp) ([G5](master/GATE_G5_REPORT.md)).
+- **Packaged live cycle:** `sim-20261110T120422Z-1a781dbd` and `sim-20261110T121126Z-979f9524`, with A28 coupling applied, refresh limits enforced, and last-good fallback under a simulated upstream failure ([B53](trackb/B53_LIVE_CYCLE_REPORT.md)).
+- **UI views:** [overview](ui/screenshots/01_situation_overview.webp), [modelled flow](ui/screenshots/14_flow_modelled_velocity.webp), [30 m focus run](ui/screenshots/18_focus_run_after_t24.webp), [live mode](ui/screenshots/20_live_overview.webp).
+
+## 6. Discussion
+
+The system shows that the full chain, from forecast or reservoir state to routing and shelter decisions, can run on one laptop. The GPU path makes a 72-hour citywide forecast take under 20 seconds, which is what makes the 3-hour live cycle and interactive what-if scenarios practical.
+
+Keeping provenance explicit (SIMULATED, MODEL_FORECAST, PUBLISHED_SNAPSHOT, SCENARIO_INPUT, REPLAY) matters most where inputs are weak: reservoir releases are never published, and road states are often unassessed. The three-state ledger turns that missing evidence into a short, prioritised verification list (50 arcs) instead of silently treating unknown roads as open or closed.
+
+The main open question is accuracy. With one accepted training event and no independent depth or road observations, the magnitudes in §5.2 should be read as relative, scenario-comparison quantities.
+
+## 7. Limitations
+
+1. **Validation:** a single training event (Nov 2015). The out-of-event check uses an unaccepted 2023 map. There are no independent depth or road observations.
+2. **Hydraulics:** a simplified 120 m (30 m focus) local-inertial model on a surface DEM with no storm drains, so flood extents are upper-end and DEM pits can show unrealistic local depths.
+3. **Assumptions:** reservoir outlet inflows, shelter capacities, road thresholds and 98% of building heights are assumed and labelled as such.
+4. **Forecast:** live mode is a numerical-model forecast through this simplified model, not an official warning, and its skill is unmeasured.
+5. **Deployment:** the packaged checks ran on CPU (the GPU container image is not built), and the Cesium token is compiled into the local bundle.
+
+## 8. Conclusion
+
+TwinGuard delivers an integrated rainfall + reservoir → flood simulation → 3D digital twin → impact, three-state routing and shelter decision pipeline with what-if scenarios for Chennai. It is reproducible, provenance-labelled and fast enough for live use on modest hardware. The most valuable next step is independent evidence: accepted flood maps for further events, observed depths, and road-closure records, to calibrate the engine and turn its relative scenario outputs into validated estimates.
+
+## Reproducibility
+
+- **Commits:** A25 a4b2cbc; A27 b90c0c6; A26 887d089, a64cc30 and 943ae77; A28 bf50c38; A21 f33797b; B47 d5a45e9; B51 818c7fc; B53 bb6e690; B50 720264b.
+- **Run outputs:** `data/features/simulation/a25_runs_v1/`, `a26_benchmark_v1/` and `a28_live_check_v1/`, with manifests and hashes.
+- **Gate evidence:** `docs/master/GATE_G1_REPORT.md` to `GATE_G5_REPORT.md` and `ROUND2_LIVE_REVIEW.md`.
+- **Report checks:** recorded in the A29 closeout. No new science runs were made for this paper.
+
+## References
+
+- An, G., Wang, Z., Qu, M., Hu, S. (2025). Integrated optimization of emergency evacuation routing for dam failure-induced flooding: a coupled flood–road network modeling approach. *Applied Sciences* 15(8), 4518. doi:10.3390/app15084518
+- Bates, P. D., Horritt, M. S., Fewtrell, T. J. (2010). A simple inertial formulation of the shallow water equations for efficient two-dimensional flood inundation modelling. *Journal of Hydrology* 387, 33–45. doi:10.1016/j.jhydrol.2010.03.027
+- Li, C., Jiang, C., Chen, J., Lam, M. Y., Xia, J., Ahmadian, R. (2025). An overview of flood evacuation planning: models, methods, and future directions. *Journal of Hydrology* 656, 133026. doi:10.1016/j.jhydrol.2025.133026
+- Li, H., Song, X., Li, Y. (2026). Bayesian active verification of lifeline roads for risk aware emergency logistics with trucks and drones. *Discover Artificial Intelligence* 6, 962. doi:10.1007/s44163-026-02033-1
+- Pan, X., Mohammadi, N., Taylor, J. E. (2026). Positioning road-level flood sensing for disruption assessment based on uncertainties and Bayesian networks. *Reliability Engineering & System Safety*, 113592. doi:10.1016/j.ress.2026.113592
+- Pregnolato, M., Ford, A., Wilkinson, S. M., Dawson, R. J. (2017). The impact of flooding on road transport: a depth-disruption function. *Transportation Research Part D* 55, 67–81. doi:10.1016/j.trd.2017.06.020

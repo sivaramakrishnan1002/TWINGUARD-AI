@@ -2419,7 +2419,8 @@
         "2026-10-31 post-I08 planning: status set to blocked_manual pending the explicit project-owner decisions listed in docs/master/I04_RELEASE_BACKUP_DECISION_REQUEST.md. No tag, database access, dump, or publication occurred.",
         "2026-11-10 Integrator, from G5 closeout: the packaged frontend bundle compiles in a Cesium ion access token from the git-ignored frontend/.env.local, and the Google Map Tiles key is likewise owner-supplied. Any release, tag publication or image push must use URL-restricted tokens or rebuild without them, and must not push local/twinguard-b11-frontend images as built. Also carry the G1-G5 Limitations (see GATE_G1..G5_REPORT.md) into the release notes.",
         "2026-11-10 Integrator: owner decisions consolidated in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a71 (recommended: v1.0 local annotated tag, no database dump, images kept local, URL-restricted tokens for any shared build).",
-        "2026-11-10 OD-2026-11-10b: local annotated tag v1.0 on the final docs/master commit; no database dump; no push or remote (M4 is the owner's action); images local."
+        "2026-11-10 OD-2026-11-10b: local annotated tag v1.0 on the final docs/master commit; no database dump; no push or remote (M4 is the owner's action); images local.",
+        "2026-11-10 Release: annotated tag v1.0, object d501438e0b82e03baec958ebcd4080549b0aed3e, on commit 631d1aeae433d344449129655c2eb01b10720461. Local only; not pushed. Note: an existing remote \"frontend-demo\" (github.com/sivaramakrishnan1002/TWINGUARD) is configured; it was not added or used by any Integrator action. The owner should confirm its visibility and contents before any push (M4: private remote, secret scan first, never data/, .env* or images)."
       ]
     },
     {
@@ -2535,7 +2536,8 @@
       "target_day": null,
       "notes": [
         "2026-11-10 Integrator: decision options in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a72 (recommended: private remote; push code/docs/evidence only, never data/, .env*, images; owner pushes after a secret scan).",
-        "2026-11-10 OD-2026-11-10b (owner: \"choose best\" = recommended G6 defaults). Private remote; code/docs/evidence only. The owner creates the remote and pushes after a secret scan. Remains an owner action (blocked_manual); no session adds a remote or pushes."
+        "2026-11-10 OD-2026-11-10b (owner: \"choose best\" = recommended G6 defaults). Private remote; code/docs/evidence only. The owner creates the remote and pushes after a secret scan. Remains an owner action (blocked_manual); no session adds a remote or pushes.",
+        "2026-11-10 Integrator: the repository already has a remote named \"frontend-demo\" -> https://github.com/sivaramakrishnan1002/TWINGUARD.git. Before pushing main or tag v1.0, the owner should confirm it is the intended private remote and run the secret scan."
       ]
     },
     {

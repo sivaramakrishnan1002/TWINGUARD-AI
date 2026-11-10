@@ -72,3 +72,19 @@ When the owner agrees, the Integrator sets both to `parked` with a superseded no
    - `GATE_G6_REPORT.md`.
 3. The Integrator then executes I04 under §1 (local tag; no dump if 1.5 holds).
 4. The owner pushes, if M4 says so.
+
+## Round 4 / G6 readiness review — 2026-11-10 (Integrator)
+
+**All lane work for G6 is complete. G6 now waits only on the owner's decisions above (I04, with M4, M7 and M8, and B40/B42).**
+
+| Task | State | Integrator verification |
+|---|---|---|
+| A15 validation | done_with_caveats | (G0–G4 era) |
+| A17 → **A29** final report and paper | done (58273af) | Only `docs/FINAL_REPORT.md` and `docs/PAPER_DRAFT.md` changed. The novelty wording matches OD-2026-11-07 verbatim. 0 broken links; all cited commits exist. No validated-accuracy or official-warning claim; the 5-item Limitations section is present. GPU figures match the benchmark (12.8 s solve; 18.3 s against 154.6 s). |
+| **B55** handbook | done (4281576) | Only `docs/handbook/` changed. The novelty wording is verbatim; 0 broken links; no tokens. The 16_References table is pending M7. |
+| **B54** packaged live screenshots | done (55df49d) | Five `18_live_*` screenshots of the packaged stack for run `sim-20261110T153456Z-b1a4b11c`. The Integrator reviewed `18_live_overview.webp`: LIVE FORECAST badge with time, disclaimer, updated/next times, source health, Refresh, generated alerts, A28 inflow labelled ASSUMPTION, Google and Cesium credits. The evidence list was split into separate paths to fix a `verify_state` drift. |
+| G0–G5 | ready | Reports `GATE_G0`–`GATE_G5_REPORT.md`; Round 2 review in `ROUND2_LIVE_REVIEW.md` |
+
+**State:** `gate_check.py G6` reports "G6 CLOSED: tasks incomplete: I04". `verify_state.py` exits 0.
+
+**Next step:** after the owner answers §1–§5, the Integrator runs the full G6 protocol (requirements, migrations, full test suite, raw audit, packaged smoke check), writes `GATE_G6_REPORT.md`, and executes I04 as decided.

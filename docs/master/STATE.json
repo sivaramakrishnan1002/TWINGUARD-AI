@@ -6796,7 +6796,12 @@
         "On the packaged B11 stack (http://127.0.0.1:8081/), capture docs/ui/screenshots/18_live_* for a LIVE_FORECAST run (e.g. sim-20261110T121126Z-979f9524). Show the LIVE FORECAST \u00b7 HH:MM IST badge, 'Updated \u2026 \u00b7 next \u2026', Open-Meteo and CFM-DSS health, the Refresh button, the disclaimer 'Model forecast \u2014 not an official warning' and the Google attribution, with 0 console errors. Record the bundle hash in docs/ui/screenshots/README.md."
       ],
       "evidence": [
-        "docs/ui/screenshots/18_live_overview.webp,docs/ui/screenshots/18_live_flood_simulation_3d.webp,docs/ui/screenshots/18_live_flood_simulation_2d.webp,docs/ui/screenshots/18_live_digital_twin.webp,docs/ui/screenshots/18_live_last_error_fallback.webp,docs/ui/screenshots/README.md"
+        "docs/ui/screenshots/18_live_overview.webp",
+        "docs/ui/screenshots/18_live_flood_simulation_3d.webp",
+        "docs/ui/screenshots/18_live_flood_simulation_2d.webp",
+        "docs/ui/screenshots/18_live_digital_twin.webp",
+        "docs/ui/screenshots/18_live_last_error_fallback.webp",
+        "docs/ui/screenshots/README.md"
       ],
       "session": "ui",
       "claimed_at": "2026-11-10T21:06:17+0530",
@@ -6808,7 +6813,8 @@
       "target_day": null,
       "notes": [
         "2026-11-10 Registered by Integrator as the I27 follow-up (B53 item 3); the UI session is already capturing.",
-        "Packaged :8081, LIVE_FORECAST run sim-20261110T153456Z-b1a4b11c; badge/updated-next/health/Refresh/disclaimer/Google attribution visible; 0 console errors; bundle index-Dg3YnI3f.js sha256 898dffde..."
+        "Packaged :8081, LIVE_FORECAST run sim-20261110T153456Z-b1a4b11c; badge/updated-next/health/Refresh/disclaimer/Google attribution visible; 0 console errors; bundle index-Dg3YnI3f.js sha256 898dffde...",
+        "2026-11-10 Integrator: the evidence list was recorded as one comma-joined string, which verify_state flagged as missing; split into separate paths (all exist; committed in 55df49d)."
       ]
     },
     {

@@ -781,3 +781,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-10 21:13:20 Finished B54: done
 
 - 2026-11-10 21:13:47 A29 verified by Integrator (final report and paper, 58273af); OD-2026-11-08c note points to the benchmark figures.
+
+- 2026-11-10 21:14:10 B54 evidence paths split (verify_state drift fix).

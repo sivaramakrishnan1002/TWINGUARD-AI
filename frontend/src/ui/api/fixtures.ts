@@ -24,7 +24,7 @@ const ROWS = 88;
 const CELL_KM2 = 0.36;
 export const LEVEL_HEIGHT_M = 3;
 
-const generated = import.meta.glob('../evidence/generated/{terrain_cma,wards,shelters,waterways,boundary,gazetteer,focus_*}.json', { import: 'default' });
+const generated = import.meta.glob('../evidence/generated/{terrain_cma,wards,shelters,waterways,boundary,gazetteer,roads_cma,focus_*}.json', { import: 'default' });
 const cache = new Map<string, Promise<unknown>>();
 function loadGenerated<R>(name: string): Promise<R | null> {
   const key = `../evidence/generated/${name}.json`;
@@ -55,6 +55,9 @@ export const FOCUS_AREAS: { id: T.FocusArea; label: string; centre: T.LonLat }[]
 export const loadFocus = (area: T.FocusArea) => loadGenerated<FocusFile>(`focus_${area}`);
 export const loadWaterways = () => loadGenerated<T.StaticFeatureCollection>('waterways');
 export const loadBoundary = () => loadGenerated<T.StaticFeatureCollection>('boundary');
+/** Citywide major roads (tools/ui/export_ui_roads_cma.py): per line [class, lon0*1e5, lat0*1e5, dlon, dlat, ...]. */
+export interface CityRoads { classes: string[]; lines: number[][] }
+export const loadCityRoads = () => loadGenerated<CityRoads>('roads_cma');
 export interface GazPlace { name: string; alt: string[]; type: string; lon: number; lat: number; ward_id: number | null; zone: string | null; rank: number }
 export interface GazWard { ward_id: number; name: string; zone: string | null; lon: number; lat: number; bbox: [number, number, number, number] }
 export const loadGazetteer = () => loadGenerated<{ places: GazPlace[]; wards: GazWard[] }>('gazetteer');

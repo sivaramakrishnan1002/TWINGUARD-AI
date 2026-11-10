@@ -10,6 +10,7 @@ import type { GpuInfo, PickInfo, TwinLayers } from '../twin/Twin3D';
 import { BarList, Columns, Donut, LineChart } from './Charts';
 import { DEFAULT_LAYERS, Icon, LAYER_LABELS, MapStage, Timeline, sampleFrames, type ProductSection } from './ProductExperience';
 import { depthHistogram, frameArea, type TwinData } from './state';
+import { isFocusRun, runTitle } from './runs';
 
 interface TabProps { data: TwinData; go: (s: ProductSection) => void }
 
@@ -98,7 +99,13 @@ function RunSelect({ data, label = 'Simulation run', value, onChange, completedO
   return (
     <label className="tg-field"><span>{label}</span>
       <select aria-label={label} value={value ?? data.runId} onChange={(e) => (onChange ?? data.setRunId)(e.target.value)}>
-        {data.runs.filter((r) => !completedOnly || r.state === 'completed').map((r) => <option key={r.run_id} value={r.run_id}>{r.label ?? r.run_id}{r.state !== 'completed' ? ` (${r.state})` : ''}</option>)}
+        {(() => {
+          const list = data.runs.filter((r) => !completedOnly || r.state === 'completed');
+          const opt = (r: (typeof list)[number]) => <option key={r.run_id} value={r.run_id}>{runTitle(r)}{r.state !== 'completed' ? ` (${r.state})` : ''}</option>;
+          const city = list.filter((r) => !isFocusRun(r));
+          const focus = list.filter((r) => isFocusRun(r));
+          return focus.length ? <><optgroup label="Citywide runs">{city.map(opt)}</optgroup><optgroup label="Focus-area runs (30 m, one 6 km box)">{focus.map(opt)}</optgroup></> : city.map(opt);
+        })()}
         {!data.runs.length && <option value={data.runId}>Loading runs…</option>}
       </select>
     </label>
@@ -264,7 +271,7 @@ export function SimulationTab({ data }: TabProps) {
           {status && <p className="tg-status" role="status">{status}</p>}
         </Panel>
         <Panel title="Saved Simulations" icon="layers" sub={`(${data.runs.length})`}>
-          <div className="tg-runlist">{data.runs.map((r) => <button type="button" key={r.run_id} className={r.run_id === data.runId ? 'is-active' : ''} onClick={() => data.setRunId(r.run_id)}><span>{r.label ?? r.run_id}</span><small>{r.summary?.max_depth_m != null ? `${r.summary.max_depth_m.toFixed(2)} m max` : r.state}</small></button>)}</div>
+          <div className="tg-runlist">{data.runs.map((r) => <button type="button" key={r.run_id} className={r.run_id === data.runId ? 'is-active' : ''} onClick={() => data.setRunId(r.run_id)}><span>{runTitle(r)}</span><small>{r.summary?.max_depth_m != null ? `${r.summary.max_depth_m.toFixed(2)} m max` : r.state}</small></button>)}</div>
         </Panel>
       </div>
       <div className="tg-col tg-col--map">
@@ -659,7 +666,7 @@ export function TwinTab({ data }: TabProps) {
             <li><span>Buildings ({area.label})</span><b>{stats.total.toLocaleString('en-IN')}</b><small>OSM footprints · {stats.osmLevels} with levels, rest estimated</small></li>
                         <li><span>3D buildings</span><b>{ionConfigured() ? 'OSM Buildings' : 'OSM extrusion'}</b><small>{ionConfigured() ? `Cesium OSM Buildings coloured by depth${layers.google && googleTilesConfigured() ? '; Google Photorealistic 3D Tiles on up close' : '; Google 3D Tiles off'}` : 'no Cesium ion token configured'}</small></li>
             <li><span>Terrain</span><b>{ionConfigured() ? 'Cesium World' : data.terrain ? 'GLO-30' : 'flat'}</b><small>{ionConfigured() ? 'ion asset 1 (GLO-30 DEM as fallback)' : 'project cleaned DEM'}</small></li>
-            <li><span>Flood run</span><b>SIMULATED</b><small>{data.run?.label}{data.run ? ` · ${data.run.run_id}` : ''}</small></li>
+            <li><span>Flood run</span><b>SIMULATED</b><small>{data.run ? `${runTitle(data.run)} · ${data.run.run_id}` : ''}</small></li>
             <li><span>Rainfall input</span><b>{data.run?.provenance.inputs[0]?.source_mode ?? '—'}</b><small>{data.run?.provenance.inputs[0]?.source ?? ''}</small></li>
             <li><span>Water motion</span><b>{data.flow ? 'MODELLED /flow' : 'ESTIMATED'}</b><small>{data.flow ? `u/v velocity, frame ${data.flow.frame_index}, stride ${data.flow.stride}` : 'no flow output for this run; surface-slope estimate'}</small></li>
             <li><span>Data service</span><b>{data.apiKind === 'api' ? 'C4 v3 API' : 'Saved results'}</b></li>

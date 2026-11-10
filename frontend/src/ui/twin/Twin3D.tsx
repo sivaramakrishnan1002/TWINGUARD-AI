@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import * as Cesium from 'cesium';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 import { lonLatToUtm, terrainHeight, utmToLonLat, type TerrainGrid } from '../api/geo';
-import { depthClass, estimatedLevels, LEVEL_HEIGHT_M, loadBoundary, loadGazetteer, loadWaterways, type FocusFile, type GazPlace } from '../api/fixtures';
+import { depthClass, estimatedLevels, LEVEL_HEIGHT_M, loadBoundary, loadCityRoads, loadGazetteer, loadWaterways, type CityRoads, type FocusFile, type GazPlace } from '../api/fixtures';
 import { DEPTH_CLASS_STYLE, EDGE_STYLE, HOME_VIEW, PLACES, googleTilesConfigured } from './constants';
 export { DEPTH_CLASS_STYLE, EDGE_STYLE, HOME_VIEW, PLACES, WATER_CLASS, WATER_EXAGGERATION, googleTilesConfigured, imagerySourceLabel, ionConfigured } from './constants';
 import type { DepthClass, DepthFrame, EdgeState, FlowFrame, Incident, LonLat, RoadFeatureCollection, RouteOption, Shelter, StaticFeatureCollection } from '../api/v3types';
@@ -20,7 +20,7 @@ export type ViewMode = '3d' | '2d' | 'satellite';
 export interface TwinLayers { water: boolean; hqWater: boolean; buildings: boolean; roads: boolean; wards: boolean; shelters: boolean; incidents: boolean; google: boolean; photoreal: boolean }
 export interface PickInfo { kind: 'building' | 'road' | 'shelter' | 'incident' | 'ward' | 'ground' | 'river'; title: string; lines: [string, string][]; location: LonLat }
 export type TwinCommand = { type: 'home' | 'zoomIn' | 'zoomOut' | 'north' | 'tilt'; key: number };
-export interface CameraInfo { headingDeg: number; metersPer100px: number | null; heightM: number }
+export interface CameraInfo { headingDeg: number; metersPer100px: number | null; heightM: number; /** visible ground [w, s, e, n] in degrees, when computable */ viewBbox: [number, number, number, number] | null }
 
 /** Fallback EGM2008 undulation for Chennai until the datum is calibrated against the loaded surface. */
 const GEOID_N_M = -86;
@@ -179,8 +179,9 @@ function buildingShader(frame: DepthFrame | null, groundEllipsoidM: number, nigh
         float upness = abs(dot(nW, up));
         bool roof = upness > 0.7;
         // base palette: cool slate roofs, lighter walls with a soft vertical gradient and darker base (AO)
-        vec3 roofCol = vec3(0.20, 0.26, 0.33);
-        vec3 wallCol = mix(vec3(0.25, 0.31, 0.39), vec3(0.42, 0.49, 0.57), clamp(h / 45.0, 0.0, 1.0));
+        // dry palette is light enough to read against the dark-tinted imagery from citywide distances
+        vec3 roofCol = vec3(0.47, 0.56, 0.66);
+        vec3 wallCol = mix(vec3(0.34, 0.41, 0.50), vec3(0.56, 0.64, 0.73), clamp(h / 45.0, 0.0, 1.0));
         float ao = mix(0.55, 1.0, clamp(h / 6.0, 0.0, 1.0));
         float sun = 0.75 + 0.25 * dot(nW, normalize(vec3(0.3, -0.5, 0.8)));
         vec3 col = roof ? roofCol * (0.9 + 0.1 * sun) : wallCol * ao * sun;
@@ -213,7 +214,7 @@ function buildingShader(frame: DepthFrame | null, groundEllipsoidM: number, nigh
           col = mix(col, flooded ? col * 0.6 : warm, win * lit * 0.85);
         }
         material.diffuse = col;
-        material.emissive = (!roof && u_night > 0.5) ? col * 0.15 : vec3(0.0);
+        material.emissive = u_night > 0.5 ? col * (roof ? 0.10 : 0.15) : vec3(0.0);
         material.alpha = 1.0;
       }`,
   });
@@ -227,7 +228,7 @@ const WATER_DEPTH_SCALE = 2.5;
  * scaled by depth. When a real FlowFrame (u east, v north, m/s) for the same run and frame is given, G/B carry
  * the modelled velocity instead (bilinear, 1 m/s = full scale, sqrt-compressed so slow sheet flow still drifts). Alpha is always 255 so browser premultiplication cannot destroy the data.
  */
-export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null, flow: FlowFrame | null = null): { canvas: HTMLCanvasElement; bbox: [number, number, number, number] } | null {
+export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null, flow: FlowFrame | null = null, hole: [number, number, number, number] | null = null): { canvas: HTMLCanvasElement; bbox: [number, number, number, number] } | null {
   const g = frame.grid;
   const [w0, s0] = utmToLonLat(g.origin_x_m, g.origin_y_m - frame.rows * g.cell_size_m);
   const [e0, n0] = utmToLonLat(g.origin_x_m + frame.cols * g.cell_size_m, g.origin_y_m);
@@ -273,7 +274,8 @@ export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null,
         const vv = val(rr, cc);
         if (vv !== null && ww > 0) { sum += vv * ww; wsum += ww; }
       }
-      const d = wsum < 0.35 ? 0 : sum / wsum;
+      const inHole = !!hole && lon >= hole[0] && lon <= hole[2] && lat >= hole[1] && lat <= hole[3];
+      const d = wsum < 0.35 || inHole ? 0 : sum / wsum;
       depth[y * W + x] = d;
       if (useFlow) { if (d > 0.01) { const [uu, vv] = flowAt(e, n); fu[y * W + x] = uu; fv[y * W + x] = vv; } }
       else surf[y * W + x] = terrainHeight(terrain, lon, lat) + d;
@@ -310,7 +312,7 @@ function floodWaterMaterial() {
     translucent: true,
     fabric: {
       type: 'TwinGuardFloodWater',
-      uniforms: { image0: Cesium.Material.DefaultImageId, image1: Cesium.Material.DefaultImageId, mixT: 1.0, normalMap: Cesium.buildModuleUrl('Assets/Textures/waterNormals.jpg'), time: 0.0, hq: 1.0, depthScale: WATER_DEPTH_SCALE },
+      uniforms: { image0: Cesium.Material.DefaultImageId, image1: Cesium.Material.DefaultImageId, mixT: 1.0, normalMap: Cesium.buildModuleUrl('Assets/Textures/waterNormals.jpg'), time: 0.0, hq: 1.0, depthScale: WATER_DEPTH_SCALE, fade: 1.0 },
       source: `
         czm_material czm_getMaterial(czm_materialInput materialInput) {
           czm_material m = czm_getDefaultMaterial(materialInput);
@@ -352,20 +354,24 @@ function floodWaterMaterial() {
           m.specular = 0.7;
           m.shininess = 70.0;
           m.normal = nEC;
-          m.alpha = alpha * mix(0.62, 0.92, clamp(depth / 0.8, 0.0, 1.0));
+          m.alpha = alpha * mix(0.62, 0.92, clamp(depth / 0.8, 0.0, 1.0)) * fade;
           return m;
         }`,
     },
   });
 }
 
-export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads, wards, wardShapes, highlightWard, shelters, incidents, route, flyTo, command, onCamera, onPick, onMapClick, className = '' }: {
+export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame = null, focusBox = null, focus, roads, wards, wardShapes, highlightWard, shelters, incidents, route, flyTo, command, onCamera, onPick, onMapClick, className = '' }: {
   mode: ViewMode;
   layers: TwinLayers;
   terrain: TerrainGrid | null;
   frame: DepthFrame | null;
   /** Real per-frame flow velocities (B49); null falls back to the surface-gradient estimate. */
   flow?: FlowFrame | null;
+  /** Citywide depth drawn faded outside a 30 m focus run's box (city context). */
+  contextFrame?: DepthFrame | null;
+  /** A focus run's simulation box, outlined and labelled. */
+  focusBox?: { bbox: [number, number, number, number]; label: string } | null;
   focus: FocusFile | null;
   roads?: RoadFeatureCollection | null;
   wards?: StaticFeatureCollection | null;
@@ -397,9 +403,12 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
   const [error, setError] = useState<string | null>(null);
   const [googleState, setGoogleState] = useState<'off' | 'loading' | 'on' | 'failed'>('off');
   const [datum, setDatum] = useState(GEOID_N_M);
+  /** flips true once the shared viewer exists, so layer effects that ran too early re-run */
+  const [viewerOk, setViewerOk] = useState(false);
   const datumRef = useRef(datum);
   datumRef.current = datum;
   const [rivers, setRivers] = useState<StaticFeatureCollection | null>(null);
+  const [cityRoads, setCityRoads] = useState<CityRoads | null>(null);
   const [boundary, setBoundary] = useState<StaticFeatureCollection | null>(null);
   const [near, setNear] = useState(false);
   const [osmReady, setOsmReady] = useState(false);
@@ -416,7 +425,7 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
   const ground = (lon: number, lat: number) => terrainHeight(terrain, lon, lat) + datum;
 
   const [places, setPlaces] = useState<GazPlace[] | null>(null);
-  useEffect(() => { loadWaterways().then(setRivers); loadBoundary().then(setBoundary); loadGazetteer().then((g) => setPlaces(g?.places ?? null)); }, []);
+  useEffect(() => { loadCityRoads().then(setCityRoads); loadWaterways().then(setRivers); loadBoundary().then(setBoundary); loadGazetteer().then((g) => setPlaces(g?.places ?? null)); }, []);
 
   /* locality labels from the gazetteer, decluttered by rank: more appear as you zoom in */
   useEffect(() => {
@@ -494,6 +503,7 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
     } else hostEl.appendChild(SHARED.el);
     const v = SHARED.v;
     viewer.current = v;
+    setViewerOk(true);
     v.useDefaultRenderLoop = true;
     prims.current = { google: SHARED.google, osm: SHARED.osm };
     (prims.current as Record<string, unknown>).dusk = SHARED.dusk;
@@ -507,7 +517,9 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
       const a = v.camera.pickEllipsoid(new Cesium.Cartesian2(c.clientWidth / 2 - 50, c.clientHeight - 40));
       const b = v.camera.pickEllipsoid(new Cesium.Cartesian2(c.clientWidth / 2 + 50, c.clientHeight - 40));
       const height = v.camera.positionCartographic.height - datumRef.current;
-      camRef.current?.({ headingDeg: Cesium.Math.toDegrees(v.camera.heading), metersPer100px: a && b ? Cesium.Cartesian3.distance(a, b) : null, heightM: height });
+      const rect = v.camera.computeViewRectangle();
+      const viewBbox: [number, number, number, number] | null = rect ? [Cesium.Math.toDegrees(rect.west), Cesium.Math.toDegrees(rect.south), Cesium.Math.toDegrees(rect.east), Cesium.Math.toDegrees(rect.north)] : null;
+      camRef.current?.({ headingDeg: Cesium.Math.toDegrees(v.camera.heading), metersPer100px: a && b ? Cesium.Cartesian3.distance(a, b) : null, heightM: height, viewBbox });
       const isNear = v.scene.mode !== Cesium.SceneMode.SCENE2D && height < GOOGLE_NEAR_M;
       if (isNear !== nearRef.current) { nearRef.current = isNear; setNear(isNear); }
     };
@@ -567,6 +579,7 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
       v.useDefaultRenderLoop = false;
       if (SHARED?.el.parentElement === hostEl) hostEl.removeChild(SHARED.el);
       viewer.current = null;
+      setViewerOk(false);
       prims.current = {};
       setGoogleState('off');
     };
@@ -842,6 +855,61 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [field, classifyOnTiles]);
 
+  /* focus runs: citywide context water (faded, with a hole where the 30 m run has its own detailed water) */
+  const ctxMatRef = useRef<Cesium.Material | null>(null);
+  const ctxField = useMemo(() => (contextFrame && typeof document !== 'undefined' ? depthFieldCanvas(contextFrame, terrain, null, focusBox?.bbox ?? null) : null), [contextFrame, terrain, focusBox?.bbox]);
+  useEffect(() => {
+    const v = viewer.current;
+    if (!v) return;
+    const old = prims.current.ctxWater; if (old) v.scene.primitives.remove(old);
+    prims.current.ctxWater = null; ctxMatRef.current = null;
+    if (!ctxField) { v.scene.requestRender(); return; }
+    const material = floodWaterMaterial();
+    material.uniforms.image0 = ctxField.canvas;
+    material.uniforms.image1 = ctxField.canvas;
+    material.uniforms.fade = 0.42;
+    const p = new Cesium.GroundPrimitive({
+      geometryInstances: new Cesium.GeometryInstance({ geometry: new Cesium.RectangleGeometry({ rectangle: Cesium.Rectangle.fromDegrees(...ctxField.bbox), vertexFormat: Cesium.MaterialAppearance.MaterialSupport.ALL.vertexFormat }), id: { kind: 'ground', title: 'Citywide context water (faded)', location: { lon: (ctxField.bbox[0] + ctxField.bbox[2]) / 2, lat: (ctxField.bbox[1] + ctxField.bbox[3]) / 2 }, lines: [['Source', 'nearest citywide run, same forcing'], ['Note', 'context only; the 30 m focus run is inside the box']] } as PickInfo }),
+      appearance: new Cesium.MaterialAppearance({ material, translucent: true, materialSupport: Cesium.MaterialAppearance.MaterialSupport.ALL }),
+      classificationType: Cesium.ClassificationType.TERRAIN,
+      asynchronous: true,
+    });
+    p.show = layers.water;
+    v.scene.primitives.add(p);
+    prims.current.ctxWater = p;
+    ctxMatRef.current = material;
+    v.scene.requestRender();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctxField, viewerOk]);
+
+  /* focus-run box: glowing outline and label */
+  useEffect(() => {
+    const v = viewer.current;
+    if (!v) return;
+    const old = prims.current.focusBox; if (old) v.scene.primitives.remove(old);
+    const oldL = prims.current.focusLabel; if (oldL) v.scene.primitives.remove(oldL);
+    prims.current.focusBox = null; prims.current.focusLabel = null;
+    if (!focusBox) { v.scene.requestRender(); return; }
+    const [w, s, e, n] = focusBox.bbox;
+    const p = new Cesium.GroundPolylinePrimitive({
+      geometryInstances: new Cesium.GeometryInstance({ geometry: new Cesium.GroundPolylineGeometry({ positions: Cesium.Cartesian3.fromDegreesArray([w, s, e, s, e, n, w, n, w, s]), width: 9 }) }),
+      appearance: new Cesium.PolylineMaterialAppearance({ material: glow('#5fe8ff', 0.32) }),
+      classificationType: Cesium.ClassificationType.BOTH, asynchronous: true,
+    });
+    v.scene.primitives.add(p);
+    const lc = new Cesium.LabelCollection({ scene: v.scene });
+    lc.add({
+      position: Cesium.Cartesian3.fromDegrees((w + e) / 2, n, ground((w + e) / 2, n) + 60), text: focusBox.label,
+      font: '600 14px Inter, Segoe UI, sans-serif', fillColor: Cesium.Color.fromCssColorString('#dffbff'), outlineColor: Cesium.Color.fromCssColorString('#04101c'), outlineWidth: 4,
+      style: Cesium.LabelStyle.FILL_AND_OUTLINE, showBackground: true, backgroundColor: Cesium.Color.fromCssColorString('#06283a').withAlpha(0.82), backgroundPadding: new Cesium.Cartesian2(10, 6),
+      horizontalOrigin: Cesium.HorizontalOrigin.CENTER, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    });
+    v.scene.primitives.add(lc);
+    prims.current.focusBox = p; prims.current.focusLabel = lc as unknown as Cesium.PrimitiveCollection;
+    v.scene.requestRender();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusBox?.bbox.join(','), focusBox?.label, datum]);
+
   /* water clock and quality */
   useEffect(() => {
     const v = viewer.current;
@@ -849,6 +917,8 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
     const remove = v.scene.preRender.addEventListener(() => {
       const w = waterRef.current;
       if (w) { w.material.uniforms.time = performance.now() / 1000; w.material.uniforms.hq = layers.hqWater ? 1 : 0; }
+      const cm = ctxMatRef.current;
+      if (cm) { cm.uniforms.time = performance.now() / 1000; cm.uniforms.hq = 0; }
     });
     return remove;
   }, [layers.hqWater]);
@@ -896,6 +966,37 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
     v.scene.requestRender();
   }, [rivers]);
 
+  /* citywide major roads: neutral context everywhere (not assessed in this run unless the run colours them) */
+  useEffect(() => {
+    const v = viewer.current;
+    if (!v || !cityRoads?.lines.length) return;
+    const old = prims.current.cityRoads; if (old) v.scene.primitives.remove(old);
+    const WIDTH: Record<string, number> = { motorway: 4.2, trunk: 3.8, primary: 3.2, secondary: 2.5, tertiary: 1.8 };
+    const coll = new Cesium.PrimitiveCollection();
+    cityRoads.classes.forEach((cls, ci) => {
+      const instances: Cesium.GeometryInstance[] = [];
+      for (const ln of cityRoads.lines) {
+        if (ln[0] !== ci) continue;
+        const deg: number[] = [];
+        let x = ln[1]; let y = ln[2];
+        deg.push(x / 1e5, y / 1e5);
+        for (let i = 3; i + 1 < ln.length; i += 2) { x += ln[i]; y += ln[i + 1]; deg.push(x / 1e5, y / 1e5); }
+        instances.push(new Cesium.GeometryInstance({ geometry: new Cesium.GroundPolylineGeometry({ positions: Cesium.Cartesian3.fromDegreesArray(deg), width: WIDTH[cls] ?? 1.8 }) }));
+      }
+      if (!instances.length) return;
+      coll.add(new Cesium.GroundPolylinePrimitive({
+        geometryInstances: instances,
+        appearance: new Cesium.PolylineMaterialAppearance({ material: Cesium.Material.fromType('Color', { color: Cesium.Color.fromCssColorString(ci <= 1 ? '#9aa9ba' : '#7f8fa1').withAlpha(ci <= 2 ? 0.62 : 0.45) }) }),
+        classificationType: Cesium.ClassificationType.TERRAIN, asynchronous: true,
+      }));
+    });
+    coll.show = layers.roads;
+    v.scene.primitives.add(coll);
+    prims.current.cityRoads = coll;
+    v.scene.requestRender();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cityRoads]);
+
   /* roads, three-state, glowing and draped */
   useEffect(() => {
     const v = viewer.current;
@@ -914,7 +1015,7 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
         return new Cesium.GeometryInstance({
           id: { kind: 'road', title: `Road ${p.edge_id} (${p.road_class ?? 'road'})`, location: { lon: f.geometry.coordinates[0][0], lat: f.geometry.coordinates[0][1] }, lines: [['State', EDGE_STYLE[p.state].label], ['Depth at midpoint', p.depth_m == null ? 'Unknown' : `${p.depth_m.toFixed(2)} m`], ...(p.unknown_reason ? [['Reason', p.unknown_reason.replace(/_/g, ' ')] as [string, string]] : [])] } as PickInfo,
           geometry: new Cesium.GroundPolylineGeometry({ positions: Cesium.Cartesian3.fromDegreesArray(f.geometry.coordinates.flat()), width: major ? 5 : 2.4 }),
-          attributes: { distanceDisplayCondition: new Cesium.DistanceDisplayConditionGeometryInstanceAttribute(0, 9000) },
+          attributes: { distanceDisplayCondition: new Cesium.DistanceDisplayConditionGeometryInstanceAttribute(0, 18000) },
         });
       });
       coll.add(new Cesium.GroundPolylinePrimitive({ geometryInstances: instances, appearance: new Cesium.PolylineMaterialAppearance({ material: glow(EDGE_STYLE[state].color, state === 'ASSESSED_PASSABLE' ? 0.12 : 0.25) }), classificationType: Cesium.ClassificationType.BOTH, asynchronous: true }));
@@ -1038,6 +1139,8 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, focus, roads
     set('osm', layers.buildings && osmReady);
     set('buildings', layers.buildings && !osmReady);
     set('roads', layers.roads);
+    set('cityRoads', layers.roads);
+    set('ctxWater', layers.water);
     set('wards', layers.wards);
     set('shelters', layers.shelters);
     set('incidents', layers.incidents);

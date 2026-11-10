@@ -25,6 +25,10 @@ const bboxParam = (b?: [number, number, number, number]) => (b ? b.map((v) => v.
 
 export function createHttpApi(fetcher: Fetcher = fetch): TwinGuardApi {
   const get = <R>(path: string) => call<R>(fetcher, path);
+  // Focus (30 m) runs must be read with resolution=focus&focus_area=…; remember each run's request from the listings.
+  const requests = new Map<string, T.SimulationRequest | undefined>();
+  const remember = (r: T.SimulationRun) => { requests.set(r.run_id, r.request); return r; };
+  const gridParams = (id: string) => { const rq = requests.get(id); return rq?.resolution === 'focus' ? { resolution: 'focus', focus_area: rq.focus_area } : {}; };
   return {
     kind: 'api',
     status: () => get<T.EngineStatus>('/status'),
@@ -32,9 +36,12 @@ export function createHttpApi(fetcher: Fetcher = fetch): TwinGuardApi {
     events: () => get<T.EventList>('/events'),
     weather: (refresh = false) => get<T.Weather>(`/weather${q({ refresh: refresh || undefined })}`),
     createSimulation: (req: SimulationRequest) => call<T.SimulationAccepted>(fetcher, '/simulations', { method: 'POST', body: JSON.stringify(req) }),
-    listSimulations: () => get<T.SimulationList>('/simulations?limit=50'),
-    getSimulation: (id) => get<T.SimulationRun>(`/simulations/${encodeURIComponent(id)}`),
-    depth: (id, frame, layer: DepthLayer = 'depth_mean') => get<T.DepthFrame>(`/simulations/${encodeURIComponent(id)}/depth${q({ frame_index: frame, layer })}`),
+    listSimulations: () => get<T.SimulationList>('/simulations?limit=50').then((l) => { l.runs.forEach(remember); return l; }),
+    getSimulation: (id) => get<T.SimulationRun>(`/simulations/${encodeURIComponent(id)}`).then(remember),
+    depth: async (id, frame, layer: DepthLayer = 'depth_mean') => {
+      if (!requests.has(id)) await get<T.SimulationRun>(`/simulations/${encodeURIComponent(id)}`).then(remember).catch(() => requests.set(id, undefined));
+      return get<T.DepthFrame>(`/simulations/${encodeURIComponent(id)}/depth${q({ frame_index: frame, layer, ...gridParams(id) })}`);
+    },
     flow: (id, frame, stride = 4) => get<T.FlowFrame>(`/simulations/${encodeURIComponent(id)}/flow${q({ frame_index: frame, stride })}`),
     buildings: (id, frame, bbox) => get<T.BuildingDepthPage>(`/simulations/${encodeURIComponent(id)}/buildings${q({ frame_index: frame, bbox: bboxParam(bbox), limit: 5000 })}`),
     wards: (id, frame) => get<T.WardSummaryList>(`/simulations/${encodeURIComponent(id)}/wards${q({ frame_index: frame })}`),

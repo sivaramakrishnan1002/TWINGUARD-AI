@@ -4,7 +4,8 @@ import { haversineM } from '../api/geo';
 import { buildIndex, type SearchHit } from './search';
 import type { FocusArea, LonLat, RouteOption } from '../api/v3types';
 import type { CameraInfo, PickInfo, TwinCommand, TwinLayers, ViewMode } from '../twin/Twin3D';
-import { useTwinData, type TwinData } from './state';
+import { frameArea, useTwinData, type TwinData } from './state';
+import { focusAreaLabel, isFocusRun } from './runs';
 import { EmergencyTab, OverviewTab, ReservoirTab, RoutingTab, SimulationTab, TwinTab, WhatIfTab } from './tabs';
 import './product.css';
 
@@ -143,6 +144,19 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
   const area = FOCUS_AREAS.find((a) => a.id === data.focusArea)!;
   const HOME = { lon: 80.2, lat: 13.02, range: 46000 };
   const [fly, setFly] = useState<{ lon: number; lat: number; range?: number; key: string }>(() => (center ? { ...center, key: 'init' } : { ...HOME, key: 'home' }));
+  const onCam = (c: CameraInfo) => {
+    setCam(c);
+    // three-state road colours for what is on screen once zoomed in; the default run/focus box otherwise
+    data.setRoadView(c.heightM < 14000 && c.viewBbox ? c.viewBbox : null);
+  };
+  const focusRun = isFocusRun(data.run) ? data.run : null;
+  const focusBox = useMemo(() => (focusRun?.grid?.bbox_wgs84 ? { bbox: focusRun.grid.bbox_wgs84 as [number, number, number, number], label: `${focusAreaLabel(focusRun) ?? 'Focus'} · ${focusRun.grid.cell_size_m} m focus area — detailed simulation inside` } : null), [focusRun?.run_id, focusRun?.grid]);
+  useEffect(() => {
+    if (!focusBox) return;
+    const [w, s, e, n] = focusBox.bbox;
+    setFly({ lon: (w + e) / 2, lat: (s + n) / 2 - 0.035, range: 11000, key: `box-${focusRun?.run_id}` });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusBox?.bbox.join(',')]);
   const firstArea = useRef(true);
   useEffect(() => {
     if (firstArea.current) { firstArea.current = false; return; }
@@ -167,8 +181,8 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
       </div>
       <div className="tg-stage__map">
         <Suspense fallback={<div className="tg-twin tg-twin--loading" role="status">Loading 3D city…</div>}>
-          <Twin3D mode={mode} layers={layers} terrain={data.terrain} frame={layers.water || layers.buildings ? data.depth : null} flow={layers.water ? data.flow : null} focus={data.focus} roads={data.roads} wards={layers.wards ? data.wardShapes : null} wardShapes={data.wardShapes} highlightWard={highlight}
-            shelters={data.shelters?.shelters ?? null} incidents={mapIncidents} route={route} flyTo={fly} command={cmd} onCamera={setCam} onPick={onPick} onMapClick={onMapClick} />
+          <Twin3D mode={mode} layers={layers} terrain={data.terrain} frame={layers.water || layers.buildings ? data.depth : null} flow={layers.water ? data.flow : null} contextFrame={layers.water ? data.contextDepth : null} focusBox={focusBox} focus={data.focus} roads={data.roads} wards={layers.wards ? data.wardShapes : null} wardShapes={data.wardShapes} highlightWard={highlight}
+            shelters={data.shelters?.shelters ?? null} incidents={mapIncidents} route={route} flyTo={fly} command={cmd} onCamera={onCam} onPick={onPick} onMapClick={onMapClick} />
         </Suspense>
         <span className="tg-stage__badge">DEMO / SIMULATION</span>
         <div className="tg-tools" role="toolbar" aria-label="Map tools">
@@ -181,10 +195,32 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
         </div>
         <button type="button" className="tg-compass" aria-label="Reset to north" title="Reset to north" onClick={() => send('north')} style={{ transform: `rotate(${-(cam?.headingDeg ?? 0)}deg)` }}><span>N</span></button>
         {cam?.metersPer100px != null && <ScaleBar metersPer100px={cam.metersPer100px} />}
-        <MapLegend flow={data.flow && layers.water ? { speedMax: data.flow.speed_max_mps ?? null } : null} />
+        <MapLegend flow={data.flow && layers.water ? { speedMax: data.flow.speed_max_mps ?? null } : null} context={focusRun ? data.contextRun?.label ?? null : undefined} />
+        <NoFloodHint data={data} />
         {overlay}
       </div>
     </section>
+  );
+}
+
+/** T+0 / dry frames: tell the viewer why the map is dry and when this run floods (from the run itself, never assumed). */
+function NoFloodHint({ data }: { data: TwinData }) {
+  const run = data.run;
+  const area = frameArea(data.depth, 0.1);
+  if (!run || !data.depth || area == null || area >= 0.05 || data.playing) return null;
+  const f0 = run.frames[0];
+  const hoursFrom = (iso?: string | null) => (iso && f0 ? Math.round((Date.parse(iso) - Date.parse(f0.valid_time_utc)) / 36e5) : null);
+  const rain = run.request?.custom_rainfall;
+  const firstWet = rain ? rain.values_mm.findIndex((v) => v > 0) : -1;
+  const rainStart = rain && firstWet >= 0 ? hoursFrom(new Date(Date.parse(rain.start_time_utc) + firstWet * rain.interval_minutes * 60000).toISOString()) : null;
+  const peak = hoursFrom(run.summary?.peak_time_utc);
+  const now = run.frames.find((f) => f.index === data.frameIndex);
+  const when = now ? `T+${Math.round((now.elapsed_minutes ?? 0) / 60)} h` : 'this frame';
+  const detail = rainStart != null ? ` Rain starts at T+${Math.max(0, rainStart)} h.` : peak != null && peak > 0 ? ` Flooding peaks at T+${peak} h in this run.` : '';
+  return (
+    <div className="tg-hint" role="status">
+      <strong>No flooding at {when}.</strong> Press play ▶ to watch the water rise.{detail}
+    </div>
   );
 }
 
@@ -283,7 +319,7 @@ function ScaleBar({ metersPer100px }: { metersPer100px: number }) {
   return <div className="tg-scale" aria-label={`Scale ${m >= 1000 ? `${m / 1000} km` : `${m} m`}`}><span>0</span><i style={{ width: px }} /><span>{m >= 1000 ? `${m / 1000} km` : `${m} m`}</span></div>;
 }
 
-function MapLegend({ flow }: { flow: { speedMax: number | null } | null }) {
+function MapLegend({ flow, context }: { flow: { speedMax: number | null } | null; /** focus runs: label of the citywide context run (null = none found) */ context?: string | null }) {
   return (
     <div className="tg-legend" aria-label="Map legend">
       <strong>Flood Depth (m)</strong>
@@ -291,6 +327,7 @@ function MapLegend({ flow }: { flow: { speedMax: number | null } | null }) {
       <div className="tg-legend__ticks"><span>0.05</span><span>0.3</span><span>0.8</span><span>1.5+</span></div>
       <ul><li><i className="is-dry" />No flood (transparent)</li></ul>
       <p className="tg-legend__note" data-flow-source={flow ? 'modelled' : 'estimated'}>
+        {context !== undefined && <>{context ? `Faded water outside the focus box: citywide context run (${context})` : 'No matching citywide run for context outside the focus box'}<br /></>}
         {flow ? `Water motion: modelled velocity${flow.speedMax != null && flow.speedMax >= 0.05 ? ` (max ${flow.speedMax.toFixed(1)} m/s)` : ''}` : 'Water motion: estimated from surface slope'}
       </p>
       <strong>Network</strong>
@@ -299,6 +336,7 @@ function MapLegend({ flow }: { flow: { speedMax: number | null } | null }) {
         <li><i className="is-line" style={{ background: '#3ddc84' }} />Road passable</li>
         <li><i className="is-line" style={{ background: '#ff3b5c' }} />Road blocked</li>
         <li><i className="is-line" style={{ background: '#f5c542' }} />Road unknown</li>
+        <li><i className="is-line" style={{ background: '#8696a8' }} />Not assessed in this run</li>
       </ul>
       <strong>Buildings</strong>
       <ul>

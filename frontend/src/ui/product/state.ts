@@ -3,6 +3,7 @@ import { resolveApi } from '../api/client';
 import { createFixtureApi, DEFAULT_RUN_ID, FOCUS_AREAS, loadFocus, loadTerrain, type FocusFile } from '../api/fixtures';
 import { lonLatToUtm, utmToLonLat, type TerrainGrid } from '../api/geo';
 import type * as T from '../api/v3types';
+import { contextRunFor, isFocusRun, nearestFrameByTime, sortRuns } from './runs';
 
 export interface TwinData {
   api: T.TwinGuardApi | null;
@@ -26,6 +27,11 @@ export interface TwinData {
   setFocusArea: (a: T.FocusArea) => void;
   focus: FocusFile | null;
   roads: T.RoadFeatureCollection | null;
+  /** Ask for three-state road colours in this WGS84 view (null = the default focus/run box). */
+  setRoadView: (bbox: [number, number, number, number] | null) => void;
+  /** For a 30 m focus run: the citywide run used as faded context outside the focus box, and its nearest frame. */
+  contextRun: T.SimulationRun | null;
+  contextDepth: T.DepthFrame | null;
   terrain: TerrainGrid | null;
   weather: T.Weather | null;
   weatherError: string | null;
@@ -53,6 +59,9 @@ function cleanShelters(r: T.ShelterReport): T.ShelterReport {
   return { ...r, shelters: r.shelters.map((s) => (!s.name || /^(nan|none|null)$/i.test(String(s.name).trim()) ? { ...s, name: `Unnamed ${s.category ?? 'shelter'} (${s.shelter_id})` } : s)) };
 }
 
+/** UNKNOWN reasons meaning "this run has no model cell here", i.e. not assessed by the run (neutral citywide layer instead). */
+const NOT_IN_RUN = /^(no_model_cell|outside_model_domain)$/i;
+
 export function useTwinData(): TwinData {
   const [api, setApi] = useState<T.TwinGuardApi | null>(null);
   const [nonce, setNonce] = useState(0);
@@ -77,6 +86,13 @@ export function useTwinData(): TwinData {
   const [focusArea, setFocusArea] = useState<T.FocusArea>('VELACHERY');
   const [focus, setFocus] = useState<FocusFile | null>(null);
   const [roads, setRoads] = useState<T.RoadFeatureCollection | null>(null);
+  const [roadView, setRoadViewRaw] = useState<[number, number, number, number] | null>(null);
+  const setRoadView = useCallback((b: [number, number, number, number] | null) => {
+    // round to ~1 km so small camera moves do not refetch
+    const r = b ? (b.map((v, i) => (i < 2 ? Math.floor(v * 100) / 100 : Math.ceil(v * 100) / 100)) as [number, number, number, number]) : null;
+    setRoadViewRaw((cur) => (cur && r && cur.every((v, i) => v === r[i])) || (!cur && !r) ? cur : r);
+  }, []);
+  const [contextDepth, setContextDepth] = useState<T.DepthFrame | null>(null);
   const [terrain, setTerrain] = useState<TerrainGrid | null>(null);
   const [weather, setWeather] = useState<T.Weather | null>(null);
   const [weatherError, setWeatherError] = useState<string | null>(null);
@@ -93,7 +109,7 @@ export function useTwinData(): TwinData {
 
   const refreshRuns = useCallback(async () => {
     if (!api) return [];
-    const list = (await api.listSimulations()).runs;
+    const list = sortRuns((await api.listSimulations()).runs);
     setRuns(list);
     return list;
   }, [api]);
@@ -112,6 +128,32 @@ export function useTwinData(): TwinData {
   }, [api]);
 
   const run = useMemo(() => runs.find((r) => r.run_id === runId) ?? null, [runs, runId]);
+  const contextRun = useMemo(() => contextRunFor(run, runs), [run, runs]);
+
+  // focus runs: load the full run (listings omit the grid) and switch the focus area to the run's own box
+  useEffect(() => {
+    if (!api || !run || !isFocusRun(run)) return;
+    const area = run.request?.focus_area;
+    if (area && area !== focusArea) setFocusArea(area);
+    if (run.grid) return;
+    let live = true;
+    api.getSimulation(run.run_id).then((full) => { if (live) setRuns((list) => list.map((r) => (r.run_id === full.run_id ? { ...r, ...full } : r))); }).catch(() => undefined);
+    return () => { live = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, run?.run_id, run?.grid]);
+
+  // focus runs: the matching citywide run's depth at the nearest valid time, drawn faded outside the box
+  useEffect(() => {
+    if (!api || !contextRun || !run) { setContextDepth(null); return; }
+    const idx = nearestFrameByTime(contextRun, run.frames.find((f) => f.index === frameIndex)?.valid_time_utc);
+    if (idx == null) { setContextDepth(null); return; }
+    let live = true;
+    const key = `${contextRun.run_id}|${idx}`;
+    const cached = depthCache.current.get(key);
+    if (cached) setContextDepth(cached);
+    else api.depth(contextRun.run_id, idx).then((d) => { depthCache.current.set(key, d); if (live) setContextDepth(d); }).catch(() => live && setContextDepth(null));
+    return () => { live = false; };
+  }, [api, contextRun, run, frameIndex]);
 
   useEffect(() => {
     if (run && frameIndex >= run.frames.length) setFrameIndex(Math.max(0, run.frames.length - 1));
@@ -147,9 +189,19 @@ export function useTwinData(): TwinData {
   useEffect(() => {
     if (!api) return;
     let live = true;
-    api.roads(runId, frameIndex, focusBbox(focus, focusArea), 0.3).then((r) => live && setRoads(r)).catch(() => live && setRoads(null));
-    return () => { live = false; };
-  }, [api, runId, frameIndex, focus, focusArea]);
+    const runBox = run && isFocusRun(run) && run.grid?.bbox_wgs84 ? run.grid.bbox_wgs84 : null;
+    let bbox: [number, number, number, number] = roadView ?? runBox ?? focusBbox(focus, focusArea);
+    // a focus run only assesses roads inside its box; asking for more fills the 20 000-edge page with NO_MODEL_CELL edges
+    if (runBox) {
+      bbox = [Math.max(bbox[0], runBox[0]), Math.max(bbox[1], runBox[1]), Math.min(bbox[2], runBox[2]), Math.min(bbox[3], runBox[3])];
+      if (bbox[0] >= bbox[2] || bbox[1] >= bbox[3]) { setRoads(null); return () => { live = false; }; }
+    }
+    const t = window.setTimeout(() => {
+      // edges outside the run's model domain are not assessed by this run: leave them to the neutral citywide layer
+      api.roads(runId, frameIndex, bbox, 0.3).then((r) => live && setRoads({ ...r, features: r.features.filter((f) => !NOT_IN_RUN.test(f.properties.unknown_reason ?? '')) })).catch(() => live && setRoads(null));
+    }, roadView ? 600 : 0);
+    return () => { live = false; window.clearTimeout(t); };
+  }, [api, runId, frameIndex, focus, focusArea, roadView, run?.grid]);
 
   useEffect(() => {
     const reduce = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -165,7 +217,7 @@ export function useTwinData(): TwinData {
 
   return {
     api, apiKind: api ? api.kind : 'connecting', runs, run, runId, setRunId, frameIndex, setFrameIndex, playing, setPlaying,
-    depth, flow, wards, wardShapes, incidents, shelters, focusArea, setFocusArea, focus, roads, terrain, weather, weatherError, refreshWeather,
+    depth, flow, contextRun, contextDepth, setRoadView, wards, wardShapes, incidents, shelters, focusArea, setFocusArea, focus, roads, terrain, weather, weatherError, refreshWeather,
     error, reload: () => setNonce((n) => n + 1), refreshRuns,
   };
 }

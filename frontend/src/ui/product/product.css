@@ -447,3 +447,9 @@
 
 .tg-timeline__body { display: grid; gap: 4px; min-width: 0; }
 .tg-timeline__range { width: 100%; accent-color: var(--tg-primary); }
+
+/* B48 follow-up: dry-frame hint over the map */
+.tg-hint { position: absolute; left: 50%; top: 64px; transform: translateX(-50%); z-index: 4; max-width: min(520px, calc(100% - 32px));
+  padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(95, 232, 255, 0.45); background: rgba(4, 22, 36, 0.86);
+  color: var(--tg-ink); font-size: 13px; line-height: 1.4; text-align: center; box-shadow: 0 0 18px rgba(54, 185, 255, 0.25); pointer-events: none; }
+.tg-hint strong { color: #9ff3ff; }

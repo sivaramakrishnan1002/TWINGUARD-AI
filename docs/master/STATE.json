@@ -6496,7 +6496,7 @@
       "lane": "B",
       "title": "Packaged-UI G5 screenshots (Tabs 2 and 7 on the B11 nginx package) \u2014 ui session",
       "phase": "B",
-      "status": "ready",
+      "status": "done",
       "depends_on": [
         "B13"
       ],
@@ -6516,17 +6516,22 @@
         "If the packaged build fails where the development server worked (for example Cesium assets or 3D tiles), fix it within the UI session's paths and record the fix.",
         "No database writes, no Docker volume deletion, and no Google key committed or present in a request to /api/ai."
       ],
-      "evidence": [],
-      "session": null,
-      "claimed_at": null,
-      "finished_at": null,
-      "commit": null,
+      "evidence": [
+        "docs/ui/screenshots/17_g5_packaged_flood_simulation.webp",
+        "docs/ui/screenshots/17_g5_packaged_digital_twin.webp",
+        "docs/ui/screenshots/README.md"
+      ],
+      "session": "ui",
+      "claimed_at": "2026-11-10T09:43:36+0530",
+      "finished_at": "2026-11-10T09:51:08+0530",
+      "commit": "720264b",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator as the G5 repair (GATE_G5_REPORT.md, criterion 4). B13's UI evidence came from the Vite development server; the packaged production UI has not been seen rendering Tabs 2 and 7."
+        "2026-11-10 Registered by Integrator as the G5 repair (GATE_G5_REPORT.md, criterion 4). B13's UI evidence came from the Vite development server; the packaged production UI has not been seen rendering Tabs 2 and 7.",
+        "Packaged B11 UI at http://127.0.0.1:8081 (frontend image 3c815aa8cc7b, bundle index-DpsSUc_K.js sha256 5ce4a2d38fe62924...), run evt-20261108T152128Z-59eba744 frame 72: run_id, REPLAY, SIMULATED, modelled /flow, generated incidents, DEMO badge, Google logo+credit; 0 console errors; no token in /api/ai requests. Fix: frontend/.dockerignore. ai-service host port dropped via a local override only (Lane B GPU service on :8000)."
       ]
     }
   ],

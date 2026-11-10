@@ -729,3 +729,7 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-10 09:38:21 Finished B13: done_with_caveats
 
 - 2026-11-10 09:42:07 G5 review (CR-020): FAIL with one item open; item 4 needs packaged-UI screenshots. Registered B50 (ui session); G5 now requires B13 and B50. Item 8 done: /replay-alerts annotation set to 200 in both specs, master tests updated.
+
+- 2026-11-10 09:43:36 Claimed B50 by ui
+
+- 2026-11-10 09:51:08 Finished B50: done

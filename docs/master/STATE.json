@@ -2414,7 +2414,8 @@
       "target_day": null,
       "notes": [
         "2026-10-28 post-G0 review: I01 is done_with_caveats, but I04 remains blocked because release/tag and backup scope is undefined and no backup target/preflight evidence exists. G0 readiness alone does not authorize a dump, tag or publication. Owner: Integrator to define scope before status can change.",
-        "2026-10-31 post-I08 planning: status set to blocked_manual pending the explicit project-owner decisions listed in docs/master/I04_RELEASE_BACKUP_DECISION_REQUEST.md. No tag, database access, dump, or publication occurred."
+        "2026-10-31 post-I08 planning: status set to blocked_manual pending the explicit project-owner decisions listed in docs/master/I04_RELEASE_BACKUP_DECISION_REQUEST.md. No tag, database access, dump, or publication occurred.",
+        "2026-11-10 Integrator, from G5 closeout: the packaged frontend bundle compiles in a Cesium ion access token from the git-ignored frontend/.env.local, and the Google Map Tiles key is likewise owner-supplied. Any release, tag publication or image push must use URL-restricted tokens or rebuild without them, and must not push local/twinguard-b11-frontend images as built. Also carry the G1-G5 Limitations (see GATE_G1..G5_REPORT.md) into the release notes."
       ]
     },
     {
@@ -6594,7 +6595,7 @@
       ],
       "tests": [],
       "target_day": 32,
-      "status": "not_ready"
+      "status": "ready"
     },
     {
       "id": "G6",

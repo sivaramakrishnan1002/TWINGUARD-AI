@@ -9,9 +9,9 @@ Build an auditable flood digital twin for the Chennai Metropolitan Area. Current
 ## Current coordinated state (generated)
 
 - G0: `ready`; C1-C8: frozen at v0.
-- Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `ready` ([report](GATE_G4_REPORT.md)); G5 `not_ready` ([report](GATE_G5_REPORT.md)); G6 `not_ready`.
+- Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `ready` ([report](GATE_G4_REPORT.md)); G5 `ready` ([report](GATE_G5_REPORT.md)); G6 `not_ready`.
 - Running tasks: none.
-- Selector-ready tasks: A: none; B: B50; I: none.
+- Selector-ready tasks: A: none; B: none; I: none.
 
 <!-- CURRENT STATE END -->
 
@@ -200,6 +200,6 @@ Some lane reports live with their owned code, because their lanes do not own `do
 | A27 | Per-frame flow velocity and water-surface export for UI flow animation | A | A25 | done |
 | A26 | Optional CUDA backend for services/flood_engine (OD-2026-11-08) | A | A25 | done |
 | B49 | Serve per-frame flow (GET /v3/simulations/{run_id}/flow) | B | A27, B47 | done |
-| B50 | Packaged-UI G5 screenshots (Tabs 2 and 7 on the B11 nginx package) — ui session | B | B13 | ready |
+| B50 | Packaged-UI G5 screenshots (Tabs 2 and 7 on the B11 nginx package) — ui session | B | B13 | done |
 
 <!-- TASK TABLE END -->

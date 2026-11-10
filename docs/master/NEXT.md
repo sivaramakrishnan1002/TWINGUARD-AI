@@ -20,7 +20,7 @@
 
 ## Ready tasks by lane B
 
-- **B50 — Packaged-UI G5 screenshots (Tabs 2 and 7 on the B11 nginx package) — ui session** (ready)
+- None.
 
 ## Ready tasks by lane I
 
@@ -41,4 +41,4 @@
 
 ## Next gate
 
-G5 is next (`not_ready`); review its registered prerequisites and evidence before closure.
+G6 is next (`not_ready`); review its registered prerequisites and evidence before closure.

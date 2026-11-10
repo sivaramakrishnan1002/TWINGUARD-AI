@@ -51,3 +51,42 @@ G5 is **FAIL** with one open item and stays `not_ready`. The pipeline itself is 
 - the GPU image has not been built.
 
 **Integrator raw audit (2026-11-10):** `DATA_FILES=157; DATA_BYTES=30544672450; HASH_MATCH=157; NO_COMPARABLE_HASH=0; MISMATCH=0`. `verify_state.py` exit 0. `gate_check.py G5`: "G5 CLOSED: tasks incomplete: B50", as intended.
+
+
+## G5 re-review after B50 — 2026-11-10
+
+**Current gate decision: PASS_WITH_CAVEATS**
+
+This supersedes the FAIL decision above, which is kept as history. `STATE.json` records G5 as `ready`.
+
+**Criterion 4 (packaged UI) is now PASS.** B50 (done, commit 720264b) supplies evidence from the B11 nginx package at `http://127.0.0.1:8081/`, not the Vite development server.
+- **Image:** frontend image `local/twinguard-b11-frontend:0.1.0` (`3c815aa8cc7b`), rebuilt from the current UI.
+- **Screenshots:** `docs/ui/screenshots/17_g5_packaged_flood_simulation.webp` and `17_g5_packaged_digital_twin.webp` show run `evt-20261108T152128Z-59eba744`, the packaged primary run from B13, at frame 72 (T+36 h).
+- **What they show:** the run_id, the REPLAY rainfall input, SIMULATED results, `MODELLED /flow`, the generated-incidents layer, the DEMO / SIMULATION badge, the Google Maps logo and credit, and the corrected A25 120 m limitation text. The UI session reports 0 console errors. The fix needed for the package (`frontend/.dockerignore`) is recorded.
+
+**Integrator verification against the running package (read-only GETs, 2026-11-10):**
+
+| Check | Result |
+|---|---|
+| UI `/` | 200 |
+| Entry bundle `assets/index-DpsSUc_K.js` | SHA-256 starts `5ce4a2d38fe62924`, matching the UI session's report. 0 Google `AIza` keys. |
+| `GET /api/ai/v3/simulations/evt-20261108T152128Z-59eba744` | completed, SIMULATED, engine `twinguard-v3-engine/1.1.0` / `twinguard-flood-engine/2.1.0`, inputs REPLAY + STATIC_REFERENCE |
+| `GET …/flow?frame_index=72&stride=4` through nginx | 200 |
+| Integrator review of both screenshots | the labels above confirmed |
+| Repository secret scan | no Google or Cesium token is tracked. `frontend/dist/` and `frontend/.env.local` are git-ignored. |
+
+All eight CR-020 criteria now pass: 1, 3, 4, 5, 6, 7 and 8 PASS; 2 PASS_WITH_CAVEATS. The optional CR-012 POONDI check also passed.
+
+**Caveats carried forward (thesis Limitations; G6/I04):**
+1. **Reused GPU output.** The primary run (and the acceptance-body run) reused engine output computed earlier on CUDA, so its `provenance.device` and the UI's "CUDA" label describe that original computation. In-container CPU compute is evidenced separately by `evt-20261108T152132Z-49db828b` (161 s).
+2. **GPU image not built.** The optional GPU image (`docker-compose.gpu.yml`) has not been built.
+3. **Cesium ion token in the bundle.** The token is compiled into the packaged frontend bundle at build time from the git-ignored `.env.local`. It is not committed, and the image is local. Any release, publication or image push under I04 must use a URL-restricted token or rebuild without it. Do not push `local/twinguard-b11-frontend` images as built.
+4. **Demo build override.** The UI session's package used a local compose override that only removes ai-service's host port `:8000`. Nginx-to-ai-service traffic over the compose network is unchanged.
+
+**Checks:**
+- `gate_check.py G5` after the state update: recorded in the line below.
+- Master, AI-service and packaging tests: 189 passed (earlier today, with no contract changes since).
+- Raw audit: 157/157 (Integrator, earlier today).
+- No database write, migration, Docker volume deletion, tag or push by the Integrator.
+
+`gate_check.py G5` after the update: "G5 READY for integrator gate checklist; all listed task prerequisites are complete". `verify_state.py`: exit 0.

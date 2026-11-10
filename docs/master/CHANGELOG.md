@@ -733,3 +733,7 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-10 09:43:36 Claimed B50 by ui
 
 - 2026-11-10 09:51:08 Finished B50: done
+
+- 2026-11-10 09:52:32 G5 re-review after B50: PASS_WITH_CAVEATS, set ready. Packaged-UI evidence verified (bundle hash 5ce4a2d3, run 59eba744, flow 200). Caveats: reused CUDA output, GPU image unbuilt, Cesium ion token in local bundle (I04 must not publish as built).
+
+- 2026-11-10 09:52:59 I04 note: release must not publish the frontend bundle or image with the embedded Cesium ion token (G5 caveat 3).

@@ -6587,7 +6587,7 @@
       "lane": "B",
       "title": "Live forecast scheduler and /v3/live endpoints (CR-021)",
       "phase": "B",
-      "status": "running",
+      "status": "done",
       "depends_on": [
         "B47",
         "B49",
@@ -6615,17 +6615,22 @@
         "Tests with a fake clock and fake transports: schedule and catch-up, the overlap lock, retention, 429/budget handling, last-good fallback, the daily reservoir limit, and that no credentials or Google key appear. Works in the local launcher and the packaged B11 stack, with a configuration switch to disable live mode.",
         "Every response keeps the disclaimer 'Model forecast - not an official warning'. No observed or official-warning claims."
       ],
-      "evidence": [],
+      "evidence": [
+        "services/ai-service/app/v3/live.py",
+        "tests/ai_service/test_v3_live.py",
+        "tests/ai_service/test_v3_a25_adapter.py"
+      ],
       "session": "Lane B",
       "claimed_at": "2026-11-10T09:58:34+0530",
-      "finished_at": null,
-      "commit": null,
+      "finished_at": "2026-11-10T15:17:10+0530",
+      "commit": "818c7fc",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only.",
+        "Live forecast mode (CR-021) in d987199 + A28 coupling 818c7fc: 3 h cycle with start-up catch-up, single live lock, persistent GPU worker/CPU fallback, last 16 live runs (only live runs pruned), Open-Meteo calls counted per UTC day stopping before 5,000, CFM-DSS at most daily, A28-RES-STORAGE-v1 coupling via run_scenario(reservoir_snapshot, run_time), last-good fallback with last_error, disclaimer on every live response, TWINGUARD_V3_LIVE=0 switch (launcher + B11 compose). GET /v3/live/status, GET /v3/live/latest, POST /v3/live/refresh mounted and schema-validated against planned_paths; run_kind on all runs; Overview badge/live. tests/ai_service + packaging 168 passed (fake clock/transports). Real local runs: sim-20261110T043936Z-149cd738 (catch_up) and sim-20261110T094545Z-22cf5627 (scheduled, A28 applied, all releases 0 m3/s, cuda 31 s)."
       ]
     },
     {

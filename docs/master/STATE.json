@@ -6638,7 +6638,7 @@
       "lane": "B",
       "title": "Live-first UI: smart badge, live status, refresh and auto-switch (CR-021) - ui session",
       "phase": "B",
-      "status": "ready",
+      "status": "done",
       "depends_on": [
         "B51"
       ],
@@ -6661,18 +6661,23 @@
         "Poll GET /v3/live/status every 60 s, and switch to a new live run when one lands (without disrupting a user who has picked a replay or what-if run). Show last_error with the last-good run when a cycle failed.",
         "Reservoir-driven inflows are labelled as assumptions. Keep Google attribution, and never commit or send the key. Production build and UI tests pass."
       ],
-      "evidence": [],
-      "session": null,
-      "claimed_at": null,
-      "finished_at": null,
-      "commit": null,
+      "evidence": [
+        "docs/ui/screenshots/20_live_overview.webp",
+        "docs/ui/screenshots/20_live_pinned_replay.webp",
+        "tests/ui/product/live.test.mjs"
+      ],
+      "session": "ui",
+      "claimed_at": "2026-11-10T15:41:09+0530",
+      "finished_at": "2026-11-10T16:04:55+0530",
+      "commit": "b69c371",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
         "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only.",
-        "2026-11-10 Integrator: B51 done (d987199, 818c7fc); the /v3/live operations are mounted and promoted to top-level paths (parity tests pass). B52 is ready for the ui session."
+        "2026-11-10 Integrator: B51 done (d987199, 818c7fc); the /v3/live operations are mounted and promoted to top-level paths (parity tests pass). B52 is ready for the ui session.",
+        "Live-first UI on the real /v3/live API (local :8000): opens on latest live run; run_kind badge + permanent disclaimer on every tab; Updated/next + Open-Meteo/CFM-DSS health; Refresh handles 202/429/503 (202 then 429 verified live); 60 s polling with auto-switch (verified: switched to sim-20261110T102920Z-87947ac7) while a pinned REPLAY stayed; last_error banner with last-good run; reservoir inflows labelled ASSUMPTION. UI tests 46/46, production build OK, 0 console errors. Packaged screenshots follow in B53."
       ]
     },
     {

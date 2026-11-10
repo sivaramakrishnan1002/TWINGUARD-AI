@@ -6741,7 +6741,7 @@
       "lane": "I",
       "title": "Round 2 live-stage review (CR-021)",
       "phase": "I",
-      "status": "running",
+      "status": "done_with_caveats",
       "depends_on": [
         "B53"
       ],
@@ -6758,17 +6758,20 @@
       "acceptance": [
         "Review B53 evidence against CR-021. Promote the /v3/live operations into top-level paths after the parity tests pass, record the decision and caveats, and update the board."
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/master/ROUND2_LIVE_REVIEW.md"
+      ],
       "session": "Integrator (Lane I) G1-G6 session",
       "claimed_at": "2026-11-10T17:56:16+0530",
-      "finished_at": null,
-      "commit": null,
+      "finished_at": "2026-11-10T17:58:16+0530",
+      "commit": "eb19e7a",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only.",
+        "Round 2 PASS_WITH_CAVEATS; packaged live screenshots follow-up B54; Round 4 tasks A29/B55 and G6 checklist registered."
       ]
     },
     {

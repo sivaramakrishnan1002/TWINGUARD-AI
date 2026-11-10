@@ -763,3 +763,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-10 17:56:16 Claimed I27 by Integrator (Lane I) G1-G6 session
 
 - 2026-11-10 17:58:05 Round 4 prepared: registered B54 (packaged live screenshots), A29 (final report/paper refresh) and B55 (handbook refresh); G6 now requires A15, A17, I04, A29 and B55; owner checklist docs/master/G6_OWNER_DECISION_CHECKLIST.md (I04, M4, M7, M8, B40/B42).
+
+- 2026-11-10 17:58:16 Finished I27: done_with_caveats

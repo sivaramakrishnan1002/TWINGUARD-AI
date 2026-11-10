@@ -90,3 +90,11 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
   - The contract now has 20 operations.
 - **2026-11-08 flow drift resolved:** B49 commit 9cb4054 removes the undocumented `resolution`/`focus_area` parameters. Runtime parameters are now `run_id`, `frame_index` and `stride`, and responses are 200/404/422/503, matching the contract. Tests: 170 passed.
 - **2026-11-08 worker field (OD-2026-11-08c):** optional `EngineStatus.worker` = {mode persistent|per_run|inline, state warm|cold|starting|down, device cuda|cpu|null, pid, jobs_done, restarts, warmup}. Additive, matching B47 commit dec0abe.
+
+- **2026-11-10 live mode (CR-021 / OD-2026-11-10), additive:**
+  - **New operations:** `GET /v3/live/status` (`LiveStatus`), `GET /v3/live/latest` (`LiveLatest`) and `POST /v3/live/refresh` (202 `LiveRefreshAccepted`, 429, 503), under the new `planned_paths` key (not yet mounted; owner B51).
+  - **New schemas:** `RunKind`, `SourceHealth`, `LiveError`.
+  - **SimulationRun:** gains `run_kind`, `mode: live` and a `live` block.
+  - **Overview:** gains `live`, and its `badge` is widened to LIVE FORECAST / REPLAY / WHAT-IF alongside DEMO / SIMULATION.
+  - **Three-stage lifecycle:** `planned_paths` (contract-first, not mounted) → `proposed_paths` (mounted and tested by the lane) → `paths` (promoted by the Integrator).
+  - **run_kind, not source_mode:** LIVE_FORECAST is a `run_kind`, not a `source_mode`. Results stay SIMULATED and inputs keep MODEL_FORECAST or PUBLISHED_SNAPSHOT.

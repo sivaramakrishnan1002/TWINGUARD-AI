@@ -98,3 +98,20 @@ See [CR-014](CR-014_OPEN_METEO_WEATHER_CONTEXT.md) for endpoint fields, timestam
 - **Fallback:** CPU remains the supported fallback (OD-2026-11-08).
 - **Measured:** a warm 48 h citywide run takes 17 s end to end, against 31 s cold. tests/ai_service: 148 passed.
 - **Contract:** additive optional `EngineStatus.worker` {mode, state, device, pid, jobs_done, restarts, warmup} in C4 v3.
+
+## OD-2026-11-10 — Live forecast mode (recorded 2026-11-10)
+
+**Decision-maker:** the project owner delegated this to the coordinator session ("run by your order"), which relayed it to the Integrator. Implemented under [CR-021](CR-021_LIVE_FORECAST_MODE.md).
+
+- **Live cycle:** every 3 h, with catch-up at start-up. Fetch the Open-Meteo forecast grid (A23 multi-model) and reuse or refresh the CFM-DSS reservoir snapshot. Run the engine for 72 h citywide at 120 m (GPU when available, CPU fallback) and publish the result as the latest live run.
+- **Limits:**
+  - The reservoir snapshot is refreshed at most once a day.
+  - Manual "Refresh now" is allowed at most once per 600 s.
+  - No overlapping runs; keep the last 16 live runs.
+  - Respect Open-Meteo's free-tier limits (scheduler budget 5,000 calls/day); use no credentials.
+- **UI:** a run-dependent badge (LIVE FORECAST with the run time / REPLAY / WHAT-IF) replaces the fixed DEMO badge. The permanent note "Model forecast — not an official warning" is always shown.
+- **Amends, for live mode only:**
+  - OD-2026-11-07's no-background-polling rule.
+  - CR-016/CR-017's on-demand-only, no-retention and no-recomputation limits for the reservoir source.
+  - **Reservoir coupling:** storage is turned into outlet inflow only through A28's documented assumption rule, labelled as an assumption and never shown as an observed release.
+- **Still binding:** no fabricated value shown as observed; generated incidents labelled; no credentials; C3 date-only semantics for the reservoir `source_date`.

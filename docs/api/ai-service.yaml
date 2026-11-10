@@ -5612,7 +5612,10 @@
       "1_situation_overview": [
         "/v3/overview",
         "/v3/weather",
-        "/reservoirs/history"
+        "/reservoirs/history",
+        "/v3/live/status",
+        "/v3/live/latest",
+        "POST /v3/live/refresh"
       ],
       "2_flood_simulation": [
         "/v3/events",
@@ -7615,8 +7618,10 @@
                 "event",
                 "custom",
                 "forecast",
-                "what_if"
-              ]
+                "what_if",
+                "live"
+              ],
+              "description": "live = created by the live cycle or POST /v3/live/refresh; not accepted by POST /v3/simulations."
             },
             "request": {
               "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationRequest"
@@ -7678,6 +7683,64 @@
               },
               "maxItems": 5,
               "description": "Short thesis-style limitations; the UI shows only the DEMO / SIMULATION badge."
+            },
+            "run_kind": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/RunKind"
+            },
+            "live": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Present on run_kind LIVE_FORECAST runs only.",
+              "properties": {
+                "cycle": {
+                  "type": "string",
+                  "enum": [
+                    "scheduled",
+                    "manual",
+                    "catch_up"
+                  ]
+                },
+                "issued_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Open-Meteo fetch time (the provider supplies no model issue time)."
+                },
+                "forecast_valid_from": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "forecast_valid_to": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "reservoir_snapshot_received_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "reservoir_source_date": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date",
+                  "description": "CFM-DSS calendar label (date-only; C3 semantics)."
+                },
+                "reservoir_coupling_rule": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "A28 documented rule id; the resulting outlet inflows are ASSUMPTIONS, not observed releases."
+                },
+                "disclaimer": {
+                  "const": "Model forecast \u2014 not an official warning"
+                }
+              }
             }
           },
           "example": {
@@ -9129,7 +9192,14 @@
               "format": "date-time"
             },
             "badge": {
-              "const": "DEMO / SIMULATION"
+              "type": "string",
+              "enum": [
+                "DEMO / SIMULATION",
+                "LIVE FORECAST",
+                "REPLAY",
+                "WHAT-IF"
+              ],
+              "description": "Widened 2026-11-10 (OD-2026-11-10): badge of the run currently shown; DEMO / SIMULATION remains valid."
             },
             "latest_run": {
               "oneOf": [
@@ -9170,6 +9240,17 @@
               "items": {
                 "$ref": "#/x-c4-v3-product-api/components/schemas/WardSummary"
               }
+            },
+            "live": {
+              "oneOf": [
+                {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/LiveLatest"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Latest live run summary when live mode is enabled (optional, additive)."
             }
           },
           "example": {
@@ -9753,10 +9834,637 @@
             ],
             "speed_max_mps": 0.93
           }
+        },
+        "RunKind": {
+          "type": "string",
+          "enum": [
+            "LIVE_FORECAST",
+            "REPLAY",
+            "WHAT_IF",
+            "CUSTOM",
+            "FORECAST"
+          ],
+          "description": "What kind of run this is, for the UI badge (OD-2026-11-10). LIVE_FORECAST = produced by the automatic live cycle or a manual live refresh; FORECAST = a user-triggered mode=forecast run; REPLAY = archived event; WHAT_IF; CUSTOM. This is separate from source_mode: every run's results stay source_mode SIMULATED, and each input keeps its own source_mode (MODEL_FORECAST, PUBLISHED_SNAPSHOT, REPLAY, SCENARIO_INPUT)."
+        },
+        "SourceHealth": {
+          "type": "object",
+          "required": [
+            "state",
+            "refresh_policy"
+          ],
+          "properties": {
+            "state": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "stale",
+                "error",
+                "disabled",
+                "unknown"
+              ]
+            },
+            "refresh_policy": {
+              "type": "string"
+            },
+            "last_success_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "last_attempt_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "data_time": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Provider data time: forecast valid start (Open-Meteo) or source_date (CFM-DSS, date-only)."
+            },
+            "last_error": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Short, credential-free message."
+            },
+            "calls_today": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Upstream requests made today (UTC), for free-tier budgeting."
+            }
+          }
+        },
+        "LiveError": {
+          "type": "object",
+          "required": [
+            "at",
+            "stage",
+            "message"
+          ],
+          "properties": {
+            "at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "stage": {
+              "type": "string",
+              "enum": [
+                "fetch_forecast",
+                "fetch_reservoir",
+                "coupling",
+                "engine",
+                "publish"
+              ]
+            },
+            "message": {
+              "type": "string"
+            },
+            "run_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "LiveLatest": {
+          "type": "object",
+          "required": [
+            "run_id",
+            "run_kind",
+            "state",
+            "issued_at",
+            "disclaimer"
+          ],
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "run_kind": {
+              "const": "LIVE_FORECAST"
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "completed"
+              ]
+            },
+            "issued_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "completed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "forecast_valid_from": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "forecast_valid_to": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "horizon_hours": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 72
+            },
+            "summary": {
+              "$ref": "#/x-c4-v3-product-api/components/schemas/SimulationSummary"
+            },
+            "inputs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "source_mode"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "source_mode": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/SourceMode"
+                  },
+                  "fetched_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  }
+                }
+              }
+            },
+            "device": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "cuda",
+                "cpu",
+                null
+              ]
+            },
+            "disclaimer": {
+              "const": "Model forecast \u2014 not an official warning"
+            }
+          },
+          "example": {
+            "run_id": "sim-20261110T060000Z-1a2b3c4d",
+            "run_kind": "LIVE_FORECAST",
+            "state": "completed",
+            "issued_at": "2026-11-10T06:00:12Z",
+            "completed_at": "2026-11-10T06:01:05Z",
+            "forecast_valid_from": "2026-11-10T06:00:00Z",
+            "forecast_valid_to": "2026-11-13T06:00:00Z",
+            "horizon_hours": 72,
+            "summary": {
+              "max_depth_m": 0.42,
+              "flooded_area_km2": 3.1,
+              "buildings_affected": 912,
+              "population_exposed": 14200,
+              "roads_blocked_km": 4.6,
+              "wards_affected": 12,
+              "peak_time_utc": "2026-11-11T09:00:00Z"
+            },
+            "inputs": [
+              {
+                "name": "rainfall",
+                "source": "open-meteo:ecmwf_ifs025+ukmo+icon",
+                "source_mode": "MODEL_FORECAST",
+                "fetched_at": "2026-11-10T06:00:12Z"
+              },
+              {
+                "name": "reservoirs",
+                "source": "cfm-dss:GetLast15daysWaterLevel",
+                "source_mode": "PUBLISHED_SNAPSHOT",
+                "fetched_at": "2026-11-10T00:05:41Z"
+              }
+            ],
+            "device": "cuda",
+            "disclaimer": "Model forecast \u2014 not an official warning"
+          }
+        },
+        "LiveStatus": {
+          "type": "object",
+          "required": [
+            "enabled",
+            "cycle_hours",
+            "state",
+            "sources",
+            "disclaimer"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "cycle_hours": {
+              "type": "number",
+              "const": 3
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "idle",
+                "running",
+                "disabled"
+              ]
+            },
+            "running_run_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "latest": {
+              "oneOf": [
+                {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/LiveLatest"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "last_good_run_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Served when the most recent cycle failed (last-good fallback)."
+            },
+            "next_scheduled_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "manual_refresh": {
+              "type": "object",
+              "required": [
+                "min_interval_s"
+              ],
+              "properties": {
+                "min_interval_s": {
+                  "type": "integer",
+                  "const": 600
+                },
+                "next_allowed_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                }
+              }
+            },
+            "sources": {
+              "type": "object",
+              "required": [
+                "open_meteo",
+                "cfm_dss"
+              ],
+              "properties": {
+                "open_meteo": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/SourceHealth"
+                },
+                "cfm_dss": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/SourceHealth"
+                }
+              }
+            },
+            "last_error": {
+              "oneOf": [
+                {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/LiveError"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "retention": {
+              "type": "object",
+              "properties": {
+                "keep_last": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "stored": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "disclaimer": {
+              "const": "Model forecast \u2014 not an official warning"
+            }
+          },
+          "example": {
+            "enabled": true,
+            "cycle_hours": 3,
+            "state": "idle",
+            "running_run_id": null,
+            "latest": null,
+            "last_good_run_id": "sim-20261110T060000Z-1a2b3c4d",
+            "next_scheduled_at": "2026-11-10T09:00:00Z",
+            "manual_refresh": {
+              "min_interval_s": 600,
+              "next_allowed_at": "2026-11-10T06:10:12Z"
+            },
+            "sources": {
+              "open_meteo": {
+                "state": "ok",
+                "refresh_policy": "every 3 h + manual (min 600 s)",
+                "last_success_at": "2026-11-10T06:00:12Z",
+                "last_attempt_at": "2026-11-10T06:00:12Z",
+                "data_time": "2026-11-10T06:00:00Z",
+                "last_error": null,
+                "calls_today": 480
+              },
+              "cfm_dss": {
+                "state": "ok",
+                "refresh_policy": "at most daily",
+                "last_success_at": "2026-11-10T00:05:41Z",
+                "last_attempt_at": "2026-11-10T00:05:41Z",
+                "data_time": "2026-11-09",
+                "last_error": null,
+                "calls_today": 1
+              }
+            },
+            "last_error": null,
+            "retention": {
+              "keep_last": 16,
+              "stored": 9
+            },
+            "disclaimer": "Model forecast \u2014 not an official warning"
+          }
+        },
+        "LiveRefreshAccepted": {
+          "type": "object",
+          "required": [
+            "accepted",
+            "state"
+          ],
+          "properties": {
+            "accepted": {
+              "type": "boolean"
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "started",
+                "already_running"
+              ],
+              "description": "already_running: a live cycle is in progress; no second run starts (no overlap)."
+            },
+            "run_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "next_allowed_at": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            }
+          },
+          "example": {
+            "accepted": true,
+            "state": "started",
+            "run_id": null,
+            "next_allowed_at": "2026-11-10T06:20:00Z"
+          }
         }
       }
     },
     "proposed_paths": {},
-    "proposed_paths_rule": "Operations under `proposed_paths` are approved contract additions that are not mounted yet. The serving lane moves each into this section's `paths` when it is mounted and tested, and the Integrator then promotes it to top-level `paths`. B47 tests read only `paths`."
+    "proposed_paths_rule": "Three stages. (1) `planned_paths`: approved contract-first operations not yet mounted; tests do not read them. (2) `proposed_paths`: mounted by the serving lane and tested (B47 tests read proposed + paths); the lane moves an operation here when it mounts it. (3) `paths` plus top-level `paths`: promoted by the Integrator after the parity tests pass.",
+    "planned_paths": {
+      "/v3/live/status": {
+        "get": {
+          "operationId": "v3GetLiveStatus",
+          "summary": "Live forecast cycle status, source health and last error",
+          "tags": [
+            "c4-v3",
+            "live"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B51)",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/LiveStatus"
+                  },
+                  "example": {
+                    "enabled": true,
+                    "cycle_hours": 3,
+                    "state": "idle",
+                    "running_run_id": null,
+                    "latest": null,
+                    "last_good_run_id": "sim-20261110T060000Z-1a2b3c4d",
+                    "next_scheduled_at": "2026-11-10T09:00:00Z",
+                    "manual_refresh": {
+                      "min_interval_s": 600,
+                      "next_allowed_at": "2026-11-10T06:10:12Z"
+                    },
+                    "sources": {
+                      "open_meteo": {
+                        "state": "ok",
+                        "refresh_policy": "every 3 h + manual (min 600 s)",
+                        "last_success_at": "2026-11-10T06:00:12Z",
+                        "last_attempt_at": "2026-11-10T06:00:12Z",
+                        "data_time": "2026-11-10T06:00:00Z",
+                        "last_error": null,
+                        "calls_today": 480
+                      },
+                      "cfm_dss": {
+                        "state": "ok",
+                        "refresh_policy": "at most daily",
+                        "last_success_at": "2026-11-10T00:05:41Z",
+                        "last_attempt_at": "2026-11-10T00:05:41Z",
+                        "data_time": "2026-11-09",
+                        "last_error": null,
+                        "calls_today": 1
+                      }
+                    },
+                    "last_error": null,
+                    "retention": {
+                      "keep_last": 16,
+                      "stored": 9
+                    },
+                    "disclaimer": "Model forecast \u2014 not an official warning"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/live/latest": {
+        "get": {
+          "operationId": "v3GetLiveLatest",
+          "summary": "Latest completed live forecast run (summary and run_id)",
+          "tags": [
+            "c4-v3",
+            "live"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B51)",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/LiveLatest"
+                  },
+                  "example": {
+                    "run_id": "sim-20261110T060000Z-1a2b3c4d",
+                    "run_kind": "LIVE_FORECAST",
+                    "state": "completed",
+                    "issued_at": "2026-11-10T06:00:12Z",
+                    "completed_at": "2026-11-10T06:01:05Z",
+                    "forecast_valid_from": "2026-11-10T06:00:00Z",
+                    "forecast_valid_to": "2026-11-13T06:00:00Z",
+                    "horizon_hours": 72,
+                    "summary": {
+                      "max_depth_m": 0.42,
+                      "flooded_area_km2": 3.1,
+                      "buildings_affected": 912,
+                      "population_exposed": 14200,
+                      "roads_blocked_km": 4.6,
+                      "wards_affected": 12,
+                      "peak_time_utc": "2026-11-11T09:00:00Z"
+                    },
+                    "inputs": [
+                      {
+                        "name": "rainfall",
+                        "source": "open-meteo:ecmwf_ifs025+ukmo+icon",
+                        "source_mode": "MODEL_FORECAST",
+                        "fetched_at": "2026-11-10T06:00:12Z"
+                      },
+                      {
+                        "name": "reservoirs",
+                        "source": "cfm-dss:GetLast15daysWaterLevel",
+                        "source_mode": "PUBLISHED_SNAPSHOT",
+                        "fetched_at": "2026-11-10T00:05:41Z"
+                      }
+                    ],
+                    "device": "cuda",
+                    "disclaimer": "Model forecast \u2014 not an official warning"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No live run has completed yet.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Live mode disabled or the run store is unreadable.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Returns the last good live run; when the latest cycle failed, LiveStatus.last_error explains why. Use the run_id with the existing /v3/simulations/{run_id}/* operations."
+        }
+      },
+      "/v3/live/refresh": {
+        "post": {
+          "operationId": "v3RefreshLive",
+          "summary": "Start a live forecast cycle now (manual Refresh)",
+          "tags": [
+            "c4-v3",
+            "live"
+          ],
+          "x-current-runtime-status": "unimplemented",
+          "x-owner": "Lane B (B51)",
+          "responses": {
+            "202": {
+              "description": "Accepted, or a cycle is already running (no overlap).",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/LiveRefreshAccepted"
+                  },
+                  "example": {
+                    "accepted": true,
+                    "state": "started",
+                    "run_id": null,
+                    "next_allowed_at": "2026-11-10T06:20:00Z"
+                  }
+                }
+              }
+            },
+            "429": {
+              "description": "Manual refresh within 600 s of the previous one; Retry-After is set.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Live mode disabled, engine unavailable, or upstream budget exhausted.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          },
+          "description": "No request body. At most one manual refresh per 600 s. The reservoir snapshot is reused if it is less than 24 h old."
+        }
+      }
+    }
   }
 }

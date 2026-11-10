@@ -6534,6 +6534,212 @@
         "2026-11-10 Registered by Integrator as the G5 repair (GATE_G5_REPORT.md, criterion 4). B13's UI evidence came from the Vite development server; the packaged production UI has not been seen rendering Tabs 2 and 7.",
         "Packaged B11 UI at http://127.0.0.1:8081 (frontend image 3c815aa8cc7b, bundle index-DpsSUc_K.js sha256 5ce4a2d38fe62924...), run evt-20261108T152128Z-59eba744 frame 72: run_id, REPLAY, SIMULATED, modelled /flow, generated incidents, DEMO badge, Google logo+credit; 0 console errors; no token in /api/ai requests. Fix: frontend/.dockerignore. ai-service host port dropped via a local override only (Lane B GPU service on :8000)."
       ]
+    },
+    {
+      "id": "A28",
+      "lane": "A",
+      "title": "Live reservoir coupling and forecast-run checks (CR-021)",
+      "phase": "A",
+      "status": "ready",
+      "depends_on": [
+        "A25",
+        "A26",
+        "A27"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/master/CR-021_LIVE_FORECAST_MODE.md",
+        "docs/api/ai-service.yaml",
+        "docs/master/contracts/c4_openapi_v3.md"
+      ],
+      "outputs": [
+        "services/flood_engine/",
+        "pipelines/",
+        "data/features/",
+        "tests/flood_engine/"
+      ],
+      "acceptance": [
+        "Map a CFM-DSS snapshot (per reservoir: source_date, water level m, storage MCM, storage %) to outlet inflow hydrographs for the A25 engine with a documented, versioned ASSUMPTION rule (e.g. spill or controlled release above a storage threshold). Return the rule id and parameters for provenance. CFM-DSS publishes no release figures: never fabricate an observed release, and label derived inflows as assumptions. Reservoir source_date stays date-only (C3).",
+        "Expose the mapping through run_scenario (e.g. reservoir_snapshot=... or a coupling helper) so B51 can call it. Default to no reservoir inflow when the snapshot is missing or stale (> 48 h), and record that choice.",
+        "Verify that A23 multi-model forecast forcing maps onto the 120 m citywide grid through run_scenario(fetch_forecast=...): valid-time alignment, mm/h units, a 72 h horizon, model coverage, and a recorded fetched_at.",
+        "Sanity checks on one real live-style run: mass balance <= 1%, finite non-negative depths, plausible flooded extent for the forecast rain, and a no-rain/no-inflow control that stays near-dry (document the threshold). Record CPU and GPU timing for a 72 h run.",
+        "Tests with fixture snapshots (no network) cover the coupling rule, missing/stale snapshots, unit handling and the no-rain control. Existing outputs stay unchanged. Report the rule in a doc under pipelines/ or docs/ (Lane A paths) and link it in the closeout.",
+        "Do not edit services/ai-service/ or frontend/."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": true,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+      ]
+    },
+    {
+      "id": "B51",
+      "lane": "B",
+      "title": "Live forecast scheduler and /v3/live endpoints (CR-021)",
+      "phase": "B",
+      "status": "ready",
+      "depends_on": [
+        "B47",
+        "B49",
+        "B44",
+        "A26"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/master/CR-021_LIVE_FORECAST_MODE.md",
+        "docs/api/ai-service.yaml",
+        "docs/master/contracts/c4_openapi_v3.md"
+      ],
+      "outputs": [
+        "services/ai-service/",
+        "docker-compose.yml",
+        "docker-compose.b11.yml",
+        "docker-compose.gpu.yml",
+        "tests/ai_service/",
+        "tests/packaging/"
+      ],
+      "acceptance": [
+        "Implement the live scheduler inside the AI service (or as a compose sidecar): a 3 h cycle with start-up catch-up; a single live lock (no overlapping runs); the persistent GPU worker when available, with CPU fallback; keep the last 16 live runs and prune only live runs.",
+        "Each cycle: Open-Meteo A23 grid fetch (count calls per UTC day, stop before 5,000, back off once on 429); a CFM-DSS snapshot via the B41 client at most once a day (reuse it if under 24 h old); the A28 coupling rule (stub with zero reservoir inflow, labelled, until A28 lands, then switch); a 72 h citywide 120 m run with run_kind LIVE_FORECAST, mode live and the live block; then publish. On failure, keep the last good run and set last_error.",
+        "Mount GET /v3/live/status, GET /v3/live/latest and POST /v3/live/refresh exactly as the C4 v3 planned operations (LiveStatus, LiveLatest, LiveRefreshAccepted; 404/429/503 as ApiError; manual refresh minimum 600 s; already_running instead of overlap). Add run_kind to all runs (REPLAY / WHAT_IF / CUSTOM / FORECAST for existing modes). Move the operations into x-c4-v3-product-api.proposed_paths when mounted, and ask the Integrator to promote them.",
+        "Tests with a fake clock and fake transports: schedule and catch-up, the overlap lock, retention, 429/budget handling, last-good fallback, the daily reservoir limit, and that no credentials or Google key appear. Works in the local launcher and the packaged B11 stack, with a configuration switch to disable live mode.",
+        "Every response keeps the disclaimer 'Model forecast - not an official warning'. No observed or official-warning claims."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+      ]
+    },
+    {
+      "id": "B52",
+      "lane": "B",
+      "title": "Live-first UI: smart badge, live status, refresh and auto-switch (CR-021) - ui session",
+      "phase": "B",
+      "status": "blocked_prerequisite",
+      "depends_on": [
+        "B51"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/master/CR-021_LIVE_FORECAST_MODE.md",
+        "docs/api/ai-service.yaml",
+        "docs/master/contracts/c4_openapi_v3.md"
+      ],
+      "outputs": [
+        "frontend/",
+        "tests/ui/",
+        "tools/ui/",
+        "docs/ui/"
+      ],
+      "acceptance": [
+        "Open the app on the latest live run by default (GET /v3/live/latest); replay, what-if and saved runs stay selectable.",
+        "Smart badge from run_kind: LIVE FORECAST (with run time), REPLAY or WHAT-IF, replacing the fixed DEMO badge. Show the permanent note 'Model forecast - not an official warning' on every tab.",
+        "'Updated HH:MM IST \u00b7 next HH:MM' from LiveStatus; health indicators for Open-Meteo and CFM-DSS (SourceHealth); a Refresh button calling POST /v3/live/refresh that handles 202 started/already_running, 429 (with the time until the next allowed refresh) and 503.",
+        "Poll GET /v3/live/status every 60 s, and switch to a new live run when one lands (without disrupting a user who has picked a replay or what-if run). Show last_error with the last-good run when a cycle failed.",
+        "Reservoir-driven inflows are labelled as assumptions. Keep Google attribution, and never commit or send the key. Production build and UI tests pass."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+      ]
+    },
+    {
+      "id": "B53",
+      "lane": "B",
+      "title": "Round 2 verification: one full live cycle on the packaged stack (CR-021)",
+      "phase": "B",
+      "status": "blocked_prerequisite",
+      "depends_on": [
+        "A28",
+        "B51",
+        "B52"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/master/CR-021_LIVE_FORECAST_MODE.md",
+        "docs/api/ai-service.yaml",
+        "docs/master/contracts/c4_openapi_v3.md"
+      ],
+      "outputs": [
+        "docs/trackb/",
+        "tests/e2e/"
+      ],
+      "acceptance": [
+        "On the packaged B11 stack (nginx /api/ai/v3/), run one full scheduled or catch-up live cycle and one manual refresh. Record: Open-Meteo request count and fetched_at, the CFM-DSS snapshot source_date and received_at, the A28 rule id, run_id, run_kind LIVE_FORECAST, engine version, device, wall time, and SHA-256s of /v3/live/status, /v3/live/latest and the run's depth, flow and summary responses.",
+        "Show: a second refresh within 600 s returns 429; a refresh during a running cycle returns already_running; a simulated upstream failure keeps the last good run and reports last_error; retention keeps 16 runs.",
+        "The UI session captures packaged-UI screenshots (docs/ui/screenshots/18_live_*) showing the LIVE FORECAST badge with run time, updated/next times, source health, the Refresh button and the disclaimer.",
+        "Raw audit 157/157; no shared-database writes; no volume deletion; no credentials or Google key in requests or responses."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+      ]
+    },
+    {
+      "id": "I27",
+      "lane": "I",
+      "title": "Round 2 live-stage review (CR-021)",
+      "phase": "I",
+      "status": "blocked_prerequisite",
+      "depends_on": [
+        "B53"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/master/CR-021_LIVE_FORECAST_MODE.md",
+        "docs/api/ai-service.yaml",
+        "docs/master/contracts/c4_openapi_v3.md"
+      ],
+      "outputs": [
+        "docs/master/",
+        "docs/api/"
+      ],
+      "acceptance": [
+        "Review B53 evidence against CR-021. Promote the /v3/live operations into top-level paths after the parity tests pass, record the decision and caveats, and update the board."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+      ]
     }
   ],
   "gates": [

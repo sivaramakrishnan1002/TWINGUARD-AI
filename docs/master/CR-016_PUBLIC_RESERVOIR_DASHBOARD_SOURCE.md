@@ -17,3 +17,9 @@
 The project owner authorizes only low-volume, on-demand GET reads for this local academic prototype, source attribution, and non-operational display. Do not poll frequently, redistribute the raw response, make flood/safety decisions from it, infer inflow/outflow or releases, or describe it as operational real-time telemetry. The source's formal terms, rate limits, custodial authority, revision/backfill policy, and freshness SLA were not located and remain unknown. Keep these caveats visible in the connector report. Do not store the page token or cookies; obtain a fresh page-scoped token per invocation and never print it.
 
 CR-016 selects the prototype source and narrows D3/D8 for this prototype only. It does not change C3, C1-C8, G0, or any historical measurement-time claim. It does not authorize database writes, persistent retention, a public API, high-frequency polling, model recomputation, flood prediction, or operational use.
+
+## Amendment 2026-11-10 (CR-021 / OD-2026-11-10, live mode only)
+
+The live forecast cycle may read the public CFM-DSS dashboard **at most once a day** (plus at most one manual read when the snapshot is more than 24 h old). It may keep the snapshot only inside a live run's provenance, for that run's retention period. It may use the snapshot as model forcing through A28's documented **assumption** rule. Derived outlet inflows are model assumptions and are never presented as observed or published releases.
+
+All other boundaries in this CR remain. `GET /reservoirs/history` itself is unchanged.

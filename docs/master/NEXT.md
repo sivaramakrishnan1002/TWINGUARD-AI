@@ -16,11 +16,11 @@
 
 ## Ready tasks by lane A
 
-- None.
+- **A28 — Live reservoir coupling and forecast-run checks (CR-021)** (ready)
 
 ## Ready tasks by lane B
 
-- None.
+- **B51 — Live forecast scheduler and /v3/live endpoints (CR-021)** (ready)
 
 ## Ready tasks by lane I
 
@@ -34,6 +34,9 @@
 - **M8 — Mentor review dates** (blocked_manual)
 - **B40 — Implement authorized IMD rainfall/weather connector** (blocked_prerequisite)
 - **B42 — Prove observation-triggered recomputation through API and UI** (blocked_prerequisite)
+- **B52 — Live-first UI: smart badge, live status, refresh and auto-switch (CR-021) - ui session** (blocked_prerequisite)
+- **B53 — Round 2 verification: one full live cycle on the packaged stack (CR-021)** (blocked_prerequisite)
+- **I27 — Round 2 live-stage review (CR-021)** (blocked_prerequisite)
 
 ## Running tasks
 

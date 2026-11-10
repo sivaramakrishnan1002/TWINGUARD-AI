@@ -20,3 +20,9 @@
 This is a low-volume, manual/on-demand read for the local college project. No recurring polling or public deployment is authorized. Source formal terms, rate limits, update cadence, and owner endorsement remain unknown. The operation must not trigger B42-style observation recomputation.
 
 Implementation task: B44. UI consumer: B45.
+
+## Amendment 2026-11-10 (CR-021 / OD-2026-11-10, live mode only)
+
+The live forecast cycle may read the public CFM-DSS dashboard **at most once a day** (plus at most one manual read when the snapshot is more than 24 h old). It may keep the snapshot only inside a live run's provenance, for that run's retention period. It may use the snapshot as model forcing through A28's documented **assumption** rule. Derived outlet inflows are model assumptions and are never presented as observed or published releases.
+
+All other boundaries in this CR remain. `GET /reservoirs/history` itself is unchanged.

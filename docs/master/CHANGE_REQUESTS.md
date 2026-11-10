@@ -49,3 +49,13 @@ Approved by the project owner as OD-2026-11-07. Tasks A25 (Lane A simulation), B
 ## CR-020 — G5 revised to the product pipeline
 
 Approved by the project owner on 2026-11-08 (option B of `G5_REASSESSMENT_2026-11-08.md`). The new G5 path is one archived 2015-12-01 event input -> engine run -> `/v3` -> packaged UI, with source and derived output kept distinct. It supersedes CR-012's G5 scope; the POONDI replay route remains as an optional secondary check. B13's acceptance is revised accordingly. See `CR-020_G5_PRODUCT_PIPELINE_REPLAY.md`.
+
+## CR-021 — Live forecast mode
+
+Approved as OD-2026-11-10 (owner delegation to the coordinator).
+- **Cycle:** a 3 h live cycle (Open-Meteo A23 grid plus a daily CFM-DSS snapshot) runs the 72 h, 120 m engine. Manual refresh is limited to once per 600 s; there is no overlap and the last 16 runs are kept.
+- **Amends:** OD-2026-11-07 §7 and CR-016/CR-017 for live mode only, including assumption-based reservoir coupling (A28), never shown as observed releases.
+- **Contract:** additive C4 v3 `GET /v3/live/status`, `GET /v3/live/latest`, `POST /v3/live/refresh`, plus `run_kind`.
+- **Tasks:** A28, B51, B52, B53, I27.
+
+See `CR-021_LIVE_FORECAST_MODE.md`.

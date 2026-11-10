@@ -1,0 +1,1534 @@
+{
+ "task": "B13",
+ "cr": "CR-020",
+ "started_at": "2026-11-08T15:21:24Z",
+ "base": "http://127.0.0.1:8081/api/ai",
+ "input": {
+  "events_file": "data/features/live/a25_static_v1/shared/events.json",
+  "events_sha256": "e402c3f5f5940104551ca76fbf620af30eae2822a23d5247468718a0bdf37d61",
+  "a25_manifest_sha256": "a4bced11e8a6f77b31ff80274d257c81bb51f66acf6371edcde311fddd9bf48a",
+  "a06_fallback_events_sha256": "9d2e922eadbfe47b2a9f4f25a9d7839d91f8068ded6f4224ff49937ce56a3001",
+  "record": {
+   "event_key": "2015-12-01",
+   "label": "Chennai floods, Dec 2015",
+   "start_utc": "2015-11-30T00:00:00Z",
+   "end_utc": "2015-12-03T00:00:00Z",
+   "rainfall_source": "GPM IMERG daily CMA mean, ERA5 hourly shape (A06 method)",
+   "source_mode": "REPLAY",
+   "interval_minutes": 60,
+   "total_mm": 351.54200000000003,
+   "values": 72,
+   "values_sha256": "bd8494b31749c8927bf1234576f80dce0d5f1400d464a1f5aeb060d13309d63c"
+  }
+ },
+ "status": {
+  "body": {
+   "engine_version": "twinguard-v3-engine/1.1.0 (A25 services.flood_engine.scenario)",
+   "device": {
+    "requested": "auto",
+    "resolved": "cpu",
+    "name": null,
+    "cuda_available": false,
+    "gpu_jobs_max": 1
+   },
+   "worker": {
+    "mode": "per_run",
+    "state": "cold",
+    "device": null,
+    "pid": null,
+    "jobs_done": null,
+    "restarts": 0,
+    "warmup": null
+   },
+   "static_available": true,
+   "running": false,
+   "running_run_id": null,
+   "queue_length": 0,
+   "last_completed_run_id": "evt-20261108T150215Z-4f19092b",
+   "weather_min_refresh_interval_s": 600,
+   "weather_next_fetch_allowed_at": null
+  },
+  "sha256": "8c59198f2f838914647c22f26e6bfe89a36c377a37b30a1932367e434e1c6a0a",
+  "schema_errors": []
+ },
+ "events_api": {
+  "keys": [
+   "2015-12-01",
+   "2021-11-11",
+   "2023-12-03"
+  ],
+  "sha256": "ee3e631f04fb2a84f334e1fbc6126477e7cbd95a5fb00035a347cf966f958637"
+ },
+ "runs": {
+  "acceptance_body": {
+   "request": {
+    "mode": "event",
+    "event_key": "2015-12-01"
+   },
+   "accepted": {
+    "run_id": "evt-20261108T152124Z-415999af",
+    "state": "queued",
+    "status_url": "/v3/simulations/evt-20261108T152124Z-415999af",
+    "estimated_seconds": 115
+   },
+   "wall_seconds": 4.1,
+   "run_id": "evt-20261108T152124Z-415999af",
+   "state": "completed",
+   "error": null,
+   "frames": 49,
+   "grid": {
+    "crs": "EPSG:32644",
+    "origin_x_m": 390000.0,
+    "origin_y_m": 1471620.0,
+    "cell_size_m": 120,
+    "rows": 440,
+    "cols": 343,
+    "bbox_wgs84": [
+     79.9844002376269,
+     12.832420655392587,
+     80.36561860258577,
+     13.311032826046603
+    ]
+   },
+   "summary": {
+    "max_depth_m": 2.29,
+    "flooded_area_km2": 83.38,
+    "buildings_affected": 26056,
+    "population_exposed": 504874,
+    "roads_blocked_km": 406.66,
+    "wards_affected": 196,
+    "peak_time_utc": "2015-12-01T00:00:00Z"
+   },
+   "provenance": {
+    "engine_version": "twinguard-v3-engine/1.1.0 (A25 services.flood_engine.scenario) (twinguard-flood-engine/2.1.0)",
+    "device": {
+     "used": "cuda",
+     "name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+     "fallback_reason": null
+    },
+    "run_id": "evt-20261108T152124Z-415999af",
+    "forcing_sha256": "181f4c39ab47f0da4e72e3d5f67f020811de966ab367eb58151a6a0e20783cd7",
+    "static_assets_version": "a25_static_v1",
+    "inputs": [
+     {
+      "name": "rainfall",
+      "source": "GPM IMERG daily CMA mean, ERA5 hourly shape (A06 method)",
+      "source_mode": "REPLAY",
+      "fetched_at": null,
+      "sha256": "bd8494b31749c8927bf1234576f80dce0d5f1400d464a1f5aeb060d13309d63c"
+     },
+     {
+      "name": "model grid",
+      "source": "A25 static bundle citywide_120m",
+      "source_mode": "STATIC_REFERENCE",
+      "fetched_at": null,
+      "sha256": null
+     }
+    ]
+   },
+   "limitations": [
+    "A25 local-inertial model on a 120 m citywide grid (Copernicus GLO-30 DEM); no storm-drain network or hydraulic validation.",
+    "Event rainfall is archived IMERG/ERA5 (REPLAY) and forecast rainfall is Open-Meteo model output, not gauge observation.",
+    "Reservoir releases enter at one river cell per reservoir and tide is a constant sea-level offset; not routed river hydraulics.",
+    "Road states, shelter capacities, incidents and resource plans are derived demo indicators, not official guidance.",
+    "Building and population exposure use the model cell containing each building; most building heights are estimated."
+   ],
+   "detail_sha256": "2782fa991c975c6b16dd815bd72f1d78fdfe7760ff11f0ab049cefad7c91c0be",
+   "detail_schema_errors": []
+  },
+  "primary_48h": {
+   "request": {
+    "mode": "event",
+    "event_key": "2015-12-01",
+    "duration_hours": 48
+   },
+   "accepted": {
+    "run_id": "evt-20261108T152128Z-59eba744",
+    "state": "queued",
+    "status_url": "/v3/simulations/evt-20261108T152128Z-59eba744",
+    "estimated_seconds": 221
+   },
+   "wall_seconds": 4.1,
+   "run_id": "evt-20261108T152128Z-59eba744",
+   "state": "completed",
+   "error": null,
+   "frames": 97,
+   "grid": {
+    "crs": "EPSG:32644",
+    "origin_x_m": 390000.0,
+    "origin_y_m": 1471620.0,
+    "cell_size_m": 120,
+    "rows": 440,
+    "cols": 343,
+    "bbox_wgs84": [
+     79.9844002376269,
+     12.832420655392587,
+     80.36561860258577,
+     13.311032826046603
+    ]
+   },
+   "summary": {
+    "max_depth_m": 7.85,
+    "flooded_area_km2": 368.54,
+    "buildings_affected": 81935,
+    "population_exposed": 1603045,
+    "roads_blocked_km": 3282.17,
+    "wards_affected": 197,
+    "peak_time_utc": "2015-12-02T00:00:00Z"
+   },
+   "provenance": {
+    "engine_version": "twinguard-v3-engine/1.1.0 (A25 services.flood_engine.scenario) (twinguard-flood-engine/2.1.0)",
+    "device": {
+     "used": "cuda",
+     "name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+     "fallback_reason": null
+    },
+    "run_id": "evt-20261108T152128Z-59eba744",
+    "forcing_sha256": "181f4c39ab47f0da4e72e3d5f67f020811de966ab367eb58151a6a0e20783cd7",
+    "static_assets_version": "a25_static_v1",
+    "inputs": [
+     {
+      "name": "rainfall",
+      "source": "GPM IMERG daily CMA mean, ERA5 hourly shape (A06 method)",
+      "source_mode": "REPLAY",
+      "fetched_at": null,
+      "sha256": "bd8494b31749c8927bf1234576f80dce0d5f1400d464a1f5aeb060d13309d63c"
+     },
+     {
+      "name": "model grid",
+      "source": "A25 static bundle citywide_120m",
+      "source_mode": "STATIC_REFERENCE",
+      "fetched_at": null,
+      "sha256": null
+     }
+    ]
+   },
+   "limitations": [
+    "A25 local-inertial model on a 120 m citywide grid (Copernicus GLO-30 DEM); no storm-drain network or hydraulic validation.",
+    "Event rainfall is archived IMERG/ERA5 (REPLAY) and forecast rainfall is Open-Meteo model output, not gauge observation.",
+    "Reservoir releases enter at one river cell per reservoir and tide is a constant sea-level offset; not routed river hydraulics.",
+    "Road states, shelter capacities, incidents and resource plans are derived demo indicators, not official guidance.",
+    "Building and population exposure use the model cell containing each building; most building heights are estimated."
+   ],
+   "detail_sha256": "daba7dae1be0d2b6ada7795f4393ea895ae9a15bc2f9e9a12983c0e1149d70d9",
+   "detail_schema_errors": []
+  },
+  "fresh_compute_36h": {
+   "request": {
+    "mode": "event",
+    "event_key": "2015-12-01",
+    "duration_hours": 36
+   },
+   "accepted": {
+    "run_id": "evt-20261108T152132Z-49db828b",
+    "state": "queued",
+    "status_url": "/v3/simulations/evt-20261108T152132Z-49db828b",
+    "estimated_seconds": 168
+   },
+   "wall_seconds": 161.2,
+   "run_id": "evt-20261108T152132Z-49db828b",
+   "state": "completed",
+   "error": null,
+   "frames": 73,
+   "grid": {
+    "crs": "EPSG:32644",
+    "origin_x_m": 390000.0,
+    "origin_y_m": 1471620.0,
+    "cell_size_m": 120,
+    "rows": 440,
+    "cols": 343,
+    "bbox_wgs84": [
+     79.9844002376269,
+     12.832420655392587,
+     80.36561860258577,
+     13.311032826046603
+    ]
+   },
+   "summary": {
+    "max_depth_m": 5.6,
+    "flooded_area_km2": 252.99,
+    "buildings_affected": 54241,
+    "population_exposed": 1112904,
+    "roads_blocked_km": 2045.59,
+    "wards_affected": 196,
+    "peak_time_utc": "2015-12-01T12:00:00Z"
+   },
+   "provenance": {
+    "engine_version": "twinguard-v3-engine/1.1.0 (A25 services.flood_engine.scenario) (twinguard-flood-engine/2.1.0)",
+    "device": {
+     "used": "cpu",
+     "name": null,
+     "fallback_reason": null
+    },
+    "run_id": "evt-20261108T152132Z-49db828b",
+    "forcing_sha256": "181f4c39ab47f0da4e72e3d5f67f020811de966ab367eb58151a6a0e20783cd7",
+    "static_assets_version": "a25_static_v1",
+    "inputs": [
+     {
+      "name": "rainfall",
+      "source": "GPM IMERG daily CMA mean, ERA5 hourly shape (A06 method)",
+      "source_mode": "REPLAY",
+      "fetched_at": null,
+      "sha256": "bd8494b31749c8927bf1234576f80dce0d5f1400d464a1f5aeb060d13309d63c"
+     },
+     {
+      "name": "model grid",
+      "source": "A25 static bundle citywide_120m",
+      "source_mode": "STATIC_REFERENCE",
+      "fetched_at": null,
+      "sha256": null
+     }
+    ]
+   },
+   "limitations": [
+    "A25 local-inertial model on a 120 m citywide grid (Copernicus GLO-30 DEM); no storm-drain network or hydraulic validation.",
+    "Event rainfall is archived IMERG/ERA5 (REPLAY) and forecast rainfall is Open-Meteo model output, not gauge observation.",
+    "Reservoir releases enter at one river cell per reservoir and tide is a constant sea-level offset; not routed river hydraulics.",
+    "Road states, shelter capacities, incidents and resource plans are derived demo indicators, not official guidance.",
+    "Building and population exposure use the model cell containing each building; most building heights are estimated."
+   ],
+   "detail_sha256": "67867eb0bc89eeb5772c4cb08a613e6c809db37f729a46cd846ac0d84625d86f",
+   "detail_schema_errors": []
+  }
+ },
+ "outputs_frame_index": 48,
+ "outputs": {
+  "depth": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/depth",
+   "params": {
+    "frame_index": 48
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.457,
+   "bytes": 717093,
+   "sha256": "c4dc137ff391cf47bdeb0a968901decf610f8cb7baa10c315b2b475a84526a08",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "4647097f08a17efd22150ed757758bbc6dc98217e79c2cf665e25e44d24653e3"
+  },
+  "flow": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/flow",
+   "params": {
+    "frame_index": 48
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.683,
+   "bytes": 2167453,
+   "sha256": "a9c15ebb8d4423c3b4f4f84d202effc30e5bcec7d3d7f24426c71d81d62e8bdf",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "1a970fda95fb966118b3a6cedb260d2945900e2035397833799652b29be02828"
+  },
+  "wards": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/wards",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 1.097,
+   "bytes": 55828,
+   "sha256": "b15e9e249dfad4474951b693e442f1408576c58e2f8fbecf565b0c41403bf01b",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "944eabeab510664768d3ec9bfe6d221c1410de9ca2a8974e765e1929f3757b39"
+  },
+  "roads": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/roads",
+   "params": {
+    "bbox": "80.20,12.96,80.24,13.00"
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.276,
+   "bytes": 3065825,
+   "sha256": "903bd9f2a7440d95e53bc1415e4dcf3c87f46f661df1503b530b386c3956fd34",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "b4143d4fd8aeab952422584d4170bf844755473512fba732e3636725dc5b9f6c"
+  },
+  "routes": {
+   "method": "POST",
+   "path": "/v3/routes",
+   "params": null,
+   "request": {
+    "run_id": "evt-20261108T152128Z-59eba744",
+    "origin": {
+     "lon": 80.2209,
+     "lat": 12.9815
+    },
+    "destination": {
+     "lon": 80.2707,
+     "lat": 13.0827
+    }
+   },
+   "status": 200,
+   "seconds": 1.692,
+   "bytes": 12445,
+   "sha256": "0bbc54109ca478831a01dafee7eee46c87f84ad82bb117919657297fcd119055",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "43d0c5210eef14ce0d4fb4607c1f3ebedb218e4a12baa7a691ce88c8cebb8714"
+  },
+  "shelters": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/shelters",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.619,
+   "bytes": 224798,
+   "sha256": "fcf5500b5bb94b0b245d71c9aa96af32ef7dac5dbf1744cbd690007b03c01975",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "595a92c8c7fbb5d2a51a88279847d5082c301a55535d2d69e658a1307aa39cbf"
+  },
+  "incidents": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/incidents",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.289,
+   "bytes": 2779425,
+   "sha256": "4788554dfe48d235e50e939fcd9232167a085990a07a535aa265016ad5ac064b",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "e7fc6b2f5ada1a88995cc75c4defa4e3449451a0f555358086262f2af0b5f69b"
+  }
+ },
+ "outputs_acceptance_body_run": {
+  "depth": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/depth",
+   "params": {
+    "frame_index": 24
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.301,
+   "bytes": 684578,
+   "sha256": "0992d07749bb54f2a6a2ee4bc777f072177e7f70ce5614ae3691aa0760c74e97",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "193cb9105e28ec79ec0ff2112e4beffb4504fab875f47695a8b7c38e7c640c22"
+  },
+  "flow": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/flow",
+   "params": {
+    "frame_index": 24
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.324,
+   "bytes": 2114952,
+   "sha256": "33e1328a5a3a0931c283fd3142c73ac50a3ba639fd4e4ed7390a4473112ec4ea",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "590a698125f9fbb0ce4606b78a2e5c7b194934f19a2b4ac66ded6e1d08375b8d"
+  },
+  "wards": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/wards",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.357,
+   "bytes": 55538,
+   "sha256": "ffdeb298bf0ff510a954783225dec82cb00ac266fe1aaf3a1ba70a3b778941a9",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "e52bc925a87a23cccc7830ec08c1189d4715d0809fa70a12931bfe35f38e6eb0"
+  },
+  "roads": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/roads",
+   "params": {
+    "bbox": "80.20,12.96,80.24,13.00"
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.274,
+   "bytes": 3064811,
+   "sha256": "9a2fc103717e23c3a6a9d8ba75dc1778900575514137fb0cb0d232c63ca43a52",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "e87a14ba7bd26adf54e9b773ca2abfa9e43803e6d4ff8f819c8a0224edfb9a47"
+  },
+  "routes": {
+   "method": "POST",
+   "path": "/v3/routes",
+   "params": null,
+   "request": {
+    "run_id": "evt-20261108T152124Z-415999af",
+    "origin": {
+     "lon": 80.2209,
+     "lat": 12.9815
+    },
+    "destination": {
+     "lon": 80.2707,
+     "lat": 13.0827
+    }
+   },
+   "status": 200,
+   "seconds": 1.347,
+   "bytes": 24039,
+   "sha256": "65260828d7cd85f06295fc07ec199a6fa758c80b138c9b6dda0413f5549b86b4",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "97eddf9a49fa2f5361adde4d255a30f8b20fa91bf08d3bd8ccbf2769ad4e64bc"
+  },
+  "shelters": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/shelters",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.567,
+   "bytes": 223756,
+   "sha256": "37bf0a4d1689d0f3267a2fb2e097a73128a6be684763bce392cadc2386b67e4f",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "7dd8d38dde1beb4585ddba850eb28851dab30a5cdbf8c10c9e6481926f9d5576"
+  },
+  "incidents": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/incidents",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.121,
+   "bytes": 821305,
+   "sha256": "057814a08df404f8132da829dac56f291ac8f09eb2b2d92c1c3798abac264e7c",
+   "schema_errors": [],
+   "content_encoding": "gzip",
+   "content_sha256": "bc1931bdbe5012a0b22be7b131939cd4aac561660f6ef490d718054979902fe3"
+  }
+ },
+ "ui_run": {
+  "run_id": "evt-20261108T141229Z-fb36a1cd",
+  "provenance": {
+   "engine_version": "twinguard-v3-engine/1.1.0 (A25 services.flood_engine.scenario) (twinguard-flood-engine/2.1.0)",
+   "device": {
+    "used": "cuda",
+    "name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "fallback_reason": null
+   },
+   "run_id": "evt-20261108T141229Z-fb36a1cd",
+   "forcing_sha256": "181f4c39ab47f0da4e72e3d5f67f020811de966ab367eb58151a6a0e20783cd7",
+   "static_assets_version": "a25_static_v1",
+   "inputs": [
+    {
+     "name": "rainfall",
+     "source": "GPM IMERG daily CMA mean, ERA5 hourly shape (A06 method)",
+     "source_mode": "REPLAY",
+     "fetched_at": null,
+     "sha256": "bd8494b31749c8927bf1234576f80dce0d5f1400d464a1f5aeb060d13309d63c"
+    },
+    {
+     "name": "model grid",
+     "source": "A25 static bundle citywide_120m",
+     "source_mode": "STATIC_REFERENCE",
+     "fetched_at": null,
+     "sha256": null
+    }
+   ]
+  },
+  "content_equal_to_primary": {
+   "depth": true,
+   "flow": true,
+   "wards": true,
+   "roads": true,
+   "routes": true,
+   "shelters": true,
+   "incidents": true
+  },
+  "outputs": {
+   "depth": {
+    "method": "GET",
+    "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/depth",
+    "params": {
+     "frame_index": 48
+    },
+    "request": null,
+    "status": 200,
+    "seconds": 0.462,
+    "bytes": 717093,
+    "sha256": "baff77f7578e85c3a92405bd1f28a8e64940e4193b9fa8766ad1c7da180f6a38",
+    "schema_errors": [],
+    "content_encoding": "gzip",
+    "content_sha256": "4647097f08a17efd22150ed757758bbc6dc98217e79c2cf665e25e44d24653e3"
+   },
+   "flow": {
+    "method": "GET",
+    "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/flow",
+    "params": {
+     "frame_index": 48
+    },
+    "request": null,
+    "status": 200,
+    "seconds": 0.118,
+    "bytes": 2167453,
+    "sha256": "e97f2d3ec44c226a81bac8cedd345eac7b05e4de49262d9f1ac6d09adaec1106",
+    "schema_errors": [],
+    "content_encoding": "gzip",
+    "content_sha256": "1a970fda95fb966118b3a6cedb260d2945900e2035397833799652b29be02828"
+   },
+   "wards": {
+    "method": "GET",
+    "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/wards",
+    "params": null,
+    "request": null,
+    "status": 200,
+    "seconds": 0.477,
+    "bytes": 55828,
+    "sha256": "0e2a481da23694d53baefa81b9ef60b62046b18e3268c79be005540f35df87d2",
+    "schema_errors": [],
+    "content_encoding": "gzip",
+    "content_sha256": "944eabeab510664768d3ec9bfe6d221c1410de9ca2a8974e765e1929f3757b39"
+   },
+   "roads": {
+    "method": "GET",
+    "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/roads",
+    "params": {
+     "bbox": "80.20,12.96,80.24,13.00"
+    },
+    "request": null,
+    "status": 200,
+    "seconds": 0.244,
+    "bytes": 3065825,
+    "sha256": "539b631425cbbbe7db7343d3b68d291bb9168f3ba904738d7d5b9bee1edf7d8e",
+    "schema_errors": [],
+    "content_encoding": "gzip",
+    "content_sha256": "b4143d4fd8aeab952422584d4170bf844755473512fba732e3636725dc5b9f6c"
+   },
+   "routes": {
+    "method": "POST",
+    "path": "/v3/routes",
+    "params": null,
+    "request": {
+     "run_id": "evt-20261108T141229Z-fb36a1cd",
+     "origin": {
+      "lon": 80.2209,
+      "lat": 12.9815
+     },
+     "destination": {
+      "lon": 80.2707,
+      "lat": 13.0827
+     }
+    },
+    "status": 200,
+    "seconds": 1.004,
+    "bytes": 12445,
+    "sha256": "8baf580088f1654515852a2ba8276b7e48a94c58ef123384d3d40baff7c69659",
+    "schema_errors": [],
+    "content_encoding": "gzip",
+    "content_sha256": "43d0c5210eef14ce0d4fb4607c1f3ebedb218e4a12baa7a691ce88c8cebb8714"
+   },
+   "shelters": {
+    "method": "GET",
+    "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/shelters",
+    "params": null,
+    "request": null,
+    "status": 200,
+    "seconds": 0.66,
+    "bytes": 224798,
+    "sha256": "c85cc8cda70ffb7fb71f800ba1dd2b880dbfc7eca2e4f6931de6902c992444a2",
+    "schema_errors": [],
+    "content_encoding": "gzip",
+    "content_sha256": "595a92c8c7fbb5d2a51a88279847d5082c301a55535d2d69e658a1307aa39cbf"
+   },
+   "incidents": {
+    "method": "GET",
+    "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/incidents",
+    "params": null,
+    "request": null,
+    "status": 200,
+    "seconds": 0.299,
+    "bytes": 2779425,
+    "sha256": "0ba589b64e0a3d0722f98690e224f9d53f3a12b6e9eb5b93d74dd3cfa55fbdca",
+    "schema_errors": [],
+    "content_encoding": "gzip",
+    "content_sha256": "e7fc6b2f5ada1a88995cc75c4defa4e3449451a0f555358086262f2af0b5f69b"
+   }
+  }
+ },
+ "determinism": {
+  "repeat_state": "cached",
+  "same_run_id": true,
+  "identical_hashes": {
+   "depth": true,
+   "flow": true,
+   "wards": true,
+   "roads": true,
+   "routes": true,
+   "shelters": true,
+   "incidents": true
+  }
+ },
+ "fail_closed": {
+  "unknown_run_404": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20200101T000000Z-deadbeef",
+   "params": null,
+   "request": null,
+   "status": 404,
+   "seconds": 0.005,
+   "bytes": 67,
+   "sha256": "bdad13192a128c93571ee371f23ba9cdfedadb7d090ed73b071e9268eb247290",
+   "schema_errors": [],
+   "content_encoding": null,
+   "expected_status": 404,
+   "pass": true
+  },
+  "flow_pre_2_1_0_503": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T090744Z-b0d2d2bc/flow",
+   "params": {
+    "frame_index": 0
+   },
+   "request": null,
+   "status": 503,
+   "seconds": 0.018,
+   "bytes": 142,
+   "sha256": "95f7e6150623e6d05eff3d3885aee1946b726452abec916b4ac67cf30dc01573",
+   "schema_errors": [],
+   "content_encoding": null,
+   "expected_status": 503,
+   "pass": true
+  },
+  "invalid_frame_422": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/depth",
+   "params": {
+    "frame_index": 9999
+   },
+   "request": null,
+   "status": 422,
+   "seconds": 0.006,
+   "bytes": 76,
+   "sha256": "21c1a22491f25a60dddd1a114deae2c014b3b88e597bc5f97e1a6818b8c6975b",
+   "schema_errors": [],
+   "content_encoding": null,
+   "expected_status": 422,
+   "pass": true
+  },
+  "invalid_flow_frame_422": {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/flow",
+   "params": {
+    "frame_index": 9999
+   },
+   "request": null,
+   "status": 422,
+   "seconds": 0.006,
+   "bytes": 76,
+   "sha256": "21c1a22491f25a60dddd1a114deae2c014b3b88e597bc5f97e1a6818b8c6975b",
+   "schema_errors": [],
+   "content_encoding": null,
+   "expected_status": 422,
+   "pass": true
+  },
+  "queue_over_limit_409": {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "custom",
+    "duration_hours": 6,
+    "custom_rainfall": {
+     "start_time_utc": "2026-11-08T00:00:00Z",
+     "interval_minutes": 60,
+     "values_mm": [
+      1.5,
+      1.5,
+      1.5,
+      1.5,
+      1.5,
+      1.5
+     ]
+    }
+   },
+   "status": 409,
+   "seconds": 0.015,
+   "bytes": 110,
+   "sha256": "1badd246855c25edc487b6449c633ef4a41939632437350150dde97a1b7b7bc5",
+   "schema_errors": [],
+   "content_encoding": null,
+   "expected_status": 409,
+   "pass": true,
+   "accepted_before": [
+    202,
+    202,
+    202,
+    202,
+    202
+   ]
+  }
+ },
+ "replay_alert_poondi": {
+  "status": 200,
+  "sha256": "067214412fd2fc47b9c57728049221815613cfe56a7f4350aefc2f1d57471539",
+  "bytes": 3847,
+  "event_id": null
+ },
+ "boundaries": {
+  "google_key_markers_found": [],
+  "calls_scanned": 47
+ },
+ "calls": [
+  {
+   "method": "GET",
+   "path": "/v3/status",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.053,
+   "bytes": 503,
+   "sha256": "8c59198f2f838914647c22f26e6bfe89a36c377a37b30a1932367e434e1c6a0a",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "GET",
+   "path": "/v3/events",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.019,
+   "bytes": 708,
+   "sha256": "ee3e631f04fb2a84f334e1fbc6126477e7cbd95a5fb00035a347cf966f958637",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "event",
+    "event_key": "2015-12-01"
+   },
+   "status": 202,
+   "seconds": 0.064,
+   "bytes": 144,
+   "sha256": "97d53de208fd7b8a9c362ca9a92d1fe2e1e007ff259e4c3070a5fe5296c8b1ee",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.005,
+   "bytes": 5838,
+   "sha256": "2782fa991c975c6b16dd815bd72f1d78fdfe7760ff11f0ab049cefad7c91c0be",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "event",
+    "event_key": "2015-12-01",
+    "duration_hours": 48
+   },
+   "status": 202,
+   "seconds": 0.071,
+   "bytes": 144,
+   "sha256": "6ad984fd5b46e996db74c3bde36587f434c28ae74c8aa208ad6eae91d083be1c",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.004,
+   "bytes": 9489,
+   "sha256": "daba7dae1be0d2b6ada7795f4393ea895ae9a15bc2f9e9a12983c0e1149d70d9",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "event",
+    "event_key": "2015-12-01",
+    "duration_hours": 36
+   },
+   "status": 202,
+   "seconds": 0.07,
+   "bytes": 144,
+   "sha256": "75409813450656289fc369c11fe38ea007b1d3f6f693d60e49269c44d0ba60a9",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152132Z-49db828b",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.01,
+   "bytes": 7631,
+   "sha256": "67867eb0bc89eeb5772c4cb08a613e6c809db37f729a46cd846ac0d84625d86f",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/depth",
+   "params": {
+    "frame_index": 48
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.457,
+   "bytes": 717093,
+   "sha256": "c4dc137ff391cf47bdeb0a968901decf610f8cb7baa10c315b2b475a84526a08",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/flow",
+   "params": {
+    "frame_index": 48
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.683,
+   "bytes": 2167453,
+   "sha256": "a9c15ebb8d4423c3b4f4f84d202effc30e5bcec7d3d7f24426c71d81d62e8bdf",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/wards",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 1.097,
+   "bytes": 55828,
+   "sha256": "b15e9e249dfad4474951b693e442f1408576c58e2f8fbecf565b0c41403bf01b",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/roads",
+   "params": {
+    "bbox": "80.20,12.96,80.24,13.00"
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.276,
+   "bytes": 3065825,
+   "sha256": "903bd9f2a7440d95e53bc1415e4dcf3c87f46f661df1503b530b386c3956fd34",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "POST",
+   "path": "/v3/routes",
+   "params": null,
+   "request": {
+    "run_id": "evt-20261108T152128Z-59eba744",
+    "origin": {
+     "lon": 80.2209,
+     "lat": 12.9815
+    },
+    "destination": {
+     "lon": 80.2707,
+     "lat": 13.0827
+    }
+   },
+   "status": 200,
+   "seconds": 1.692,
+   "bytes": 12445,
+   "sha256": "0bbc54109ca478831a01dafee7eee46c87f84ad82bb117919657297fcd119055",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/shelters",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.619,
+   "bytes": 224798,
+   "sha256": "fcf5500b5bb94b0b245d71c9aa96af32ef7dac5dbf1744cbd690007b03c01975",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/incidents",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.289,
+   "bytes": 2779425,
+   "sha256": "4788554dfe48d235e50e939fcd9232167a085990a07a535aa265016ad5ac064b",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/depth",
+   "params": {
+    "frame_index": 24
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.301,
+   "bytes": 684578,
+   "sha256": "0992d07749bb54f2a6a2ee4bc777f072177e7f70ce5614ae3691aa0760c74e97",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/flow",
+   "params": {
+    "frame_index": 24
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.324,
+   "bytes": 2114952,
+   "sha256": "33e1328a5a3a0931c283fd3142c73ac50a3ba639fd4e4ed7390a4473112ec4ea",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/wards",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.357,
+   "bytes": 55538,
+   "sha256": "ffdeb298bf0ff510a954783225dec82cb00ac266fe1aaf3a1ba70a3b778941a9",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/roads",
+   "params": {
+    "bbox": "80.20,12.96,80.24,13.00"
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.274,
+   "bytes": 3064811,
+   "sha256": "9a2fc103717e23c3a6a9d8ba75dc1778900575514137fb0cb0d232c63ca43a52",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "POST",
+   "path": "/v3/routes",
+   "params": null,
+   "request": {
+    "run_id": "evt-20261108T152124Z-415999af",
+    "origin": {
+     "lon": 80.2209,
+     "lat": 12.9815
+    },
+    "destination": {
+     "lon": 80.2707,
+     "lat": 13.0827
+    }
+   },
+   "status": 200,
+   "seconds": 1.347,
+   "bytes": 24039,
+   "sha256": "65260828d7cd85f06295fc07ec199a6fa758c80b138c9b6dda0413f5549b86b4",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/shelters",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.567,
+   "bytes": 223756,
+   "sha256": "37bf0a4d1689d0f3267a2fb2e097a73128a6be684763bce392cadc2386b67e4f",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152124Z-415999af/incidents",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.121,
+   "bytes": 821305,
+   "sha256": "057814a08df404f8132da829dac56f291ac8f09eb2b2d92c1c3798abac264e7c",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/depth",
+   "params": {
+    "frame_index": 48
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.462,
+   "bytes": 717093,
+   "sha256": "baff77f7578e85c3a92405bd1f28a8e64940e4193b9fa8766ad1c7da180f6a38",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/flow",
+   "params": {
+    "frame_index": 48
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.118,
+   "bytes": 2167453,
+   "sha256": "e97f2d3ec44c226a81bac8cedd345eac7b05e4de49262d9f1ac6d09adaec1106",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/wards",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.477,
+   "bytes": 55828,
+   "sha256": "0e2a481da23694d53baefa81b9ef60b62046b18e3268c79be005540f35df87d2",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/roads",
+   "params": {
+    "bbox": "80.20,12.96,80.24,13.00"
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.244,
+   "bytes": 3065825,
+   "sha256": "539b631425cbbbe7db7343d3b68d291bb9168f3ba904738d7d5b9bee1edf7d8e",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "POST",
+   "path": "/v3/routes",
+   "params": null,
+   "request": {
+    "run_id": "evt-20261108T141229Z-fb36a1cd",
+    "origin": {
+     "lon": 80.2209,
+     "lat": 12.9815
+    },
+    "destination": {
+     "lon": 80.2707,
+     "lat": 13.0827
+    }
+   },
+   "status": 200,
+   "seconds": 1.004,
+   "bytes": 12445,
+   "sha256": "8baf580088f1654515852a2ba8276b7e48a94c58ef123384d3d40baff7c69659",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/shelters",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.66,
+   "bytes": 224798,
+   "sha256": "c85cc8cda70ffb7fb71f800ba1dd2b880dbfc7eca2e4f6931de6902c992444a2",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T141229Z-fb36a1cd/incidents",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.299,
+   "bytes": 2779425,
+   "sha256": "0ba589b64e0a3d0722f98690e224f9d53f3a12b6e9eb5b93d74dd3cfa55fbdca",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "event",
+    "event_key": "2015-12-01",
+    "duration_hours": 48
+   },
+   "status": 202,
+   "seconds": 0.029,
+   "bytes": 142,
+   "sha256": "e84728afb3877597437fa16e0097c6412c15c6733b9dddaba10f3a38acaf5ce0",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/depth",
+   "params": {
+    "frame_index": 48
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.09,
+   "bytes": 717093,
+   "sha256": "c4dc137ff391cf47bdeb0a968901decf610f8cb7baa10c315b2b475a84526a08",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/flow",
+   "params": {
+    "frame_index": 48
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.132,
+   "bytes": 2167453,
+   "sha256": "a9c15ebb8d4423c3b4f4f84d202effc30e5bcec7d3d7f24426c71d81d62e8bdf",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/wards",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.522,
+   "bytes": 55828,
+   "sha256": "b15e9e249dfad4474951b693e442f1408576c58e2f8fbecf565b0c41403bf01b",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/roads",
+   "params": {
+    "bbox": "80.20,12.96,80.24,13.00"
+   },
+   "request": null,
+   "status": 200,
+   "seconds": 0.255,
+   "bytes": 3065825,
+   "sha256": "903bd9f2a7440d95e53bc1415e4dcf3c87f46f661df1503b530b386c3956fd34",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "POST",
+   "path": "/v3/routes",
+   "params": null,
+   "request": {
+    "run_id": "evt-20261108T152128Z-59eba744",
+    "origin": {
+     "lon": 80.2209,
+     "lat": 12.9815
+    },
+    "destination": {
+     "lon": 80.2707,
+     "lat": 13.0827
+    }
+   },
+   "status": 200,
+   "seconds": 1.069,
+   "bytes": 12445,
+   "sha256": "0bbc54109ca478831a01dafee7eee46c87f84ad82bb117919657297fcd119055",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/shelters",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.027,
+   "bytes": 224798,
+   "sha256": "fcf5500b5bb94b0b245d71c9aa96af32ef7dac5dbf1744cbd690007b03c01975",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/incidents",
+   "params": null,
+   "request": null,
+   "status": 200,
+   "seconds": 0.055,
+   "bytes": 2779425,
+   "sha256": "4788554dfe48d235e50e939fcd9232167a085990a07a535aa265016ad5ac064b",
+   "schema_errors": [],
+   "content_encoding": "gzip"
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20200101T000000Z-deadbeef",
+   "params": null,
+   "request": null,
+   "status": 404,
+   "seconds": 0.005,
+   "bytes": 67,
+   "sha256": "bdad13192a128c93571ee371f23ba9cdfedadb7d090ed73b071e9268eb247290",
+   "schema_errors": [],
+   "content_encoding": null,
+   "expected_status": 404,
+   "pass": true
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T090744Z-b0d2d2bc/flow",
+   "params": {
+    "frame_index": 0
+   },
+   "request": null,
+   "status": 503,
+   "seconds": 0.018,
+   "bytes": 142,
+   "sha256": "95f7e6150623e6d05eff3d3885aee1946b726452abec916b4ac67cf30dc01573",
+   "schema_errors": [],
+   "content_encoding": null,
+   "expected_status": 503,
+   "pass": true
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/depth",
+   "params": {
+    "frame_index": 9999
+   },
+   "request": null,
+   "status": 422,
+   "seconds": 0.006,
+   "bytes": 76,
+   "sha256": "21c1a22491f25a60dddd1a114deae2c014b3b88e597bc5f97e1a6818b8c6975b",
+   "schema_errors": [],
+   "content_encoding": null,
+   "expected_status": 422,
+   "pass": true
+  },
+  {
+   "method": "GET",
+   "path": "/v3/simulations/evt-20261108T152128Z-59eba744/flow",
+   "params": {
+    "frame_index": 9999
+   },
+   "request": null,
+   "status": 422,
+   "seconds": 0.006,
+   "bytes": 76,
+   "sha256": "21c1a22491f25a60dddd1a114deae2c014b3b88e597bc5f97e1a6818b8c6975b",
+   "schema_errors": [],
+   "content_encoding": null,
+   "expected_status": 422,
+   "pass": true
+  },
+  {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "custom",
+    "duration_hours": 6,
+    "custom_rainfall": {
+     "start_time_utc": "2026-11-08T00:00:00Z",
+     "interval_minutes": 60,
+     "values_mm": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "status": 202,
+   "seconds": 0.053,
+   "bytes": 143,
+   "sha256": "54e87af1aca64125b1e9d32df8644d0135f5256d0361811a99acd230a2bcddf4",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "custom",
+    "duration_hours": 6,
+    "custom_rainfall": {
+     "start_time_utc": "2026-11-08T00:00:00Z",
+     "interval_minutes": 60,
+     "values_mm": [
+      1.1,
+      1.1,
+      1.1,
+      1.1,
+      1.1,
+      1.1
+     ]
+    }
+   },
+   "status": 202,
+   "seconds": 0.051,
+   "bytes": 143,
+   "sha256": "75bb8279ee2e29b5af319b36bcd36f594bb3e275798270ba554b0f9c7db2e0bd",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "custom",
+    "duration_hours": 6,
+    "custom_rainfall": {
+     "start_time_utc": "2026-11-08T00:00:00Z",
+     "interval_minutes": 60,
+     "values_mm": [
+      1.2,
+      1.2,
+      1.2,
+      1.2,
+      1.2,
+      1.2
+     ]
+    }
+   },
+   "status": 202,
+   "seconds": 0.052,
+   "bytes": 143,
+   "sha256": "a0924a48e7158df9755fd12cf87d88ceb820e10a1c7b94e6b04c5e6939538cc3",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "custom",
+    "duration_hours": 6,
+    "custom_rainfall": {
+     "start_time_utc": "2026-11-08T00:00:00Z",
+     "interval_minutes": 60,
+     "values_mm": [
+      1.3,
+      1.3,
+      1.3,
+      1.3,
+      1.3,
+      1.3
+     ]
+    }
+   },
+   "status": 202,
+   "seconds": 0.048,
+   "bytes": 143,
+   "sha256": "77ad1c13fd705137a30f75d775701f9e72ac5ceddd6be90eb752a7ab94f32236",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "custom",
+    "duration_hours": 6,
+    "custom_rainfall": {
+     "start_time_utc": "2026-11-08T00:00:00Z",
+     "interval_minutes": 60,
+     "values_mm": [
+      1.4,
+      1.4,
+      1.4,
+      1.4,
+      1.4,
+      1.4
+     ]
+    }
+   },
+   "status": 202,
+   "seconds": 0.062,
+   "bytes": 143,
+   "sha256": "771223c807f98ee0a2be6d97592ba5d5452a76b4f99abd9783c8fb681755e7e6",
+   "schema_errors": [],
+   "content_encoding": null
+  },
+  {
+   "method": "POST",
+   "path": "/v3/simulations",
+   "params": null,
+   "request": {
+    "mode": "custom",
+    "duration_hours": 6,
+    "custom_rainfall": {
+     "start_time_utc": "2026-11-08T00:00:00Z",
+     "interval_minutes": 60,
+     "values_mm": [
+      1.5,
+      1.5,
+      1.5,
+      1.5,
+      1.5,
+      1.5
+     ]
+    }
+   },
+   "status": 409,
+   "seconds": 0.015,
+   "bytes": 110,
+   "sha256": "1badd246855c25edc487b6449c633ef4a41939632437350150dde97a1b7b7bc5",
+   "schema_errors": [],
+   "content_encoding": null
+  }
+ ],
+ "finished_at": "2026-11-08T15:24:40Z"
+}

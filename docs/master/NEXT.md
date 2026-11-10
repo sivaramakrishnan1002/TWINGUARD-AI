@@ -16,7 +16,7 @@
 
 ## Ready tasks by lane B
 
-- None.
+- **B56 — UI performance + layout rework + e2e test - ui session** (ready)
 
 ## Ready tasks by lane I
 

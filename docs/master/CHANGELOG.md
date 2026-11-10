@@ -791,3 +791,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-10 21:24:15 G6 PASS_WITH_CAVEATS: set ready; I04 done; release tag v1.0 (local) to follow.
 
 - 2026-11-10 21:25:10 Release v1.0 tagged locally: tag object d501438e on commit 631d1ae (not pushed). Existing remote frontend-demo noted for M4.
+
+- 2026-11-10 21:43:32 Registered B56 (ui session): UI performance, layout rework and 7-tab e2e test; post-v1.0 polish.

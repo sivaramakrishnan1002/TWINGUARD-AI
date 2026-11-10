@@ -6922,6 +6922,49 @@
         "Handbook refreshed: 00 and 03 rewritten; new 18 User Guide and 19 Runbook; current sections prepended to 04 (OD-2026-11-07/08/08b/08c/10, CR-019..021), 13 (G1-G5, Round 2) and 16 (G6 section 3, pending owner confirmation M7); novelty claim in the owner's wording; 17 document control and coverage matrix updated; master markdown rebuilt and DOCX regenerated with tools/build_handbook_docx.py (OOXML fallback). Secret scan clean; no broken links; screenshots linked not copied. Did not edit docs/master, docs/api, frontend or Lane A files.",
         "2026-11-10 Integrator verification: commit 4281576 touches only docs/handbook/; novelty wording matches OD-2026-11-07 verbatim; 0 broken relative links across docs/handbook/*.md; no Google/Cesium tokens; \"operational/validated/official warning\" appear only as disclaimers. The 16_References table stays pending M7 owner confirmation."
       ]
+    },
+    {
+      "id": "B56",
+      "lane": "B",
+      "title": "UI performance + layout rework + e2e test - ui session",
+      "phase": "B",
+      "status": "ready",
+      "depends_on": [
+        "B54"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/ui/reference_images/",
+        "docs/ui/reference_images/owner_feedback_20261110_current.webp",
+        "docs/ui/reference_images/owner_feedback_20261110_target_all_tabs.webp",
+        "docs/api/ai-service.yaml"
+      ],
+      "outputs": [
+        "frontend/",
+        "tests/ui/",
+        "tools/ui/",
+        "docs/ui/",
+        "tests/e2e/ui_7tabs_e2e.mjs"
+      ],
+      "acceptance": [
+        "Performance: Cesium rendering and timeline playback reach >= 30 FPS on the RTX 3050 Laptop GPU for citywide 120 m runs (measure and record FPS for map idle, playback with flow animation and tab switching, before and after); remove main-thread stalls such as per-frame JSON decoding or full re-renders, using stride, caching and incremental updates as needed.",
+        "Layout: a dominant centre map with side and bottom panels matching docs/ui/reference_images (including owner_feedback_20261110_current.webp versus owner_feedback_20261110_target_all_tabs.webp) across all 7 tabs, with no regression at 1366x768 or 1920x1080.",
+        "Data: every panel is bound to real C4 v3 /v3 data (live, replay and what-if runs) with no fixture or placeholder values shown as data; labels keep run_kind, source_mode, generated and ASSUMPTION markers, the DEMO / LIVE FORECAST badge and the disclaimer; Google and Cesium attribution stay visible.",
+        "End-to-end test: a scripted test of the 7 tabs at tests/e2e/ui_7tabs_e2e.mjs (Playwright or the existing tools/ui runner) against the packaged or local stack: open each tab, load a live and a replay run, play the timeline, run one what-if and one route search, and assert key panels show /v3 values with 0 console errors. Record the run in docs/ui/.",
+        "No key or token committed or sent to /api/ai; production build and UI tests pass; do not edit services/, docs/master/ or docs/api/ (request contract changes from the Integrator)."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator at the owner's request (21:30 IST, via the coordinator): 'the system is very slow and the simulation map are very lagging, and also the centre map area feels very smaller, i need you to follow the design in the image reference and change it and map everything properly and also check a end to end test also do it'. Post-v1.0 polish: v1.0 stays as tagged; a v1.1 tag decision comes later."
+      ]
     }
   ],
   "gates": [

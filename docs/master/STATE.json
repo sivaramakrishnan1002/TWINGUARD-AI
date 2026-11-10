@@ -6779,7 +6779,7 @@
       "lane": "B",
       "title": "Packaged live-UI screenshots (18_live_*) - ui session",
       "phase": "B",
-      "status": "running",
+      "status": "done",
       "depends_on": [
         "B52",
         "B53"
@@ -6795,17 +6795,20 @@
       "acceptance": [
         "On the packaged B11 stack (http://127.0.0.1:8081/), capture docs/ui/screenshots/18_live_* for a LIVE_FORECAST run (e.g. sim-20261110T121126Z-979f9524). Show the LIVE FORECAST \u00b7 HH:MM IST badge, 'Updated \u2026 \u00b7 next \u2026', Open-Meteo and CFM-DSS health, the Refresh button, the disclaimer 'Model forecast \u2014 not an official warning' and the Google attribution, with 0 console errors. Record the bundle hash in docs/ui/screenshots/README.md."
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/ui/screenshots/18_live_overview.webp,docs/ui/screenshots/18_live_flood_simulation_3d.webp,docs/ui/screenshots/18_live_flood_simulation_2d.webp,docs/ui/screenshots/18_live_digital_twin.webp,docs/ui/screenshots/18_live_last_error_fallback.webp,docs/ui/screenshots/README.md"
+      ],
       "session": "ui",
       "claimed_at": "2026-11-10T21:06:17+0530",
-      "finished_at": null,
-      "commit": null,
+      "finished_at": "2026-11-10T21:13:20+0530",
+      "commit": "55df49d",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator as the I27 follow-up (B53 item 3); the UI session is already capturing."
+        "2026-11-10 Registered by Integrator as the I27 follow-up (B53 item 3); the UI session is already capturing.",
+        "Packaged :8081, LIVE_FORECAST run sim-20261110T153456Z-b1a4b11c; badge/updated-next/health/Refresh/disclaimer/Google attribution visible; 0 console errors; bundle index-Dg3YnI3f.js sha256 898dffde..."
       ]
     },
     {
@@ -6813,7 +6816,7 @@
       "lane": "A",
       "title": "Round 4: final report and paper refresh (G6)",
       "phase": "A",
-      "status": "running",
+      "status": "done",
       "depends_on": [
         "A17",
         "A28",
@@ -6842,17 +6845,21 @@
         "Figures: reuse existing ones and add packaged screenshots by reference. Run Lane A tests and the raw audit; no new science runs.",
         "Do not edit docs/master/, docs/api/, docs/handbook/ or frontend/."
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/FINAL_REPORT.md"
+      ],
       "session": "A29 final report + paper (Lane A)",
       "claimed_at": "2026-11-10T17:59:07+0530",
-      "finished_at": null,
-      "commit": null,
+      "finished_at": "2026-11-10T21:12:57+0530",
+      "commit": "58273af",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator for Round 4 (coordinator request). Required by G6."
+        "2026-11-10 Registered by Integrator for Round 4 (coordinator request). Required by G6.",
+        "FINAL_REPORT.md and PAPER_DRAFT.md thesis-ready: G1-G5 + Round 2, A05-A10/A21, A25/A26/A27/A28, C4 v3 API (36 ops) and 7-tab 3D UI, live mode (CR-021, B51/B53), G5 packaged replay. Owner novelty wording (OD-2026-11-07) as integrated contribution; related work (Bates 2010, Pregnolato 2017, Li 2025, An 2025, Li/Song/Li 2026, Pan/Mohammadi/Taylor 2026); 5-item Limitations. Every number cites run_id/commit/report; 95 references checked, 12 commits exist. Figures reused by reference (docs/figures, docs/ui/screenshots incl. 17_g5_packaged_*). Lane A tests 176 passed; raw audit 157/157. No new science runs; no edits to docs/master, docs/api, docs/handbook or frontend.",
+        "2026-11-10 Integrator verification: commit 58273af touches only docs/FINAL_REPORT.md and docs/PAPER_DRAFT.md; the novelty wording matches OD-2026-11-07 verbatim in both; 0 broken relative links; all cited commit hashes exist (the other hex ids are B9 replay run ids); no validated-accuracy or official-warning claim (Limitations \u00a710 states the evidence limits); GPU figures (12.8 s solve, 18.3 s vs 154.6 s) match FLOOD_ENGINE_GPU_BENCHMARK.md and A28_RESERVOIR_COUPLING.md."
       ]
     },
     {

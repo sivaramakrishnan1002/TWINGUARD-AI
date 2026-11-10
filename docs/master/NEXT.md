@@ -37,8 +37,7 @@
 
 ## Running tasks
 
-- **B54 — Packaged live-UI screenshots (18_live_*) - ui session** (running)
-- **A29 — Round 4: final report and paper refresh (G6)** (running)
+- None.
 
 ## Next gate
 

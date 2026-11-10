@@ -10,7 +10,7 @@ Build an auditable flood digital twin for the Chennai Metropolitan Area. Current
 
 - G0: `ready`; C1-C8: frozen at v0.
 - Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `ready` ([report](GATE_G4_REPORT.md)); G5 `ready` ([report](GATE_G5_REPORT.md)); G6 `not_ready`.
-- Running tasks: B54, A29.
+- Running tasks: none.
 - Selector-ready tasks: A: none; B: none; I: none.
 
 <!-- CURRENT STATE END -->
@@ -207,8 +207,8 @@ Some lane reports live with their owned code, because their lanes do not own `do
 | B52 | Live-first UI: smart badge, live status, refresh and auto-switch (CR-021) - ui session | B | B51 | done |
 | B53 | Round 2 verification: one full live cycle on the packaged stack (CR-021) | B | A28, B51, B52 | done_with_caveats |
 | I27 | Round 2 live-stage review (CR-021) | I | B53 | done_with_caveats |
-| B54 | Packaged live-UI screenshots (18_live_*) - ui session | B | B52, B53 | running |
-| A29 | Round 4: final report and paper refresh (G6) | A | A17, A28, B53, I27 | running |
+| B54 | Packaged live-UI screenshots (18_live_*) - ui session | B | B52, B53 | done |
+| A29 | Round 4: final report and paper refresh (G6) | A | A17, A28, B53, I27 | done |
 | B55 | Round 4: handbook refresh (architecture, user guide, runbook, attribution) | B | B53, I27 | done |
 
 <!-- TASK TABLE END -->

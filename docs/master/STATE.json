@@ -2531,7 +2531,8 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Integrator: decision options in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a72 (recommended: private remote; push code/docs/evidence only, never data/, .env*, images; owner pushes after a secret scan)."
+        "2026-11-10 Integrator: decision options in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a72 (recommended: private remote; push code/docs/evidence only, never data/, .env*, images; owner pushes after a secret scan).",
+        "2026-11-10 OD-2026-11-10b (owner: \"choose best\" = recommended G6 defaults). Private remote; code/docs/evidence only. The owner creates the remote and pushes after a secret scan. Remains an owner action (blocked_manual); no session adds a remote or pushes."
       ]
     },
     {
@@ -2606,7 +2607,7 @@
       "lane": "M",
       "title": "Census/licence checks",
       "phase": "Manual",
-      "status": "blocked_manual",
+      "status": "done_with_caveats",
       "depends_on": [],
       "prerequisites": [
         "human action required"
@@ -2615,7 +2616,8 @@
       "outputs": [],
       "acceptance": [],
       "evidence": [
-        "docs/MANUAL_TODO.md"
+        "docs/master/G6_OWNER_DECISION_CHECKLIST.md",
+        "docs/master/FINAL_YEAR_OWNER_DECISIONS.md"
       ],
       "session": null,
       "claimed_at": null,
@@ -2626,7 +2628,8 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Integrator: source-by-source licence and attribution table in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a73 for owner confirmation."
+        "2026-11-10 Integrator: source-by-source licence and attribution table in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a73 for owner confirmation.",
+        "2026-11-10 OD-2026-11-10b (owner: \"choose best\" = recommended G6 defaults). The 14-source licence/attribution table in G6_OWNER_DECISION_CHECKLIST.md \u00a73 is accepted as recorded; the CFM-DSS dashboard is 'cited as source, no published terms'."
       ]
     },
     {
@@ -2652,7 +2655,8 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Integrator: docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a74 asks for two dates (draft review after A29/B55; final demo before tagging v1.0)."
+        "2026-11-10 Integrator: docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a74 asks for two dates (draft review after A29/B55; final demo before tagging v1.0).",
+        "2026-11-10 OD-2026-11-10b (owner: \"choose best\" = recommended G6 defaults). Owner action, not blocking G6: the owner schedules a draft review now and the final demo."
       ]
     },
     {
@@ -5571,7 +5575,7 @@
       "lane": "B",
       "title": "Implement authorized IMD rainfall/weather connector",
       "phase": "Live-data source verification and integration",
-      "status": "blocked_prerequisite",
+      "status": "parked",
       "depends_on": [
         "B38"
       ],
@@ -5612,7 +5616,8 @@
       "target_day": null,
       "notes": [
         "Blocked until source verification and explicit D2/D8/source-owner permission. This task does not authorize endpoint access or credentials.",
-        "2026-11-10 Integrator: recommended to park as superseded (G6 checklist \u00a75); awaiting owner decision."
+        "2026-11-10 Integrator: recommended to park as superseded (G6 checklist \u00a75); awaiting owner decision.",
+        "2026-11-10 OD-2026-11-10b (owner: \"choose best\" = recommended G6 defaults). Parked as superseded by the Open-Meteo live cycle (CR-021, B51). Not required by any gate."
       ]
     },
     {
@@ -5670,7 +5675,7 @@
       "lane": "B",
       "title": "Prove observation-triggered recomputation through API and UI",
       "phase": "Live-data source verification and integration",
-      "status": "blocked_prerequisite",
+      "status": "parked",
       "depends_on": [
         "B37",
         "B40",
@@ -5724,7 +5729,8 @@
       "target_day": null,
       "notes": [
         "Blocked: there is no completed Lane A observation-triggered recomputation interface or approved Integrator API projection. Do not treat A21 as model recomputation or use its outputs prematurely. Requires B40/B41 and B37 completion.",
-        "2026-11-10 Integrator: recommended to park as superseded by B51 live cycle (G6 checklist \u00a75); awaiting owner decision."
+        "2026-11-10 Integrator: recommended to park as superseded by B51 live cycle (G6 checklist \u00a75); awaiting owner decision.",
+        "2026-11-10 OD-2026-11-10b (owner: \"choose best\" = recommended G6 defaults). Parked as superseded by the Open-Meteo live cycle (CR-021, B51). Not required by any gate."
       ]
     },
     {

@@ -116,3 +116,17 @@ See [CR-014](CR-014_OPEN_METEO_WEATHER_CONTEXT.md) for endpoint fields, timestam
   - CR-016/CR-017's on-demand-only, no-retention and no-recomputation limits for the reservoir source.
   - **Reservoir coupling:** storage is turned into outlet inflow only through A28's documented assumption rule, labelled as an assumption and never shown as an observed release.
 - **Still binding:** no fabricated value shown as observed; generated incidents labelled; no credentials; C3 date-only semantics for the reservoir `source_date`.
+
+## OD-2026-11-10b — G6 checklist: recommended defaults accepted (recorded 2026-11-10)
+
+**Decision-maker:** project owner. Their reply to "Accept the recommended G6 defaults?" was: **"choose best"**. The coordinator session relayed it, interpreting it as acceptance of the recommended defaults in [G6_OWNER_DECISION_CHECKLIST.md](G6_OWNER_DECISION_CHECKLIST.md).
+
+- **I04 (release):**
+  - Create a local annotated tag `v1.0` on the final docs/master commit, after `verify_state` and `gate_check G6` pass.
+  - **No database dump.** No G1–G5 or Round 2 work wrote to the shared `twinguard` database.
+  - Docker images stay local; any shared build uses URL-restricted tokens.
+  - **No push** by any session.
+- **M4 (GitHub):** a private remote, carrying code, docs and evidence only (never `data/`, `.env*`, images, `backups/` or run stores). **The owner creates the remote and pushes after a secret scan.** Sessions add no remote and never push.
+- **M7 (licences):** the 14-source licence and attribution table in the checklist §3 is accepted as recorded. The CFM-DSS reservoir dashboard is marked **"cited as source, no published terms"**, and CR-016/CR-021 bounds apply.
+- **M8 (mentor review):** an owner action, not blocking G6. The owner schedules two dates: a draft review now and the final demo.
+- **B40 and B42:** parked as superseded by the Open-Meteo live cycle (CR-021). No gauge or IMD observations are ingested, and recomputation driven by incoming observations is out of scope; both are noted in the Limitations.

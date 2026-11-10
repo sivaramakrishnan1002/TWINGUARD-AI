@@ -1,6 +1,6 @@
 # G6 owner-decision checklist (Round 4) — prepared 2026-11-10
 
-**For:** the project owner, directly or through the coordinator's delegation. **Prepared by:** the Integrator. Nothing here is decided yet.
+**For:** the project owner, directly or through the coordinator's delegation. **Prepared by:** the Integrator. **Decided 2026-11-10 as OD-2026-11-10b (owner: "choose best" = recommended defaults).**
 
 **Where G6 stands:** G6 ("Validation, documentation, release tag v1.0") requires A15 ✔, A17 ✔, **I04**, and now also the Round 4 documentation tasks **A29** (final report/paper refresh) and **B55** (handbook refresh). G0–G5 are `ready`. Tick one option per item. Each item lists a recommended default.
 
@@ -35,7 +35,7 @@
 | GPM IMERG (NASA) | Event rainfall | NASA open data | NASA GES DISC citation |
 | ERA5 (Copernicus C3S) | Hourly rainfall shape | Copernicus licence | C3S citation |
 | Open-Meteo | Forecast rainfall and weather | Free non-commercial use, CC BY 4.0 data | "Weather data by Open-Meteo.com" |
-| CFM-DSS public dashboard (Tamil Nadu) | Reservoir snapshot | **No formal terms published.** CR-016/CR-021 bounds apply. | Source name, with no endorsement claim |
+| CFM-DSS public dashboard (Tamil Nadu) | Reservoir snapshot | **Cited as source, no published terms** (OD-2026-11-10b). CR-016/CR-021 bounds apply. | Source name, with no endorsement claim |
 | UNOSAT / HDX flood extents | Labels (tier A) | UNOSAT terms (HDX) | UNOSAT citation |
 | Sentinel-1 (ESA Copernicus) | SAR diagnostics | Copernicus open licence | Copernicus Sentinel data citation |
 | NRSC/NDEM flood maps (2021, 2023) | Diagnostic out-of-event check | Government publication; confirm reuse terms | NRSC citation |

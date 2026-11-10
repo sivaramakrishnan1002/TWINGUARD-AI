@@ -783,3 +783,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-10 21:13:47 A29 verified by Integrator (final report and paper, 58273af); OD-2026-11-08c note points to the benchmark figures.
 
 - 2026-11-10 21:14:10 B54 evidence paths split (verify_state drift fix).
+
+- 2026-11-10 21:21:41 OD-2026-11-10b recorded (owner 'choose best' = recommended G6 defaults): M7 accepted; M4 and M8 remain owner actions; B40/B42 parked as superseded; I04 to tag v1.0 locally with no dump and no push.

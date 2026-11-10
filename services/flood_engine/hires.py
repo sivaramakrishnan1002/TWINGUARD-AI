@@ -308,7 +308,7 @@ def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, fra
     inputs = totals["rain_m3"] + totals["inflow_m3"]
     residual = inputs - totals["infiltration_m3"] - totals["boundary_net_out_m3"] - storage
     diag = {**totals, "final_storage_m3": storage, "steps": steps, "min_dt_s": min_dt, "threads": n_threads,
-            "mass_balance_relative_error": abs(residual) / max(inputs, 1e-9), "inflow_m3s": inflow_m3s}
+            "mass_balance_relative_error": abs(residual) / max(inputs + max(0.0, -totals["boundary_net_out_m3"]), 1e-9), "inflow_m3s": inflow_m3s}
     peak_frame[peak <= 0] = -1
     return HiresResult(frames, [int(round(k * frame_interval_s / 60)) for k in range(nframes)],
                        np.where(act, peak, np.nan).astype(np.float32), peak_frame,

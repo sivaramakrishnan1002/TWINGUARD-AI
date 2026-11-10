@@ -137,14 +137,46 @@ def build_forcing(request: dict, static_root: Path, bundle: StaticBundle, runs_r
     if mode == "forecast":
         from . import forcing as fm
         snap = (fetch_forecast or fm.fetch_snapshot)(_bounds(bundle))
-        model = snap.usable[0]
+        usable = snap.usable
+        if not usable:
+            raise ScenarioError("no forecast model returned complete domain precipitation")
         a = bundle.a
-        field = fm.map_to_grid(model, a["cell_lat"].astype(float), a["cell_lon"].astype(float), a["active"] | a["boundary"])
-        field = np.nan_to_num(field[fm.PAST_HOURS:], nan=0.0)
-        start = _parse(model.times_utc[fm.PAST_HOURS] + ":00Z") - timedelta(hours=1)
-        inputs.append({"name": "rainfall", "source": f"open-meteo:{model.model}", "source_mode": "MODEL_FORECAST", "fetched_at": snap.fetched_at,
-                       "sha256": model.response_sha256})
-        return {"start": start, "interval_s": 3600.0, "rain_mm": field.astype(np.float32), "inputs": inputs, "stage_m": 0.0, "releases": {}}
+        mask = a["active"] | a["boundary"]
+        horizon = len(usable[0].times_utc) - fm.PAST_HOURS
+        if int(request.get("duration_hours", 24)) > horizon:
+            raise ScenarioError(f"duration_hours exceeds the forecast horizon ({horizon} h)")
+        fields, models = [], []
+        for m in usable:
+            fld = fm.map_to_grid(m, a["cell_lat"].astype(float), a["cell_lon"].astype(float), mask)[fm.PAST_HOURS:]
+            cover = float(np.isfinite(fld[:, a["active"]]).all(axis=0).mean())
+            models.append({"model": m.model, "label": m.label, "distinct_native_cells": m.native_cells, "active_cell_coverage": round(cover, 4),
+                           "domain_mean_forecast_total_mm": round(float(np.nanmean(np.nansum(fld, axis=0)[a["active"]])), 2),
+                           "response_sha256": m.response_sha256})
+            fields.append(fld)
+        choice = request.get("forecast_model") or usable[0].model
+        if choice == "ensemble_mean":
+            field = np.nanmean(np.stack(fields), axis=0)
+            src = "open-meteo:ensemble_mean(" + ",".join(m.model for m in usable) + ")"
+        else:
+            names = [m.model for m in usable]
+            if choice not in names:
+                raise ScenarioError(f"forecast_model {choice!r} unavailable; usable: {names} or ensemble_mean")
+            field = fields[names.index(choice)]
+            src = f"open-meteo:{choice}"
+        if not np.isfinite(field[:, a["active"]]).all():
+            raise ScenarioError("forecast forcing has missing values over active cells")
+        field = np.where(np.isfinite(field), field, 0.0)  # NaN only outside the computed domain
+        times = usable[0].times_utc[fm.PAST_HOURS:]
+        start = _parse(times[0] + ":00Z") - timedelta(hours=1)  # hourly value at T covers (T-1h, T]
+        check = {"valid_times_utc": [times[0] + ":00Z", times[-1] + ":00Z"], "interval_end_labels": True,
+                 "simulation_start_utc": _iso(start), "units": "mm per 1-hour interval (= mm/h)", "horizon_hours": horizon,
+                 "spin_up_hours_discarded": fm.PAST_HOURS, "fetched_at": snap.fetched_at, "models": models,
+                 "excluded_models": [{"model": m.model, "reason": m.reason} for m in snap.models if m.status != "ok"],
+                 "forcing_used": src, "combined_forcing_sha256": snap.combined_sha256()}
+        inputs.append({"name": "rainfall", "source": src, "source_mode": "MODEL_FORECAST", "fetched_at": snap.fetched_at,
+                       "sha256": snap.combined_sha256() if choice == "ensemble_mean" else usable[[m.model for m in usable].index(choice)].response_sha256})
+        return {"start": start, "interval_s": 3600.0, "rain_mm": field.astype(np.float32), "inputs": inputs, "stage_m": 0.0, "releases": {},
+                "forecast_check": check}
     raise ScenarioError("mode must be event, custom, forecast or what_if")
 
 
@@ -426,9 +458,14 @@ def find_cached(runs_root: Path, key: str) -> dict | None:
 def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = None, custom_rainfall: dict | None = None,
                  what_if: dict | None = None, duration_hours: int = 24, resolution: str = "citywide", focus_area: str | None = None,
                  frame_interval_minutes: int = 30, members: int = 1, citywide_cell_m: int = 120, threads: int | None = None,
-                 fetch_forecast=None, progress=None, use_cache: bool = True, device: str = "cpu") -> dict:
+                 fetch_forecast=None, progress=None, use_cache: bool = True, device: str = "cpu",
+                 reservoir_snapshot=None, run_time: datetime | None = None, forecast_model: str | None = None) -> dict:
     """Run one simulation and write it under ``runs_root/<run_id>/``. Returns the SimulationRun document.
 
+    ``reservoir_snapshot``: optional CFM-DSS snapshot (the B44 /reservoirs/history body or a list of records). It is
+    mapped to reservoir outlet inflows by the A28 ASSUMPTION rule (``reservoir_coupling.couple``); missing or stale
+    (> 48 h) snapshots give zero inflow. ``run_time`` (UTC) is the reference for staleness (default: now).
+    ``forecast_model``: mode=forecast only; a usable model id (default: the first usable, ECMWF IFS) or "ensemble_mean".
     ``device``: "cpu" (NumPy, default) or "cuda" / "cuda:N" (A26 torch float32). CUDA falls back to NumPy when torch
     or CUDA is unavailable or a CUDA error occurs; ``provenance.device`` records requested/used/fallback_reason.
     The request cache is device-independent (CPU and CUDA agree within the documented tolerance).
@@ -447,8 +484,14 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
         raise ScenarioError("members must be 1 or 3")
     request = {"mode": mode, "event_key": event_key, "custom_rainfall": custom_rainfall, "what_if": what_if,
                "duration_hours": int(duration_hours), "resolution": resolution, "focus_area": focus_area,
-               "frame_interval_minutes": int(frame_interval_minutes)}
+               "frame_interval_minutes": int(frame_interval_minutes), "forecast_model": forecast_model}
     request = {k: v for k, v in request.items() if v is not None}
+    coupling = None
+    if reservoir_snapshot is not None or mode == "forecast":  # forecast (live) runs always record the coupling choice
+        from .reservoir_coupling import couple
+        coupling = couple(reservoir_snapshot, run_time)
+        request["reservoir_coupling"] = {"rule_id": coupling["rule_id"], "snapshot_sha256": coupling["snapshot_sha256"],
+                                         "status": coupling["status"].split(":")[0]}
     key = request_key({**request, "members": members, "cell": citywide_cell_m, "engine": ENGINE_VERSION})
     if use_cache and mode != "forecast":
         cached = find_cached(runs_root, key)
@@ -461,10 +504,20 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
     duration_s = int(duration_hours) * 3600.0
     frame_s = frame_interval_minutes * 60.0
     rain = forcing["rain_mm"]
+    n_in = int(np.ceil(duration_s / forcing["interval_s"]))  # forcing intervals inside the run
     forcing_sha = hashlib.sha256(np.ascontiguousarray(rain, np.float32).tobytes() + json.dumps(
         {"stage": forcing["stage_m"], "rel": forcing["releases"]}, sort_keys=True).encode()).hexdigest()
     prefix = {"event": "evt", "what_if": "whatif"}.get(mode, "sim")  # C4 v3 run_id pattern
     run_id = f"{prefix}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-{key[:8]}"
+    if coupling is not None:
+        releases = dict(coupling["releases_m3s"])
+        releases.update(forcing.get("releases", {}))  # explicit what-if releases override the rule
+        forcing["releases"] = {k: v for k, v in releases.items() if v > 0}
+        forcing["inputs"] = forcing["inputs"] + [
+            {"name": "reservoir_snapshot", "source": "CFM-DSS public dashboard (daily level/storage)", "source_mode": "PUBLISHED_SNAPSHOT",
+             "fetched_at": coupling.get("snapshot_received_at"), "sha256": coupling.get("snapshot_sha256")},
+            {"name": "reservoir_outlet_inflow", "source": f"{coupling['rule_id']} (ASSUMPTION; not an observed release)", "source_mode": "SCENARIO_INPUT",
+             "fetched_at": None, "sha256": None}]
     inflows = []
     for name, q in forcing["releases"].items():
         cell = bundle.meta.get("inflow_cells", {}).get(name)
@@ -623,9 +676,10 @@ def run_scenario(static_root, runs_root, *, mode: str, event_key: str | None = N
         "created_at": created, "completed_at": _now(), "progress_pct": 100, "error": None, "cached": False,
         "grid": bundle.grid, "frame_interval_minutes": int(frame_interval_minutes), "frames": frames, "summary": summary,
         "members": [m[0] for m in MEMBERS[members]], "layers": sorted(peaks) + ["velocity_mps"], "flow": flow_meta,
-        "forcing": {"start_utc": _iso(start), "interval_minutes": int(forcing["interval_s"] // 60), "total_mm_domain_mean": round(float(rain.sum() if rain.ndim == 1 else np.nanmean(rain.sum(axis=0)[act])), 2),
+        "forcing": {"start_utc": _iso(start), "interval_minutes": int(forcing["interval_s"] // 60), "total_mm_domain_mean": round(float(rain[:n_in].sum() if rain.ndim == 1 else np.nanmean(rain[:n_in].sum(axis=0)[act])), 2),
                     "tide_offset_m": forcing["stage_m"], "reservoir_release_m3s": forcing["releases"], "inflow_cells_used": len(inflows)},
         "parent_run_id": parent_run["run_id"] if parent_run else None,
+        "reservoir_coupling": coupling, "forecast_check": forcing.get("forecast_check"),
         "provenance": {"engine_version": ENGINE_VERSION, "run_id": run_id, "forcing_sha256": forcing_sha, "static_assets_version": STATIC_VERSION,
                        "static_bundle": bundle.name, "static_bundle_sha256": bundle.meta.get("bundle_sha256"), "inputs": forcing["inputs"],
                        "device": {"requested": device, "used": used, "name": gpu_name if used != "cpu" else "cpu (NumPy)",

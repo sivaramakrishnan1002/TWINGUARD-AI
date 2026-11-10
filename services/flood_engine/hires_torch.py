@@ -300,7 +300,7 @@ def run(grid: HiresGrid, rain_mm, rain_interval_s: float, duration_s: float, fra
     pf = peak_frame.cpu().numpy()
     pf[peak_np <= 0] = -1
     diag = {**totals, "final_storage_m3": storage, "steps": steps, "min_dt_s": min_dt, "threads": 0,
-            "mass_balance_relative_error": abs(residual) / max(inputs, 1e-9), "inflow_m3s": inflow_m3s,
+            "mass_balance_relative_error": abs(residual) / max(inputs + max(0.0, -totals["boundary_net_out_m3"]), 1e-9), "inflow_m3s": inflow_m3s,
             "device": str(dev), "kernel_mode": graph_mode, "peak_vram_mb": round(torch.cuda.max_memory_allocated(dev) / 2**20, 1) if dev.type == "cuda" else None}
     return HiresResult(frames, [int(round(k * frame_interval_s / 60)) for k in range(nframes)],
                        np.where(act_np, peak_np, np.nan).astype(np.float32), pf,

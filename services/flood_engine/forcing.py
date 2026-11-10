@@ -195,7 +195,10 @@ def map_to_grid(forcing: ModelForcing, cell_lat: np.ndarray, cell_lon: np.ndarra
     py = forcing.point_lat
     cx = cell_lon[mask] * math.cos(lat0)
     cy = cell_lat[mask]
-    nearest = np.argmin((cx[:, None] - px[None, :]) ** 2 + (cy[:, None] - py[None, :]) ** 2, axis=1)
+    nearest = np.empty(len(cx), dtype=np.int64)
+    for i in range(0, len(cx), 20000):  # chunked: bounded memory on 30-120 m grids
+        sl = slice(i, i + 20000)
+        nearest[sl] = np.argmin((cx[sl, None] - px[None, :]) ** 2 + (cy[sl, None] - py[None, :]) ** 2, axis=1)
     hours = forcing.values_mm.shape[1]
     field_mm = np.full((hours,) + mask.shape, np.nan)
     field_mm[:, mask] = forcing.values_mm[nearest].T

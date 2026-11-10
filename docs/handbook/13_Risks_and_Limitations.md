@@ -1,5 +1,25 @@
 # Risks and limitations
 
+<!-- B55 refresh -->
+## Current limitations (G1–G5 and Round 2) — for the thesis
+
+These come from the Integrator's gate reviews (`docs/master/GATE_G1_REPORT.md` … `GATE_G5_REPORT.md`, `ROUND2_LIVE_REVIEW.md`). Every gate passed **with caveats**, and the caveats bind every report, UI and API wording. The October risk register further down is kept as history. [repo]
+
+| Area | Limitation |
+|---|---|
+| **Labels (G1)** | The SAR flood-label rule failed acceptance (tier D). The only accepted labels are the UNOSAT November 2015 references. Labels give extent, not depth. DEM-derived depth is valid for only about 30 % of the mapped extent, and the `p05`/`p95` bounds are ±4 m assumptions, not percentiles. |
+| **Risk map (G2)** | Single event (Nov 2015). The out-of-event check against the Dec 2023 NRSC map (PR-AUC 0.121, lift 2.76) uses a **preliminary, unaccepted** reference. The susceptibility model and map are **not validated out of event**. |
+| **Replay (G3)** | The Kafka/Redis replay is historical `REPLAY` in an isolated test database. Reservoir times are date-only (C3), with no measurement time or timezone. |
+| **Forecast and decision chain (G4)** | Hindcasts, not forecasts, for 2015–2023. Simulated research results only: no passability or safe-route claim. Shelter capacities (100/250/500 people) and candidates (schools, colleges) are assumptions. |
+| **Product pipeline (G5)** | The packaged replay run reused engine output first computed on CUDA, so the in-package CPU compute is evidenced separately. The GPU image was not built for the gate evidence. |
+| **Engine** | Simplified local-inertial model on the GLO-30 *surface* DEM (buildings and vegetation included). No storm-drain network. Not validated against observed depths. Building heights are mostly estimated. Event rainfall is spatially uniform. |
+| **Live mode (Round 2)** | A numerical weather-model forecast pushed through the 120 m model. **Not an official warning, and its skill is not validated.** Packaged verification ran on CPU (about 4.6 min per cycle); pruning past 16 runs is shown by a test, not 17 real cycles. Run only one live scheduler at a time, because the local launcher and the package each count Open-Meteo calls separately. |
+| **Reservoirs** | CFM-DSS publishes level and storage, never releases. A28 outlet inflows are **assumptions** from a storage threshold rule, never observed releases. The source has no published terms; CR-016/CR-021 bounds apply. |
+| **Security and licensing** | The Cesium ion token is compiled into the frontend bundle from git-ignored `.env.local`: do not publish images or bundles as built (I04). Data licences are pending owner confirmation (G6 M7; see [References and Attribution](16_References_and_Attribution.md)). |
+| **Operations** | A service started from a Claude session stops when that session ends. Use `start_live.ps1 -Background` or the always-on compose overlay ([Runbook](19_Runbook.md)). |
+
+---
+
 Likelihood and impact ratings below are qualitative **[estimate, to be agreed]** project judgments, not computed probabilities. Evidence is cited for each underlying issue. [user]
 
 | Risk | Likelihood / impact | Why it matters | Mitigation |

@@ -1,5 +1,26 @@
 # Decision log
 
+<!-- B55 refresh -->
+## Final-year decisions (November 2026)
+
+These are the binding owner decisions for the final product. They are recorded by the Integrator in `docs/master/FINAL_YEAR_OWNER_DECISIONS.md` and implemented under the change requests below. The October entries further down are kept as history; where they conflict, the decisions below win. [repo]
+
+| ID | Decision | Implemented by |
+|---|---|---|
+| **OD-2026-11-07** | A bachelor's final-year product rebaseline. 7 tabs in a dark control-room style. 3D city with CesiumJS and Google Photorealistic 3D Tiles; the key stays in git-ignored `.env.local` and the API never returns or accepts it. Relaxed caveat policy (one DEMO/SIMULATION badge; `done_with_caveats` counts as done). Still binding: no fabricated value shown as observed, a `source_mode` on every result, resources as `SCENARIO_INPUT`, incidents labelled generated. On-demand Open-Meteo with caching and a 600 s minimum interval. **Novelty claim in the owner's wording** (see [Project on a Page](00_Project_on_a_Page.md)). | CR-019; A25, B47, B48 |
+| **OD-2026-11-08** | Use the GPU whenever it helps (RTX 3050 Laptop, 4 GB). CPU must remain a supported fallback, and every GPU path falls back cleanly. One GPU job at a time. | A26 (CUDA backend); B47 device option |
+| **OD-2026-11-08b** | Revised G5: the product-pipeline end-to-end check (archived input → engine → `/v3` → packaged UI). The CR-012 POONDI replay is kept as an optional secondary check. | CR-020; B13, B50 |
+| **OD-2026-11-08c** | Keep a persistent engine worker warm (`TWINGUARD_V3_WORKER`), with CPU fallback. Measured 17 s warm against 31 s cold for a 48 h citywide run. | B47 (dec0abe, df96bf2) |
+| **OD-2026-11-10** | Live forecast mode: a 3 h cycle with start-up catch-up, manual refresh at most once per 600 s, the last 16 live runs kept, a 5,000 calls/day Open-Meteo budget, the CFM-DSS snapshot at most daily, and reservoir coupling only through A28's labelled assumption rule. A run-dependent badge, and the permanent note "Model forecast — not an official warning". It amends the earlier no-polling rules **for live mode only**. | CR-021; A28, B51, B52, B53 |
+
+| Change request | Subject |
+|---|---|
+| **CR-019** | Product rebaseline of the UI and API: C4 v3 `/v3` contract, ownership and task split (A25, B47, B48) |
+| **CR-020** | G5 as the product-pipeline replay (B13 acceptance, packaged UI evidence) |
+| **CR-021** | Live forecast mode (`/v3/live/*`, `run_kind`, `live` block, Overview badge, CR-016/017/018 amendments) |
+
+---
+
 This table separates recorded repository decisions from the user's planning-chat decisions. Dates are stated only where a repository record supports them. “Options” are included only when recorded; otherwise the entry says they were not recorded. [repo: sources in table; user]
 
 | ID | Decision | Alternatives considered / reason | Decision owner and date | Impact |

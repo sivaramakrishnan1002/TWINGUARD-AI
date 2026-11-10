@@ -1,5 +1,42 @@
 # References and attribution
 
+<!-- B55 refresh -->
+## Data sources and services (G6 checklist §3)
+
+**Status: pending owner confirmation (G6 item M7).** Each row is confirmed by the owner, or marked "use removed", before the final report. The licence and terms column is what must be confirmed, not a legal opinion. [repo: `docs/master/G6_OWNER_DECISION_CHECKLIST.md` §3]
+
+| Source | Use in the project | Licence or terms to confirm | Attribution |
+|---|---|---|---|
+| OpenStreetMap (Geofabrik extract) | Roads, buildings, facilities, shelters | ODbL 1.0 | "© OpenStreetMap contributors" |
+| WorldPop | Population exposure | CC BY 4.0 | WorldPop citation |
+| Copernicus GLO-30 DEM | Terrain (engine surface) | Copernicus DEM licence (free, with attribution) | "© DLR e.V. 2010–2014 and © Airbus Defence and Space GmbH 2014–2018, provided under COPERNICUS by the European Union and ESA" |
+| GPM IMERG (NASA) | Event rainfall totals | NASA open data | NASA GES DISC citation |
+| ERA5 (Copernicus C3S) | Hourly rainfall shape | Copernicus licence | C3S citation |
+| Open-Meteo | Forecast rainfall (live and forecast runs), weather panel | Free non-commercial use; data CC BY 4.0 | "Weather data by Open-Meteo.com" |
+| CFM-DSS public dashboard (Tamil Nadu) | Reservoir snapshot (`PUBLISHED_SNAPSHOT`); A28 coupling input | **No formal terms published.** CR-016/CR-021 bounds apply: at most daily, no redistribution of raw responses, no endorsement claim. | Source name, with no endorsement claim |
+| UNOSAT / HDX flood extents | Labels (tier A) | UNOSAT terms (HDX) | UNOSAT citation |
+| Sentinel-1 (ESA Copernicus) | SAR diagnostics | Copernicus open licence | "Contains modified Copernicus Sentinel data" |
+| NRSC/NDEM flood maps (2021, 2023) | Diagnostic out-of-event check | Government publication; confirm reuse terms | NRSC citation |
+| Kaggle Chennai reservoir levels | Track B replay | Dataset licence on Kaggle (confirm) | Dataset citation |
+| Google Map Tiles / Photorealistic 3D Tiles | 3D city in the UI | Google Maps Platform terms (attribution and logo visible; no caching beyond the terms) | On-map Google attribution and logo (kept visible) |
+| CesiumJS / Cesium ion | 3D engine and terrain | CesiumJS Apache-2.0; Cesium ion terms (free tier, non-commercial) | Cesium credit (on map) |
+| Census data (if used) | — | Confirm whether any census table is used; WorldPop is the population source | — |
+
+### Software (open source)
+
+| Component | Licence |
+|---|---|
+| Python, NumPy, SciPy, FastAPI, Uvicorn, Pydantic, httpx | PSF / BSD / MIT (per package) |
+| PyTorch (optional GPU backend) | BSD-3-Clause; NVIDIA CUDA runtime under NVIDIA's EULA |
+| React, Vite, Tailwind CSS | MIT |
+| CesiumJS | Apache-2.0 |
+| nginx | BSD-2-Clause |
+| Docker Desktop | Docker subscription terms (personal/educational use) |
+
+The UI keeps the Open-Meteo, OpenStreetMap, Google and Cesium credits visible. The handbook contains no keys or tokens.
+
+---
+
 ## Literature supplied by the user
 
 The list below reproduces bibliographic leads and links from the planning brief. The links have not been opened for this handbook, and the works were described as reviewed by title/abstract only unless noted. Verify authors, title, year, venue, DOI, methods and findings from the source before citing in a thesis. [user; unverified]

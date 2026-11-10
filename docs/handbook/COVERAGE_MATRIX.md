@@ -145,3 +145,16 @@ This matrix maps the current project documentation, code, data folders and raw d
 - No content-bearing project folder or documented dataset family was intentionally omitted. Git and virtual-environment internals and generated Python bytecode are excluded as implementation machinery, not project sources.
 - `docs/LABEL_STRATEGY.md` is absent, not silently skipped. The repo’s current label guidance is covered from `docs/PHASE3_PLAN.md`.
 - This matrix maps whole dataset families, not every individual file in every folder. File-level names, sizes, periods, sources, licenses and status are in `docs/DATA_MANIFEST.csv` and `05_Data_Inventory.md`; all 13 Sentinel files are separately listed in `06_Flood_Events_and_Labels.md`.
+
+
+## B55 refresh (10 Nov 2026) — final-year sources
+
+| Source | Covered in |
+|---|---|
+| `docs/master/FINAL_YEAR_OWNER_DECISIONS.md` (OD-2026-11-07/08/08b/08c/10) | 00 Project on a Page; 04 Decision Log |
+| `docs/master/CR-019_PRODUCT_REBASELINE_UI_API.md`, `CR-020_G5_PRODUCT_PIPELINE_REPLAY.md`, `CR-021_LIVE_FORECAST_MODE.md` | 03 Architecture; 04 Decision Log; 19 Runbook |
+| `docs/master/GATE_G1_REPORT.md` … `GATE_G5_REPORT.md`, `ROUND2_LIVE_REVIEW.md` | 13 Risks and Limitations |
+| `docs/master/G6_OWNER_DECISION_CHECKLIST.md` §3 | 16 References and Attribution |
+| `docs/api/ai-service.yaml` (C4 v3), `services/ai-service/README.md` | 03 Architecture; 19 Runbook |
+| `docs/trackb/B13_E2E_SCENARIO.md`, `docs/trackb/B53_LIVE_CYCLE_REPORT.md` | 03 Architecture; 13 Risks; 19 Runbook |
+| `docs/ui/screenshots/README.md` and screenshots (linked, not copied) | 18 User Guide |

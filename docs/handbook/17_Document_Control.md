@@ -1,5 +1,21 @@
 # Document control
 
+<!-- B55 refresh -->
+## Refresh record — 10 Nov 2026 (B55, Round 4)
+
+| Item | Detail |
+|---|---|
+| Scope | Final-year product state after G1–G5, Round 2 (live mode) and I27 |
+| Rewritten | 00 Project on a Page; 03 Architecture and Tech Stack |
+| New | 18 User Guide (7 tabs, badges, live bar); 19 Runbook (launcher, B11 package, GPU and always-on overlays, live switch, Open-Meteo budget) |
+| Updated (new section on top, older content kept as history) | 04 Decision Log (OD-2026-11-07/08/08b/08c/10, CR-019–021); 13 Risks and Limitations (G1–G5, Round 2); 16 References and Attribution (G6 §3, pending owner confirmation M7) |
+| Unchanged history | 01, 02, 05–12, 14, 15 describe the October research phases |
+| Sources | `docs/master/FINAL_YEAR_OWNER_DECISIONS.md`, `CR-019/020/021`, `GATE_G1`–`G5` reports, `ROUND2_LIVE_REVIEW.md`, `G6_OWNER_DECISION_CHECKLIST.md`, `docs/api/ai-service.yaml`, `services/ai-service/README.md`, `docs/trackb/B13_E2E_SCENARIO.md`, `docs/trackb/B53_LIVE_CYCLE_REPORT.md`, `docs/ui/screenshots/README.md` |
+| Secrets | No keys, tokens or credentials. A pattern scan of the handbook found none (see B55 notes). |
+| Not edited | `docs/master/`, `docs/api/`, `frontend/`, Lane A reports |
+
+---
+
 ## Scope and sources
 
 Prepared on **16 Oct 2026** from the current repository and the user-supplied project brief. No network or login was used. Raw data were not read/processed for this handbook; existing reports, logs, manifests, Git metadata, directory names, source code docstrings and recorded JSON summaries were consulted. [repo: system clock, files named in Coverage Matrix; user]

@@ -2,105 +2,76 @@
 
 **TwinGuard AI: An Intelligent Digital Twin for Urban Flood Management and Emergency Decision Support**
 
-Originally prepared 16 October 2026 from the repository and the user-supplied project brief; Track B chapter refreshed 27 October 2026 from verified repository evidence. Important statements identify their source. Unknown details remain visible placeholders.
+Originally prepared 16 October 2026; Track B chapter refreshed 27 October 2026; refreshed for the final-year product on 10 November 2026 (B55: architecture, user guide, runbook, decision log, risks, references). Important statements identify their source. Unknown details remain visible placeholders. No keys or tokens appear in this handbook.
 
 \pagebreak
 
 ## Contents
 
-- [00 — Project on a Page](00_Project_on_a_Page.md)
-- [01 — Overview and Vision](01_Overview_and_Vision.md)
-- [02 — Research Foundation](02_Research_Foundation.md)
-- [03 — Architecture and Technology Stack](03_Architecture_and_Tech_Stack.md)
-- [04 — Decision Log](04_Decision_Log.md)
-- [05 — Data Inventory](05_Data_Inventory.md)
-- [06 — Flood Events and Labels](06_Flood_Events_and_Labels.md)
-- [07 — Reservoirs and Track B](07_Reservoirs_and_Track_B.md)
-- [08 — Engineering Phases 2 and 3](08_Engineering_Phase2_and_Phase3.md)
+- [00 — TwinGuard AI — project on a page](00_Project_on_a_Page.md)
+- [01 — Overview and vision](01_Overview_and_Vision.md)
+- [02 — Research foundation](02_Research_Foundation.md)
+- [03 — Architecture and technology stack](03_Architecture_and_Tech_Stack.md)
+- [04 — Decision log](04_Decision_Log.md)
+- [05 — Data inventory](05_Data_Inventory.md)
+- [06 — Flood events and labels](06_Flood_Events_and_Labels.md)
+- [07 — Reservoir data and Track B](07_Reservoirs_and_Track_B.md)
+- [08 — Engineering work in Phases 2 and 3](08_Engineering_Phase2_and_Phase3.md)
 - [09 — Progress and Chronicle](09_Progress_and_Chronicle.md)
-- [10 — Roadmap and Next Steps](10_Roadmap_and_Next_Steps.md)
-- [11 — Evaluation Plan](11_Evaluation_Plan.md)
-- [12 — Team Guide](12_Team_Guide.md)
-- [13 — Risks and Limitations](13_Risks_and_Limitations.md)
+- [10 — Roadmap and next steps](10_Roadmap_and_Next_Steps.md)
+- [11 — Evaluation plan](11_Evaluation_Plan.md)
+- [12 — Team guide](12_Team_Guide.md)
+- [13 — Risks and limitations](13_Risks_and_Limitations.md)
 - [14 — Glossary](14_Glossary.md)
-- [15 — FAQ](15_FAQ.md)
-- [16 — References and Attribution](16_References_and_Attribution.md)
-- [17 — Document Control](17_Document_Control.md)
+- [15 — Frequently asked questions](15_FAQ.md)
+- [16 — References and attribution](16_References_and_Attribution.md)
+- [17 — Document control](17_Document_Control.md)
+- [18 — User guide — the 7 tabs](18_User_Guide.md)
+- [19 — Runbook](19_Runbook.md)
 
 \pagebreak
-\pagebreak
-## Contents
 
-- [00 — Project on a Page](00_Project_on_a_Page.md)
-- [01 — Overview and Vision](01_Overview_and_Vision.md)
-- [02 — Research Foundation](02_Research_Foundation.md)
-- [03 — Architecture and Tech Stack](03_Architecture_and_Tech_Stack.md)
-- [04 — Decision Log](04_Decision_Log.md)
-- [05 — Data Inventory](05_Data_Inventory.md)
-- [06 — Flood Events and Labels](06_Flood_Events_and_Labels.md)
-- [07 — Reservoirs and Track B](07_Reservoirs_and_Track_B.md)
-- [08 — Engineering Phase2 and Phase3](08_Engineering_Phase2_and_Phase3.md)
-- [09 — Progress and Chronicle](09_Progress_and_Chronicle.md)
-- [10 — Roadmap and Next Steps](10_Roadmap_and_Next_Steps.md)
-- [11 — Evaluation Plan](11_Evaluation_Plan.md)
-- [12 — Team Guide](12_Team_Guide.md)
-- [13 — Risks and Limitations](13_Risks_and_Limitations.md)
-- [14 — Glossary](14_Glossary.md)
-- [15 — FAQ](15_FAQ.md)
-- [16 — References and Attribution](16_References_and_Attribution.md)
-- [17 — Document Control](17_Document_Control.md)
-
-\pagebreak
-\pagebreak
-## Contents
-
-- [00 — Project on a Page](00_Project_on_a_Page.md)
-- [01 — Overview and Vision](01_Overview_and_Vision.md)
-- [02 — Research Foundation](02_Research_Foundation.md)
-- [03 — Architecture and Tech Stack](03_Architecture_and_Tech_Stack.md)
-- [04 — Decision Log](04_Decision_Log.md)
-- [05 — Data Inventory](05_Data_Inventory.md)
-- [06 — Flood Events and Labels](06_Flood_Events_and_Labels.md)
-- [07 — Reservoirs and Track B](07_Reservoirs_and_Track_B.md)
-- [08 — Engineering Phase2 and Phase3](08_Engineering_Phase2_and_Phase3.md)
-- [09 — Progress and Chronicle](09_Progress_and_Chronicle.md)
-- [10 — Roadmap and Next Steps](10_Roadmap_and_Next_Steps.md)
-- [11 — Evaluation Plan](11_Evaluation_Plan.md)
-- [12 — Team Guide](12_Team_Guide.md)
-- [13 — Risks and Limitations](13_Risks_and_Limitations.md)
-- [14 — Glossary](14_Glossary.md)
-- [15 — FAQ](15_FAQ.md)
-- [16 — References and Attribution](16_References_and_Attribution.md)
-- [17 — Document Control](17_Document_Control.md)
-
-\pagebreak
 # TwinGuard AI — project on a page
 
-**A decision-support research project for urban flooding in Chennai.** TwinGuard is intended to combine weather, satellite, terrain, reservoir, map and population information to estimate where flooding may occur, show uncertainty, and help compare emergency actions. [user]
+*Refreshed 10 Nov 2026 (B55). TwinGuard is a bachelor's final-year project (OD-2026-11-07), not an operational or research-grade service.* [repo: `docs/master/FINAL_YEAR_OWNER_DECISIONS.md`]
 
-## Why it exists
+## What it is
 
-Flood response is a chain of decisions. A predicted flood can affect roads, people, facilities and shelters. A useful system should carry uncertainty through that chain and help an operator compare choices, rather than show a flood map alone. This is the project's research direction; the operational system does not exist yet. [user]
+A flood digital twin for Chennai:
+- **Simulation:** it simulates flooding from rainfall and reservoirs.
+- **3D city:** it shows the water on a 3D city (CesiumJS with Google Photorealistic 3D Tiles).
+- **Decision support:** it turns depth into decision support: affected buildings and wards, three-state road access, routes, shelter reachability, generated incidents and a resource plan.
+- **Live mode:** a 72 h forecast is refreshed automatically every 3 h. Archived events can be replayed, and what-if scenarios compared.
 
-## What is new (carefully stated)
+## Contribution (owner's wording, OD-2026-11-07 §6)
 
-The project proposes to test an integrated **uncertainty-to-decision** workflow: forecasts update a digital representation of the city, and likely future road access, exposure, shelter availability and decisions are compared. It also proposes time-aware routes and “what if” scenarios. The individual methods are established ideas. The team has not completed a literature review sufficient to claim priority or novelty. [user]
+> "an integrated rainfall + reservoir → flood simulation → 3D digital twin → impact, three-state routing and shelter decision pipeline with what-if scenarios for Chennai" is the project's contribution.
 
-## Status
+The individual methods (local-inertial flood modelling, graph routing, shelter allocation) are established. The contribution is their integration into one labelled, end-to-end pipeline for Chennai.
 
-`Phase 1: foundation — reported complete` → `Phase 2: collection and audit — close-out complete, with gaps` → `Phase 3: feature preparation — Part B complete` → `Phase 4: not started`. No flood model has been trained. [repo: `docs/PROJECT_STATUS.md`, `docs/PHASE3_LOG.md`]
+## Status (10 Nov 2026)
 
-## What exists now
+| Area | State |
+|---|---|
+| Engine | A25 high-resolution engine: 120/90 m citywide, 30 m focus areas. It has a CUDA backend (A26), flow export (A27) and the A28 reservoir coupling. |
+| API | C4 v3 `/v3`: 31 paths / 33 operations, including live endpoints (B47, B49, B51) |
+| UI | 7-tab live-first UI with badges and the live bar (B48, B52) |
+| Gates | G1–G5 passed with caveats. The Round 2 live stage passed with caveats (I27). G6 (final) is pending owner checklist items. |
+| Packaging | B11 Docker stack verified for the replay (B13) and live cycle (B53) |
 
-Raw sources are locally collected and logged; a common 30 m analysis grid and exploratory weather, terrain, land-cover, OSM, population, reservoir and flood-inspection outputs exist. They are research inputs, not a deployed twin or final validation set. The grid uses the older, pre-2022 CMA boundary provisionally. [repo: `docs/PHASE3_LOG.md`, `docs/GRID_DECISION.md`]
+## Labels you will see
 
-## The immediate next work
+- **Results:** every result is `SIMULATED`.
+- **Inputs:** these keep their own class — `REPLAY` (archived event), `MODEL_FORECAST` (Open-Meteo), `PUBLISHED_SNAPSHOT` (CFM-DSS) or `SCENARIO_INPUT` (owner-set resources, what-if values, A28 assumed inflow).
+- **Incidents:** generated from the results and labelled as such.
+- **Live runs:** every live run carries "Model forecast — not an official warning".
 
-Resolve the old-versus-expanded CMA boundary, review coastal terrain and drainage, reconcile OSM counts and test network connectivity, settle the flood-label strategy, and verify product units and reuse terms. Then follow the reviewed roadmap and get explicit approval before Phase 4. [repo: `docs/MANUAL_TODO.md`, `docs/PHASE3_PLAN.md`]
+## Where to start
 
-## Where a new teammate should start
+- [Architecture](03_Architecture_and_Tech_Stack.md) → [User Guide](18_User_Guide.md) → [Runbook](19_Runbook.md) → [Risks and Limitations](13_Risks_and_Limitations.md) → [Decision Log](04_Decision_Log.md) → [References and Attribution](16_References_and_Attribution.md).
+- Chapters 05–11 record the earlier research phases (data, labels, Track B, Phases 2–3) and are kept as history.
 
-Read this page, [Progress and Chronicle](09_Progress_and_Chronicle.md), [Data Inventory](05_Data_Inventory.md), [Flood Events and Labels](06_Flood_Events_and_Labels.md), and [Document Control](17_Document_Control.md). Use the [Coverage Matrix](COVERAGE_MATRIX.md) to locate evidence. Unknown personal details remain marked `[TO BE FILLED]`.
+\pagebreak
 
 # Overview and vision
 
@@ -139,6 +110,8 @@ The intended decision-maker is an emergency planning or response operator. Candi
 ## Geographic scope
 
 The working boundary is the older, smaller CMA, with a measured area of **1,187.460287 km²** in the coverage analysis. It remains provisional; the expanded post-2022 metropolitan area is not the current analysis boundary. The planning brief explains the choice as a denser urban core with better event and map-data fit, but this rationale must be checked against the final project requirements. [repo: `docs/COVERAGE_2015.md`, `docs/GRID_DECISION.md`; user]
+
+\pagebreak
 
 # Research foundation
 
@@ -206,61 +179,90 @@ Background sources supplied: CAG’s Chennai flood audit executive summary and I
 
 The reservoir-release element may be a useful local research angle, but the user’s supplied search did not find a Chennai paper treating release as a first-class input. This needs a fuller literature search before any gap or novelty claim. Never say “first.” [user]
 
+\pagebreak
+
 # Architecture and technology stack
 
-## Intended architecture
+*Refreshed 10 Nov 2026 (B55) for the final-year product (OD-2026-11-07). The October design notes are kept in the [Decision Log](04_Decision_Log.md) and [Progress and Chronicle](09_Progress_and_Chronicle.md). This chapter describes what runs now.* [repo]
 
-```mermaid
-flowchart LR
-  Sources[Weather, radar, terrain, OSM, population, reservoirs] --> Ingest[Data ingestion and quality checks]
-  Ingest --> DB[(PostgreSQL + PostGIS)]
-  DB --> Twin[City twin state and scenario service]
-  Twin --> A[Track A: slower forecast, hours to days]
-  Twin --> B[Track B: rapid rain and reservoir alert, minutes to hours]
-  A --> U[Uncertainty and future flood state]
-  B --> U
-  U --> Impact[Road, population, facility and shelter impacts]
-  Impact --> Decisions[Route and emergency decision comparison]
-  Decisions --> UI[Map and operator interface]
-  UI --> Twin
+## The pipeline in one line
+
+**Rainfall + reservoirs → flood simulation → 3D digital twin → impact, three-state routing and shelters → what-if comparison**, for Chennai. The owner records this integration as the project's contribution (OD-2026-11-07 §6). Every result is labelled `SIMULATED`, and inputs keep their own source class (`REPLAY`, `MODEL_FORECAST`, `PUBLISHED_SNAPSHOT`, `SCENARIO_INPUT`, `STATIC_REFERENCE`). [repo: `docs/master/FINAL_YEAR_OWNER_DECISIONS.md`, `docs/api/ai-service.yaml`]
+
+```
+ Open-Meteo forecast grid ─┐        CFM-DSS reservoir snapshot ─┐ (A28 storage rule, ASSUMPTION)
+ IMERG/ERA5 event replay ──┼──► A25 flood engine (120/90 m citywide, 30 m focus; CUDA or NumPy)
+ user rainfall / what-if ──┘          │ depth frames, flow (u, v, wse), peak, ward/building/road products
+                                      ▼
+                AI service  /v3  (FastAPI; run queue, persistent GPU worker, live scheduler)
+                                      │  same-origin /api/ai/  (nginx in the package, Vite proxy in development)
+                                      ▼
+            React UI: 7 tabs, CesiumJS + Google Photorealistic 3D Tiles, badges and live bar
 ```
 
-This is a design diagram, not a depiction of deployed services. [user; repo: `docs/PROJECT_STATUS.md`]
+## Components
 
-Plain-text version: `sources → ingestion and checks → spatial database → twin state → Track A forecast + Track B rapid alert → uncertainty → impacts → route/shelter/action comparison → operator map → twin update`. Java services are intended to manage users, APIs and scenarios; Python services are intended to perform scientific modelling. No prediction service, twin state service, routing application, or frontend is recorded as implemented. [user; repo: `README.md`, `docs/PROJECT_STATUS.md`]
+| Component | What it does | Where |
+|---|---|---|
+| **Flood engine (A25/A26/A27/A28)** | A local-inertial shallow-water solver on the Copernicus GLO-30 surface DEM. Grids: 120 m (or 90 m) citywide, and 30 m nested focus areas (Velachery, Adyar, T. Nagar, Porur). Event, custom, forecast and what-if forcing. 1 or 3 parameter members. | `services/flood_engine/` (Lane A) |
+| **CUDA backend (A26)** | Optional PyTorch float32 solver with CUDA-graph time steps. It matches NumPy within tolerance (peak depth < 1 mm, flooded IoU ≥ 0.9995). NumPy stays the default and the fallback. | `services/flood_engine/hires_torch.py` |
+| **Flow export (A27)** | Per-frame depth-averaged velocity `u`, `v` and water-surface elevation (EGM2008), cell-centred, int16 × 0.01. | `flow.npz` per run |
+| **Reservoir coupling (A28)** | Rule `A28-RES-STORAGE-v1` turns the CFM-DSS storage percentage into an **assumed** outlet inflow: none below 90 % full, a linear ramp to 100 %, then 2 × Q_ctrl. It is never shown as an observed release. | `services/flood_engine/reservoir_coupling.py` |
+| **AI service, C4 v3 (B47/B49/B51)** | 31 paths / 33 operations, including status, overview, weather, events, simulations, depth, flow, buildings, wards, roads, routes, shelters, incidents, emergency plan, scenario resources, comparison, static layers and live endpoints. | `services/ai-service/app/v3/`, contract `docs/api/ai-service.yaml` |
+| **Run manager** | Runs one simulation at a time with up to 4 queued. Identical requests return `cached`, and results are stored in a run store. | `app/v3/runs.py` |
+| **Persistent GPU worker (OD-2026-11-08c)** | One long-lived child process warms CUDA once and frees cached GPU memory between jobs (one GPU job at a time on the 4 GB card). A crash or CUDA error triggers one CPU rerun with `fallback_reason` recorded. | `app/v3/gpu_worker.py` |
+| **Live scheduler (CR-021)** | Runs a 72 h citywide forecast every 3 h, plus a start-up catch-up and manual refresh (at most once per 600 s). Keeps the last 16 live runs and the last-good run, records `last_error`, and counts Open-Meteo calls against a 5,000/day budget. | `app/v3/live.py` |
+| **Decision products** | Three-state roads (passable / blocked / unknown; A21/A08 rule), scipy Dijkstra routes with a dry baseline, shelter reachability and allocation (assumed capacities), incidents generated from results (`generated: true`), and a greedy plan for owner-set resources (`SCENARIO_INPUT`). | `app/v3/analysis.py` |
+| **UI (B48/B52)** | React, Vite and Tailwind. A dark control-room layout with 7 tabs, CesiumJS with Google Photorealistic 3D Tiles (attribution and logo visible), flow-animated water, and a live bar and run badge. | `frontend/` (UI session) |
+| **Package (B11)** | Docker Compose: nginx frontend (`:8081`), AI service (`:8000`), backend (`:8080`). Bind-mounted read-only data and one writable run store. Optional GPU and always-on overlays. | `docker-compose.b11.yml`, `docker-compose.gpu.yml`, `docker-compose.always-on.yml` |
 
-## Two tracks
+## Data flow of a live cycle
 
-- **Track A, slower forecast:** weather and spatial information support an hours-to-days flood outlook and feed the uncertainty/impact workflow. Satellites support historical labels and context. Their revisit interval makes them unsuitable as the sole rapid alert input. [user]
-- **Track B, rapid alert:** current rain and reservoir trend are intended to produce a minutes-to-hours screen that shares the same twin state. Current work only has an illustrative historical rule; no live feed or validated alert service exists. [repo: `data/features/reservoirs/illustrative_track_b_backtest.json`; user]
+1. The scheduler fetches the Open-Meteo multi-model lattice (about 297 counted calls) and saves the snapshot with the run.
+2. It reuses the CFM-DSS reservoir snapshot if it is under 24 h old; otherwise it reads it once (2 requests).
+3. The engine runs a 72 h forecast at 120 m with the A28 coupling, on the persistent GPU worker (about 31 s engine time on an RTX 3050) or on CPU (about 4.6 min).
+4. The result is published as `run_kind: LIVE_FORECAST` (`mode: live`) with a `live` block: issue time, valid window, reservoir `source_date`, coupling rule and the disclaimer "Model forecast — not an official warning".
+5. The UI polls `GET /v3/live/status` every 60 s and switches to the new live run unless the user pinned another run.
 
-## Intended technology choices
+## Technology
 
-All technologies below are planning choices supplied by the user. Except for the Python geospatial packages recorded in `requirements.txt`, treat them as **planned or not verified installed**, not as implemented components. [user; repo: `requirements.txt`, `docs/PHASE3_LOG.md`]
+| Layer | Choice |
+|---|---|
+| Engine | Python 3.12, NumPy, SciPy (road connectivity), optional PyTorch 2.14.1 + CUDA 12.6 (`requirements-gpu.txt`) |
+| API | FastAPI 0.162, Uvicorn, Pydantic 2 |
+| UI | React, Vite, Tailwind, CesiumJS with Google Photorealistic 3D Tiles |
+| Packaging | Docker Desktop 29.x, Compose, nginx 1.27 |
+| Data | EPSG:32644 grids, WGS84 GeoJSON, run stores in `data/features/v3/` (git-ignored) |
+| Earlier work | The PostgreSQL/PostGIS database, Kafka/Redis replay (Track B) and Spring backend remain from earlier phases. The product UI uses only the AI service. |
 
-| Layer | Planned technology | Intended job | Current evidence/status |
-|---|---|---|---|
-| Main application | Java 21, Spring Boot 3, Security, Web, Data JPA, Hibernate | Identity, APIs, scenarios, orchestration, routing requests, shelters, alerts and audit. | Not present as a backend implementation. [repo: `README.md`] |
-| User interface | React, TypeScript, Tailwind, MapLibre GL JS | Map, event context, uncertainty and action comparison. | `frontend` folder exists; service is planned. [repo: folder tree] |
-| Scientific service | Python, FastAPI | Expose model and geospatial functions to the main application. | Python pipelines exist; no FastAPI model service recorded. [repo: `pipelines/phase3/`, `README.md`] |
-| Modelling | PyTorch, scikit-learn, XGBoost, LightGBM; Transformer/vision encoder; GNN only if justified | Forecasts, fusion, uncertainty and experiments. | No model training. [repo: `docs/PROJECT_STATUS.md`; user] |
-| Geospatial | GeoPandas, Rasterio, GDAL, Shapely, xarray | Read, align, inspect and summarize spatial/weather inputs. | Pinned packages include GeoPandas, Rasterio, Shapely, pyproj; rasterio-bundled GDAL was used. [repo: `requirements.txt`, `docs/PHASE3_LOG.md`] |
-| Storage | PostgreSQL 18.6 + PostGIS 3.6.2 locally; Docker Compose remains stopped | Spatial and application data storage. | Local `twinguard` database is verified; Compose uses `postgis/postgis:18-3.6-alpine`, host port 5433, and a named volume. [repo: `docker-compose.yml`, `docs/STAGE_5_6_REPORT.md`] |
-| Fast messaging/cache | Redis, Apache Kafka | Potential real-time stream and state handling for Track B. | Planned only; include only if a real workload justifies them. [user] |
-| Experiment operations | MLflow, GitHub Actions, Docker | Track experiments and repeatable builds. | Not verified configured. [user; repo: folder tree] |
-| Operations and tests | Prometheus, Grafana, JUnit, Mockito, Pytest, OpenAPI | Monitoring, tests and API documentation. | Not verified configured. [user] |
+## What it is not
 
-The division is deliberate: Java/Spring Boot is the application brain; Python/FastAPI is the scientific brain. Do not force machine-learning work into Java. [user]
+It is not an operational warning service. Model skill is not validated against observed depths, there is no storm-drain network, and building heights are mostly estimated. See [Risks and Limitations](13_Risks_and_Limitations.md).
 
-## Database and deployment sequence
-
-The local PostgreSQL 18.6/PostGIS 3.6.2 installation and `twinguard` database are verified. Compose remains stopped and uses a separate host port (5433 by default) so it will not collide with the local server on 5432. Compose reads secrets from `.env`; `.env.example` contains placeholders and non-secret defaults only. [repo: `docker-compose.yml`, `.env.example`, `docs/STAGE_5_6_REPORT.md`]
-
-## Decision loop data flow
-
-The planned loop is observation/forecast → twin-state update → flood and uncertainty estimate → road/facility/population impacts → route and shelter alternatives → counterfactual comparison → operator review → updated state. Each future recommendation should retain its input time, model version, uncertainty and reason. This is a design requirement, not current software behavior. [user]
+\pagebreak
 
 # Decision log
+
+<!-- B55 refresh -->
+## Final-year decisions (November 2026)
+
+These are the binding owner decisions for the final product. They are recorded by the Integrator in `docs/master/FINAL_YEAR_OWNER_DECISIONS.md` and implemented under the change requests below. The October entries further down are kept as history; where they conflict, the decisions below win. [repo]
+
+| ID | Decision | Implemented by |
+|---|---|---|
+| **OD-2026-11-07** | A bachelor's final-year product rebaseline. 7 tabs in a dark control-room style. 3D city with CesiumJS and Google Photorealistic 3D Tiles; the key stays in git-ignored `.env.local` and the API never returns or accepts it. Relaxed caveat policy (one DEMO/SIMULATION badge; `done_with_caveats` counts as done). Still binding: no fabricated value shown as observed, a `source_mode` on every result, resources as `SCENARIO_INPUT`, incidents labelled generated. On-demand Open-Meteo with caching and a 600 s minimum interval. **Novelty claim in the owner's wording** (see [Project on a Page](00_Project_on_a_Page.md)). | CR-019; A25, B47, B48 |
+| **OD-2026-11-08** | Use the GPU whenever it helps (RTX 3050 Laptop, 4 GB). CPU must remain a supported fallback, and every GPU path falls back cleanly. One GPU job at a time. | A26 (CUDA backend); B47 device option |
+| **OD-2026-11-08b** | Revised G5: the product-pipeline end-to-end check (archived input → engine → `/v3` → packaged UI). The CR-012 POONDI replay is kept as an optional secondary check. | CR-020; B13, B50 |
+| **OD-2026-11-08c** | Keep a persistent engine worker warm (`TWINGUARD_V3_WORKER`), with CPU fallback. Measured 17 s warm against 31 s cold for a 48 h citywide run. | B47 (dec0abe, df96bf2) |
+| **OD-2026-11-10** | Live forecast mode: a 3 h cycle with start-up catch-up, manual refresh at most once per 600 s, the last 16 live runs kept, a 5,000 calls/day Open-Meteo budget, the CFM-DSS snapshot at most daily, and reservoir coupling only through A28's labelled assumption rule. A run-dependent badge, and the permanent note "Model forecast — not an official warning". It amends the earlier no-polling rules **for live mode only**. | CR-021; A28, B51, B52, B53 |
+
+| Change request | Subject |
+|---|---|
+| **CR-019** | Product rebaseline of the UI and API: C4 v3 `/v3` contract, ownership and task split (A25, B47, B48) |
+| **CR-020** | G5 as the product-pipeline replay (B13 acceptance, packaged UI evidence) |
+| **CR-021** | Live forecast mode (`/v3/live/*`, `run_kind`, `live` block, Overview badge, CR-016/017/018 amendments) |
+
+---
 
 This table separates recorded repository decisions from the user's planning-chat decisions. Dates are stated only where a repository record supports them. “Options” are included only when recorded; otherwise the entry says they were not recorded. [repo: sources in table; user]
 
@@ -289,6 +291,8 @@ This table separates recorded repository decisions from the user's planning-chat
 ## Decisions still needed
 
 Confirm the final boundary, label strategy, hydrological conditioning, release-data plan, and Sentinel reuse terms. These choices affect final model scope and validation. [repo: `docs/MANUAL_TODO.md`]
+
+\pagebreak
 
 # Data inventory
 
@@ -536,6 +540,8 @@ The next two tables reproduce the repository manifest fields so a teammate can f
 | Phase 3 derived: era5_event_hourly_features.csv | See docs/FEATURE_DICTIONARY.md | Vector/table; see feature dictionary | See docs/FEATURE_DICTIONARY.md | not applicable | CMA and 2 km context grid; statistics are CMA-only | See docs/PHASE3_LOG.md and docs/PHASE3_VALIDATION.json |
 | Phase 3 derived: event_peak_rainfall.json | See docs/FEATURE_DICTIONARY.md | Vector/table; see feature dictionary | See docs/FEATURE_DICTIONARY.md | not applicable | CMA and 2 km context grid; statistics are CMA-only | See docs/PHASE3_LOG.md and docs/PHASE3_VALIDATION.json |
 
+\pagebreak
+
 # Flood events and labels
 
 ## What a label is
@@ -588,6 +594,8 @@ All listed ZIPs passed CRC/integrity checks and SAFE filename/start-stop consist
 
 Counts by on-disk year folder: 2015 **3**, 2021 **6**, 2023 **4**. The repository’s raw-audit report says all 13 archives matched their logged sizes and hashes. The actual folder on disk is `sentinel1`; manifest rows and older notes say `senitnel1`. Preserve files; reconcile metadata paths without renaming the raw folder. [repo: `docs/SENTINEL_VERIFICATION.md`, `docs/PHASE3_LOG.md`, `docs/DATA_MANIFEST.csv`]
 
+\pagebreak
+
 # Reservoir data and Track B
 
 ## Purpose and operating boundary
@@ -616,6 +624,8 @@ The Track B FastAPI router contains separate read-only reservoir, alert, backtes
 ## Work still requiring evidence or review
 
 Obtain authoritative documentation for the reservoir date/time convention before treating event instants as historically confirmed. Verify rainfall units and historical capacity series. Continue seeking dated release/outflow and gate records; until obtained, preserve release as unavailable. Integrator review is required for proposed API contract changes and G0 evidence; do not claim G0 ready or contracts frozen. [repo: `docs/trackb/G0_REPAIR_EVIDENCE.md`, `docs/MANUAL_TODO.md`, `docs/master/GATE_G0_REPORT.md`]
+
+\pagebreak
 
 # Engineering work in Phases 2 and 3
 
@@ -683,18 +693,20 @@ The rainfall sequences are hourly for 2015-11-01–2015-12-15, 2021-11-01–2021
 
 The build log documents handled script failures (syntax, invalid KML geometry, missing imports, environment mismatch, and first-pass interruption). This history matters for reproducibility: preserve existing outputs and use the project environment, but do not blindly rerun scripts that write files. [repo: `docs/PHASE3_LOG.md`]
 
+\pagebreak
+
 # Progress and Chronicle
 
 ## Status of the 26-phase roadmap
 
-This is the roadmap supplied in the project brief, reconciled to current repository evidence. “Complete” means planning/collection work is recorded, not that a production system exists. Phases 1–2 are reported closed; Phase 3 feature preparation is complete but the labels and data decisions remain exploratory. Phases 4–26 are not started unless noted. [repo: `docs/PROJECT_STATUS.md`, `docs/PHASE2_CLOSURE.md`, `docs/PHASE3_LOG.md`; user]
+This is the roadmap supplied in the project brief, reconciled to current repository evidence. “Complete” means work in the stated scope is recorded, not that a production system exists. Phases 1–2 are reported closed; Phase 3 feature preparation and Phase 4 preprocessing are complete but labels and data decisions remain exploratory. Phases 5–6 are implemented locally with one restore acceptance check pending; later phases are not started unless noted. [repo: `docs/PROJECT_STATUS.md`, `docs/PHASE2_CLOSURE.md`, `docs/PHASE3_LOG.md`, `docs/PHASE4_LOG.md`; user]
 
 | Phase | Scope | Status / evidence |
 |---:|---|---|
 | 1 | Research foundation | Reported complete; detailed evidence in earlier project work is not fully represented in this repo. [repo: `docs/PROJECT_STATUS.md`] |
 | 2 | Study area and data collection | Close-out complete for collected sources, with known gaps and manual tasks. [repo: `docs/PHASE2_CLOSURE.md`] |
 | 3 | Data engineering and features | Part B feature preparation complete; outputs exploratory, label limitations remain. [repo: `docs/PHASE3_LOG.md`] |
-| 4 | Preprocessing and temporal/spatial alignment | Not started. [repo: `docs/PHASE3_PLAN.md`] |
+| 4 | Preprocessing and temporal/spatial alignment | Complete; event Parquets, static cell table, conditioning and routing products are documented. [repo: `docs/PHASE4_LOG.md`, `docs/STAGE_4_REPORT.md`] |
 | 5 | PostgreSQL/PostGIS foundation | Local PostgreSQL/PostGIS verified; migrations/checksums and Compose configured. Full separate-database restore test pending because app role lacks `CREATEDB`; containers not started. [repo: `docs/STAGE_5_6_REPORT.md`] |
 | 6 | GIS layers | Core vector layers, views and MVT functions loaded locally; source flood geometry has 235 invalid features to review. [repo: `docs/GIS_DATABASE_LAYERS.md`] |
 | 7 | Digital Twin foundation | Not started; design only. [user] |
@@ -735,11 +747,13 @@ Planning-chat sequence (project vision, boundary choice, label feasibility revie
 
 `data/raw/` is organized by `boundary`, `buildings`, `dem`, `historical_floods`, `hydrology`, `infrastructure`, `landcover`, `osm`, `population`, `reservoirs`, `roads`, `satellite` and `weather`. Derived results are in `data/processed/` and `data/features/`; they are excluded from Git. Project code is in `pipelines/phase3/` and `tools/`. Planned product folders include `services/backend/`, `services/ai-service/`, `frontend/`, `notebooks/`, `experiments/`, and `docs/research/`. [repo: folder tree, `.gitignore`, `README.md`]
 
+\pagebreak
+
 # Roadmap and next steps
 
 ## Immediate order
 
-The next step is **not automatically Phase 4**. First resolve open decisions and database readiness; then start only the next approved phase. [repo: `docs/MANUAL_TODO.md`; user]
+The next step is **not automatically Stage 7**. First resolve open data decisions and the remaining database restore acceptance check; then start only the next approved phase. [repo: `docs/MANUAL_TODO.md`; user]
 
 1. Confirm older versus expanded CMA boundary and record final choice.
 2. Review GLO-30 coastal elevations and urban drainage artefacts; choose a documented hydrology-conditioning approach before interpreting flow accumulation/TWI.
@@ -789,6 +803,8 @@ The user’s brief identifies graph neural networks, foundation-model experiment
 
 The immediate blockers are boundary and label decisions, incomplete release records, validation of the road graph, unit/licence checks, and unconfirmed local database setup. The final validation scope may need to narrow if observed December 2015 and PDF-derived labels remain unavailable. [repo: `docs/MANUAL_TODO.md`; user]
 
+\pagebreak
+
 # Evaluation plan
 
 This chapter proposes experiments; none has been run. Choose thresholds after observing baseline performance, and keep whole flood events separated between training and test wherever possible. With only three major event years, results will have high uncertainty and limited generalisation. [user]
@@ -813,6 +829,8 @@ This chapter proposes experiments; none has been run. Choose thresholds after ob
 
 Success thresholds remain **[TO BE FILLED]** after baselines. No metric result in this chapter is a measured project result. [user]
 
+\pagebreak
+
 # Team guide
 
 ## People and roles
@@ -823,13 +841,20 @@ Names, institution, guide/supervisor, deadlines and role assignments are **[TO B
 
 - Project root is `D:\TIWNGUARD`, branch `main`. [repo: current Git state]
 - Python dependencies are pinned in `requirements.txt`. The Phase 3 report says to use `.venv` and records no global package installation. [repo: `requirements.txt`, `docs/PHASE3_LOG.md`]
-- `docker-compose.yml` uses verified `postgis/postgis:18-3.6-alpine`, a named data volume at PostgreSQL 18's `/var/lib/postgresql` path, and a health check. It reads credentials from `.env`; `.env.example` contains no real secrets. Containers were not started. [repo: Compose files]
-- Local PostgreSQL 18.6/PostGIS 3.6.2 and the `twinguard` database are verified. Local scripts use port 5432; Compose defaults to host port 5433. A separate-database restore test remains pending the app role's `CREATEDB` privilege. [repo: `docs/STAGE_5_6_REPORT.md`]
+- The shared Compose file defines the project PostgreSQL service; the separate `docker-compose.trackb.yml` overlay defines Redis, single-node Kafka, Prometheus and Grafana under the `trackb` profile, with loopback-only ports and named volumes. The Track B overlay was quietly validated and its four services were runtime-checked during the 27 Oct REPLAY; they were stopped afterward and their volumes retained. Follow [Track B Runbook](../trackb/RUNBOOK.md) for the exact commands. Never use `down -v`, prune, or volume deletion. [repo: Compose files, `docs/trackb/RUNBOOK.md`]
+- At the 27 Oct verification checkpoint, local PostgreSQL/PostGIS was available; the isolated database `twinguard_trackb_test` held Track B migration 100 and replay persistence. The shared `twinguard` database was checked read-only and remained at 14 migrations without migration 100 or Track B tables. Track B persistence must target only the isolated database. Local scripts use port 5432; Compose defaults to host port 5433. Do not print credentials; Compose reads `.env`. [repo: `docs/trackb/RUNBOOK.md`, `docs/trackb/TRACKB_REPORT.md`]
 - Never paste passwords, access tokens or real `.env` values into chat, Git or this handbook. Add `.env` locally and keep it untracked. [repo: `.gitignore`; user]
 
 ## Folder map
 
-`data/raw/` is the immutable source archive. `data/processed/` and `data/features/` contain derived work and are excluded from Git. `docs/` contains plans, manifests, checks and reports. `pipelines/phase3/` contains the recorded Phase 3 scripts; `tools/` contains verification/audit helpers. `services/`, `frontend/`, `notebooks/` and `experiments/` are planned spaces. Use [Coverage Matrix](COVERAGE_MATRIX.md) for a fuller path map. [repo: `.gitignore`, `README.md`, folder tree]
+`data/raw/` is the immutable source archive. `data/processed/` and `data/features/` contain derived work and are excluded from Git. `docs/` contains plans, manifests, checks and reports. `pipelines/phase3/` contains the recorded Phase 3 scripts; `pipelines/trackb/` contains Track B replay/streaming code; `tools/` contains verification/audit helpers. `services/trackb/`, `services/ai-service/` and `services/backend/` contain Track B/API scaffolds; the host application has not mounted the Track B router and the AI forecast/impact/route operations remain stubs. `frontend/` is under a design-only mock-data redesign; real API/database integration is disabled. Use [Coverage Matrix](COVERAGE_MATRIX.md) for a fuller path map. [repo: current source tree, `docs/trackb/TRACKB.md`, `docs/ui/PROFESSIONAL_UI_REDESIGN.md`]
+
+## Track B verified behavior and limits
+
+- The B1–B4 evaluation is a DERIVED future-storage-threshold task using capacity assumptions; it is not a flood-outcome, reservoir-release, or live-warning evaluation. Kaggle daily storage ends 3 Dec 2020. OpenCity storage is monthly. Rainfall units and historical capacities retain their documented caveats. No complete historical release/outflow or gate-operation series is available. [repo: `docs/trackb/AUDIT_AND_BACKTEST.md`, `docs/trackb/BACKTEST_REPORT.md`]
+- B9's 27 Oct integration evidence is a historical accelerated **REPLAY** only. It verified Kafka, Redis, Prometheus and idempotent persistence in `twinguard_trackb_test`; it does not prove live ingestion or operation. Replay message timestamps use a provisional Asia/Kolkata convention because the date-only historical source does not confirm its timezone; provenance keeps `DEFAULT, to confirm`. [repo: `docs/trackb/MESSAGES.md`, `docs/trackb/RUNBOOK.md`]
+- The separate Track B read-only router is not mounted by the host app. Forecast, impact and route operations are placeholders; the layer catalogue exposes metadata but no HTTP tile endpoint. The UI redesign uses local demo/mock data only. Do not describe replay or simulated output as live or operational, and do not use it for safety decisions. [repo: `services/trackb/router.py`, `services/ai-service/app/main.py`, `docs/trackb/G0_REPAIR_EVIDENCE.md`, `docs/ui/PROFESSIONAL_UI_REDESIGN.md`]
+- G0 remains not ready and the contracts are not frozen. Integrator review is required before contract-based service integration. [repo: `docs/master/GATE_G0_REPORT.md`]
 
 ## Golden rules
 
@@ -883,7 +908,29 @@ Work on one small change at a time. Review `git diff`, verify that no data or se
 
 Share the exact file path, command and error text, but remove credentials, personal tokens and `.env` values. For confusing QGIS/browser steps, capture a screenshot without personal information. [user]
 
+\pagebreak
+
 # Risks and limitations
+
+<!-- B55 refresh -->
+## Current limitations (G1–G5 and Round 2) — for the thesis
+
+These come from the Integrator's gate reviews (`docs/master/GATE_G1_REPORT.md` … `GATE_G5_REPORT.md`, `ROUND2_LIVE_REVIEW.md`). Every gate passed **with caveats**, and the caveats bind every report, UI and API wording. The October risk register further down is kept as history. [repo]
+
+| Area | Limitation |
+|---|---|
+| **Labels (G1)** | The SAR flood-label rule failed acceptance (tier D). The only accepted labels are the UNOSAT November 2015 references. Labels give extent, not depth. DEM-derived depth is valid for only about 30 % of the mapped extent, and the `p05`/`p95` bounds are ±4 m assumptions, not percentiles. |
+| **Risk map (G2)** | Single event (Nov 2015). The out-of-event check against the Dec 2023 NRSC map (PR-AUC 0.121, lift 2.76) uses a **preliminary, unaccepted** reference. The susceptibility model and map are **not validated out of event**. |
+| **Replay (G3)** | The Kafka/Redis replay is historical `REPLAY` in an isolated test database. Reservoir times are date-only (C3), with no measurement time or timezone. |
+| **Forecast and decision chain (G4)** | Hindcasts, not forecasts, for 2015–2023. Simulated research results only: no passability or safe-route claim. Shelter capacities (100/250/500 people) and candidates (schools, colleges) are assumptions. |
+| **Product pipeline (G5)** | The packaged replay run reused engine output first computed on CUDA, so the in-package CPU compute is evidenced separately. The GPU image was not built for the gate evidence. |
+| **Engine** | Simplified local-inertial model on the GLO-30 *surface* DEM (buildings and vegetation included). No storm-drain network. Not validated against observed depths. Building heights are mostly estimated. Event rainfall is spatially uniform. |
+| **Live mode (Round 2)** | A numerical weather-model forecast pushed through the 120 m model. **Not an official warning, and its skill is not validated.** Packaged verification ran on CPU (about 4.6 min per cycle); pruning past 16 runs is shown by a test, not 17 real cycles. Run only one live scheduler at a time, because the local launcher and the package each count Open-Meteo calls separately. |
+| **Reservoirs** | CFM-DSS publishes level and storage, never releases. A28 outlet inflows are **assumptions** from a storage threshold rule, never observed releases. The source has no published terms; CR-016/CR-021 bounds apply. |
+| **Security and licensing** | The Cesium ion token is compiled into the frontend bundle from git-ignored `.env.local`: do not publish images or bundles as built (I04). Data licences are pending owner confirmation (G6 M7; see [References and Attribution](16_References_and_Attribution.md)). |
+| **Operations** | A service started from a Claude session stops when that session ends. Use `start_live.ps1 -Background` or the always-on compose overlay ([Runbook](19_Runbook.md)). |
+
+---
 
 Likelihood and impact ratings below are qualitative **[estimate, to be agreed]** project judgments, not computed probabilities. Evidence is cited for each underlying issue. [user]
 
@@ -907,6 +954,8 @@ Likelihood and impact ratings below are qualitative **[estimate, to be agreed]**
 ## Interpretation limits
 
 WorldCover class 50 is only a built-up proxy; OSM building polygons are incomplete and do not imply occupancy; proximity buffers are not network service areas; GFD overlap is broad regional evidence; UNOSAT inspection rasters are not final training labels; and Track B is not a validated warning model. [repo: `docs/FEATURE_DICTIONARY.md`, `docs/PHASE3_LOG.md`]
+
+\pagebreak
 
 # Glossary
 
@@ -966,6 +1015,8 @@ Terms are defined here in plain language. A term’s mention does not mean its f
 | WorldPop | Gridded population estimate; the project uses an alpha constrained 2021 product. |
 | mcft / cusec | Storage and flow units; they measure different things and cannot be substituted for one another. |
 
+\pagebreak
+
 # Frequently asked questions
 
 1. **What is TwinGuard AI?** A research project aiming to connect flood estimates to emergency decisions. It is not yet an operational system. [user; repo: `docs/PROJECT_STATUS.md`]
@@ -999,7 +1050,46 @@ Terms are defined here in plain language. A term’s mention does not mean its f
 29. **Why not model releases from storage changes?** A storage change is not a direct release observation; inflow and other factors also change storage. [repo: `docs/PHASE3_PLAN.md`]
 30. **Who is the supervisor and what is the deadline?** `[TO BE FILLED]`; neither is recorded in the repo. [unverified]
 
+\pagebreak
+
 # References and attribution
+
+<!-- B55 refresh -->
+## Data sources and services (G6 checklist §3)
+
+**Status: pending owner confirmation (G6 item M7).** Each row is confirmed by the owner, or marked "use removed", before the final report. The licence and terms column is what must be confirmed, not a legal opinion. [repo: `docs/master/G6_OWNER_DECISION_CHECKLIST.md` §3]
+
+| Source | Use in the project | Licence or terms to confirm | Attribution |
+|---|---|---|---|
+| OpenStreetMap (Geofabrik extract) | Roads, buildings, facilities, shelters | ODbL 1.0 | "© OpenStreetMap contributors" |
+| WorldPop | Population exposure | CC BY 4.0 | WorldPop citation |
+| Copernicus GLO-30 DEM | Terrain (engine surface) | Copernicus DEM licence (free, with attribution) | "© DLR e.V. 2010–2014 and © Airbus Defence and Space GmbH 2014–2018, provided under COPERNICUS by the European Union and ESA" |
+| GPM IMERG (NASA) | Event rainfall totals | NASA open data | NASA GES DISC citation |
+| ERA5 (Copernicus C3S) | Hourly rainfall shape | Copernicus licence | C3S citation |
+| Open-Meteo | Forecast rainfall (live and forecast runs), weather panel | Free non-commercial use; data CC BY 4.0 | "Weather data by Open-Meteo.com" |
+| CFM-DSS public dashboard (Tamil Nadu) | Reservoir snapshot (`PUBLISHED_SNAPSHOT`); A28 coupling input | **No formal terms published.** CR-016/CR-021 bounds apply: at most daily, no redistribution of raw responses, no endorsement claim. | Source name, with no endorsement claim |
+| UNOSAT / HDX flood extents | Labels (tier A) | UNOSAT terms (HDX) | UNOSAT citation |
+| Sentinel-1 (ESA Copernicus) | SAR diagnostics | Copernicus open licence | "Contains modified Copernicus Sentinel data" |
+| NRSC/NDEM flood maps (2021, 2023) | Diagnostic out-of-event check | Government publication; confirm reuse terms | NRSC citation |
+| Kaggle Chennai reservoir levels | Track B replay | Dataset licence on Kaggle (confirm) | Dataset citation |
+| Google Map Tiles / Photorealistic 3D Tiles | 3D city in the UI | Google Maps Platform terms (attribution and logo visible; no caching beyond the terms) | On-map Google attribution and logo (kept visible) |
+| CesiumJS / Cesium ion | 3D engine and terrain | CesiumJS Apache-2.0; Cesium ion terms (free tier, non-commercial) | Cesium credit (on map) |
+| Census data (if used) | — | Confirm whether any census table is used; WorldPop is the population source | — |
+
+### Software (open source)
+
+| Component | Licence |
+|---|---|
+| Python, NumPy, SciPy, FastAPI, Uvicorn, Pydantic, httpx | PSF / BSD / MIT (per package) |
+| PyTorch (optional GPU backend) | BSD-3-Clause; NVIDIA CUDA runtime under NVIDIA's EULA |
+| React, Vite, Tailwind CSS | MIT |
+| CesiumJS | Apache-2.0 |
+| nginx | BSD-2-Clause |
+| Docker Desktop | Docker subscription terms (personal/educational use) |
+
+The UI keeps the Open-Meteo, OpenStreetMap, Google and Cesium credits visible. The handbook contains no keys or tokens.
+
+---
 
 ## Literature supplied by the user
 
@@ -1036,7 +1126,25 @@ The exact per-file records are in `docs/DATA_MANIFEST.csv` and raw `DOWNLOAD_LOG
 
 Attribution reminders recorded by the project: OSM data require ODbL attribution/share-alike compliance; Copernicus DEM requires its attribution notice; WorldCover and WorldPop are noted CC BY 4.0; GFD is CC BY-NC 4.0; UNOSAT has a non-commercial share-alike note; NRSC PDFs say “For official use” and have redistribution limits; some NASA POWER, CWC, CAG and Sentinel-specific terms remain unconfirmed. Do not redistribute unless the applicable terms are checked. [repo: `docs/DATA_MANIFEST.csv`, `docs/OSM_COUNTS.md`, `docs/MANUAL_TODO.md`]
 
+\pagebreak
+
 # Document control
+
+<!-- B55 refresh -->
+## Refresh record — 10 Nov 2026 (B55, Round 4)
+
+| Item | Detail |
+|---|---|
+| Scope | Final-year product state after G1–G5, Round 2 (live mode) and I27 |
+| Rewritten | 00 Project on a Page; 03 Architecture and Tech Stack |
+| New | 18 User Guide (7 tabs, badges, live bar); 19 Runbook (launcher, B11 package, GPU and always-on overlays, live switch, Open-Meteo budget) |
+| Updated (new section on top, older content kept as history) | 04 Decision Log (OD-2026-11-07/08/08b/08c/10, CR-019–021); 13 Risks and Limitations (G1–G5, Round 2); 16 References and Attribution (G6 §3, pending owner confirmation M7) |
+| Unchanged history | 01, 02, 05–12, 14, 15 describe the October research phases |
+| Sources | `docs/master/FINAL_YEAR_OWNER_DECISIONS.md`, `CR-019/020/021`, `GATE_G1`–`G5` reports, `ROUND2_LIVE_REVIEW.md`, `G6_OWNER_DECISION_CHECKLIST.md`, `docs/api/ai-service.yaml`, `services/ai-service/README.md`, `docs/trackb/B13_E2E_SCENARIO.md`, `docs/trackb/B53_LIVE_CYCLE_REPORT.md`, `docs/ui/screenshots/README.md` |
+| Secrets | No keys, tokens or credentials. A pattern scan of the handbook found none (see B55 notes). |
+| Not edited | `docs/master/`, `docs/api/`, `frontend/`, Lane A reports |
+
+---
 
 ## Scope and sources
 
@@ -1116,4 +1224,151 @@ Important project claims in this handbook end with `[repo: <path>]`, `[user]`, o
 | Date | Change |
 |---|---|
 | 16 Oct 2026 | First handbook draft assembled from current repository and user-supplied project context; export and quality checks recorded in the final report. |
-| 27 Oct 2026 | Refreshed the Reservoirs and Track B chapter with B6–B10 REPLAY evidence, isolated-database boundary, unresolved source timezone, API/UI availability, and current research limitations. |
+
+\pagebreak
+
+# User guide — the 7 tabs
+
+*Added 10 Nov 2026 (B55). The UI opens on the latest **live forecast**. Screenshots are linked, not copied: [`docs/ui/screenshots/`](../ui/screenshots/README.md).* [repo: B48/B52 commits]
+
+## Before you start
+
+- **The badge (header and map)** shows what you are looking at:
+
+  | Badge | Meaning |
+  |---|---|
+  | **LIVE FORECAST · HH:MM IST** | The automatic 3-hourly forecast run (`run_kind` LIVE_FORECAST), with its Open-Meteo issue time |
+  | **REPLAY** | An archived event (Dec 2015, Nov 2021, Dec 2023) re-simulated from saved rainfall |
+  | **WHAT-IF** | A what-if run built on a base run |
+  | **CUSTOM / FORECAST** | User rainfall, or an on-demand forecast run |
+  | **DEMO / SIMULATION** | Shown only before any run is known |
+
+- **The permanent note** "Model forecast — not an official warning" appears on every tab.
+- **The live bar** shows "Updated HH:MM IST · next HH:MM", health dots for Open-Meteo and CFM-DSS, and a **Refresh** button (at most once per 10 min). If a cycle fails, a `last_error` banner appears and the last good run stays on screen.
+- **Following live:** picking a replay or what-if run *pins* it. "Back to live forecast" follows live again.
+
+Screenshots: [20_live_overview](../ui/screenshots/20_live_overview.webp), [21_live_badge_status](../ui/screenshots/21_live_badge_status.webp), [21_switch_to_replay](../ui/screenshots/21_switch_to_replay.webp), [21_back_to_live](../ui/screenshots/21_back_to_live.webp).
+
+## 1 Situation Overview
+
+The latest run's headline numbers: maximum depth, flooded area, buildings affected, population exposed, roads blocked and wards affected. It also shows Chennai weather (Open-Meteo, cached at most every 10 min), reservoir context, incident counts by severity, and the most affected wards.
+Screenshot: [01_situation_overview](../ui/screenshots/01_situation_overview.webp), [20_live_overview](../ui/screenshots/20_live_overview.webp).
+
+## 2 Flood Simulation
+
+Run a simulation and play it back. Choose an archived event, enter custom rainfall (15/30/60 min intervals), or start a forecast run; then use the timeline to play the depth frames. Per-ward summaries are shown. Runs are queued, and an identical request returns the cached run.
+Screenshots: [02_flood_simulation](../ui/screenshots/02_flood_simulation.webp), [17_g5_packaged_flood_simulation](../ui/screenshots/17_g5_packaged_flood_simulation.webp), [20_live_flood_simulation](../ui/screenshots/20_live_flood_simulation.webp).
+
+## 3 Emergency Support
+
+- **Shelters:** reachability and allocation. Capacities are *assumed*; the capacity factor can be 0.5, 1 or 2.
+- **Incidents:** generated from the run's results and labelled as generated.
+- **Resources:** boats, teams and vehicles are owner-set scenario inputs (`SCENARIO_INPUT`), and a greedy assignment plan pairs them with incidents. This is decision support, not dispatch.
+
+Screenshot: [03_emergency_support](../ui/screenshots/03_emergency_support.webp).
+
+## 4 Road Routing
+
+Roads are shown in three states: passable, blocked (at 0.30 m or more; tunnels at half that) and unknown (for example bridges). Route search compares three policies — *avoid blocked*, *avoid blocked and unknown* and *shortest dry* — against a dry baseline. A route through unknown roads is **CONDITIONAL**.
+Screenshots: [04_road_routing](../ui/screenshots/04_road_routing.webp), [13_e2e_road_routing](../ui/screenshots/13_e2e_road_routing.webp).
+
+## 5 What-if Simulation
+
+Modify a base run: rainfall from 0–300 %, reservoir releases of 0–3,000 m³/s per reservoir (assumed scenario inputs), and a tide offset from −1 to 2 m. The comparison shows the changes against the base, overall and by ward.
+Screenshots: [05_what_if_simulation](../ui/screenshots/05_what_if_simulation.webp), [12_e2e_what_if](../ui/screenshots/12_e2e_what_if.webp).
+
+## 6 Reservoir Monitoring
+
+The CFM-DSS public dashboard snapshot (`PUBLISHED_SNAPSHOT`, date-only `source_date`). In live runs, the A28 outlet inflow is labelled **ASSUMPTION**, never as a release.
+Screenshot: [06_reservoir_monitoring](../ui/screenshots/06_reservoir_monitoring.webp).
+
+## 7 Digital Twin 3D City
+
+CesiumJS with Google Photorealistic 3D Tiles. Water is draped or extruded from the depth grid and animated by the modelled `/flow` velocities. Layers cover buildings by depth class, roads, shelters, incidents and wards. You can switch between 2D, 3D and satellite views. The Google logo and attribution always stay visible.
+Screenshots: [07_digital_twin_3d_city](../ui/screenshots/07_digital_twin_3d_city.webp), [14_flow_modelled_velocity](../ui/screenshots/14_flow_modelled_velocity.webp), [17_g5_packaged_digital_twin](../ui/screenshots/17_g5_packaged_digital_twin.webp), [20_live_digital_twin](../ui/screenshots/20_live_digital_twin.webp).
+
+\pagebreak
+
+# Runbook
+
+*Added 10 Nov 2026 (B55). All commands run from the repository root `D:\TIWNGUARD`. No keys or tokens appear in this handbook: the UI's 3D token lives in the git-ignored `frontend/.env.local`, and the API never accepts or returns it.* [repo: `services/ai-service/README.md`]
+
+## Choose one way to run it
+
+Run **exactly one live scheduler at a time**. The local launcher and the packaged stack each keep their own Open-Meteo call counter, and both bind `127.0.0.1:8000`. To run both, set `TWINGUARD_V3_LIVE=0` on one of them and remove its `:8000` host port.
+
+### A. Local service with GPU (recommended for the demo)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File services\ai-service\start_live.ps1 -Background
+```
+
+- **What it starts:** the AI service on `http://127.0.0.1:8000`, with `TWINGUARD_V3_LIVE=1`, `TWINGUARD_V3_DEVICE=auto` and `TWINGUARD_V3_WORKER=auto` (persistent GPU worker when CUDA is available).
+- **Detached:** it survives closing the terminal. A service started from a Claude session instead stops when that session ends.
+- **Logs:** `data\features\v3\logs\ai-service-<timestamp>.log`.
+- **Stop:** `start_live.ps1 -Stop`. `start_live.bat` takes the same options.
+- **Second copies:** it refuses to start one if something already answers on the port.
+- **Auto-start:** add a Task Scheduler "At log on" task that runs the same line.
+- **UI in development:** run `npm run dev` in `frontend/`. The Vite proxy sends `/api/ai/*` to `127.0.0.1:8000`; set `TWINGUARD_AI_URL` only if the service runs elsewhere.
+
+### B. Packaged stack (B11)
+
+```powershell
+docker compose -p twinguard-b11 -f docker-compose.b11.yml up -d --build --wait
+```
+
+- **Ports:** UI at `http://127.0.0.1:8081` (nginx proxies `/api/ai/` to the AI container), AI at `:8000`, backend at `:8080`.
+- **Mounts:** grids and bundles are read-only; `data/features/v3/runs` is the only writable mount.
+- **Stop:** `docker compose -p twinguard-b11 -f docker-compose.b11.yml stop`. Never use `down -v`, and never delete volumes.
+- **Always on:** add `-f docker-compose.always-on.yml` (`restart: unless-stopped`, live on).
+- **GPU:** add `-f docker-compose.gpu.yml`. This builds the AI image with CUDA PyTorch (`TWINGUARD_GPU=1`, pin `torch==2.14.1` from cu126, kept in step with `requirements-gpu.txt`) and requests `gpus: all`. It needs the NVIDIA Container Toolkit (Docker Desktop with WSL 2 GPU support). CPU stays the default.
+
+## Settings
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `TWINGUARD_V3_LIVE` | `1` | `0` disables live mode: no scheduler, and `/v3/live/latest` and `/refresh` return 503 |
+| `TWINGUARD_V3_DEVICE` | `auto` | `auto`, `cuda` or `cpu` |
+| `TWINGUARD_V3_WORKER` | `auto` | `persistent`, `per_run` or `auto` (persistent when CUDA resolves) |
+| `TWINGUARD_V3_RUNS` | `data/features/v3/runs` | Run store (runs, live state, weather cache, resources) |
+| `TWINGUARD_V3_A25_STATIC` | `data/features/live/a25_static_v1` | A25 bundle; without it the service falls back to the 600 m A06 pilot |
+| `TWINGUARD_V3_WEATHER_MIN_INTERVAL_S` | `600` | Minimum seconds between Open-Meteo fetches for the weather panel and forecast runs |
+
+## Open-Meteo budget
+
+- **Free tier:** the published figure is 10,000 calls a day. The scheduler stops before **5,000 counted calls per UTC day** and returns 503 on refresh, while keeping the last good run.
+- **Usage:** one live cycle counts about 297 location-calls (99 lattice points × 3 models). Eight scheduled cycles a day use about 2,400, plus any manual refreshes.
+- **Where to check:** `GET /v3/live/status` → `sources.open_meteo.calls_today`.
+- **CFM-DSS:** read at most once a day (2 requests).
+- **Credentials:** none are used for either source.
+
+## Health checks
+
+| Check | Command |
+|---|---|
+| Service | `curl http://127.0.0.1:8000/health` |
+| Engine, device and worker | `curl http://127.0.0.1:8000/v3/status` (`device.resolved`, `worker.state` = warm) |
+| Live mode | `curl http://127.0.0.1:8000/v3/live/status` (`state`, `next_scheduled_at`, `last_error`, `sources`) |
+| Latest live run | `curl http://127.0.0.1:8000/v3/live/latest` (404 before the first run) |
+| Packaged through nginx | Same paths under `http://127.0.0.1:8081/api/ai/` |
+
+## Common situations
+
+| Symptom | Cause and fix |
+|---|---|
+| The UI shows fixtures or "API unavailable" | Nothing on `:8000`. Start option A or B. |
+| A live cycle missed its slot | The machine was asleep. On wake the overdue cycle runs at once as `scheduled`, or as `catch_up` if more than 6 h late. |
+| `last_error` with `fetch_forecast` | An Open-Meteo outage or the budget was reached. The last good run is still served, and the next cycle retries. |
+| A second Refresh gives 429 | Manual refresh is limited to once per 600 s (`Retry-After` is set). |
+| GPU not used | `GET /v3/status` → `device.cuda_available` false, or `worker.mode` per_run. Check the NVIDIA driver and the CUDA PyTorch install (`pip install -r requirements-gpu.txt`). |
+| "â€”" instead of "—" in a terminal | The client decoded UTF-8 as cp1252. The server sends `application/json; charset=utf-8`. |
+
+## Tests
+
+```powershell
+.venv\Scripts\python.exe -m pytest -q tests\ai_service tests\packaging
+.venv\Scripts\python.exe tools\validate_api_contracts.py
+.venv\Scripts\python.exe tools\audit_raw_logs.py
+```
+
+The end-to-end evidence scripts (`tests/e2e/b13_product_replay.py`, `tests/e2e/b53_live_cycle.py`) need the packaged stack to be running.

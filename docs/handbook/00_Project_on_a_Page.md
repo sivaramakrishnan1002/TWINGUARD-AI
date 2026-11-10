@@ -1,27 +1,39 @@
 # TwinGuard AI — project on a page
 
-**A decision-support research project for urban flooding in Chennai.** TwinGuard is intended to combine weather, satellite, terrain, reservoir, map and population information to estimate where flooding may occur, show uncertainty, and help compare emergency actions. [user]
+*Refreshed 10 Nov 2026 (B55). TwinGuard is a bachelor's final-year project (OD-2026-11-07), not an operational or research-grade service.* [repo: `docs/master/FINAL_YEAR_OWNER_DECISIONS.md`]
 
-## Why it exists
+## What it is
 
-Flood response is a chain of decisions. A predicted flood can affect roads, people, facilities and shelters. A useful system should carry uncertainty through that chain and help an operator compare choices, rather than show a flood map alone. This is the project's research direction; the operational system does not exist yet. [user]
+A flood digital twin for Chennai:
+- **Simulation:** it simulates flooding from rainfall and reservoirs.
+- **3D city:** it shows the water on a 3D city (CesiumJS with Google Photorealistic 3D Tiles).
+- **Decision support:** it turns depth into decision support: affected buildings and wards, three-state road access, routes, shelter reachability, generated incidents and a resource plan.
+- **Live mode:** a 72 h forecast is refreshed automatically every 3 h. Archived events can be replayed, and what-if scenarios compared.
 
-## What is new (carefully stated)
+## Contribution (owner's wording, OD-2026-11-07 §6)
 
-The project proposes to test an integrated **uncertainty-to-decision** workflow: forecasts update a digital representation of the city, and likely future road access, exposure, shelter availability and decisions are compared. It also proposes time-aware routes and “what if” scenarios. The individual methods are established ideas. The team has not completed a literature review sufficient to claim priority or novelty. [user]
+> "an integrated rainfall + reservoir → flood simulation → 3D digital twin → impact, three-state routing and shelter decision pipeline with what-if scenarios for Chennai" is the project's contribution.
 
-## Status
+The individual methods (local-inertial flood modelling, graph routing, shelter allocation) are established. The contribution is their integration into one labelled, end-to-end pipeline for Chennai.
 
-`Phase 1: foundation — reported complete` → `Phase 2: collection and audit — close-out complete, with gaps` → `Phase 3: feature preparation — Part B complete` → `Phase 4: not started`. No flood model has been trained. [repo: `docs/PROJECT_STATUS.md`, `docs/PHASE3_LOG.md`]
+## Status (10 Nov 2026)
 
-## What exists now
+| Area | State |
+|---|---|
+| Engine | A25 high-resolution engine: 120/90 m citywide, 30 m focus areas. It has a CUDA backend (A26), flow export (A27) and the A28 reservoir coupling. |
+| API | C4 v3 `/v3`: 31 paths / 33 operations, including live endpoints (B47, B49, B51) |
+| UI | 7-tab live-first UI with badges and the live bar (B48, B52) |
+| Gates | G1–G5 passed with caveats. The Round 2 live stage passed with caveats (I27). G6 (final) is pending owner checklist items. |
+| Packaging | B11 Docker stack verified for the replay (B13) and live cycle (B53) |
 
-Raw sources are locally collected and logged; a common 30 m analysis grid and exploratory weather, terrain, land-cover, OSM, population, reservoir and flood-inspection outputs exist. They are research inputs, not a deployed twin or final validation set. The grid uses the older, pre-2022 CMA boundary provisionally. [repo: `docs/PHASE3_LOG.md`, `docs/GRID_DECISION.md`]
+## Labels you will see
 
-## The immediate next work
+- **Results:** every result is `SIMULATED`.
+- **Inputs:** these keep their own class — `REPLAY` (archived event), `MODEL_FORECAST` (Open-Meteo), `PUBLISHED_SNAPSHOT` (CFM-DSS) or `SCENARIO_INPUT` (owner-set resources, what-if values, A28 assumed inflow).
+- **Incidents:** generated from the results and labelled as such.
+- **Live runs:** every live run carries "Model forecast — not an official warning".
 
-Resolve the old-versus-expanded CMA boundary, review coastal terrain and drainage, reconcile OSM counts and test network connectivity, settle the flood-label strategy, and verify product units and reuse terms. Then follow the reviewed roadmap and get explicit approval before Phase 4. [repo: `docs/MANUAL_TODO.md`, `docs/PHASE3_PLAN.md`]
+## Where to start
 
-## Where a new teammate should start
-
-Read this page, [Progress and Chronicle](09_Progress_and_Chronicle.md), [Data Inventory](05_Data_Inventory.md), [Flood Events and Labels](06_Flood_Events_and_Labels.md), and [Document Control](17_Document_Control.md). Use the [Coverage Matrix](COVERAGE_MATRIX.md) to locate evidence. Unknown personal details remain marked `[TO BE FILLED]`.
+- [Architecture](03_Architecture_and_Tech_Stack.md) → [User Guide](18_User_Guide.md) → [Runbook](19_Runbook.md) → [Risks and Limitations](13_Risks_and_Limitations.md) → [Decision Log](04_Decision_Log.md) → [References and Attribution](16_References_and_Attribution.md).
+- Chapters 05–11 record the earlier research phases (data, labels, Track B, Phases 2–3) and are kept as history.

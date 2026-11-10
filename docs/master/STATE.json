@@ -6685,7 +6685,7 @@
       "lane": "B",
       "title": "Round 2 verification: one full live cycle on the packaged stack (CR-021)",
       "phase": "B",
-      "status": "ready",
+      "status": "done_with_caveats",
       "depends_on": [
         "A28",
         "B51",
@@ -6708,18 +6708,23 @@
         "Raw audit 157/157; no shared-database writes; no volume deletion; no credentials or Google key in requests or responses.",
         "Encoding: on the packaged stack, the disclaimer in /v3/live/status, /v3/live/latest and live runs must decode as UTF-8 and equal the contract constant 'Model forecast \u2014 not an official warning' exactly (the UI session saw mojibake '\u00e2\u20ac\u201d' during B52; the local :8000 service returned the exact constant on 2026-11-10). Record the check."
       ],
-      "evidence": [],
-      "session": null,
-      "claimed_at": null,
-      "finished_at": null,
-      "commit": null,
+      "evidence": [
+        "docs/trackb/B53_LIVE_CYCLE_REPORT.md",
+        "docs/trackb/B53_LIVE_CYCLE_EVIDENCE.json",
+        "tests/e2e/b53_live_cycle.py"
+      ],
+      "session": "Lane B",
+      "claimed_at": "2026-11-10T16:09:06+0530",
+      "finished_at": "2026-11-10T17:54:44+0530",
+      "commit": "bb6e690",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
         "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only.",
-        "2026-11-10 Integrator: A28, B51 and B52 are done (bf50c38; d987199/818c7fc; b69c371). B53 is ready for Lane B, with the UI session capturing packaged screenshots 18_live_*. B52 dev-server screenshots are docs/ui/screenshots/20_live_*. The UI triggered two manual live cycles during testing."
+        "2026-11-10 Integrator: A28, B51 and B52 are done (bf50c38; d987199/818c7fc; b69c371). B53 is ready for Lane B, with the UI session capturing packaged screenshots 18_live_*. B52 dev-server screenshots are docs/ui/screenshots/20_live_*. The UI triggered two manual live cycles during testing.",
+        "Packaged B11 live cycle via nginx /api/ai/v3/live/* (CPU image, isolated run store runs_b53, no host :8000): catch-up sim-20261110T120422Z-1a781dbd (277 s) and manual sim-20261110T121126Z-979f9524 (286 s), LIVE_FORECAST, engine 2.1.0, A28-RES-STORAGE-v1 applied (0 m3/s), OM 594 calls in container, CFM 2026-11-10. already_running, 429 (Retry-After 599), simulated upstream failure keeps last good + last_error, keep_last 16. Exact UTF-8 disclaimer + charset. Raw audit 157/157; no Google key. Fixed engine timestamp format (d672eae). Caveats: item 3 screenshots (18_live_*) by UI session after this; CPU only; retention >16 proven by fake-clock test."
       ]
     },
     {

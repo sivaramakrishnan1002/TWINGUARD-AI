@@ -2415,7 +2415,8 @@
       "notes": [
         "2026-10-28 post-G0 review: I01 is done_with_caveats, but I04 remains blocked because release/tag and backup scope is undefined and no backup target/preflight evidence exists. G0 readiness alone does not authorize a dump, tag or publication. Owner: Integrator to define scope before status can change.",
         "2026-10-31 post-I08 planning: status set to blocked_manual pending the explicit project-owner decisions listed in docs/master/I04_RELEASE_BACKUP_DECISION_REQUEST.md. No tag, database access, dump, or publication occurred.",
-        "2026-11-10 Integrator, from G5 closeout: the packaged frontend bundle compiles in a Cesium ion access token from the git-ignored frontend/.env.local, and the Google Map Tiles key is likewise owner-supplied. Any release, tag publication or image push must use URL-restricted tokens or rebuild without them, and must not push local/twinguard-b11-frontend images as built. Also carry the G1-G5 Limitations (see GATE_G1..G5_REPORT.md) into the release notes."
+        "2026-11-10 Integrator, from G5 closeout: the packaged frontend bundle compiles in a Cesium ion access token from the git-ignored frontend/.env.local, and the Google Map Tiles key is likewise owner-supplied. Any release, tag publication or image push must use URL-restricted tokens or rebuild without them, and must not push local/twinguard-b11-frontend images as built. Also carry the G1-G5 Limitations (see GATE_G1..G5_REPORT.md) into the release notes.",
+        "2026-11-10 Integrator: owner decisions consolidated in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a71 (recommended: v1.0 local annotated tag, no database dump, images kept local, URL-restricted tokens for any shared build)."
       ]
     },
     {
@@ -2529,7 +2530,9 @@
       "manual": true,
       "estimate_days": null,
       "target_day": null,
-      "notes": []
+      "notes": [
+        "2026-11-10 Integrator: decision options in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a72 (recommended: private remote; push code/docs/evidence only, never data/, .env*, images; owner pushes after a secret scan)."
+      ]
     },
     {
       "id": "M5",
@@ -2622,7 +2625,9 @@
       "manual": true,
       "estimate_days": null,
       "target_day": null,
-      "notes": []
+      "notes": [
+        "2026-11-10 Integrator: source-by-source licence and attribution table in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a73 for owner confirmation."
+      ]
     },
     {
       "id": "M8",
@@ -2646,7 +2651,9 @@
       "manual": true,
       "estimate_days": null,
       "target_day": null,
-      "notes": []
+      "notes": [
+        "2026-11-10 Integrator: docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a74 asks for two dates (draft review after A29/B55; final demo before tagging v1.0)."
+      ]
     },
     {
       "id": "I05",
@@ -5604,7 +5611,8 @@
       "estimate_days": 3,
       "target_day": null,
       "notes": [
-        "Blocked until source verification and explicit D2/D8/source-owner permission. This task does not authorize endpoint access or credentials."
+        "Blocked until source verification and explicit D2/D8/source-owner permission. This task does not authorize endpoint access or credentials.",
+        "2026-11-10 Integrator: recommended to park as superseded (G6 checklist \u00a75); awaiting owner decision."
       ]
     },
     {
@@ -5715,7 +5723,8 @@
       "estimate_days": 5,
       "target_day": null,
       "notes": [
-        "Blocked: there is no completed Lane A observation-triggered recomputation interface or approved Integrator API projection. Do not treat A21 as model recomputation or use its outputs prematurely. Requires B40/B41 and B37 completion."
+        "Blocked: there is no completed Lane A observation-triggered recomputation interface or approved Integrator API projection. Do not treat A21 as model recomputation or use its outputs prematurely. Requires B40/B41 and B37 completion.",
+        "2026-11-10 Integrator: recommended to park as superseded by B51 live cycle (G6 checklist \u00a75); awaiting owner decision."
       ]
     },
     {
@@ -6732,7 +6741,7 @@
       "lane": "I",
       "title": "Round 2 live-stage review (CR-021)",
       "phase": "I",
-      "status": "blocked_prerequisite",
+      "status": "running",
       "depends_on": [
         "B53"
       ],
@@ -6750,6 +6759,40 @@
         "Review B53 evidence against CR-021. Promote the /v3/live operations into top-level paths after the parity tests pass, record the decision and caveats, and update the board."
       ],
       "evidence": [],
+      "session": "Integrator (Lane I) G1-G6 session",
+      "claimed_at": "2026-11-10T17:56:16+0530",
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+      ]
+    },
+    {
+      "id": "B54",
+      "lane": "B",
+      "title": "Packaged live-UI screenshots (18_live_*) - ui session",
+      "phase": "B",
+      "status": "ready",
+      "depends_on": [
+        "B52",
+        "B53"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/master/ROUND2_LIVE_REVIEW.md",
+        "docs/trackb/B53_LIVE_CYCLE_REPORT.md"
+      ],
+      "outputs": [
+        "docs/ui/screenshots/"
+      ],
+      "acceptance": [
+        "On the packaged B11 stack (http://127.0.0.1:8081/), capture docs/ui/screenshots/18_live_* for a LIVE_FORECAST run (e.g. sim-20261110T121126Z-979f9524). Show the LIVE FORECAST \u00b7 HH:MM IST badge, 'Updated \u2026 \u00b7 next \u2026', Open-Meteo and CFM-DSS health, the Refresh button, the disclaimer 'Model forecast \u2014 not an official warning' and the Google attribution, with 0 console errors. Record the bundle hash in docs/ui/screenshots/README.md."
+      ],
+      "evidence": [],
       "session": null,
       "claimed_at": null,
       "finished_at": null,
@@ -6759,7 +6802,91 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+        "2026-11-10 Registered by Integrator as the I27 follow-up (B53 item 3); the UI session is already capturing."
+      ]
+    },
+    {
+      "id": "A29",
+      "lane": "A",
+      "title": "Round 4: final report and paper refresh (G6)",
+      "phase": "A",
+      "status": "ready",
+      "depends_on": [
+        "A17",
+        "A28",
+        "B53",
+        "I27"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/master/GATE_G1_REPORT.md",
+        "docs/master/GATE_G2_REPORT.md",
+        "docs/master/GATE_G3_REPORT.md",
+        "docs/master/GATE_G4_REPORT.md",
+        "docs/master/GATE_G5_REPORT.md",
+        "docs/master/ROUND2_LIVE_REVIEW.md",
+        "docs/master/FINAL_YEAR_OWNER_DECISIONS.md"
+      ],
+      "outputs": [
+        "docs/FINAL_REPORT.md",
+        "docs/PAPER_DRAFT.md",
+        "docs/figures/"
+      ],
+      "acceptance": [
+        "Update docs/FINAL_REPORT.md and docs/PAPER_DRAFT.md from the internal-draft state to a thesis-ready report covering: data and labels (G1); susceptibility model, baselines and the out-of-event check (G2); Track B replay (G3); forecast \u2192 simulation \u2192 impact \u2192 three-state routing \u2192 shelters (G4, A05\u2013A10, A21); the A25/A26/A27 high-resolution GPU engine and flow; the C4 v3 API and 7-tab 3D UI (B47\u2013B52); live forecast mode with reservoir coupling (CR-021, A28/B51/B53); and the G5 packaged end-to-end replay.",
+        "State the contribution in the owner's wording (OD-2026-11-07): 'an integrated rainfall + reservoir \u2192 flood simulation \u2192 3D digital twin \u2192 impact, three-state routing and shelter decision pipeline with what-if scenarios for Chennai'. Present it as the project's integrated contribution, with related work cited, not as a validated-accuracy claim.",
+        "Quantitative statements cite the existing reports and artifacts (run_id, commit, report path). Add a short Limitations section using the G1\u2013G5 and Round 2 caveats (single training event; out-of-event check against an unaccepted map only; 120 m simplified hydraulics, no drains; assumption-based reservoir coupling, shelter capacities and road thresholds; model forecast, not official warnings).",
+        "Figures: reuse existing ones and add packaged screenshots by reference. Run Lane A tests and the raw audit; no new science runs.",
+        "Do not edit docs/master/, docs/api/, docs/handbook/ or frontend/."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator for Round 4 (coordinator request). Required by G6."
+      ]
+    },
+    {
+      "id": "B55",
+      "lane": "B",
+      "title": "Round 4: handbook refresh (architecture, user guide, runbook, attribution)",
+      "phase": "B",
+      "status": "ready",
+      "depends_on": [
+        "B53",
+        "I27"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/master/G6_OWNER_DECISION_CHECKLIST.md",
+        "docs/master/ROUND2_LIVE_REVIEW.md",
+        "docs/master/CR-021_LIVE_FORECAST_MODE.md"
+      ],
+      "outputs": [
+        "docs/handbook/"
+      ],
+      "acceptance": [
+        "Refresh docs/handbook/ (markdown; regenerate TwinGuard_Project_Handbook.docx only if the existing tool does so locally): architecture (A25 engine with CUDA backend, flow, persistent GPU worker, C4 v3 /v3 API, live scheduler, nginx package, CesiumJS + Google 3D Tiles UI); a user guide for the 7 tabs and the live/replay/what-if badges; a runbook (local launcher, packaged B11 stack, GPU overlay, TWINGUARD_V3_LIVE switch, run only one live scheduler at a time, Open-Meteo budget); Risks and Limitations (G1\u2013G5, Round 2); the decision log (OD-2026-11-07/08/08b/08c/10, CR-019..021).",
+        "16_References_and_Attribution.md lists every data source and service with licence and attribution per the G6 checklist \u00a73 (pending owner confirmation in M7). State the novelty claim in the owner's wording (OD-2026-11-07).",
+        "No credentials, keys or tokens in the handbook. Link screenshots, do not duplicate them. Do not edit docs/master/, docs/api/, frontend/ or Lane A report files."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator for Round 4 (coordinator request). Lane B owned the previous handbook refresh (B12). Required by G6."
       ]
     }
   ],
@@ -6829,7 +6956,9 @@
       "requires": [
         "A15",
         "A17",
-        "I04"
+        "I04",
+        "A29",
+        "B55"
       ],
       "tests": [],
       "target_day": 38,

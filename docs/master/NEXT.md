@@ -20,7 +20,7 @@
 
 ## Ready tasks by lane B
 
-- **B53 — Round 2 verification: one full live cycle on the packaged stack (CR-021)** (ready)
+- **B54 — Packaged live-UI screenshots (18_live_*) - ui session** (ready)
 
 ## Ready tasks by lane I
 
@@ -34,11 +34,10 @@
 - **M8 — Mentor review dates** (blocked_manual)
 - **B40 — Implement authorized IMD rainfall/weather connector** (blocked_prerequisite)
 - **B42 — Prove observation-triggered recomputation through API and UI** (blocked_prerequisite)
-- **I27 — Round 2 live-stage review (CR-021)** (blocked_prerequisite)
 
 ## Running tasks
 
-- None.
+- **I27 — Round 2 live-stage review (CR-021)** (running)
 
 ## Next gate
 

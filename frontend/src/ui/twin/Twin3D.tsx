@@ -20,7 +20,7 @@ export type ViewMode = '3d' | '2d' | 'satellite';
 export interface TwinLayers { water: boolean; hqWater: boolean; buildings: boolean; roads: boolean; wards: boolean; shelters: boolean; incidents: boolean; google: boolean; photoreal: boolean }
 export interface PickInfo { kind: 'building' | 'road' | 'shelter' | 'incident' | 'ward' | 'ground' | 'river'; title: string; lines: [string, string][]; location: LonLat }
 export type TwinCommand = { type: 'home' | 'zoomIn' | 'zoomOut' | 'north' | 'tilt'; key: number };
-export interface CameraInfo { headingDeg: number; metersPer100px: number | null; heightM: number; /** visible ground [w, s, e, n] in degrees, when computable */ viewBbox: [number, number, number, number] | null }
+export interface CameraInfo { headingDeg: number; metersPer100px: number | null; heightM: number; /** visible ground [w, s, e, n] in degrees, when computable */ viewBbox: [number, number, number, number] | null; /** ground point at the screen centre */ center: { lon: number; lat: number } | null }
 
 /** Fallback EGM2008 undulation for Chennai until the datum is calibrated against the loaded surface. */
 const GEOID_N_M = -86;
@@ -559,7 +559,10 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
       const height = v.camera.positionCartographic.height - datumRef.current;
       const rect = v.camera.computeViewRectangle();
       const viewBbox: [number, number, number, number] | null = rect ? [Cesium.Math.toDegrees(rect.west), Cesium.Math.toDegrees(rect.south), Cesium.Math.toDegrees(rect.east), Cesium.Math.toDegrees(rect.north)] : null;
-      camRef.current?.({ headingDeg: Cesium.Math.toDegrees(v.camera.heading), metersPer100px: a && b ? Cesium.Cartesian3.distance(a, b) : null, heightM: height, viewBbox });
+      const mid = v.camera.pickEllipsoid(new Cesium.Cartesian2(c.clientWidth / 2, c.clientHeight / 2));
+      const mc = mid ? Cesium.Cartographic.fromCartesian(mid) : null;
+      const center = mc ? { lon: Cesium.Math.toDegrees(mc.longitude), lat: Cesium.Math.toDegrees(mc.latitude) } : null;
+      camRef.current?.({ headingDeg: Cesium.Math.toDegrees(v.camera.heading), metersPer100px: a && b ? Cesium.Cartesian3.distance(a, b) : null, heightM: height, viewBbox, center });
       const isNear = v.scene.mode !== Cesium.SceneMode.SCENE2D && height < GOOGLE_NEAR_M;
       if (isNear !== nearRef.current) { nearRef.current = isNear; setNear(isNear); }
     };

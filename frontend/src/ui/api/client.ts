@@ -42,6 +42,9 @@ export function createHttpApi(fetcher: Fetcher = fetch): TwinGuardApi {
       if (!requests.has(id)) await get<T.SimulationRun>(`/simulations/${encodeURIComponent(id)}`).then(remember).catch(() => requests.set(id, undefined));
       return get<T.DepthFrame>(`/simulations/${encodeURIComponent(id)}/depth${q({ frame_index: frame, layer, ...gridParams(id) })}`);
     },
+    liveStatus: () => get<T.LiveStatus>('/live/status'),
+    liveLatest: () => get<T.LiveLatest>('/live/latest'),
+    liveRefresh: () => call<T.LiveRefreshAccepted>(fetcher, '/live/refresh', { method: 'POST' }),
     flow: (id, frame, stride = 4) => get<T.FlowFrame>(`/simulations/${encodeURIComponent(id)}/flow${q({ frame_index: frame, stride })}`),
     buildings: (id, frame, bbox) => get<T.BuildingDepthPage>(`/simulations/${encodeURIComponent(id)}/buildings${q({ frame_index: frame, bbox: bboxParam(bbox), limit: 5000 })}`),
     wards: (id, frame) => get<T.WardSummaryList>(`/simulations/${encodeURIComponent(id)}/wards${q({ frame_index: frame })}`),

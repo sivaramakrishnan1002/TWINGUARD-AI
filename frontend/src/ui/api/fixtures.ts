@@ -310,6 +310,13 @@ export async function createFixtureApi(): Promise<T.TwinGuardApi> {
     },
     async listSimulations() { return { runs: await Promise.all(RUNS.map((r) => runFor(r.id))), next_cursor: null }; },
     getSimulation: runFor,
+    // saved-results mode has no live forecast cycle
+    async liveStatus() {
+      const off: T.SourceHealth = { state: 'disabled', refresh_policy: 'live mode needs the C4 v3 API' };
+      return { enabled: false, cycle_hours: 3, state: 'disabled', latest: null, last_good_run_id: null, next_scheduled_at: null, sources: { open_meteo: off, cfm_dss: off }, last_error: null, disclaimer: 'Model forecast — not an official warning' } satisfies T.LiveStatus;
+    },
+    async liveLatest(): Promise<T.LiveLatest> { throw unavailable('Live mode needs the C4 v3 API.'); },
+    async liveRefresh(): Promise<T.LiveRefreshAccepted> { throw unavailable('Live mode needs the C4 v3 API.'); },
     async flow() { throw unavailable('Flow velocities are not saved in the A05 batch2_v1 grids; the water animation uses the surface-gradient estimate.'); },
     async depth(runId, frame, layer = 'depth_mean') {
       const { k, g } = await grids(runId);

@@ -51,3 +51,24 @@ export function nearestFrameByTime(run: T.SimulationRun, iso: string | undefined
   for (const f of run.frames) if (Math.abs(Date.parse(f.valid_time_utc) - t) < Math.abs(Date.parse(best.valid_time_utc) - t)) best = f;
   return best.index;
 }
+
+/** Run kind from the API, or derived from the request mode for older runs and saved results. */
+export function runKindOf(r: T.SimulationRun | null | undefined): T.RunKind | null {
+  if (!r) return null;
+  if (r.run_kind) return r.run_kind;
+  const mode = r.request?.mode ?? r.mode;
+  return mode === 'event' ? 'REPLAY' : mode === 'what_if' ? 'WHAT_IF' : mode === 'custom' ? 'CUSTOM' : mode === 'forecast' ? 'FORECAST' : null;
+}
+
+/** Contract badge (Overview.badge enum): LIVE FORECAST | REPLAY | WHAT-IF, else DEMO / SIMULATION. */
+export function badgeFor(kind: T.RunKind | null): 'LIVE FORECAST' | 'REPLAY' | 'WHAT-IF' | 'DEMO / SIMULATION' {
+  return kind === 'LIVE_FORECAST' ? 'LIVE FORECAST' : kind === 'REPLAY' ? 'REPLAY' : kind === 'WHAT_IF' ? 'WHAT-IF' : 'DEMO / SIMULATION';
+}
+
+/** The fixed disclaimer (contract const), shown on every tab. */
+export const LIVE_DISCLAIMER = 'Model forecast — not an official warning';
+
+/** An input that is an assumption rather than an observation (e.g. A28 reservoir outlet inflow). */
+export const isAssumptionInput = (i: { name: string; source?: string | null; source_mode?: string }) => /inflow|release/i.test(i.name) || /assumption/i.test(i.source ?? '') || i.source_mode === 'SCENARIO_INPUT';
+
+export const istTime = (iso?: string | null) => (iso ? new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' }) : '—');

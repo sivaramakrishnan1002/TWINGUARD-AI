@@ -5,7 +5,7 @@ import { buildIndex, type SearchHit } from './search';
 import type { FocusArea, LonLat, RouteOption } from '../api/v3types';
 import type { CameraInfo, PickInfo, TwinCommand, TwinLayers, ViewMode } from '../twin/Twin3D';
 import { frameArea, useTwinData, type TwinData } from './state';
-import { focusAreaLabel, isFocusRun } from './runs';
+import { badgeFor, focusAreaLabel, isFocusRun, istTime, LIVE_DISCLAIMER, runKindOf } from './runs';
 import { EmergencyTab, OverviewTab, ReservoirTab, RoutingTab, SimulationTab, TwinTab, WhatIfTab } from './tabs';
 import './product.css';
 
@@ -52,6 +52,14 @@ export function ProductExperience({ initialSection = 'overview' }: { initialSect
       </nav>
       <main id="tg-main" className="tg-main" tabIndex={-1}>
         <h1 className="tg-visually-hidden">{sections.find((s) => s.id === section)!.label}</h1>
+        <div className="tg-livebar">
+          <p className="tg-disclaimer" role="note"><Icon name="alert" /> {LIVE_DISCLAIMER}. Results are SIMULATED by the flood model; follow official advisories.</p>
+          <LiveStrip data={data} />
+        </div>
+        {data.live?.last_error && <p className="tg-toast tg-toast--warn" role="alert">
+          Last live cycle failed at {istTime(data.live.last_error.at)} IST ({data.live.last_error.stage.replace('_', ' ')}): {data.live.last_error.message}
+          {data.live.last_good_run_id ? ` Showing the last good live run ${data.live.last_good_run_id}.` : ' No earlier live run is available.'}
+        </p>}
         {data.error && data.apiKind !== 'connecting' && <p className="tg-toast" role="status">{data.error}</p>}
         {section === 'overview' && <OverviewTab {...tabProps} />}
         {section === 'simulation' && <SimulationTab {...tabProps} />}
@@ -70,6 +78,51 @@ export function ProductExperience({ initialSection = 'overview' }: { initialSect
   );
 }
 
+/** Badge of the run on screen (run_kind): LIVE FORECAST with its run time, REPLAY, WHAT-IF, else DEMO / SIMULATION. */
+export function RunBadge({ data, compact = false }: { data: TwinData; compact?: boolean }) {
+  const kind = runKindOf(data.run);
+  const text = badgeFor(kind);
+  const issued = kind === 'LIVE_FORECAST' ? (data.live?.latest?.run_id === data.runId ? data.live.latest.issued_at : data.run?.created_at) : null;
+  return (
+    <span className={`tg-badge tg-badge--${text === 'LIVE FORECAST' ? 'live' : text === 'REPLAY' ? 'replay' : text === 'WHAT-IF' ? 'whatif' : 'demo'}`} role="note" data-run-kind={kind ?? 'none'}
+      title={kind === 'LIVE_FORECAST' ? `${LIVE_DISCLAIMER}. Live forecast run ${data.runId}` : kind === 'REPLAY' ? 'Replay of an archived event (REPLAY rainfall); results SIMULATED' : kind === 'WHAT_IF' ? 'What-if scenario; results SIMULATED' : 'Simulation; results SIMULATED'}>
+      {text}{!compact && issued ? ` · ${istTime(issued)} IST` : ''}
+    </span>
+  );
+}
+
+const HEALTH_LABEL: Record<string, string> = { ok: 'OK', stale: 'Stale', error: 'Error', disabled: 'Off', unknown: 'Unknown' };
+function SourceDot({ name, h }: { name: string; h: { state: string; refresh_policy: string; last_success_at?: string | null; data_time?: string | null; last_error?: string | null } }) {
+  const tip = `${name}: ${HEALTH_LABEL[h.state] ?? h.state} · ${h.refresh_policy}${h.last_success_at ? ` · last success ${istTime(h.last_success_at)} IST` : ''}${h.data_time ? ` · data ${h.data_time}` : ''}${h.last_error ? ` · ${h.last_error}` : ''}`;
+  return <span className={`tg-health tg-health--${h.state}`} title={tip} aria-label={tip}><i aria-hidden="true" />{name}</span>;
+}
+
+/** Live strip: "Updated HH:MM IST · next HH:MM", source health, Refresh, follow-live. Hidden without the live API. */
+function LiveStrip({ data }: { data: TwinData }) {
+  const [msg, setMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const live = data.live;
+  // the "cycle started" note is done once a new live run lands
+  useEffect(() => { setMsg(null); }, [data.liveRunId]);
+  if (!live || data.apiKind !== 'api') return null;
+  const latest = live.latest;
+  const refresh = async () => { setBusy(true); setMsg(await data.refreshLive()); setBusy(false); };
+  const onLive = !!data.liveRunId && data.runId === data.liveRunId;
+  return (
+    <div className="tg-live" role="group" aria-label="Live forecast status">
+      <span className="tg-live__state" data-live-state={live.state}>
+        {live.state === 'disabled' || !live.enabled ? 'Live forecast off' : live.state === 'running' ? 'Live cycle running…' : latest ? `Updated ${istTime(latest.completed_at ?? latest.issued_at)} IST` : 'No live run yet'}
+        {live.enabled && live.next_scheduled_at && <> · next {istTime(live.next_scheduled_at)}</>}
+      </span>
+      <SourceDot name="Open-Meteo" h={live.sources.open_meteo} />
+      <SourceDot name="CFM-DSS" h={live.sources.cfm_dss} />
+      {live.enabled && <button type="button" className="tg-btn tg-btn--small" onClick={refresh} disabled={busy || live.state === 'running'}>{busy ? 'Requesting…' : 'Refresh'}</button>}
+      {data.pinned && data.liveRunId && !onLive && <button type="button" className="tg-link" onClick={data.followLive}>Back to live forecast</button>}
+      {msg && <span className="tg-live__msg" role="status">{msg}</span>}
+    </div>
+  );
+}
+
 function Header({ data }: { data: TwinData }) {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => { setNow(new Date()); const t = window.setInterval(() => setNow(new Date()), 30_000); return () => window.clearInterval(t); }, []);
@@ -83,7 +136,7 @@ function Header({ data }: { data: TwinData }) {
       <p className="tg-top__tagline">Intelligent Digital Twin for<br />Flood Simulation, Early Warning &amp; Emergency Decision Support</p>
       <div className="tg-top__status">
         <span className="tg-chip"><i className="tg-dot" aria-hidden="true" />Chennai, Tamil Nadu</span>
-        <span className="tg-badge" role="note">DEMO / SIMULATION</span>
+        <RunBadge data={data} />
         <span className="tg-chip tg-chip--mono" title={data.apiKind === 'api' ? 'Connected to the C4 v3 API' : 'C4 v3 API not reachable yet; showing typed fixtures from saved project results'}>
           DATA: {data.apiKind === 'api' ? 'C4 v3 API' : data.apiKind === 'fixture' ? 'SAVED RESULTS' : 'CONNECTING'}
           {data.apiKind === 'fixture' && <button type="button" className="tg-chip__btn" onClick={data.reload} aria-label="Retry C4 v3 API connection">↻</button>}
@@ -147,7 +200,13 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
   const onCam = (c: CameraInfo) => {
     setCam(c);
     // three-state road colours for what is on screen once zoomed in; the default run/focus box otherwise
-    data.setRoadView(c.heightM < 14000 && c.viewBbox ? c.viewBbox : null);
+    // oblique views reach the horizon, so use ~9 km around the screen centre (clipped to the view), not the whole view rectangle
+    if (c.heightM < 14000 && c.center) {
+      const r = 0.04;
+      let b: [number, number, number, number] = [c.center.lon - r, c.center.lat - r, c.center.lon + r, c.center.lat + r];
+      if (c.viewBbox) b = [Math.max(b[0], c.viewBbox[0]), Math.max(b[1], c.viewBbox[1]), Math.min(b[2], c.viewBbox[2]), Math.min(b[3], c.viewBbox[3])];
+      data.setRoadView(b[0] < b[2] && b[1] < b[3] ? b : null);
+    } else data.setRoadView(null);
   };
   const focusRun = isFocusRun(data.run) ? data.run : null;
   const focusBox = useMemo(() => (focusRun?.grid?.bbox_wgs84 ? { bbox: focusRun.grid.bbox_wgs84 as [number, number, number, number], label: `${focusAreaLabel(focusRun) ?? 'Focus'} · ${focusRun.grid.cell_size_m} m focus area — detailed simulation inside` } : null), [focusRun?.run_id, focusRun?.grid]);
@@ -184,7 +243,7 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
           <Twin3D mode={mode} layers={layers} terrain={data.terrain} frame={layers.water || layers.buildings ? data.depth : null} flow={layers.water ? data.flow : null} contextFrame={layers.water ? data.contextDepth : null} focusBox={focusBox} focus={data.focus} roads={data.roads} wards={layers.wards ? data.wardShapes : null} wardShapes={data.wardShapes} highlightWard={highlight}
             shelters={data.shelters?.shelters ?? null} incidents={mapIncidents} route={route} flyTo={fly} command={cmd} onCamera={onCam} onPick={onPick} onMapClick={onMapClick} />
         </Suspense>
-        <span className="tg-stage__badge">DEMO / SIMULATION</span>
+        <span className="tg-stage__badge" data-run-kind={runKindOf(data.run) ?? 'none'}>{badgeFor(runKindOf(data.run))}</span>
         <div className="tg-tools" role="toolbar" aria-label="Map tools">
           <button type="button" aria-label="Whole city view" title="Whole study area" onClick={() => setFly({ ...HOME, key: `home-${Date.now()}` })}><Icon name="home" /></button>
           <button type="button" aria-label="Fly to focus area" title="Locate focus area" onClick={() => setFly({ lon: area.centre.lon, lat: area.centre.lat, range: 2800, key: `${area.id}-${Date.now()}` })}><Icon name="pin" /></button>

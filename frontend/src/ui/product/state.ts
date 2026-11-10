@@ -4,7 +4,7 @@ import { createFixtureApi, DEFAULT_RUN_ID, FOCUS_AREAS, loadFocus, loadTerrain, 
 import { lonLatToUtm, utmToLonLat, type TerrainGrid } from '../api/geo';
 import type * as T from '../api/v3types';
 import { ApiRequestError } from '../api/v3types';
-import { contextRunFor, isFocusRun, nearestFrameByTime, sortRuns } from './runs';
+import { contextRunFor, isFocusRun, istTime, nearestFrameByTime, runKindOf, sortRuns } from './runs';
 
 export interface TwinData {
   api: T.TwinGuardApi | null;
@@ -40,7 +40,21 @@ export interface TwinData {
   error: string | null;
   reload: () => void;
   refreshRuns: () => Promise<T.SimulationRun[]>;
+  /** Live forecast cycle (GET /v3/live/status, polled every 60 s); null in saved-results mode or before the first poll. */
+  live: T.LiveStatus | null;
+  /** The run the live cycle currently serves: the latest live run, or the last good one after a failed cycle. */
+  liveRunId: string | null;
+  /** True once the user picked a non-live run (replay, what-if, ...): new live runs then do not take over the view. */
+  pinned: boolean;
+  /** Go back to following the live forecast. */
+  followLive: () => void;
+  /** POST /v3/live/refresh; resolves to a short status message (202 / 429 / 503 handled). */
+  refreshLive: () => Promise<string>;
 }
+
+/** Live polling cadence: 60 s normally, 10 s while a cycle runs or right after a manual refresh. */
+export const LIVE_POLL_MS = 60_000;
+const LIVE_FAST_POLL_MS = 10_000;
 
 export function focusBbox(f: FocusFile | null, area: T.FocusArea): [number, number, number, number] {
   if (f) {
@@ -67,11 +81,17 @@ export function useTwinData(): TwinData {
   const [api, setApi] = useState<T.TwinGuardApi | null>(null);
   const [nonce, setNonce] = useState(0);
   const [runs, setRuns] = useState<T.SimulationRun[]>([]);
-  const [runId, setRunId] = useState(() => {
+  const deepLinkRun = useMemo(() => {
     // ?run=<run_id> deep link (demos, screenshots); unknown ids fall back to the first completed run
     try { const r = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('run') : null; if (r && /^[a-z]+-[0-9TZ]+-[a-f0-9]+$/.test(r)) return r; } catch { /* non-browser */ }
-    return DEFAULT_RUN_ID;
-  });
+    return null;
+  }, []);
+  const [runId, setRunIdRaw] = useState(() => deepLinkRun ?? DEFAULT_RUN_ID);
+  const setRunId = setRunIdRaw;
+  const [live, setLive] = useState<T.LiveStatus | null>(null);
+  const [fastPoll, setFastPoll] = useState(false);
+  // a deep-linked run is the user's explicit choice
+  const [pinned, setPinned] = useState(() => deepLinkRun != null);
   const [frameIndex, setFrameIndex] = useState(() => {
     try { const f = typeof window !== 'undefined' ? Number(new URLSearchParams(window.location.search).get('frame')) : NaN; if (Number.isInteger(f) && f >= 0) return f; } catch { /* non-browser */ }
     return 3;
@@ -117,9 +137,13 @@ export function useTwinData(): TwinData {
 
   useEffect(() => {
     if (!api) return;
-    refreshRuns().then((list) => {
+    Promise.all([refreshRuns(), api.kind === 'api' ? api.liveStatus().catch(() => null) : Promise.resolve(null)]).then(([list, st]) => {
       const done = list.filter((r) => r.state === 'completed');
-      if (api.kind === 'api') { if (done.length && !done.some((r) => r.run_id === runId)) setRunId(done[0].run_id); }
+      if (st) setLive(st);
+      // live-first: open on the latest live run (or the last good one after a failed cycle) unless the user deep-linked a run
+      const liveTarget = st?.latest?.run_id ?? st?.last_good_run_id ?? null;
+      if (api.kind === 'api' && !pinned && liveTarget && done.some((r) => r.run_id === liveTarget)) setRunId(liveTarget);
+      else if (api.kind === 'api') { if (done.length && !done.some((r) => r.run_id === runId)) setRunId(done[0].run_id); }
       // saved-results mode: a deep-linked API run id is not in the bundle, so show the default saved run instead of an error
       else if (!list.some((r) => r.run_id === runId)) setRunId(list.some((r) => r.run_id === DEFAULT_RUN_ID) ? DEFAULT_RUN_ID : (done[0] ?? list[0])?.run_id ?? DEFAULT_RUN_ID);
     }).catch((e) => setError(e instanceof Error ? e.message : String(e)));
@@ -129,6 +153,59 @@ export function useTwinData(): TwinData {
   }, [api]);
 
   const run = useMemo(() => runs.find((r) => r.run_id === runId) ?? null, [runs, runId]);
+  const liveRunId = live?.latest?.run_id ?? live?.last_good_run_id ?? null;
+
+  /* live polling: follow new live runs unless the user pinned another run */
+  const liveSeen = useRef<string | null>(null);
+  useEffect(() => {
+    if (!api || api.kind !== 'api') return;
+    let stop = false;
+    const tick = async () => {
+      const st = await api.liveStatus().catch(() => null);
+      if (stop || !st) return;
+      setLive(st);
+      const target = st.latest?.run_id ?? st.last_good_run_id ?? null;
+      if (st.state !== 'running' && target && target !== liveSeen.current) {
+        const isNew = liveSeen.current !== null;
+        liveSeen.current = target;
+        if (isNew) {
+          const list = await refreshRuns().catch(() => [] as T.SimulationRun[]);
+          if (!pinnedRef.current && list.some((r) => r.run_id === target)) setRunId(target);
+          // only now drop back to the slow cadence: changing it re-runs this effect (and stops this closure)
+          setFastPoll(false);
+        }
+      }
+    };
+    tick();
+    const t = window.setInterval(tick, fastPoll ? LIVE_FAST_POLL_MS : LIVE_POLL_MS);
+    return () => { stop = true; window.clearInterval(t); };
+  }, [api, fastPoll, refreshRuns]);
+  const pinnedRef = useRef(pinned);
+  pinnedRef.current = pinned;
+
+  /** User selection: picking a non-live run pins it; picking the live run follows live again. */
+  const selectRun = useCallback((id: string) => {
+    const r = runs.find((x) => x.run_id === id);
+    setPinned(runKindOf(r) !== 'LIVE_FORECAST');
+    setRunId(id);
+  }, [runs]);
+  const followLive = useCallback(() => { setPinned(false); if (liveRunId) setRunId(liveRunId); }, [liveRunId]);
+  const refreshLive = useCallback(async (): Promise<string> => {
+    if (!api) return 'Not connected.';
+    try {
+      const r = await api.liveRefresh();
+      setFastPoll(true);
+      return r.state === 'already_running' ? 'A live cycle is already running; the view switches when it lands.' : 'Live cycle started; the view switches to the new forecast when it lands.';
+    } catch (e) {
+      if (e instanceof ApiRequestError && e.status === 429) {
+        const wait = e.body?.retry_after_s ?? null;
+        const next = live?.manual_refresh?.next_allowed_at ?? (wait != null ? new Date(Date.now() + wait * 1000).toISOString() : null);
+        return `Refreshed recently. Next manual refresh allowed at ${istTime(next)} IST${wait != null ? ` (in ${Math.ceil(wait / 60)} min)` : ''}.`;
+      }
+      if (e instanceof ApiRequestError && e.status === 503) return `Live refresh unavailable: ${e.body?.detail ?? 'live mode disabled or engine busy'}.`;
+      return `Live refresh failed: ${e instanceof Error ? e.message : String(e)}.`;
+    }
+  }, [api, live]);
   // on the live API, only ask for per-run data once the selected id is a listed run (the saved-results default id
   // or a stale deep link would otherwise 404 on depth/flow/wards/incidents/shelters/roads)
   const runKnown = !!api && (api.kind === 'fixture' || !!run);
@@ -231,9 +308,9 @@ export function useTwinData(): TwinData {
   }, [api]);
 
   return {
-    api, apiKind: api ? api.kind : 'connecting', runs, run, runId, setRunId, frameIndex, setFrameIndex, playing, setPlaying,
+    api, apiKind: api ? api.kind : 'connecting', runs, run, runId, setRunId: selectRun, frameIndex, setFrameIndex, playing, setPlaying,
     depth, flow, contextRun, contextDepth, setRoadView, wards, wardShapes, incidents, shelters, focusArea, setFocusArea, focus, roads, terrain, weather, weatherError, refreshWeather,
-    error, reload: () => setNonce((n) => n + 1), refreshRuns,
+    error, reload: () => setNonce((n) => n + 1), refreshRuns, live, liveRunId, pinned, followLive, refreshLive,
   };
 }
 

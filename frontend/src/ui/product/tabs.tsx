@@ -10,7 +10,7 @@ import type { GpuInfo, PickInfo, TwinLayers } from '../twin/Twin3D';
 import { BarList, Columns, Donut, LineChart } from './Charts';
 import { DEFAULT_LAYERS, Icon, LAYER_LABELS, MapStage, Timeline, sampleFrames, type ProductSection } from './ProductExperience';
 import { depthHistogram, frameArea, type TwinData } from './state';
-import { isFocusRun, runTitle } from './runs';
+import { isAssumptionInput, isFocusRun, runTitle } from './runs';
 
 interface TabProps { data: TwinData; go: (s: ProductSection) => void }
 
@@ -187,6 +187,7 @@ export function OverviewTab({ data, go }: TabProps) {
           <ul className="tg-fresh">
             <li><span>Flood run</span><b>{data.run ? 'SIMULATED' : '—'}</b><small>{data.run?.provenance.engine_version ?? ''}</small></li>
             <li><span>Rainfall forcing</span><b>{data.run?.provenance.inputs[0]?.source_mode ?? '—'}</b><small>{data.run?.provenance.inputs[0]?.source ?? ''}</small></li>
+            {(data.run?.provenance.inputs ?? []).filter((i) => /inflow|release/i.test(i.name)).map((i) => <li key={i.name}><span>Reservoir inflow</span><b className="tg-assume">ASSUMPTION</b><small>{i.source ?? i.name} · modelled from storage, not an observed release</small></li>)}
             <li><span>Weather</span><b>{data.weather ? 'MODEL_FORECAST' : 'n/a'}</b><small>{data.weather ? `fetched ${fmtTime(data.weather.fetched_at)}` : data.weatherError ?? 'loading'}</small></li>
             <li><span>Data service</span><b>{data.apiKind === 'api' ? 'C4 v3 API' : 'Saved results'}</b><small>{data.apiKind === 'api' ? 'live engine' : 'B47 API not mounted yet'}</small></li>
           </ul>
@@ -312,7 +313,7 @@ export function SimulationTab({ data }: TabProps) {
           <BarList title="Ward max depth" unit="m" rows={topWards.map((w) => ({ label: `${w.ward_name}`, value: w.max_depth_m ?? null, color: w.risk_level === 'severe' ? '#ff3b5c' : w.risk_level === 'high' ? '#ff9f43' : '#2fa8ff' }))} />
         </Panel>
         <Panel title="Rainfall Forcing" icon="cloud">
-          <ul className="tg-fresh">{(data.run?.provenance.inputs ?? []).map((i) => <li key={i.name}><span>{i.name}</span><b>{i.source_mode}</b><small>{i.source}</small></li>)}</ul>
+          <ul className="tg-fresh">{(data.run?.provenance.inputs ?? []).map((i) => <li key={i.name}><span>{i.name.replace(/_/g, ' ')}</span><b>{i.source_mode}{isAssumptionInput(i) && /inflow|release/i.test(i.name) && <em className="tg-assume"> · ASSUMPTION</em>}</b><small>{i.source}</small></li>)}</ul>
         </Panel>
       </div>
     </div>
@@ -516,7 +517,7 @@ export function WhatIfTab({ data }: TabProps) {
         <Panel title="Scenario Builder" icon="branch">
           <RunSelect data={data} label="Baseline run" value={baseId} onChange={setBaseId} completedOnly />
           <label className="tg-field"><span>Rainfall vs baseline <b>{rainPct}%</b></span><input type="range" min={0} max={300} step={5} value={rainPct} aria-label="Rainfall percent of baseline" onChange={(e) => setRainPct(Number(e.target.value))} /></label>
-          <div className="tg-field"><span>Reservoir release (m³/s)</span>
+          <div className="tg-field"><span>Reservoir release (m³/s) <small className="tg-assume">assumed · scenario input</small></span>
             {(Object.keys(release) as T.ReservoirKey[]).map((k) => <label key={k} className="tg-inline-field"><small>{k.charAt(0) + k.slice(1).toLowerCase()}</small><input className="tg-num" type="number" min={0} max={3000} step={50} value={release[k]} aria-label={`${k} release m3/s`} onChange={(e) => setRelease({ ...release, [k]: Math.max(0, Math.min(3000, Number(e.target.value))) })} /><small>{(release[k] * 35.3147).toFixed(0)} cusecs</small></label>)}
           </div>
           <label className="tg-field"><span>Tide / sea level offset <b>{tide.toFixed(1)} m</b></span><input type="range" min={-1} max={2} step={0.1} value={tide} aria-label="Tide offset metres" onChange={(e) => setTide(Number(e.target.value))} /></label>
@@ -594,6 +595,7 @@ export function ReservoirTab({ data }: TabProps) {
             <LineChart title="Published storage" unit="MCM" xLabels={cur.records.map((r) => r.sourceDate.slice(5))} series={[{ name: 'Storage', values: cur.records.map((r) => r.averageStorageMcm), color: '#9b8cff' }]} height={150} />
           </> : <p className="tg-muted">Fetch a snapshot to see published levels and storage.</p>}
           <p className="tg-source">No inflow, outflow or release is published in this source.</p>
+          <p className="tg-source"><b className="tg-assume">ASSUMPTION</b> Live forecast runs derive reservoir outlet inflows from the published storage (A28 method); they are model assumptions, not observed releases.</p>
         </Panel>
       </div>
       <div className="tg-row4">
@@ -668,6 +670,7 @@ export function TwinTab({ data }: TabProps) {
             <li><span>Terrain</span><b>{ionConfigured() ? 'Cesium World' : data.terrain ? 'GLO-30' : 'flat'}</b><small>{ionConfigured() ? 'ion asset 1 (GLO-30 DEM as fallback)' : 'project cleaned DEM'}</small></li>
             <li><span>Flood run</span><b>SIMULATED</b><small>{data.run ? `${runTitle(data.run)} · ${data.run.run_id}` : ''}</small></li>
             <li><span>Rainfall input</span><b>{data.run?.provenance.inputs[0]?.source_mode ?? '—'}</b><small>{data.run?.provenance.inputs[0]?.source ?? ''}</small></li>
+            {(data.run?.provenance.inputs ?? []).filter((i) => /inflow|release/i.test(i.name)).map((i) => <li key={i.name}><span>Reservoir inflow</span><b className="tg-assume">ASSUMPTION</b><small>{i.source ?? i.name} · modelled from storage, not an observed release</small></li>)}
             <li><span>Water motion</span><b>{data.flow ? 'MODELLED /flow' : 'ESTIMATED'}</b><small>{data.flow ? `u/v velocity, frame ${data.flow.frame_index}, stride ${data.flow.stride}` : 'no flow output for this run; surface-slope estimate'}</small></li>
             <li><span>Data service</span><b>{data.apiKind === 'api' ? 'C4 v3 API' : 'Saved results'}</b></li>
           </ul>

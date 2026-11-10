@@ -41,8 +41,44 @@ export interface SimulationSummary {
   wards_affected?: number | null;
   peak_time_utc?: string | null;
 }
+/** What kind of run this is, for the badge (separate from source_mode, which stays SIMULATED for results). */
+export type RunKind = 'LIVE_FORECAST' | 'REPLAY' | 'WHAT_IF' | 'CUSTOM' | 'FORECAST';
+export type SourceHealthState = 'ok' | 'stale' | 'error' | 'disabled' | 'unknown';
+export interface SourceHealth { state: SourceHealthState; refresh_policy: string; last_success_at?: string | null; last_attempt_at?: string | null; data_time?: string | null; last_error?: string | null; calls_today?: number | null }
+export interface LiveLatest {
+  run_id: string;
+  run_kind: 'LIVE_FORECAST';
+  state: 'completed';
+  issued_at: string;
+  completed_at?: string | null;
+  forecast_valid_from?: string | null;
+  forecast_valid_to?: string | null;
+  horizon_hours?: number;
+  summary?: SimulationSummary;
+  inputs?: { name: string; source?: string; source_mode: SourceMode; fetched_at?: string | null }[];
+  device?: 'cuda' | 'cpu' | null;
+  disclaimer: string;
+}
+export interface LiveError { at: string; stage: 'fetch_forecast' | 'fetch_reservoir' | 'coupling' | 'engine' | 'publish'; message: string; run_id?: string | null }
+export interface LiveStatus {
+  enabled: boolean;
+  cycle_hours: number;
+  state: 'idle' | 'running' | 'disabled';
+  running_run_id?: string | null;
+  latest?: LiveLatest | null;
+  last_good_run_id?: string | null;
+  next_scheduled_at?: string | null;
+  manual_refresh?: { min_interval_s: number; next_allowed_at?: string | null };
+  sources: { open_meteo: SourceHealth; cfm_dss: SourceHealth };
+  last_error?: LiveError | null;
+  retention?: { keep_last?: number; stored?: number };
+  disclaimer: string;
+}
+export interface LiveRefreshAccepted { accepted: boolean; state: 'started' | 'already_running'; run_id?: string | null; next_allowed_at?: string | null }
+
 export interface SimulationRun {
   run_id: string;
+  run_kind?: RunKind;
   state: 'queued' | 'running' | 'completed' | 'failed';
   mode: SimMode;
   request?: SimulationRequest;
@@ -250,6 +286,11 @@ export interface TwinGuardApi {
   listSimulations(): Promise<SimulationList>;
   getSimulation(runId: string): Promise<SimulationRun>;
   depth(runId: string, frameIndex: number | null, layer?: DepthLayer): Promise<DepthFrame>;
+  liveStatus(): Promise<LiveStatus>;
+  /** 404 before the first live run, 503 when live mode is disabled. */
+  liveLatest(): Promise<LiveLatest>;
+  /** 202 started | already_running; 429 within 600 s of the last manual refresh; 503 disabled/unavailable. */
+  liveRefresh(): Promise<LiveRefreshAccepted>;
   /** Real flow velocities (503 for runs saved without flow output). */
   flow(runId: string, frameIndex: number, stride?: number): Promise<FlowFrame>;
   buildings(runId: string, frameIndex: number | null, bbox: [number, number, number, number]): Promise<BuildingDepthPage>;

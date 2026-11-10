@@ -739,3 +739,9 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-10 09:52:59 I04 note: release must not publish the frontend bundle or image with the embedded Cesium ion token (G5 caveat 3).
 
 - 2026-11-10 09:57:29 OD-2026-11-10 / CR-021 live forecast mode recorded (amends OD-2026-11-07 §7 and CR-016/017 for live mode only); C4 v3 live contract added under planned_paths; registered A28 and B51 (ready), B52, B53 and I27.
+
+- 2026-11-10 09:58:34 Claimed B51 by Lane B
+
+- 2026-11-10 09:59:12 Claimed A28 by A28 reservoir coupling + forecast checks (Lane A)
+
+- 2026-11-10 10:10:38 Finished A28: done

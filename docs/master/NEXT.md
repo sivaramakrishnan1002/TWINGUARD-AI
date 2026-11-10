@@ -16,11 +16,11 @@
 
 ## Ready tasks by lane A
 
-- **A28 — Live reservoir coupling and forecast-run checks (CR-021)** (ready)
+- None.
 
 ## Ready tasks by lane B
 
-- **B51 — Live forecast scheduler and /v3/live endpoints (CR-021)** (ready)
+- None.
 
 ## Ready tasks by lane I
 
@@ -40,7 +40,7 @@
 
 ## Running tasks
 
-- None.
+- **B51 — Live forecast scheduler and /v3/live endpoints (CR-021)** (running)
 
 ## Next gate
 

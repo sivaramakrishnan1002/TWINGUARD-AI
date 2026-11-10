@@ -6540,7 +6540,7 @@
       "lane": "A",
       "title": "Live reservoir coupling and forecast-run checks (CR-021)",
       "phase": "A",
-      "status": "ready",
+      "status": "done",
       "depends_on": [
         "A25",
         "A26",
@@ -6566,17 +6566,20 @@
         "Tests with fixture snapshots (no network) cover the coupling rule, missing/stale snapshots, unit handling and the no-rain control. Existing outputs stay unchanged. Report the rule in a doc under pipelines/ or docs/ (Lane A paths) and link it in the closeout.",
         "Do not edit services/ai-service/ or frontend/."
       ],
-      "evidence": [],
-      "session": null,
-      "claimed_at": null,
-      "finished_at": null,
-      "commit": null,
+      "evidence": [
+        "pipelines/a25_hires/A28_RESERVOIR_COUPLING.md"
+      ],
+      "session": "A28 reservoir coupling + forecast checks (Lane A)",
+      "claimed_at": "2026-11-10T09:59:12+0530",
+      "finished_at": "2026-11-10T10:10:38+0530",
+      "commit": "bf50c38",
       "heavy": true,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only.",
+        "Rule A28-RES-STORAGE-v1 (ASSUMPTION; services/flood_engine/reservoir_coupling.py). run_scenario(reservoir_snapshot=B44 body|records|None, run_time=, forecast_model=None|'ensemble_mean'); forecast runs always record reservoir_coupling (zero inflow when missing/stale >48 h) and forecast_check (valid times, mm/h, 72 h, per-model coverage 1.0, fetched_at). Live check 2026-11-10: real ECMWF/UKMO/ICON forecast (0.5 mm/72 h) + real CFM snapshot (15-73% full -> 0 m3/s); 72 h citywide 120 m CPU 154.6 s, CUDA 18.3 s, mass balance 1e-6; no-rain control near-dry 0.014 km2 (threshold 1 km2). 35 engine tests pass; raw audit 157/157."
       ]
     },
     {
@@ -6584,7 +6587,7 @@
       "lane": "B",
       "title": "Live forecast scheduler and /v3/live endpoints (CR-021)",
       "phase": "B",
-      "status": "ready",
+      "status": "running",
       "depends_on": [
         "B47",
         "B49",
@@ -6613,8 +6616,8 @@
         "Every response keeps the disclaimer 'Model forecast - not an official warning'. No observed or official-warning claims."
       ],
       "evidence": [],
-      "session": null,
-      "claimed_at": null,
+      "session": "Lane B",
+      "claimed_at": "2026-11-10T09:58:34+0530",
       "finished_at": null,
       "commit": null,
       "heavy": false,

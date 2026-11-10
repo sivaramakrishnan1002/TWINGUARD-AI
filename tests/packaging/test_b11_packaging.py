@@ -72,8 +72,10 @@ def test_ai_mounts_only_registered_artifacts_read_only() -> None:
     ]
     assert set(ai["environment"]) == {
         "PYTHONDONTWRITEBYTECODE", "PYTHONPATH", "TWINGUARD_LIVE_SCHEDULE_MIN", "TWINGUARD_V3_RUNS",
-        "TWINGUARD_V3_PRODUCT_STATIC", "TWINGUARD_LIVE_STATIC", "TWINGUARD_V3_WEATHER_MIN_INTERVAL_S",
+        "TWINGUARD_V3_PRODUCT_STATIC", "TWINGUARD_LIVE_STATIC", "TWINGUARD_V3_WEATHER_MIN_INTERVAL_S", "TWINGUARD_V3_LIVE",
     }
+    # CR-021: live forecast mode is on in the packaged stack and switchable; the old CR-018 draft scheduler stays off.
+    assert ai["environment"]["TWINGUARD_V3_LIVE"] in ("0", "1")
     # OD-2026-11-07: no background polling; the draft scheduler stays disabled.
     assert ai["environment"]["TWINGUARD_LIVE_SCHEDULE_MIN"] == "0"
     assert int(ai["environment"]["TWINGUARD_V3_WEATHER_MIN_INTERVAL_S"]) >= 600

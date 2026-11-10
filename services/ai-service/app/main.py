@@ -2,6 +2,8 @@
 
 import json
 import hashlib
+import os
+from contextlib import asynccontextmanager
 import math
 import re
 from datetime import date, datetime, timezone
@@ -700,7 +702,18 @@ def _b13_replay_projection(event_id: str) -> ReplayObservationResult:
     return _evaluate_b13(matches[0])
 
 
+@asynccontextmanager
+async def _lifespan(_app):
+    """Start the C4 v3 live scheduler (OD-2026-11-10) unless disabled; TestClient without `with` never runs this."""
+    from app.v3 import live
+    if live.enabled() and os.environ.get("TWINGUARD_V3_LIVE_SCHEDULER", "1") != "0":
+        live.SCHEDULER.start()
+    yield
+    live.SCHEDULER.stop()
+
+
 app = FastAPI(
+    lifespan=_lifespan,
     title="TwinGuard AI Service",
     version="0.1.0",
     description=(

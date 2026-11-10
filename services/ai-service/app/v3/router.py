@@ -5,6 +5,7 @@ user-triggered requests with caching and a 600 s minimum interval. Every result 
 """
 from __future__ import annotations
 
+import json
 import math
 import re
 import threading
@@ -18,7 +19,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from . import analysis, config, device, resources, static, weather
+from . import analysis, config, device, live, resources, static, weather
 from .runs import MANAGER, QueueFull, TooSoon, public
 
 router = APIRouter(prefix="/v3", tags=["v3"])
@@ -337,7 +338,8 @@ def get_overview(response: Response) -> dict:
             counts[incident["severity"]] += 1
     return {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "badge": config.BADGE,
+        "badge": BADGES.get(public(latest)["run_kind"], config.BADGE) if latest else config.BADGE,
+        "live": live.SCHEDULER.latest() if live.enabled() else None,
         "latest_run": public(latest) if latest else None,
         "weather": weather.cached_point(),
         "reservoirs": None,
@@ -397,6 +399,12 @@ def create_simulation(body: SimulationRequest, response: Response) -> dict:
         request["what_if"] = {"rainfall_scale_pct": 100.0, "tide_offset_m": 0.0, "reservoir_release_m3s": {}, **request["what_if"]}
         identity = {"label": f"What-if on {base.get('label', base['run_id'])}"}
         job_extra = {"base_run_dir": str(MANAGER.run_dir(base["run_id"])), "base_engine_run_id": base.get("_engine_run_id")}
+        try:  # a live (or forecast) base must reuse its saved Open-Meteo snapshot, never trigger a new upstream fetch
+            base_job = json.loads((MANAGER.run_dir(base["run_id"]) / "job.json").read_text(encoding="utf-8"))
+            if base_job.get("live_snapshot"):
+                job_extra["base_snapshot"] = base_job["live_snapshot"]
+        except (OSError, ValueError):
+            pass
     _grid(request)
     if body.mode == "forecast":
         try:
@@ -736,6 +744,42 @@ def put_resources(body: ResourceSet, response: Response) -> dict:
 
 
 # ------------------------------------------------------------------------------------------------ static layers
+# ------------------------------------------------------------------------------------------------ live (B51, CR-021)
+BADGES = {"LIVE_FORECAST": "LIVE FORECAST", "REPLAY": "REPLAY", "WHAT_IF": "WHAT-IF"}
+
+
+def _live_error(status: int, detail: str, retry_after_s: int | None = None) -> V3Error:
+    return V3Error(status, f"{detail} ({live.DISCLAIMER})", retry_after_s)
+
+
+@router.get("/live/status", operation_id="v3GetLiveStatus")
+def get_live_status(response: Response) -> dict:
+    _no_store(response)
+    return live.SCHEDULER.status()
+
+
+@router.get("/live/latest", operation_id="v3GetLiveLatest", responses=errors(404, 503))
+def get_live_latest(response: Response) -> dict:
+    _no_store(response)
+    if not live.enabled():
+        raise _live_error(503, "Live mode is disabled")
+    latest = live.SCHEDULER.latest()
+    if latest is None:
+        raise _live_error(404, "No live forecast run has completed yet")
+    return latest
+
+
+@router.post("/live/refresh", status_code=202, operation_id="v3RefreshLive", responses=errors(429, 503))
+def post_live_refresh(response: Response) -> dict:
+    _no_store(response)
+    try:
+        return live.SCHEDULER.refresh()
+    except live.LiveRateLimited as error:
+        raise _live_error(429, "Manual refresh is allowed once per 600 s", error.retry_after_s) from None
+    except live.LiveUnavailable as error:
+        raise _live_error(503, str(error)) from None
+
+
 @router.get("/static/{layer}", operation_id="v3GetStaticLayer", responses=errors(400, 404, 422, 503))
 def get_static_layer(layer: Literal["wards", "buildings", "shelters", "focus_areas"], response: Response,
                      bbox: str | None = Query(default=None, pattern=BBOX), cursor: str | None = Query(default=None),

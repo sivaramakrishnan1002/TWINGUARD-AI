@@ -186,23 +186,34 @@ def fetch_forecast_snapshot(bounds_lonlat: list[float]):
     from services.flood_engine import forcing as fm
 
     snapshot = fm.fetch_snapshot(bounds_lonlat, models=fm.MODELS[:1])
+    save_snapshot(snapshot, grid_snapshot_path())
+    return load_forecast_snapshot()
+
+
+def save_snapshot(snapshot, path: Path) -> dict:
+    """Persist the primary usable model of a ForcingSnapshot (atomic); returns its meta."""
+    from services.flood_engine import forcing as fm
+
     model = snapshot.usable[0]
     meta = {"fetched_at": snapshot.fetched_at, "model": model.model, "label": model.label, "nominal_km": model.nominal_km,
             "url": model.url, "response_sha256": model.response_sha256, "lattice_deg": snapshot.lattice_deg,
             "forcing_sha256": snapshot.combined_sha256(), "attribution": fm.ATTRIBUTION, "endpoint": fm.ENDPOINT}
-    tmp = _dir() / "forecast_snapshot.tmp.npz"
+    meta["models_usable"] = [m.model for m in snapshot.usable]
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.stem + ".tmp.npz")
     np.savez_compressed(tmp, times_utc=np.asarray(model.times_utc), point_lat=model.point_lat, point_lon=model.point_lon,
                         native_lat=model.native_lat, native_lon=model.native_lon, values_mm=model.values_mm,
                         meta=np.asarray(json.dumps(meta)))
-    tmp.replace(grid_snapshot_path())
-    return load_forecast_snapshot()
+    tmp.replace(path)
+    return meta
 
 
-def load_forecast_snapshot():
-    """Rebuild a services.flood_engine.forcing.ForcingSnapshot from the cache (no network)."""
+def load_forecast_snapshot(path: Path | None = None):
+    """Rebuild a services.flood_engine.forcing.ForcingSnapshot from a saved snapshot (default: the cache; no network)."""
     from services.flood_engine import forcing as fm
 
-    path = grid_snapshot_path()
+    path = Path(path) if path else grid_snapshot_path()
     if not path.exists():
         raise Unavailable("no cached Open-Meteo snapshot")
     with np.load(path, allow_pickle=False) as z:

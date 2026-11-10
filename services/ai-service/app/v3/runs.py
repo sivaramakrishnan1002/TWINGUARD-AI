@@ -20,7 +20,8 @@ from . import config
 
 log = logging.getLogger("twinguard.v3")
 SERVICE_ROOT = Path(__file__).resolve().parents[2]  # services/ai-service
-PREFIX = {"event": "evt", "custom": "sim", "forecast": "sim", "what_if": "whatif"}
+PREFIX = {"event": "evt", "custom": "sim", "forecast": "sim", "what_if": "whatif", "live": "sim"}
+RUN_KIND = {"event": "REPLAY", "custom": "CUSTOM", "forecast": "FORECAST", "what_if": "WHAT_IF", "live": "LIVE_FORECAST"}
 ESTIMATE_S_PER_MEMBER_HOUR = 0.08
 
 
@@ -168,6 +169,30 @@ class RunManager:
             self.wakeup.set()
             return doc, "queued"
 
+    def annotate(self, run_id: str, **fields) -> None:
+        """Attach extra fields (e.g. the live block) to a stored run."""
+        with self.lock:
+            doc = self.docs.get(run_id)
+            if doc is not None:
+                doc.update(fields)
+                _write(self.run_dir(run_id) / "run.json", doc)
+
+    def delete_run(self, run_id: str) -> None:
+        """Remove one run and its engine output (live retention only)."""
+        with self.lock:
+            doc = self.docs.pop(run_id, None)
+            if doc is None or doc["state"] in ("queued", "running"):
+                if doc is not None:
+                    self.docs[run_id] = doc
+                return
+            if self.keys.get(doc.get("_key")) == run_id:
+                self.keys.pop(doc["_key"], None)
+            self.frames_cache.pop(run_id, None)
+            engine_run = doc.get("_engine_run_id")
+            shutil.rmtree(self.run_dir(run_id), ignore_errors=True)
+            if engine_run and "/" not in engine_run and "\\" not in engine_run and ".." not in engine_run:
+                shutil.rmtree(self.run_dir("_a25") / engine_run, ignore_errors=True)
+
     def estimate_s(self, request: dict) -> int:
         if config.a25_enabled():  # measured by Lane A: ~105 s per 24 h citywide 120 m member incl. products
             citywide = request.get("resolution", "citywide") == "citywide"
@@ -301,6 +326,9 @@ MANAGER = RunManager()
 
 def public(doc: dict) -> dict:
     out = {k: v for k, v in doc.items() if not k.startswith("_")}
+    out["run_kind"] = RUN_KIND.get(doc.get("mode"), "CUSTOM")  # OD-2026-11-10 badge; results stay SIMULATED
+    if doc.get("mode") == "live":
+        out.pop("request", None)  # not a SimulationRequest (mode live is never accepted by POST); see the live block
     # Limitations follow the engine and grid actually used (also corrects runs stored before this fix).
     out["limitations"] = config.limitations_for(doc.get("_engine", "a06"), (doc.get("request") or {}).get("resolution", "citywide"),
                                                 (doc.get("grid") or {}).get("cell_size_m"))

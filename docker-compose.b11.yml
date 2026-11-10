@@ -72,6 +72,8 @@ services:
       TWINGUARD_V3_PRODUCT_STATIC: /app/data/features/v3/product_static_v1
       TWINGUARD_LIVE_STATIC: /app/data/features/live/a06_live_static_v1
       TWINGUARD_V3_WEATHER_MIN_INTERVAL_S: "600"
+      # OD-2026-11-10 / CR-021 live forecast mode: 3 h cycle + manual refresh (min 600 s). "0" disables it.
+      TWINGUARD_V3_LIVE: "1"
     healthcheck:
       test:
         - CMD

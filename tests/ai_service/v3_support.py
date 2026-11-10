@@ -15,7 +15,8 @@ SPEC = json.loads((ROOT / "docs/api/ai-service.yaml").read_text(encoding="utf-8"
 def v3_section() -> dict:
     """C4 v3 operations: the proposed section plus any already promoted into top-level paths."""
     section = SPEC["x-c4-v3-product-api"]
-    paths = {**section.get("proposed_paths", {}), **section["paths"]}  # proposed ops are tested before they move
+    # planned/proposed ops are tested before they move (B49, B51)
+    paths = {**section.get("planned_paths", {}), **section.get("proposed_paths", {}), **section["paths"]}
     for path, item in SPEC.get("paths", {}).items():
         if path.startswith("/v3/"):
             paths[path] = item

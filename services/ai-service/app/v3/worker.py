@@ -54,6 +54,8 @@ def execute(run_dir: Path) -> dict:
         forcing = simulate.event_forcing(event, req["duration_hours"])
     elif mode == "custom":
         forcing = simulate.custom_forcing(req["custom_rainfall"])
+    elif mode == "live":  # live cycle: forecast forcing from the cycle's own saved Open-Meteo snapshot
+        forcing = simulate.forecast_forcing(grid, weather.load_forecast_snapshot(job["live_snapshot"]))
     elif mode == "forecast":
         snapshot = weather.forecast_snapshot(bool(job.get("fetch_forecast")), static.grid("citywide").bounds_lonlat)
         forcing = simulate.forecast_forcing(grid, snapshot)
@@ -117,11 +119,18 @@ def _execute_a25(run_dir: Path, job: dict, progress) -> dict:
     if req["mode"] == "what_if":
         what_if = {**req["what_if"], "base_run_id": job["base_engine_run_id"]}
     fetch = None
-    if req["mode"] == "forecast":
+    if req["mode"] == "what_if":
+        # A25 rebuilds a forecast/live base's forcing via fetch_forecast: hand it the base's saved snapshot (or the cache)
+        base_snap = job.get("base_snapshot")
+        fetch = lambda _bounds: weather.load_forecast_snapshot(base_snap)  # noqa: E731 - no upstream fetch
+    if req["mode"] == "live":
+        live_path = job["live_snapshot"]
+        fetch = lambda _bounds: weather.load_forecast_snapshot(live_path)  # noqa: E731 - fetched by the live cycle
+    elif req["mode"] == "forecast":
         fetch_now = bool(job.get("fetch_forecast"))
         bounds = static.grid("citywide").bounds_lonlat
         fetch = lambda _bounds: weather.forecast_snapshot(fetch_now, bounds)  # noqa: E731 - cached, >= 600 s apart
-    kwargs = dict(mode=req["mode"], event_key=req.get("event_key"), custom_rainfall=req.get("custom_rainfall"),
+    kwargs = dict(mode="forecast" if req["mode"] == "live" else req["mode"], event_key=req.get("event_key"), custom_rainfall=req.get("custom_rainfall"),
                   what_if=what_if, duration_hours=req["duration_hours"], resolution=req["resolution"], focus_area=req.get("focus_area"),
                   frame_interval_minutes=req["frame_interval_minutes"], members=config.a25_members(),
                   citywide_cell_m=config.a25_citywide_cell_m(), fetch_forecast=fetch, progress=progress)

@@ -138,6 +138,7 @@ def test_completed_run_and_cache(env, base_run):
     assert run["summary"]["max_depth_m"] > 0.3 and run["summary"]["roads_blocked_km"] > 0
     assert any(i["source_mode"] == "SCENARIO_INPUT" for i in run["provenance"]["inputs"])
     assert run["provenance"]["device"] == {"used": "cpu", "name": None, "fallback_reason": None}
+    assert run["run_kind"] == "CUSTOM" and run["source_mode"] == "SIMULATED"
     assert len(run["limitations"]) <= 5 and run["limitations"][0].startswith("Coarse 600 m local-inertial pilot (A06/A23)")
     again = client.post("/v3/simulations", json=custom_request())
     assert again.status_code == 202 and again.json() == {**again.json(), "run_id": base_run, "state": "cached"}
@@ -386,7 +387,8 @@ def test_forecast_rate_limited_without_cache(env, monkeypatch, tmp_path):
 # ------------------------------------------------------------------------------------------------- overview/static
 def test_overview(env, base_run):
     body = assert_contract(env["client"].get("/v3/overview"), "/v3/overview")
-    assert body["badge"] == "DEMO / SIMULATION" and body["latest_run"]["state"] == "completed"
+    badge = {"WHAT_IF": "WHAT-IF", "REPLAY": "REPLAY", "LIVE_FORECAST": "LIVE FORECAST"}.get(body["latest_run"]["run_kind"], "DEMO / SIMULATION")
+    assert body["badge"] == badge and body["latest_run"]["state"] == "completed"  # run-dependent (OD-2026-11-10)
     assert sum(body["incident_counts"].values()) > 0 and body["top_wards"] == []
 
 

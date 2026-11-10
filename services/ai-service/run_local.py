@@ -23,6 +23,7 @@ DEFAULTS = {
     "TWINGUARD_V3_A25_STATIC": ROOT / "data/features/live/a25_static_v1",
     "TWINGUARD_V3_DEVICE": "auto",
     "TWINGUARD_LIVE_SCHEDULE_MIN": "0",
+    "TWINGUARD_V3_LIVE": "1",  # CR-021 live forecast mode (3 h cycle); set 0 to disable
 }
 
 

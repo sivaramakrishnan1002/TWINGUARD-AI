@@ -234,3 +234,20 @@ def test_what_if_on_live_run_makes_no_upstream_fetch(env):
     assert run["state"] == "completed" and run["run_kind"] == "WHAT_IF" and env["om"].calls == calls
     job = json.loads((MANAGER.run_dir(run["run_id"]) / "job.json").read_text(encoding="utf-8"))
     assert job["base_snapshot"].endswith(".npz")
+
+
+def test_disclaimer_is_exact_utf8_everywhere(env):
+    """The disclaimer is U+2014 EM DASH, sent as UTF-8 (e2 80 94) with an explicit charset; never cp1252 mojibake."""
+    client, sched = env["client"], env["sched"]
+    assert live.DISCLAIMER == "Model forecast \u2014 not an official warning"
+    sched.run_cycle("catch_up")
+    expected = "Model forecast \u2014 not an official warning".encode("utf-8")
+    assert b"\xe2\x80\x94" in expected and "\u00e2\u20ac".encode("utf-8") not in expected
+    for method, path in (("get", "/v3/live/status"), ("get", "/v3/live/latest"), ("post", "/v3/live/refresh")):
+        response = getattr(client, method)(path)
+        assert response.headers["content-type"] == "application/json; charset=utf-8", path
+        assert expected in response.content and "\u00e2\u20ac".encode("utf-8") not in response.content, path
+    status = client.get("/v3/live/status").json()
+    assert status["disclaimer"] == status["latest"]["disclaimer"] == "Model forecast \u2014 not an official warning"
+    run = client.get(f"/v3/simulations/{status['last_good_run_id']}").json()
+    assert run["live"]["disclaimer"] == "Model forecast \u2014 not an official warning"

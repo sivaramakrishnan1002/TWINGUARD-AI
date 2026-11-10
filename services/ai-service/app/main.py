@@ -725,6 +725,15 @@ app.include_router(scenario_visualization_router)
 app.include_router(scenario_raster_router)
 app.include_router(reservoir_snapshot_router)
 app.include_router(v3_router)  # C4 v3 product API (OD-2026-11-07 / CR-019)
+
+
+@app.middleware("http")
+async def v3_json_charset(request: Request, call_next):
+    """Label /v3 JSON as UTF-8 explicitly (the disclaimer's em dash otherwise shows as mojibake in some clients)."""
+    response = await call_next(request)
+    if request.url.path.startswith("/v3/") and response.headers.get("content-type", "").split(";")[0] == "application/json":
+        response.headers["content-type"] = "application/json; charset=utf-8"
+    return response
 app.add_middleware(
     _ExactAcceptCORSMiddleware,
     allow_origins=["http://127.0.0.1:8081"],

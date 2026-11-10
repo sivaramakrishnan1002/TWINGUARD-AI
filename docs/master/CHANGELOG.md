@@ -725,3 +725,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-08 20:39:40 Claimed B13 by Lane B
 
 - 2026-11-08 20:40:13 OD-2026-11-08c recorded (persistent GPU worker); C4 v3 EngineStatus.worker added (optional, additive).
+
+- 2026-11-10 09:38:21 Finished B13: done_with_caveats

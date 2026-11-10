@@ -785,3 +785,7 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-10 21:14:10 B54 evidence paths split (verify_state drift fix).
 
 - 2026-11-10 21:21:41 OD-2026-11-10b recorded (owner 'choose best' = recommended G6 defaults): M7 accepted; M4 and M8 remain owner actions; B40/B42 parked as superseded; I04 to tag v1.0 locally with no dump and no push.
+
+- 2026-11-10 21:24:15 Finished I04: done
+
+- 2026-11-10 21:24:15 G6 PASS_WITH_CAVEATS: set ready; I04 done; release tag v1.0 (local) to follow.

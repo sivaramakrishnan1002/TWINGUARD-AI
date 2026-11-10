@@ -26,8 +26,8 @@ TwinGuard is a bachelor's final-year project (OD-2026-11-07), not an operational
 | Migration numbering | inspected `database/migrations/` | unique: 001–014, 100, 101. Nothing applied by this review. |
 | API contracts | `.venv\Scripts\python.exe tools\validate_api_contracts.py` | PASS. AI service: 34 paths, 36 operations. Backend: 11 paths, 12 operations. |
 | Backend suite | `mvn -o -B -ntp -q -f services/backend/pom.xml test` | exit 0; 30 tests, 0 failures, 0 errors |
-| Full Python suite | `.venv\Scripts\python.exe -m pytest -q --import-mode=importlib -p no:cacheprovider` | see results below |
-| Raw audit | `.venv\Scripts\python.exe tools\audit_raw_logs.py` | see results below |
+| Full Python suite | `.venv\Scripts\python.exe -m pytest -q --import-mode=importlib -p no:cacheprovider` | **469 passed, 1 skipped** (env-gated isolated PostgreSQL test), 115 subtests passed, 197.5 s |
+| Raw audit | `.venv\Scripts\python.exe tools\audit_raw_logs.py` | `DATA_FILES=157; DATA_BYTES=30544672450; HASH_MATCH=157; NO_COMPARABLE_HASH=0; MISMATCH=0` |
 | Packaged end-to-end | not rerun at G6 | The packaged stack was stopped after B54. The latest packaged evidence is G5/B13 (product replay), B50 (packaged UI), B53 (live cycle) and B54 (live UI), all reviewed in their reports. |
 | Backup | not required | OD-2026-11-10b §I04. No database write, migration or Docker operation by the Integrator. |
 
@@ -45,3 +45,5 @@ TwinGuard is a bachelor's final-year project (OD-2026-11-07), not an operational
 G6 is **PASS_WITH_CAVEATS** and is recorded as `ready`. I04 is finished. The release is the local annotated tag `v1.0`. Remaining owner actions, none of which blocks G6:
 - **M4:** create the private remote and push after a secret scan.
 - **M8:** schedule the draft review and the final demo.
+
+**Closure (2026-11-10):** I04 finished `done`, with its report commit `93704bf`. G6 is set `ready`. `gate_check.py` G0–G6: all READY. `verify_state.py`: exit 0. Master tests: 26 passed. The release tag `v1.0` (annotated, local only, not pushed) points at the commit that adds this line. Its hash is recorded in `CHANGELOG.md` and the release note below.

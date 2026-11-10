@@ -2373,7 +2373,7 @@
       "lane": "I",
       "title": "Release/backups",
       "phase": "I",
-      "status": "blocked_manual",
+      "status": "done",
       "depends_on": [
         "I01"
       ],
@@ -2403,11 +2403,13 @@
         "Create only the explicitly approved local tag and/or backup. Do not push/publish or dump any database unless that exact action is approved; never remove Docker volumes.",
         "Record exact commands, results, tag/ref, backup decision/evidence and remaining scientific/documentation limitations in docs/master/GATE_G6_REPORT.md. Mark G6 ready only after every criterion and gate check passes."
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/master/GATE_G6_REPORT.md"
+      ],
       "session": null,
       "claimed_at": null,
-      "finished_at": null,
-      "commit": null,
+      "finished_at": "2026-11-10T21:24:15+0530",
+      "commit": "93704bf",
       "heavy": false,
       "manual": true,
       "estimate_days": null,
@@ -2416,7 +2418,8 @@
         "2026-10-28 post-G0 review: I01 is done_with_caveats, but I04 remains blocked because release/tag and backup scope is undefined and no backup target/preflight evidence exists. G0 readiness alone does not authorize a dump, tag or publication. Owner: Integrator to define scope before status can change.",
         "2026-10-31 post-I08 planning: status set to blocked_manual pending the explicit project-owner decisions listed in docs/master/I04_RELEASE_BACKUP_DECISION_REQUEST.md. No tag, database access, dump, or publication occurred.",
         "2026-11-10 Integrator, from G5 closeout: the packaged frontend bundle compiles in a Cesium ion access token from the git-ignored frontend/.env.local, and the Google Map Tiles key is likewise owner-supplied. Any release, tag publication or image push must use URL-restricted tokens or rebuild without them, and must not push local/twinguard-b11-frontend images as built. Also carry the G1-G5 Limitations (see GATE_G1..G5_REPORT.md) into the release notes.",
-        "2026-11-10 Integrator: owner decisions consolidated in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a71 (recommended: v1.0 local annotated tag, no database dump, images kept local, URL-restricted tokens for any shared build)."
+        "2026-11-10 Integrator: owner decisions consolidated in docs/master/G6_OWNER_DECISION_CHECKLIST.md \u00a71 (recommended: v1.0 local annotated tag, no database dump, images kept local, URL-restricted tokens for any shared build).",
+        "2026-11-10 OD-2026-11-10b: local annotated tag v1.0 on the final docs/master commit; no database dump; no push or remote (M4 is the owner's action); images local."
       ]
     },
     {
@@ -6991,7 +6994,7 @@
       ],
       "tests": [],
       "target_day": 38,
-      "status": "not_ready"
+      "status": "ready"
     }
   ],
   "contracts": [

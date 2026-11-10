@@ -9,7 +9,7 @@ Build an auditable flood digital twin for the Chennai Metropolitan Area. Current
 ## Current coordinated state (generated)
 
 - G0: `ready`; C1-C8: frozen at v0.
-- Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `ready` ([report](GATE_G4_REPORT.md)); G5 `ready` ([report](GATE_G5_REPORT.md)); G6 `not_ready`.
+- Gate status: G0 `ready` ([report](GATE_G0_REPORT.md)); G1 `ready` ([report](GATE_G1_REPORT.md)); G2 `ready` ([report](GATE_G2_REPORT.md)); G3 `ready` ([report](GATE_G3_REPORT.md)); G4 `ready` ([report](GATE_G4_REPORT.md)); G5 `ready` ([report](GATE_G5_REPORT.md)); G6 `ready` ([report](GATE_G6_REPORT.md)).
 - Running tasks: none.
 - Selector-ready tasks: A: none; B: none; I: none.
 
@@ -125,14 +125,14 @@ Some lane reports live with their owned code, because their lanes do not own `do
 | I01 | Gate checks | I | — | done_with_caveats |
 | I02 | Requirements merge | I | B01 | done_with_caveats |
 | I03 | Contract versioning | I | — | done_with_caveats |
-| I04 | Release/backups | I | I01 | blocked_manual |
+| I04 | Release/backups | I | I01 | done |
 | M1 | Pull Track B Docker images | M | — | done |
 | M2 | Install Maven | M | — | done |
 | M3 | Approve UI npm/network | M | — | done_with_caveats |
 | M4 | Create GitHub repo/push | M | — | blocked_manual |
 | M5 | Install MLflow | M | — | done_with_caveats |
 | M6 | Optional PDF georeferencing | M | — | parked |
-| M7 | Census/licence checks | M | — | blocked_manual |
+| M7 | Census/licence checks | M | — | done_with_caveats |
 | M8 | Mentor review dates | M | — | blocked_manual |
 | I05 | Reconcile OpenAPI projections with C4-C8 evidence | I | A07, A09, B02, B15, I06, B16 | done_with_caveats |
 | A18 | C1 T6 GeoTIFF metadata conformance repair | A | A02 | done_with_caveats |
@@ -183,9 +183,9 @@ Some lane reports live with their owned code, because their lanes do not own `do
 | B37 | Professor-facing TwinGuard demo UI refinement | B | B33, B36, B18, I08, I24 | done_with_caveats |
 | B38 | Verify IMD rainfall and weather source readiness | B | B34, I24 | done_with_caveats |
 | B39 | Verify official Tamil Nadu reservoir source readiness | B | B34, I24 | done_with_caveats |
-| B40 | Implement authorized IMD rainfall/weather connector | B | B38 | blocked_prerequisite |
+| B40 | Implement authorized IMD rainfall/weather connector | B | B38 | parked |
 | B41 | Implement bounded public CFM-DSS reservoir snapshot connector | B | B39 | done_with_caveats |
-| B42 | Prove observation-triggered recomputation through API and UI | B | B37, B40, B41 | blocked_prerequisite |
+| B42 | Prove observation-triggered recomputation through API and UI | B | B37, B40, B41 | parked |
 | B43 | Connect Open-Meteo Chennai weather-model context to the product UI | B | B34, B35, B36, B37, I23, I24 | done_with_caveats |
 | A22 | Assess Open-Meteo Chennai weather-model rainfall for a versioned flood run | A | A05, A06, B43 | done_with_caveats |
 | A23 | Assess spatial Open-Meteo rainfall forcing over A06 domain | A | A22, A05, A06, B43 | done_with_caveats |

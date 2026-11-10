@@ -161,3 +161,25 @@ def test_gpu_image_pins_match_requirements_gpu() -> None:
     gpu_install = next(line for line in gpu_lines if "pip install" in line).split(";")[0]
     assert sorted(re.findall(r"\b[\w.-]+==[\w.+-]+", gpu_install)) == pins
     assert f"--index-url {index}" in gpu_install
+
+
+def test_always_on_override_restarts_containers_and_keeps_base_unchanged() -> None:
+    """CR-021 live mode 'always on' option: restart: unless-stopped only via the override file."""
+    base = _compose()["services"]
+    assert all("restart" not in svc for svc in base.values())
+    override = yaml.safe_load((ROOT / "docker-compose.always-on.yml").read_text(encoding="utf-8"))["services"]
+    assert {name: svc["restart"] for name, svc in override.items()} == {
+        "ai-service": "unless-stopped", "backend": "unless-stopped", "frontend": "unless-stopped"}
+    assert override["ai-service"]["environment"]["TWINGUARD_V3_LIVE"] == "1"
+    result = subprocess.run(
+        ["docker", "compose", "-p", "twinguard-b11", "-f", str(COMPOSE), "-f", str(ROOT / "docker-compose.always-on.yml"),
+         "config", "--quiet"], cwd=ROOT, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+
+
+def test_local_live_launcher_sets_live_and_gpu_worker() -> None:
+    script = (ROOT / "services/ai-service/start_live.ps1").read_text(encoding="utf-8")
+    for needle in ('$env:TWINGUARD_V3_LIVE', '$env:TWINGUARD_V3_DEVICE = "auto"', '$env:TWINGUARD_V3_WORKER = "auto"',
+                   "run_local.py", "-WindowStyle Hidden", r"data\features\v3\logs"):
+        assert needle in script
+    assert "start_live.ps1" in (ROOT / "services/ai-service/start_live.bat").read_text(encoding="utf-8")

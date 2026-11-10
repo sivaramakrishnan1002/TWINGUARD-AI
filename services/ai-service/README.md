@@ -52,3 +52,28 @@ docker compose -f docker-compose.b11.yml -f docker-compose.gpu.yml up --build
 ```
 
 This builds the AI image with CUDA PyTorch (`--build-arg TWINGUARD_GPU=1`) and adds `gpus: all`.
+
+### Keeping the service (and live mode) running
+
+A service started from a Claude session (the app's preview runner or a session's shell) belongs to that session, so it stops when the session ends or the app restarts. For live forecast mode (3 h cycle), use one of these instead:
+
+1. **Your own terminal (local, GPU):**
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File services\ai-service\start_live.ps1 -Background
+   ```
+   - This starts `run_local.py` detached, so it survives closing the terminal. Settings: `TWINGUARD_V3_LIVE=1`, `TWINGUARD_V3_DEVICE=auto`, `TWINGUARD_V3_WORKER=auto` (persistent GPU worker).
+   - It serves `http://127.0.0.1:8000` and logs to `data\features\v3\logs\ai-service-<timestamp>.log`.
+   - `-Stop` stops it. Without `-Background`, it runs in the foreground (Ctrl+C stops it).
+   - It refuses to start a second copy if something already answers on the port.
+   - `start_live.bat` wraps the same options.
+   - To start it at sign-in, add a Task Scheduler task "At log on" that runs that command.
+2. **The packaged stack, always on:**
+   ```powershell
+   docker compose -p twinguard-b11 -f docker-compose.b11.yml -f docker-compose.always-on.yml up -d --build --wait
+   ```
+   - `restart: unless-stopped` brings the containers back after a crash, and whenever Docker Desktop starts.
+   - Stop it with `docker compose -p twinguard-b11 -f docker-compose.b11.yml stop` (this keeps the containers and deletes no volumes).
+   - The CPU image runs the 72 h live run on CPU (about 2.5–3 min); add `-f docker-compose.gpu.yml` for the CUDA image.
+   - It binds `127.0.0.1:8000`, so run either option 1 or option 2, not both.
+
+`GET /v3/live/status` shows whether the scheduler is enabled, its next cycle time and any `last_error`. `GET /v3/status` shows the device and worker.

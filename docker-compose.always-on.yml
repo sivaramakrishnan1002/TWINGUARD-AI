@@ -1,0 +1,17 @@
+# Always-on override for the packaged B11 stack (live forecast mode, CR-021). The base stack is unchanged.
+#
+#   docker compose -p twinguard-b11 -f docker-compose.b11.yml -f docker-compose.always-on.yml up -d --build --wait
+#
+# Docker restarts the containers after a crash, and again whenever Docker Desktop starts, until you run
+# `docker compose -p twinguard-b11 -f docker-compose.b11.yml stop` (stop keeps containers; it deletes no volumes).
+# The packaged AI container binds 127.0.0.1:8000, so stop a local start_live.ps1 service first.
+# Add -f docker-compose.gpu.yml for the CUDA image.
+services:
+  ai-service:
+    restart: unless-stopped
+    environment:
+      TWINGUARD_V3_LIVE: "1"
+  backend:
+    restart: unless-stopped
+  frontend:
+    restart: unless-stopped

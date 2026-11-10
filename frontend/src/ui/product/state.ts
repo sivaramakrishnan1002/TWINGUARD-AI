@@ -3,6 +3,7 @@ import { resolveApi } from '../api/client';
 import { createFixtureApi, DEFAULT_RUN_ID, FOCUS_AREAS, loadFocus, loadTerrain, type FocusFile } from '../api/fixtures';
 import { lonLatToUtm, utmToLonLat, type TerrainGrid } from '../api/geo';
 import type * as T from '../api/v3types';
+import { ApiRequestError } from '../api/v3types';
 import { contextRunFor, isFocusRun, nearestFrameByTime, sortRuns } from './runs';
 
 export interface TwinData {
@@ -128,6 +129,13 @@ export function useTwinData(): TwinData {
   }, [api]);
 
   const run = useMemo(() => runs.find((r) => r.run_id === runId) ?? null, [runs, runId]);
+  // on the live API, only ask for per-run data once the selected id is a listed run (the saved-results default id
+  // or a stale deep link would otherwise 404 on depth/flow/wards/incidents/shelters/roads)
+  const runKnown = !!api && (api.kind === 'fixture' || !!run);
+  const fallBackToCitywide = useCallback(() => {
+    const pick = runs.find((r) => r.state === 'completed' && !isFocusRun(r));
+    if (pick && pick.run_id !== runId) setRunId(pick.run_id);
+  }, [runs, runId]);
   const contextRun = useMemo(() => contextRunFor(run, runs), [run, runs]);
 
   // focus runs: load the full run (listings omit the grid) and switch the focus area to the run's own box
@@ -160,12 +168,18 @@ export function useTwinData(): TwinData {
   }, [run, frameIndex]);
 
   useEffect(() => {
-    if (!api) return;
+    if (!api || !runKnown) return;
     let live = true;
     const key = `${runId}|${frameIndex}`;
     const cached = depthCache.current.get(key);
     if (cached) setDepth(cached);
-    else api.depth(runId, frameIndex).then((d) => { depthCache.current.set(key, d); if (live) setDepth(d); }).catch((e) => { if (live) { setDepth(null); setError(e instanceof Error ? e.message : String(e)); } });
+    else api.depth(runId, frameIndex).then((d) => { depthCache.current.set(key, d); if (live) setDepth(d); }).catch((e) => {
+      if (!live) return;
+      setDepth(null);
+      // a run that vanished from the store (404): show the newest completed citywide run instead of an empty map
+      if (e instanceof ApiRequestError && e.status === 404 && api.kind === 'api') { fallBackToCitywide(); return; }
+      setError(e instanceof Error ? e.message : String(e));
+    });
     if (flowCache.current.has(key)) setFlow(flowCache.current.get(key) ?? null);
     else {
       setFlow(null);
@@ -178,7 +192,8 @@ export function useTwinData(): TwinData {
     api.incidents(runId, frameIndex, 'watch').then((i) => live && setIncidents(i.incidents)).catch(() => live && setIncidents([]));
     api.shelters(runId, frameIndex, 1).then((s) => live && setShelters(cleanShelters(s))).catch(() => live && setShelters(null));
     return () => { live = false; };
-  }, [api, runId, frameIndex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, runId, frameIndex, runKnown]);
 
   useEffect(() => {
     let live = true;
@@ -187,7 +202,7 @@ export function useTwinData(): TwinData {
   }, [focusArea]);
 
   useEffect(() => {
-    if (!api) return;
+    if (!api || !runKnown) return;
     let live = true;
     const runBox = run && isFocusRun(run) && run.grid?.bbox_wgs84 ? run.grid.bbox_wgs84 : null;
     let bbox: [number, number, number, number] = roadView ?? runBox ?? focusBbox(focus, focusArea);
@@ -201,7 +216,7 @@ export function useTwinData(): TwinData {
       api.roads(runId, frameIndex, bbox, 0.3).then((r) => live && setRoads({ ...r, features: r.features.filter((f) => !NOT_IN_RUN.test(f.properties.unknown_reason ?? '')) })).catch(() => live && setRoads(null));
     }, roadView ? 600 : 0);
     return () => { live = false; window.clearTimeout(t); };
-  }, [api, runId, frameIndex, focus, focusArea, roadView, run?.grid]);
+  }, [api, runId, frameIndex, focus, focusArea, roadView, run?.grid, runKnown]);
 
   useEffect(() => {
     const reduce = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;

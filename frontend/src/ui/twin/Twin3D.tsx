@@ -108,6 +108,46 @@ function applyQuality(v: Cesium.Viewer, g: GpuInfo) {
 }
 const glow = (color: string, power = 0.22) => Cesium.Material.fromType('PolylineGlow', { color: Cesium.Color.fromCssColorString(color), glowPower: power, taperPower: 1 });
 
+/**
+ * View-mode switch. 3D tilesets (OSM buildings, Google) cannot render in the 2D projection: their model matrices
+ * throw inside GeographicProjection during the morph, and with render-loop errors hidden the animated morph stalls
+ * in MORPHING forever (white map). So: hide tilesets before 2D and morph instantly (no tween); they are shown
+ * again in 3D. "Satellite" stays in 3D as a top-down view, no morph.
+ */
+function switchSceneMode(v: Cesium.Viewer, mode: ViewMode) {
+  const scene = v.scene;
+  const tilesets: Cesium.Cesium3DTileset[] = [];
+  for (let i = 0; i < scene.primitives.length; i += 1) {
+    const p = scene.primitives.get(i);
+    if (p instanceof Cesium.Cesium3DTileset) tilesets.push(p);
+  }
+  const c = scene.canvas;
+  const mid = v.camera.pickEllipsoid(new Cesium.Cartesian2(c.clientWidth / 2, c.clientHeight / 2));
+  const centre = mid ? Cesium.Cartographic.fromCartesian(mid) : null;
+  const height = Math.max(800, Math.min(v.camera.positionCartographic.height || 6000, MAX_ZOOM_DISTANCE_M));
+  if (mode === '2d') {
+    if (scene.mode === Cesium.SceneMode.SCENE2D) return;
+    // a hidden tileset skips its update, so it never reaches the 2D projection (its clipping can stay attached)
+    for (const ts of tilesets) ts.show = false;
+    scene.morphTo2D(0);
+    if (centre) v.camera.setView({ destination: Cesium.Cartesian3.fromRadians(centre.longitude, centre.latitude, height * 1.3) });
+  } else {
+    const from2d = scene.mode !== Cesium.SceneMode.SCENE3D;
+    if (from2d) {
+      scene.morphTo3D(0); // tileset visibility is restored by the layer-visibility effect (mode !== '2d')
+    }
+    if (centre) {
+      const pitch = mode === 'satellite' ? -90 : -32;
+      // keep the same ground footprint: undo the 2D frustum factor
+      const base = from2d ? height / 1.3 : height;
+      // camera height = range * sin(|pitch|): keep the height the viewer had
+      const range = Math.min(base / Math.sin(Cesium.Math.toRadians(-pitch)), MAX_ZOOM_DISTANCE_M);
+      v.camera.flyToBoundingSphere(new Cesium.BoundingSphere(Cesium.Cartesian3.fromRadians(centre.longitude, centre.latitude, 0), 1), { offset: new Cesium.HeadingPitchRange(mode === 'satellite' ? 0 : v.camera.heading, Cesium.Math.toRadians(pitch), range), duration: 0.8 });
+    }
+  }
+  scene.requestRender();
+}
+
 function setupScene(v: Cesium.Viewer): Cesium.PostProcessStage {
   const scene = v.scene;
   scene.globe.baseColor = Cesium.Color.fromCssColorString('#07131d');
@@ -666,15 +706,14 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
       if (mode === '2d') { v.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({ url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', subdomains: 'abcd', maximumLevel: 19, credit: '© OpenStreetMap contributors © CARTO' })); scene.requestRender(); return; }
       Cesium.ArcGisMapServerImageryProvider.fromUrl('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer').then((p) => { if (!cancelled) { tint(v.imageryLayers.addImageryProvider(p), mode === '3d'); scene.requestRender(); } }).catch(() => { /* offline: dark globe colour remains */ });
     };
-    if (mode === '2d') { if (scene.mode !== Cesium.SceneMode.SCENE2D) scene.morphTo2D(0.6); }
-    else if (scene.mode !== Cesium.SceneMode.SCENE3D) scene.morphTo3D(0.6);
+    switchSceneMode(v, mode);
     if (ION_TOKEN) {
       const asset = mode === '2d' ? ION_ASSETS.roadmap : mode === 'satellite' ? ION_ASSETS.satelliteLabels : ION_ASSETS.satellite;
       Cesium.IonImageryProvider.fromAssetId(asset).then((p) => {
         if (cancelled) return;
         const layer = v.imageryLayers.addImageryProvider(p);
         if (mode === '3d') tint(layer, true);
-        else if (mode === '2d') { layer.brightness = 0.62; layer.saturation = 0.55; layer.hue = 0.55; }
+        else if (mode === '2d') { layer.brightness = 0.42; layer.contrast = 1.35; layer.gamma = 1.25; layer.saturation = 0.3; layer.hue = 0; } // dark, low-saturation roadmap to match the UI
         scene.requestRender();
       }).catch(fallback);
     } else fallback();
@@ -1136,7 +1175,8 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
     if (ts && !ts.isDestroyed()) ts.show = showGoogle;
     v.scene.globe.show = !showGoogle;
     set('water', layers.water);
-    set('osm', layers.buildings && osmReady);
+    // 3D tiles (OSM buildings, Google) cannot be drawn in the 2D projection; they come back with 3D
+    set('osm', layers.buildings && osmReady && mode !== '2d');
     set('buildings', layers.buildings && !osmReady);
     set('roads', layers.roads);
     set('cityRoads', layers.roads);
@@ -1145,7 +1185,7 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
     set('shelters', layers.shelters);
     set('incidents', layers.incidents);
     v.scene.requestRender();
-  }, [layers, googleOn, near, osmReady]);
+  }, [layers, googleOn, near, osmReady, mode]);
 
   /* camera fly-to and tool commands */
   const flyToTarget = (v: Cesium.Viewer, lon: number, lat: number, range: number) => {

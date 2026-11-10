@@ -291,7 +291,8 @@ def test_live_cycle_passes_reservoir_snapshot_to_a28(env, monkeypatch):
         doc = inner(static_root, runs_root, mode=mode, **kw)
         doc["reservoir_coupling"] = {"rule_id": "A28-RES-STORAGE-v1", "status": "applied", "releases_m3s": {"POONDI": 0.0}}
         doc["provenance"]["inputs"] += [
-            {"name": "reservoir_snapshot", "source": "CFM-DSS public dashboard", "source_mode": "PUBLISHED_SNAPSHOT", "fetched_at": None},
+            {"name": "reservoir_snapshot", "source": "CFM-DSS public dashboard", "source_mode": "PUBLISHED_SNAPSHOT",
+             "fetched_at": "2026-11-10T04:39:36.729457+00:00"},  # engine-style offset timestamp (B53 finding)
             {"name": "reservoir_outlet_inflow", "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
              "source_mode": "SCENARIO_INPUT", "fetched_at": None}]
         return doc
@@ -312,3 +313,5 @@ def test_live_cycle_passes_reservoir_snapshot_to_a28(env, monkeypatch):
     names = [i["name"] for i in latest["inputs"]]
     assert "reservoir_outlet_inflow" in names and "reservoirs" not in names  # engine's own reservoir inputs, no duplicate
     assert next(i for i in latest["inputs"] if i["name"] == "reservoir_outlet_inflow")["source_mode"] == "SCENARIO_INPUT"
+    assert next(i for i in latest["inputs"] if i["name"] == "reservoir_snapshot")["fetched_at"] == "2026-11-10T04:39:36Z"
+    assert any(i.get("fetched_at") == "2026-11-10T04:39:36Z" for i in run["provenance"]["inputs"])

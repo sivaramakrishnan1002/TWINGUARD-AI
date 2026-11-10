@@ -362,9 +362,11 @@ class LiveScheduler:
         engine_inputs = [i for i in prov.get("inputs", []) if i.get("source_mode") != "STATIC_REFERENCE"]
         has_reservoir = any(i.get("name") == "reservoir_snapshot" for i in engine_inputs)  # A28 engine reports its own
         extra = [] if has_reservoir else doc.get("_live_inputs", [])
-        inputs = [{k: i.get(k) for k in ("name", "source", "source_mode", "fetched_at")} for i in engine_inputs + extra]
+        from .runs import utc_z
+        inputs = [{**{k: i.get(k) for k in ("name", "source", "source_mode")}, "fetched_at": utc_z(i.get("fetched_at"))}
+                  for i in engine_inputs + extra]
         return {"run_id": run_id, "run_kind": "LIVE_FORECAST", "state": "completed",
-                "issued_at": live.get("issued_at") or doc["created_at"], "completed_at": doc.get("completed_at"),
+                "issued_at": utc_z(live.get("issued_at") or doc["created_at"]), "completed_at": doc.get("completed_at"),
                 "forecast_valid_from": live.get("forecast_valid_from"), "forecast_valid_to": live.get("forecast_valid_to"),
                 "horizon_hours": HORIZON_HOURS, "summary": doc.get("summary"), "inputs": inputs,
                 "device": (prov.get("device") or {}).get("used"), "disclaimer": DISCLAIMER}

@@ -324,8 +324,28 @@ class RunManager:
 MANAGER = RunManager()
 
 
+def utc_z(value):
+    """RFC 3339 UTC with Z (C4 v3); engines may report '+00:00' offsets with microseconds. Non-timestamps pass through."""
+    if not isinstance(value, str) or "T" not in value:
+        return value
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return value
+    if dt.tzinfo is None:
+        return value
+    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def public(doc: dict) -> dict:
     out = {k: v for k, v in doc.items() if not k.startswith("_")}
+    prov = out.get("provenance")
+    if isinstance(prov, dict) and isinstance(prov.get("inputs"), list):
+        out["provenance"] = {**prov, "inputs": [{**i, "fetched_at": utc_z(i.get("fetched_at"))} if isinstance(i, dict) else i
+                                                for i in prov["inputs"]]}
+    if isinstance(out.get("live"), dict):
+        out["live"] = {**out["live"], **{k: utc_z(out["live"].get(k)) for k in ("issued_at", "reservoir_snapshot_received_at")
+                                         if out["live"].get(k)}}
     out["run_kind"] = RUN_KIND.get(doc.get("mode"), "CUSTOM")  # OD-2026-11-10 badge; results stay SIMULATED
     if doc.get("mode") == "live":
         out.pop("request", None)  # not a SimulationRequest (mode live is never accepted by POST); see the live block

@@ -49,3 +49,5 @@ G5 requires `B13` and `B50`.
 G5 is **FAIL** with one open item and stays `not_ready`. The pipeline itself is proven end to end on the packaged stack at the API level: archived input → engine → `/v3`. The remaining gap is visual confirmation that the packaged production UI renders Tabs 2 and 7 for that run. Once B50 provides it, re-run `gate_check.py G5` and close G5 as PASS_WITH_CAVEATS, carrying forward these caveats:
 - the primary run reused cached CUDA output (the fresh CPU compute is evidenced separately);
 - the GPU image has not been built.
+
+**Integrator raw audit (2026-11-10):** `DATA_FILES=157; DATA_BYTES=30544672450; HASH_MATCH=157; NO_COMPARABLE_HASH=0; MISMATCH=0`. `verify_state.py` exit 0. `gate_check.py G5`: "G5 CLOSED: tasks incomplete: B50", as intended.

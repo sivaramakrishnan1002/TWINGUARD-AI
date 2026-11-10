@@ -475,3 +475,5 @@
 .tg-stage__badge[data-run-kind="LIVE_FORECAST"] { color: #06121c; background: #3ddc84; border-color: #3ddc84; }
 .tg-stage__badge[data-run-kind="REPLAY"] { color: #ffd98a; border-color: rgba(245, 197, 66, 0.7); background: rgba(20, 16, 4, 0.8); }
 .tg-stage__badge[data-run-kind="WHAT_IF"] { color: #d9c2ff; border-color: rgba(155, 92, 255, 0.75); background: rgba(14, 6, 28, 0.8); }
+.tg-badge--custom { color: #bfe9ff; border-color: rgba(54, 185, 255, 0.7); background: rgba(54, 185, 255, 0.1); }
+.tg-stage__badge[data-run-kind="CUSTOM"], .tg-stage__badge[data-run-kind="FORECAST"] { color: #bfe9ff; border-color: rgba(54, 185, 255, 0.7); background: rgba(4, 16, 28, 0.8); }

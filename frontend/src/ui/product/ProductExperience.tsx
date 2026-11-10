@@ -84,8 +84,8 @@ export function RunBadge({ data, compact = false }: { data: TwinData; compact?: 
   const text = badgeFor(kind);
   const issued = kind === 'LIVE_FORECAST' ? (data.live?.latest?.run_id === data.runId ? data.live.latest.issued_at : data.run?.created_at) : null;
   return (
-    <span className={`tg-badge tg-badge--${text === 'LIVE FORECAST' ? 'live' : text === 'REPLAY' ? 'replay' : text === 'WHAT-IF' ? 'whatif' : 'demo'}`} role="note" data-run-kind={kind ?? 'none'}
-      title={kind === 'LIVE_FORECAST' ? `${LIVE_DISCLAIMER}. Live forecast run ${data.runId}` : kind === 'REPLAY' ? 'Replay of an archived event (REPLAY rainfall); results SIMULATED' : kind === 'WHAT_IF' ? 'What-if scenario; results SIMULATED' : 'Simulation; results SIMULATED'}>
+    <span className={`tg-badge tg-badge--${text === 'LIVE FORECAST' ? 'live' : text === 'REPLAY' ? 'replay' : text === 'WHAT-IF' ? 'whatif' : text === 'CUSTOM' || text === 'FORECAST' ? 'custom' : 'demo'}`} role="note" data-run-kind={kind ?? 'none'}
+      title={kind === 'LIVE_FORECAST' ? `${LIVE_DISCLAIMER}. Live forecast run ${data.runId}` : kind === 'REPLAY' ? 'Replay of an archived event (REPLAY rainfall); results SIMULATED' : kind === 'WHAT_IF' ? 'What-if scenario; results SIMULATED' : kind === 'CUSTOM' ? 'Custom rainfall scenario (SCENARIO_INPUT); results SIMULATED' : kind === 'FORECAST' ? 'On-demand Open-Meteo forecast run (MODEL_FORECAST rainfall); results SIMULATED' : 'Simulation; results SIMULATED'}>
       {text}{!compact && issued ? ` · ${istTime(issued)} IST` : ''}
     </span>
   );

@@ -40,7 +40,11 @@ test('B52 run-kind badges, assumption inputs and the disclaimer on every tab', a
     assert.equal(R.badgeFor('LIVE_FORECAST'), 'LIVE FORECAST');
     assert.equal(R.badgeFor('REPLAY'), 'REPLAY');
     assert.equal(R.badgeFor('WHAT_IF'), 'WHAT-IF');
-    assert.equal(R.badgeFor('CUSTOM'), 'DEMO / SIMULATION');
+    assert.equal(R.badgeFor('CUSTOM'), 'CUSTOM');
+    assert.equal(R.badgeFor('FORECAST'), 'FORECAST');
+    assert.equal(R.badgeFor(null), 'DEMO / SIMULATION');
+    const mk = (id, kind, res = 'citywide', created = '2026-11-10T00:00:00Z') => ({ run_id: id, state: 'completed', run_kind: kind, mode: 'event', request: { mode: 'event', resolution: res }, created_at: created, frames: [] });
+    assert.equal(R.defaultRun([mk('c1', 'CUSTOM'), mk('f1', 'REPLAY', 'focus'), mk('r1', 'REPLAY'), mk('r2', 'REPLAY')]).run_id, 'r1', 'newest citywide event replay, not a custom or focus run');
     assert.equal(R.runKindOf({ mode: 'event', request: { mode: 'event' } }), 'REPLAY', 'older runs derive their kind from the request');
     assert.equal(R.runKindOf({ mode: 'forecast', run_kind: 'LIVE_FORECAST' }), 'LIVE_FORECAST');
     assert.equal(R.isAssumptionInput({ name: 'reservoir_outlet_inflow', source: 'A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)', source_mode: 'SCENARIO_INPUT' }), true);

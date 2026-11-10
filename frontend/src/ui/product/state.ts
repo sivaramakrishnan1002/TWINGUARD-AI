@@ -4,7 +4,7 @@ import { createFixtureApi, DEFAULT_RUN_ID, FOCUS_AREAS, loadFocus, loadTerrain, 
 import { lonLatToUtm, utmToLonLat, type TerrainGrid } from '../api/geo';
 import type * as T from '../api/v3types';
 import { ApiRequestError } from '../api/v3types';
-import { contextRunFor, isFocusRun, istTime, nearestFrameByTime, runKindOf, sortRuns } from './runs';
+import { contextRunFor, defaultRun, isFocusRun, istTime, nearestFrameByTime, runKindOf, sortRuns } from './runs';
 
 export interface TwinData {
   api: T.TwinGuardApi | null;
@@ -143,7 +143,7 @@ export function useTwinData(): TwinData {
       // live-first: open on the latest live run (or the last good one after a failed cycle) unless the user deep-linked a run
       const liveTarget = st?.latest?.run_id ?? st?.last_good_run_id ?? null;
       if (api.kind === 'api' && !pinned && liveTarget && done.some((r) => r.run_id === liveTarget)) setRunId(liveTarget);
-      else if (api.kind === 'api') { if (done.length && !done.some((r) => r.run_id === runId)) setRunId(done[0].run_id); }
+      else if (api.kind === 'api') { const d = defaultRun(list); if (d && !done.some((r) => r.run_id === runId)) setRunId(d.run_id); }
       // saved-results mode: a deep-linked API run id is not in the bundle, so show the default saved run instead of an error
       else if (!list.some((r) => r.run_id === runId)) setRunId(list.some((r) => r.run_id === DEFAULT_RUN_ID) ? DEFAULT_RUN_ID : (done[0] ?? list[0])?.run_id ?? DEFAULT_RUN_ID);
     }).catch((e) => setError(e instanceof Error ? e.message : String(e)));
@@ -210,7 +210,7 @@ export function useTwinData(): TwinData {
   // or a stale deep link would otherwise 404 on depth/flow/wards/incidents/shelters/roads)
   const runKnown = !!api && (api.kind === 'fixture' || !!run);
   const fallBackToCitywide = useCallback(() => {
-    const pick = runs.find((r) => r.state === 'completed' && !isFocusRun(r));
+    const pick = defaultRun(runs);
     if (pick && pick.run_id !== runId) setRunId(pick.run_id);
   }, [runs, runId]);
   const contextRun = useMemo(() => contextRunFor(run, runs), [run, runs]);

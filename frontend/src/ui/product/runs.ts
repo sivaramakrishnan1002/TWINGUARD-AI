@@ -60,9 +60,15 @@ export function runKindOf(r: T.SimulationRun | null | undefined): T.RunKind | nu
   return mode === 'event' ? 'REPLAY' : mode === 'what_if' ? 'WHAT_IF' : mode === 'custom' ? 'CUSTOM' : mode === 'forecast' ? 'FORECAST' : null;
 }
 
-/** Contract badge (Overview.badge enum): LIVE FORECAST | REPLAY | WHAT-IF, else DEMO / SIMULATION. */
-export function badgeFor(kind: T.RunKind | null): 'LIVE FORECAST' | 'REPLAY' | 'WHAT-IF' | 'DEMO / SIMULATION' {
-  return kind === 'LIVE_FORECAST' ? 'LIVE FORECAST' : kind === 'REPLAY' ? 'REPLAY' : kind === 'WHAT_IF' ? 'WHAT-IF' : 'DEMO / SIMULATION';
+/** Badge text from run_kind: LIVE FORECAST | REPLAY | WHAT-IF | CUSTOM | FORECAST; DEMO / SIMULATION before a run is known. */
+export function badgeFor(kind: T.RunKind | null): 'LIVE FORECAST' | 'REPLAY' | 'WHAT-IF' | 'CUSTOM' | 'FORECAST' | 'DEMO / SIMULATION' {
+  return kind === 'LIVE_FORECAST' ? 'LIVE FORECAST' : kind === 'REPLAY' ? 'REPLAY' : kind === 'WHAT_IF' ? 'WHAT-IF' : kind === 'CUSTOM' ? 'CUSTOM' : kind === 'FORECAST' ? 'FORECAST' : 'DEMO / SIMULATION';
+}
+
+/** Default when live is unavailable: the newest completed citywide event replay, else the newest completed citywide run. */
+export function defaultRun(runs: T.SimulationRun[]): T.SimulationRun | null {
+  const city = runs.filter((r) => r.state === 'completed' && !isFocusRun(r));
+  return city.find((r) => runKindOf(r) === 'REPLAY') ?? city[0] ?? runs.find((r) => r.state === 'completed') ?? null;
 }
 
 /** The fixed disclaimer (contract const), shown on every tab. */

@@ -44,3 +44,28 @@ Run `evt-20261108T152128Z-59eba744` (B13 packaged run), frame 72 (T+36 h), camer
   `/weather`, and for the run `/depth`, `/flow`, `/wards`, `/incidents`, `/shelters`, `/roads`.
 - Packaged-build fix: added `frontend/.dockerignore`, so the build context no longer copies the host's Windows
   `node_modules` (and `dist`) over the Linux `npm ci` install.
+
+## B54: packaged live UI (18_live_*)
+
+Captured on 2026-11-10 from the **packaged stack at http://127.0.0.1:8081/** (nginx, Lane B's B53 build; frontend
+rebuilt from the B52 UI). Served entry bundle `assets/index-Dg3YnI3f.js`, sha256
+`898dffdeafc771c0de4ff913395f6c5d1fbdc305631eb0d34236a21463ed63e8` (no Google `AIza` key in it).
+
+| File | What it shows |
+| --- | --- |
+| `18_live_overview.webp` | Situation Overview on live run `sim-20261110T153456Z-b1a4b11c` (LIVE_FORECAST, CPU, issued 15:34:50Z) |
+| `18_live_flood_simulation_3d.webp` | Flood Simulation, 3D Digital Twin, same run; Run Details: CPU, MODELLED /flow |
+| `18_live_flood_simulation_2d.webp` | Flood Simulation after switching to 2D Map (Google roadmap, dark-styled) |
+| `18_live_digital_twin.webp` | Digital Twin (3D City) tab, same run |
+| `18_live_last_error_fallback.webp` | Error-handling evidence: after B53's simulated Open-Meteo failure (12:21Z) the `last_error` banner shows, the Open-Meteo dot is red and the last good run `sim-20261110T121126Z-979f9524` stays on screen |
+
+- Visible in the clean shots: header badge **LIVE FORECAST · 21:04 IST** and map badge LIVE FORECAST; live strip
+  "Updated 21:09 IST · next 00:04" with Open-Meteo and CFM-DSS health dots (both ok, green) and the Refresh button;
+  disclaimer "Model forecast — not an official warning" on every tab; reservoir outlet inflow tagged ASSUMPTION
+  (SCENARIO_INPUT); Google Maps logo and credit with Cesium ion and OpenStreetMap attribution.
+- The clean state came from one manual Refresh at 12:31:42Z (202 started, run `sim-20261110T123148Z-eac60710`, cleared
+  `last_error`); the scheduled 15:34Z cycle then published the run shown.
+- Browser console errors: **0** on all five captures. The ion token appeared in **no** `/api/ai` request.
+- API calls (same origin): `GET /api/ai/v3/live/status` (polled), `/status`, `/simulations?limit=50`, `/static/wards`,
+  `/weather`, and per run `/depth`, `/flow` (200), `/wards`, `/incidents`, `/shelters`, `/roads`; one
+  `POST /api/ai/v3/live/refresh` (manual, before capture).

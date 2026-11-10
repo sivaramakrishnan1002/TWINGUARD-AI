@@ -6779,7 +6779,7 @@
       "lane": "B",
       "title": "Packaged live-UI screenshots (18_live_*) - ui session",
       "phase": "B",
-      "status": "ready",
+      "status": "running",
       "depends_on": [
         "B52",
         "B53"
@@ -6796,8 +6796,8 @@
         "On the packaged B11 stack (http://127.0.0.1:8081/), capture docs/ui/screenshots/18_live_* for a LIVE_FORECAST run (e.g. sim-20261110T121126Z-979f9524). Show the LIVE FORECAST \u00b7 HH:MM IST badge, 'Updated \u2026 \u00b7 next \u2026', Open-Meteo and CFM-DSS health, the Refresh button, the disclaimer 'Model forecast \u2014 not an official warning' and the Google attribution, with 0 console errors. Record the bundle hash in docs/ui/screenshots/README.md."
       ],
       "evidence": [],
-      "session": null,
-      "claimed_at": null,
+      "session": "ui",
+      "claimed_at": "2026-11-10T21:06:17+0530",
       "finished_at": null,
       "commit": null,
       "heavy": false,
@@ -6813,7 +6813,7 @@
       "lane": "A",
       "title": "Round 4: final report and paper refresh (G6)",
       "phase": "A",
-      "status": "ready",
+      "status": "running",
       "depends_on": [
         "A17",
         "A28",
@@ -6843,8 +6843,8 @@
         "Do not edit docs/master/, docs/api/, docs/handbook/ or frontend/."
       ],
       "evidence": [],
-      "session": null,
-      "claimed_at": null,
+      "session": "A29 final report + paper (Lane A)",
+      "claimed_at": "2026-11-10T17:59:07+0530",
       "finished_at": null,
       "commit": null,
       "heavy": false,
@@ -6860,7 +6860,7 @@
       "lane": "B",
       "title": "Round 4: handbook refresh (architecture, user guide, runbook, attribution)",
       "phase": "B",
-      "status": "ready",
+      "status": "done",
       "depends_on": [
         "B53",
         "I27"
@@ -6879,17 +6879,24 @@
         "16_References_and_Attribution.md lists every data source and service with licence and attribution per the G6 checklist \u00a73 (pending owner confirmation in M7). State the novelty claim in the owner's wording (OD-2026-11-07).",
         "No credentials, keys or tokens in the handbook. Link screenshots, do not duplicate them. Do not edit docs/master/, docs/api/, frontend/ or Lane A report files."
       ],
-      "evidence": [],
-      "session": null,
-      "claimed_at": null,
-      "finished_at": null,
-      "commit": null,
+      "evidence": [
+        "docs/handbook/03_Architecture_and_Tech_Stack.md",
+        "docs/handbook/18_User_Guide.md",
+        "docs/handbook/19_Runbook.md",
+        "docs/handbook/16_References_and_Attribution.md"
+      ],
+      "session": "Lane B",
+      "claimed_at": "2026-11-10T17:58:54+0530",
+      "finished_at": "2026-11-10T21:09:31+0530",
+      "commit": "4281576",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator for Round 4 (coordinator request). Lane B owned the previous handbook refresh (B12). Required by G6."
+        "2026-11-10 Registered by Integrator for Round 4 (coordinator request). Lane B owned the previous handbook refresh (B12). Required by G6.",
+        "Handbook refreshed: 00 and 03 rewritten; new 18 User Guide and 19 Runbook; current sections prepended to 04 (OD-2026-11-07/08/08b/08c/10, CR-019..021), 13 (G1-G5, Round 2) and 16 (G6 section 3, pending owner confirmation M7); novelty claim in the owner's wording; 17 document control and coverage matrix updated; master markdown rebuilt and DOCX regenerated with tools/build_handbook_docx.py (OOXML fallback). Secret scan clean; no broken links; screenshots linked not copied. Did not edit docs/master, docs/api, frontend or Lane A files.",
+        "2026-11-10 Integrator verification: commit 4281576 touches only docs/handbook/; novelty wording matches OD-2026-11-07 verbatim; 0 broken relative links across docs/handbook/*.md; no Google/Cesium tokens; \"operational/validated/official warning\" appear only as disclaimers. The 16_References table stays pending M7 owner confirmation."
       ]
     }
   ],

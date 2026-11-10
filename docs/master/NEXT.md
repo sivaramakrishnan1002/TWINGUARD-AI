@@ -16,12 +16,11 @@
 
 ## Ready tasks by lane A
 
-- **A29 — Round 4: final report and paper refresh (G6)** (ready)
+- None.
 
 ## Ready tasks by lane B
 
-- **B54 — Packaged live-UI screenshots (18_live_*) - ui session** (ready)
-- **B55 — Round 4: handbook refresh (architecture, user guide, runbook, attribution)** (ready)
+- None.
 
 ## Ready tasks by lane I
 
@@ -38,7 +37,8 @@
 
 ## Running tasks
 
-- None.
+- **B54 — Packaged live-UI screenshots (18_live_*) - ui session** (running)
+- **A29 — Round 4: final report and paper refresh (G6)** (running)
 
 ## Next gate
 

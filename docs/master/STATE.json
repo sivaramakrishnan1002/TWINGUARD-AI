@@ -6638,7 +6638,7 @@
       "lane": "B",
       "title": "Live-first UI: smart badge, live status, refresh and auto-switch (CR-021) - ui session",
       "phase": "B",
-      "status": "blocked_prerequisite",
+      "status": "ready",
       "depends_on": [
         "B51"
       ],
@@ -6671,7 +6671,8 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only.",
+        "2026-11-10 Integrator: B51 done (d987199, 818c7fc); the /v3/live operations are mounted and promoted to top-level paths (parity tests pass). B52 is ready for the ui session."
       ]
     },
     {

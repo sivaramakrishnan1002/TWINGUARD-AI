@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "TwinGuard AI Service",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "description": "C4 v0 remains the frozen G0 baseline; C4 v1 selectors follow CR-008. The AI service implements health, layers, B08 exact saved-artifact selectors, and B21 C9 metadata GETs in the local B11 package. The CR-010 C9 v1 raster-byte GET is verified in that same local package by B25 (commit 0aebc59); it serves only exact saved A20 research/simulation bytes. Forecast, uncertainty, route computation, and scenario computation remain HTTP 501. No live or deployment-wide operation is implied; C9 remains proposed and unfrozen. C4 v2 / CR-012 defines a test-scoped, read-only date-only replay projection; it is not mounted until B27 evidence passes. C4 v3 (OD-2026-11-07 / CR-019) is a proposed, unmounted product-API section under `x-c4-v3-product-api`; operations move into `paths` only when mounted and tested."
   },
   "paths": {
@@ -2109,6 +2109,200 @@
             }
           }
         }
+      }
+    },
+    "/v3/live/status": {
+      "get": {
+        "operationId": "v3GetLiveStatus",
+        "summary": "Live forecast cycle status, source health and last error",
+        "tags": [
+          "c4-v3",
+          "live"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B51)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/LiveStatus"
+                },
+                "example": {
+                  "enabled": true,
+                  "cycle_hours": 3,
+                  "state": "idle",
+                  "running_run_id": null,
+                  "latest": null,
+                  "last_good_run_id": "sim-20261110T060000Z-1a2b3c4d",
+                  "next_scheduled_at": "2026-11-10T09:00:00Z",
+                  "manual_refresh": {
+                    "min_interval_s": 600,
+                    "next_allowed_at": "2026-11-10T06:10:12Z"
+                  },
+                  "sources": {
+                    "open_meteo": {
+                      "state": "ok",
+                      "refresh_policy": "every 3 h + manual (min 600 s)",
+                      "last_success_at": "2026-11-10T06:00:12Z",
+                      "last_attempt_at": "2026-11-10T06:00:12Z",
+                      "data_time": "2026-11-10T06:00:00Z",
+                      "last_error": null,
+                      "calls_today": 480
+                    },
+                    "cfm_dss": {
+                      "state": "ok",
+                      "refresh_policy": "at most daily",
+                      "last_success_at": "2026-11-10T00:05:41Z",
+                      "last_attempt_at": "2026-11-10T00:05:41Z",
+                      "data_time": "2026-11-09",
+                      "last_error": null,
+                      "calls_today": 1
+                    }
+                  },
+                  "last_error": null,
+                  "retention": {
+                    "keep_last": 16,
+                    "stored": 9
+                  },
+                  "disclaimer": "Model forecast \u2014 not an official warning"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/live/latest": {
+      "get": {
+        "operationId": "v3GetLiveLatest",
+        "summary": "Latest completed live forecast run (summary and run_id)",
+        "tags": [
+          "c4-v3",
+          "live"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B51)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/LiveLatest"
+                },
+                "example": {
+                  "run_id": "sim-20261110T060000Z-1a2b3c4d",
+                  "run_kind": "LIVE_FORECAST",
+                  "state": "completed",
+                  "issued_at": "2026-11-10T06:00:12Z",
+                  "completed_at": "2026-11-10T06:01:05Z",
+                  "forecast_valid_from": "2026-11-10T06:00:00Z",
+                  "forecast_valid_to": "2026-11-13T06:00:00Z",
+                  "horizon_hours": 72,
+                  "summary": {
+                    "max_depth_m": 0.42,
+                    "flooded_area_km2": 3.1,
+                    "buildings_affected": 912,
+                    "population_exposed": 14200,
+                    "roads_blocked_km": 4.6,
+                    "wards_affected": 12,
+                    "peak_time_utc": "2026-11-11T09:00:00Z"
+                  },
+                  "inputs": [
+                    {
+                      "name": "rainfall",
+                      "source": "open-meteo:ecmwf_ifs025+ukmo+icon",
+                      "source_mode": "MODEL_FORECAST",
+                      "fetched_at": "2026-11-10T06:00:12Z"
+                    },
+                    {
+                      "name": "reservoirs",
+                      "source": "cfm-dss:GetLast15daysWaterLevel",
+                      "source_mode": "PUBLISHED_SNAPSHOT",
+                      "fetched_at": "2026-11-10T00:05:41Z"
+                    }
+                  ],
+                  "device": "cuda",
+                  "disclaimer": "Model forecast \u2014 not an official warning"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No live run has completed yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Live mode disabled or the run store is unreadable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "description": "Returns the last good live run; when the latest cycle failed, LiveStatus.last_error explains why. Use the run_id with the existing /v3/simulations/{run_id}/* operations."
+      }
+    },
+    "/v3/live/refresh": {
+      "post": {
+        "operationId": "v3RefreshLive",
+        "summary": "Start a live forecast cycle now (manual Refresh)",
+        "tags": [
+          "c4-v3",
+          "live"
+        ],
+        "x-current-runtime-status": 200,
+        "x-owner": "Lane B (B51)",
+        "responses": {
+          "202": {
+            "description": "Accepted, or a cycle is already running (no overlap).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/LiveRefreshAccepted"
+                },
+                "example": {
+                  "accepted": true,
+                  "state": "started",
+                  "run_id": null,
+                  "next_allowed_at": "2026-11-10T06:20:00Z"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Manual refresh within 600 s of the previous one; Retry-After is set.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Live mode disabled, engine unavailable, or upstream budget exhausted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "description": "No request body. At most one manual refresh per 600 s. The reservoir snapshot is reused if it is less than 24 h old."
       }
     }
   },
@@ -7063,6 +7257,200 @@
             }
           }
         }
+      },
+      "/v3/live/status": {
+        "get": {
+          "operationId": "v3GetLiveStatus",
+          "summary": "Live forecast cycle status, source health and last error",
+          "tags": [
+            "c4-v3",
+            "live"
+          ],
+          "x-current-runtime-status": 200,
+          "x-owner": "Lane B (B51)",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/LiveStatus"
+                  },
+                  "example": {
+                    "enabled": true,
+                    "cycle_hours": 3,
+                    "state": "idle",
+                    "running_run_id": null,
+                    "latest": null,
+                    "last_good_run_id": "sim-20261110T060000Z-1a2b3c4d",
+                    "next_scheduled_at": "2026-11-10T09:00:00Z",
+                    "manual_refresh": {
+                      "min_interval_s": 600,
+                      "next_allowed_at": "2026-11-10T06:10:12Z"
+                    },
+                    "sources": {
+                      "open_meteo": {
+                        "state": "ok",
+                        "refresh_policy": "every 3 h + manual (min 600 s)",
+                        "last_success_at": "2026-11-10T06:00:12Z",
+                        "last_attempt_at": "2026-11-10T06:00:12Z",
+                        "data_time": "2026-11-10T06:00:00Z",
+                        "last_error": null,
+                        "calls_today": 480
+                      },
+                      "cfm_dss": {
+                        "state": "ok",
+                        "refresh_policy": "at most daily",
+                        "last_success_at": "2026-11-10T00:05:41Z",
+                        "last_attempt_at": "2026-11-10T00:05:41Z",
+                        "data_time": "2026-11-09",
+                        "last_error": null,
+                        "calls_today": 1
+                      }
+                    },
+                    "last_error": null,
+                    "retention": {
+                      "keep_last": 16,
+                      "stored": 9
+                    },
+                    "disclaimer": "Model forecast \u2014 not an official warning"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v3/live/latest": {
+        "get": {
+          "operationId": "v3GetLiveLatest",
+          "summary": "Latest completed live forecast run (summary and run_id)",
+          "tags": [
+            "c4-v3",
+            "live"
+          ],
+          "x-current-runtime-status": 200,
+          "x-owner": "Lane B (B51)",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/LiveLatest"
+                  },
+                  "example": {
+                    "run_id": "sim-20261110T060000Z-1a2b3c4d",
+                    "run_kind": "LIVE_FORECAST",
+                    "state": "completed",
+                    "issued_at": "2026-11-10T06:00:12Z",
+                    "completed_at": "2026-11-10T06:01:05Z",
+                    "forecast_valid_from": "2026-11-10T06:00:00Z",
+                    "forecast_valid_to": "2026-11-13T06:00:00Z",
+                    "horizon_hours": 72,
+                    "summary": {
+                      "max_depth_m": 0.42,
+                      "flooded_area_km2": 3.1,
+                      "buildings_affected": 912,
+                      "population_exposed": 14200,
+                      "roads_blocked_km": 4.6,
+                      "wards_affected": 12,
+                      "peak_time_utc": "2026-11-11T09:00:00Z"
+                    },
+                    "inputs": [
+                      {
+                        "name": "rainfall",
+                        "source": "open-meteo:ecmwf_ifs025+ukmo+icon",
+                        "source_mode": "MODEL_FORECAST",
+                        "fetched_at": "2026-11-10T06:00:12Z"
+                      },
+                      {
+                        "name": "reservoirs",
+                        "source": "cfm-dss:GetLast15daysWaterLevel",
+                        "source_mode": "PUBLISHED_SNAPSHOT",
+                        "fetched_at": "2026-11-10T00:05:41Z"
+                      }
+                    ],
+                    "device": "cuda",
+                    "disclaimer": "Model forecast \u2014 not an official warning"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No live run has completed yet.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Live mode disabled or the run store is unreadable.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Returns the last good live run; when the latest cycle failed, LiveStatus.last_error explains why. Use the run_id with the existing /v3/simulations/{run_id}/* operations."
+        }
+      },
+      "/v3/live/refresh": {
+        "post": {
+          "operationId": "v3RefreshLive",
+          "summary": "Start a live forecast cycle now (manual Refresh)",
+          "tags": [
+            "c4-v3",
+            "live"
+          ],
+          "x-current-runtime-status": 200,
+          "x-owner": "Lane B (B51)",
+          "responses": {
+            "202": {
+              "description": "Accepted, or a cycle is already running (no overlap).",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/LiveRefreshAccepted"
+                  },
+                  "example": {
+                    "accepted": true,
+                    "state": "started",
+                    "run_id": null,
+                    "next_allowed_at": "2026-11-10T06:20:00Z"
+                  }
+                }
+              }
+            },
+            "429": {
+              "description": "Manual refresh within 600 s of the previous one; Retry-After is set.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "Live mode disabled, engine unavailable, or upstream budget exhausted.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
+                  }
+                }
+              }
+            }
+          },
+          "description": "No request body. At most one manual refresh per 600 s. The reservoir snapshot is reused if it is less than 24 h old."
+        }
       }
     },
     "components": {
@@ -10270,201 +10658,6 @@
     },
     "proposed_paths": {},
     "proposed_paths_rule": "Three stages. (1) `planned_paths`: approved contract-first operations not yet mounted; tests do not read them. (2) `proposed_paths`: mounted by the serving lane and tested (B47 tests read proposed + paths); the lane moves an operation here when it mounts it. (3) `paths` plus top-level `paths`: promoted by the Integrator after the parity tests pass.",
-    "planned_paths": {
-      "/v3/live/status": {
-        "get": {
-          "operationId": "v3GetLiveStatus",
-          "summary": "Live forecast cycle status, source health and last error",
-          "tags": [
-            "c4-v3",
-            "live"
-          ],
-          "x-current-runtime-status": "unimplemented",
-          "x-owner": "Lane B (B51)",
-          "responses": {
-            "200": {
-              "description": "OK",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/x-c4-v3-product-api/components/schemas/LiveStatus"
-                  },
-                  "example": {
-                    "enabled": true,
-                    "cycle_hours": 3,
-                    "state": "idle",
-                    "running_run_id": null,
-                    "latest": null,
-                    "last_good_run_id": "sim-20261110T060000Z-1a2b3c4d",
-                    "next_scheduled_at": "2026-11-10T09:00:00Z",
-                    "manual_refresh": {
-                      "min_interval_s": 600,
-                      "next_allowed_at": "2026-11-10T06:10:12Z"
-                    },
-                    "sources": {
-                      "open_meteo": {
-                        "state": "ok",
-                        "refresh_policy": "every 3 h + manual (min 600 s)",
-                        "last_success_at": "2026-11-10T06:00:12Z",
-                        "last_attempt_at": "2026-11-10T06:00:12Z",
-                        "data_time": "2026-11-10T06:00:00Z",
-                        "last_error": null,
-                        "calls_today": 480
-                      },
-                      "cfm_dss": {
-                        "state": "ok",
-                        "refresh_policy": "at most daily",
-                        "last_success_at": "2026-11-10T00:05:41Z",
-                        "last_attempt_at": "2026-11-10T00:05:41Z",
-                        "data_time": "2026-11-09",
-                        "last_error": null,
-                        "calls_today": 1
-                      }
-                    },
-                    "last_error": null,
-                    "retention": {
-                      "keep_last": 16,
-                      "stored": 9
-                    },
-                    "disclaimer": "Model forecast \u2014 not an official warning"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "/v3/live/latest": {
-        "get": {
-          "operationId": "v3GetLiveLatest",
-          "summary": "Latest completed live forecast run (summary and run_id)",
-          "tags": [
-            "c4-v3",
-            "live"
-          ],
-          "x-current-runtime-status": "unimplemented",
-          "x-owner": "Lane B (B51)",
-          "responses": {
-            "200": {
-              "description": "OK",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/x-c4-v3-product-api/components/schemas/LiveLatest"
-                  },
-                  "example": {
-                    "run_id": "sim-20261110T060000Z-1a2b3c4d",
-                    "run_kind": "LIVE_FORECAST",
-                    "state": "completed",
-                    "issued_at": "2026-11-10T06:00:12Z",
-                    "completed_at": "2026-11-10T06:01:05Z",
-                    "forecast_valid_from": "2026-11-10T06:00:00Z",
-                    "forecast_valid_to": "2026-11-13T06:00:00Z",
-                    "horizon_hours": 72,
-                    "summary": {
-                      "max_depth_m": 0.42,
-                      "flooded_area_km2": 3.1,
-                      "buildings_affected": 912,
-                      "population_exposed": 14200,
-                      "roads_blocked_km": 4.6,
-                      "wards_affected": 12,
-                      "peak_time_utc": "2026-11-11T09:00:00Z"
-                    },
-                    "inputs": [
-                      {
-                        "name": "rainfall",
-                        "source": "open-meteo:ecmwf_ifs025+ukmo+icon",
-                        "source_mode": "MODEL_FORECAST",
-                        "fetched_at": "2026-11-10T06:00:12Z"
-                      },
-                      {
-                        "name": "reservoirs",
-                        "source": "cfm-dss:GetLast15daysWaterLevel",
-                        "source_mode": "PUBLISHED_SNAPSHOT",
-                        "fetched_at": "2026-11-10T00:05:41Z"
-                      }
-                    ],
-                    "device": "cuda",
-                    "disclaimer": "Model forecast \u2014 not an official warning"
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "No live run has completed yet.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
-                  }
-                }
-              }
-            },
-            "503": {
-              "description": "Live mode disabled or the run store is unreadable.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
-                  }
-                }
-              }
-            }
-          },
-          "description": "Returns the last good live run; when the latest cycle failed, LiveStatus.last_error explains why. Use the run_id with the existing /v3/simulations/{run_id}/* operations."
-        }
-      },
-      "/v3/live/refresh": {
-        "post": {
-          "operationId": "v3RefreshLive",
-          "summary": "Start a live forecast cycle now (manual Refresh)",
-          "tags": [
-            "c4-v3",
-            "live"
-          ],
-          "x-current-runtime-status": "unimplemented",
-          "x-owner": "Lane B (B51)",
-          "responses": {
-            "202": {
-              "description": "Accepted, or a cycle is already running (no overlap).",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/x-c4-v3-product-api/components/schemas/LiveRefreshAccepted"
-                  },
-                  "example": {
-                    "accepted": true,
-                    "state": "started",
-                    "run_id": null,
-                    "next_allowed_at": "2026-11-10T06:20:00Z"
-                  }
-                }
-              }
-            },
-            "429": {
-              "description": "Manual refresh within 600 s of the previous one; Retry-After is set.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
-                  }
-                }
-              }
-            },
-            "503": {
-              "description": "Live mode disabled, engine unavailable, or upstream budget exhausted.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/x-c4-v3-product-api/components/schemas/ApiError"
-                  }
-                }
-              }
-            }
-          },
-          "description": "No request body. At most one manual refresh per 600 s. The reservoir snapshot is reused if it is less than 24 h old."
-        }
-      }
-    }
+    "planned_paths": {}
   }
 }

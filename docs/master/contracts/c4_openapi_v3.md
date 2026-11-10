@@ -98,3 +98,4 @@ B47 moves an operation from `x-c4-v3-product-api.paths` into the top-level `path
   - **Overview:** gains `live`, and its `badge` is widened to LIVE FORECAST / REPLAY / WHAT-IF alongside DEMO / SIMULATION.
   - **Three-stage lifecycle:** `planned_paths` (contract-first, not mounted) → `proposed_paths` (mounted and tested by the lane) → `paths` (promoted by the Integrator).
   - **run_kind, not source_mode:** LIVE_FORECAST is a `run_kind`, not a `source_mode`. Results stay SIMULATED and inputs keep MODEL_FORECAST or PUBLISHED_SNAPSHOT.
+- **2026-11-10 live operations promoted:** `GET /v3/live/status`, `GET /v3/live/latest` and `POST /v3/live/refresh` are mounted by B51 (d987199, 818c7fc) and moved from `planned_paths` into the section and top-level `paths` with status 200. The AI service now has 34 paths and 36 operations; 200 tests pass, including runtime parity.

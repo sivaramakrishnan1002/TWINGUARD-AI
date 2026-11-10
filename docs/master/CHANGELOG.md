@@ -747,3 +747,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-10 10:10:38 Finished A28: done
 
 - 2026-11-10 15:17:10 Finished B51: done
+
+- 2026-11-10 15:19:06 C4 v3 live operations promoted (B51); B52 set ready.

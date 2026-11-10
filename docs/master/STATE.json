@@ -6490,6 +6490,44 @@
         "2026-11-08 Unblocked by Integrator: A27 done (b90c0c6). Contract aligned to A27 readers: FlowFrame validated against products.flow_frame on the citywide 120 m and Velachery 30 m runs at strides 1/2/4/8. GridSpec.cell_size_m relaxed to a positive number, because strided grids report cell_size*stride. The proposed op takes only run_id, frame_index and stride. Map FlowUnavailable to 503, NotFound to 404 and ValueError to 422.",
         "GET /v3/simulations/{run_id}/flow mounted (17bf87c, aligned in 9cb4054): FlowFrame from products.flow_frame with stride 1-8; 404 NotFound, 422 ValueError/validation, 503 FlowUnavailable (A06 or pre-2.1.0 runs); gzip when accepted (citywide frame 2.1 MB -> 42 KB, ~70 ms cached). Engine version in the run cache identity. tests/ai_service 144 passed (strided frames schema-validated); validator 31 paths / 33 ops PASS. Live on local AI service 127.0.0.1:8000."
       ]
+    },
+    {
+      "id": "B50",
+      "lane": "B",
+      "title": "Packaged-UI G5 screenshots (Tabs 2 and 7 on the B11 nginx package) \u2014 ui session",
+      "phase": "B",
+      "status": "ready",
+      "depends_on": [
+        "B13"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/master/GATE_G5_REPORT.md",
+        "docs/trackb/B13_E2E_SCENARIO.md",
+        "docs/master/CR-020_G5_PRODUCT_PIPELINE_REPLAY.md"
+      ],
+      "outputs": [
+        "docs/ui/screenshots/"
+      ],
+      "acceptance": [
+        "Start the B11 package (docker compose -p twinguard-b11 -f docker-compose.b11.yml up -d --wait; Docker Desktop must be running) and open http://127.0.0.1:8081/ (the nginx production bundle), not the Vite development server.",
+        "Capture Tab 2 (Flood Simulation) and Tab 7 (Digital Twin 3D City) for run evt-20261108T152128Z-59eba744 (or fb36a1cd), with flow animation running. The screenshots must show the run_id, input REPLAY, results SIMULATED, generated incidents, the DEMO / SIMULATION badge, and the Google logo and credit.",
+        "Save them as docs/ui/screenshots/17_g5_packaged_*.webp, and record that the browser console shows no errors.",
+        "If the packaged build fails where the development server worked (for example Cesium assets or 3D tiles), fix it within the UI session's paths and record the fix.",
+        "No database writes, no Docker volume deletion, and no Google key committed or present in a request to /api/ai."
+      ],
+      "evidence": [],
+      "session": null,
+      "claimed_at": null,
+      "finished_at": null,
+      "commit": null,
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator as the G5 repair (GATE_G5_REPORT.md, criterion 4). B13's UI evidence came from the Vite development server; the packaged production UI has not been seen rendering Tabs 2 and 7."
+      ]
     }
   ],
   "gates": [
@@ -6546,7 +6584,8 @@
     {
       "id": "G5",
       "requires": [
-        "B13"
+        "B13",
+        "B50"
       ],
       "tests": [],
       "target_day": 32,

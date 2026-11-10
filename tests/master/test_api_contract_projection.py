@@ -226,6 +226,7 @@ def test_cr008_c4_v1_selectors_match_verified_ai_runtime_and_backend_unexposed()
                 if path in {
                     "/scenario-visualization-assets",
                     "/scenario-visualization-assets/{event_id}/{scenario_id}",
+                    "/replay-alerts/{event_id}",  # B27 route, mounted in B11; G5/CR-020 secondary check
                 }:
                     assert operation["x-current-runtime-status"] == 200
                 else:

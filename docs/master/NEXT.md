@@ -20,7 +20,7 @@
 
 ## Ready tasks by lane B
 
-- **B13 — E2E scenario: packaged replay -> engine -> /v3 -> UI (G5, CR-020)** (ready)
+- **B50 — Packaged-UI G5 screenshots (Tabs 2 and 7 on the B11 nginx package) — ui session** (ready)
 
 ## Ready tasks by lane I
 

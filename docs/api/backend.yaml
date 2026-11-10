@@ -431,10 +431,10 @@
       "get": {
         "operationId": "getB13ReplayObservation",
         "summary": "Read the uniquely selected date-only POONDI replay observation and separate derived-output status",
-        "description": "C4 v2 / CR-012, conditional CR-011 route approval. This is a read-only, test-scoped exact lookup of the B28-identified source observation and the result of the approved B19 replay processing. It returns the source observation separately from an optional derived alert; a derived alert is replay-derived and not historically observed. Only the exact approved POONDI source selector is eligible. Historical measurement-time meaning and timezone remain unknown. No flood-depth result is produced by this Track B rule path. The route is not mounted by this projection review; current runtime status is unexposed until B27 passes.",
+        "description": "C4 v2 / CR-012, conditional CR-011 route approval. This is a read-only, test-scoped exact lookup of the B28-identified source observation and the result of the approved B19 replay processing. It returns the source observation separately from an optional derived alert; a derived alert is replay-derived and not historically observed. Only the exact approved POONDI source selector is eligible. Historical measurement-time meaning and timezone remain unknown. No flood-depth result is produced by this Track B rule path. The route is not mounted by this projection review; current runtime status is unexposed until B27 passes. Runtime update 2026-11-10 (G5/CR-020 closeout, item 8): mounted in the local B11 package (B27 2d14e13). B13 (d68aa15) received 200 through nginx /api/ai/replay-alerts/replay:POONDI:date:2015-12-01. This route is the optional secondary check under CR-020, not the G5 path.",
         "x-contract-version": "C4-v2",
         "x-change-request": "CR-012",
-        "x-current-runtime-status": "unexposed",
+        "x-current-runtime-status": 200,
         "x-source-mode": "REPLAY",
         "parameters": [
           {
@@ -499,7 +499,8 @@
               }
             }
           }
-        }
+        },
+        "x-runtime-availability": "available_in_local_B11_package"
       }
     }
   },

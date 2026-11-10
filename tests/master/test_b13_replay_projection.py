@@ -16,7 +16,7 @@ def _spec(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def test_ai_and_backend_publish_same_unexposed_c4_v2_projection():
+def test_ai_and_backend_publish_same_mounted_c4_v2_projection():
     ai = _spec(AI_SPEC)
     backend = _spec(BACKEND_SPEC)
     path = "/replay-alerts/{event_id}"
@@ -27,7 +27,9 @@ def test_ai_and_backend_publish_same_unexposed_c4_v2_projection():
     assert ai_operation["operationId"] == "getB13ReplayObservation"
     assert ai_operation["x-contract-version"] == "C4-v2"
     assert ai_operation["x-change-request"] == "CR-012"
-    assert ai_operation["x-current-runtime-status"] == "unexposed"
+    # Mounted in the local B11 package (B27); confirmed by B13 at G5/CR-020 closeout (item 8, 2026-11-10).
+    assert ai_operation["x-current-runtime-status"] == 200
+    assert ai_operation["x-runtime-availability"] == "available_in_local_B11_package"
     assert ai_operation["parameters"][0]["schema"]["pattern"] == (
         r"^replay:[A-Z]+:date:[0-9]{4}-[0-9]{2}-[0-9]{2}$"
     )

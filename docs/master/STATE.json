@@ -6685,7 +6685,7 @@
       "lane": "B",
       "title": "Round 2 verification: one full live cycle on the packaged stack (CR-021)",
       "phase": "B",
-      "status": "blocked_prerequisite",
+      "status": "ready",
       "depends_on": [
         "A28",
         "B51",
@@ -6705,7 +6705,8 @@
         "On the packaged B11 stack (nginx /api/ai/v3/), run one full scheduled or catch-up live cycle and one manual refresh. Record: Open-Meteo request count and fetched_at, the CFM-DSS snapshot source_date and received_at, the A28 rule id, run_id, run_kind LIVE_FORECAST, engine version, device, wall time, and SHA-256s of /v3/live/status, /v3/live/latest and the run's depth, flow and summary responses.",
         "Show: a second refresh within 600 s returns 429; a refresh during a running cycle returns already_running; a simulated upstream failure keeps the last good run and reports last_error; retention keeps 16 runs.",
         "The UI session captures packaged-UI screenshots (docs/ui/screenshots/18_live_*) showing the LIVE FORECAST badge with run time, updated/next times, source health, the Refresh button and the disclaimer.",
-        "Raw audit 157/157; no shared-database writes; no volume deletion; no credentials or Google key in requests or responses."
+        "Raw audit 157/157; no shared-database writes; no volume deletion; no credentials or Google key in requests or responses.",
+        "Encoding: on the packaged stack, the disclaimer in /v3/live/status, /v3/live/latest and live runs must decode as UTF-8 and equal the contract constant 'Model forecast \u2014 not an official warning' exactly (the UI session saw mojibake '\u00e2\u20ac\u201d' during B52; the local :8000 service returned the exact constant on 2026-11-10). Record the check."
       ],
       "evidence": [],
       "session": null,
@@ -6717,7 +6718,8 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only."
+        "2026-11-10 Registered by Integrator under OD-2026-11-10 / CR-021 (live forecast mode, Round 2). Caveat policy per OD-2026-11-07; short Limitations only.",
+        "2026-11-10 Integrator: A28, B51 and B52 are done (bf50c38; d987199/818c7fc; b69c371). B53 is ready for Lane B, with the UI session capturing packaged screenshots 18_live_*. B52 dev-server screenshots are docs/ui/screenshots/20_live_*. The UI triggered two manual live cycles during testing."
       ]
     },
     {

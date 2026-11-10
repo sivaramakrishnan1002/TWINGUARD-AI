@@ -753,3 +753,5 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-10 15:41:09 Claimed B52 by ui
 
 - 2026-11-10 16:04:55 Finished B52: done
+
+- 2026-11-10 16:06:14 B52 done; B53 (packaged live-cycle verification) set ready, with an exact-disclaimer encoding check added.

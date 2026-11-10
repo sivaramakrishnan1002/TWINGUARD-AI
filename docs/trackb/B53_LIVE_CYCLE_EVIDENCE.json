@@ -1,0 +1,1298 @@
+{
+ "task": "B53",
+ "cr": "CR-021",
+ "base": "http://127.0.0.1:8081/api/ai",
+ "catchup_initial": {
+  "observed_at": "2026-11-10T12:09:02Z",
+  "seconds_to_publish": 282.4,
+  "first_status_state": "running",
+  "refresh_during_cycle": {
+   "status": 202,
+   "seconds": 0.015,
+   "bytes": 139,
+   "sha256": "b40702c7576dbdcbb987783c708cddc86608ab9f175c9c66d29c392738aec599",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "accepted": false,
+    "state": "already_running",
+    "run_id": null,
+    "next_allowed_at": null,
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "status": {
+   "status": 200,
+   "seconds": 0.061,
+   "bytes": 1771,
+   "sha256": "7f53d9d08fafbea13c01707975c9ec8fe595c21bcbd31d8629b9393d55c54bc8",
+   "schema_errors": [
+    "$.latest: matches 0 oneOf branches"
+   ],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "enabled": true,
+    "cycle_hours": 3,
+    "state": "idle",
+    "running_run_id": null,
+    "latest": {
+     "run_id": "sim-20261110T120422Z-1a781dbd",
+     "run_kind": "LIVE_FORECAST",
+     "state": "completed",
+     "issued_at": "2026-11-10T12:04:16Z",
+     "completed_at": "2026-11-10T12:08:59Z",
+     "forecast_valid_from": "2026-11-10T11:00:00Z",
+     "forecast_valid_to": "2026-11-13T11:00:00Z",
+     "horizon_hours": 72,
+     "summary": {
+      "max_depth_m": 2.07,
+      "flooded_area_km2": 0.01,
+      "buildings_affected": 0,
+      "population_exposed": 1,
+      "roads_blocked_km": 0.1,
+      "wards_affected": 0,
+      "peak_time_utc": "2026-11-10T11:30:00Z"
+     },
+     "inputs": [
+      {
+       "name": "rainfall",
+       "source": "open-meteo:ecmwf_ifs",
+       "source_mode": "MODEL_FORECAST",
+       "fetched_at": "2026-11-10T12:04:16Z"
+      },
+      {
+       "name": "reservoir_snapshot",
+       "source": "CFM-DSS public dashboard (daily level/storage)",
+       "source_mode": "PUBLISHED_SNAPSHOT",
+       "fetched_at": "2026-11-10T12:04:22.308738+00:00"
+      },
+      {
+       "name": "reservoir_outlet_inflow",
+       "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
+       "source_mode": "SCENARIO_INPUT",
+       "fetched_at": null
+      }
+     ],
+     "device": "cpu",
+     "disclaimer": "Model forecast — not an official warning"
+    },
+    "last_good_run_id": "sim-20261110T120422Z-1a781dbd",
+    "next_scheduled_at": "2026-11-10T15:04:16Z",
+    "manual_refresh": {
+     "min_interval_s": 600,
+     "next_allowed_at": null
+    },
+    "sources": {
+     "open_meteo": {
+      "state": "ok",
+      "refresh_policy": "every 3 h + manual (min 600 s)",
+      "last_success_at": "2026-11-10T12:04:16Z",
+      "last_attempt_at": "2026-11-10T12:04:16Z",
+      "data_time": "2026-11-10T11:00:00Z",
+      "last_error": null,
+      "calls_today": 297
+     },
+     "cfm_dss": {
+      "state": "ok",
+      "refresh_policy": "at most daily",
+      "last_success_at": "2026-11-10T12:04:16Z",
+      "last_attempt_at": "2026-11-10T12:04:16Z",
+      "data_time": "2026-11-10",
+      "last_error": null,
+      "calls_today": 2
+     }
+    },
+    "last_error": null,
+    "retention": {
+     "keep_last": 16,
+     "stored": 1
+    },
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "latest": {
+   "status": 200,
+   "seconds": 0.018,
+   "bytes": 977,
+   "sha256": "f6809b643c4fbaf9959b0858abded067ab081733dd31369349c2f3c4e71df772",
+   "schema_errors": [
+    "$.inputs[1].fetched_at: '2026-11-10T12:04:22.308738+00:00' is not RFC 3339 UTC"
+   ],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "run_id": "sim-20261110T120422Z-1a781dbd",
+    "run_kind": "LIVE_FORECAST",
+    "state": "completed",
+    "issued_at": "2026-11-10T12:04:16Z",
+    "completed_at": "2026-11-10T12:08:59Z",
+    "forecast_valid_from": "2026-11-10T11:00:00Z",
+    "forecast_valid_to": "2026-11-13T11:00:00Z",
+    "horizon_hours": 72,
+    "summary": {
+     "max_depth_m": 2.07,
+     "flooded_area_km2": 0.01,
+     "buildings_affected": 0,
+     "population_exposed": 1,
+     "roads_blocked_km": 0.1,
+     "wards_affected": 0,
+     "peak_time_utc": "2026-11-10T11:30:00Z"
+    },
+    "inputs": [
+     {
+      "name": "rainfall",
+      "source": "open-meteo:ecmwf_ifs",
+      "source_mode": "MODEL_FORECAST",
+      "fetched_at": "2026-11-10T12:04:16Z"
+     },
+     {
+      "name": "reservoir_snapshot",
+      "source": "CFM-DSS public dashboard (daily level/storage)",
+      "source_mode": "PUBLISHED_SNAPSHOT",
+      "fetched_at": "2026-11-10T12:04:22.308738+00:00"
+     },
+     {
+      "name": "reservoir_outlet_inflow",
+      "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
+      "source_mode": "SCENARIO_INPUT",
+      "fetched_at": null
+     }
+    ],
+    "device": "cpu",
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "run": {
+   "run_id": "sim-20261110T120422Z-1a781dbd",
+   "run_kind": "LIVE_FORECAST",
+   "mode": "live",
+   "source_mode": "SIMULATED",
+   "engine_version": "twinguard-v3-engine/1.1.0 (A25 services.flood_engine.scenario) (twinguard-flood-engine/2.1.0)",
+   "device": {
+    "used": "cpu",
+    "name": null,
+    "fallback_reason": null
+   },
+   "live": {
+    "cycle": "catch_up",
+    "issued_at": "2026-11-10T12:04:16Z",
+    "forecast_valid_from": "2026-11-10T11:00:00Z",
+    "forecast_valid_to": "2026-11-13T11:00:00Z",
+    "reservoir_snapshot_received_at": "2026-11-10T12:04:22.308738Z",
+    "reservoir_source_date": "2026-11-10",
+    "reservoir_coupling_rule": "A28-RES-STORAGE-v1 (applied)",
+    "disclaimer": "Model forecast — not an official warning"
+   },
+   "frames": 145,
+   "grid": {
+    "crs": "EPSG:32644",
+    "origin_x_m": 390000.0,
+    "origin_y_m": 1471620.0,
+    "cell_size_m": 120,
+    "rows": 440,
+    "cols": 343,
+    "bbox_wgs84": [
+     79.9844002376269,
+     12.832420655392587,
+     80.36561860258577,
+     13.311032826046603
+    ]
+   },
+   "run_wall_seconds": 277.0,
+   "engine_runtime_s": 273.7,
+   "engine_kernel_mode": null,
+   "reservoir_coupling": {
+    "rule_id": "A28-RES-STORAGE-v1",
+    "parameters": {
+     "rule_id": "A28-RES-STORAGE-v1",
+     "threshold_pct": 90.0,
+     "spill_factor": 2.0,
+     "stale_hours": 48,
+     "reservoirs": {
+      "CHEMBARAMBAKKAM": {
+       "capacity_mcm": 103.22,
+       "q_ctrl_m3s": 170.0
+      },
+      "POONDI": {
+       "capacity_mcm": 91.49,
+       "q_ctrl_m3s": 140.0
+      },
+      "PUZHAL": {
+       "capacity_mcm": 93.45,
+       "q_ctrl_m3s": 60.0
+      },
+      "CHOLAVARAM": {
+       "capacity_mcm": 30.61,
+       "q_ctrl_m3s": 30.0
+      }
+     },
+     "basis": "ASSUMPTION: storage-threshold release; CFM-DSS publishes no release data"
+    },
+    "releases_m3s": {
+     "CHEMBARAMBAKKAM": 0.0,
+     "POONDI": 0.0,
+     "PUZHAL": 0.0,
+     "CHOLAVARAM": 0.0
+    },
+    "reservoirs": [
+     {
+      "reservoir": "CHEMBARAMBAKKAM",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 23.0783297775069,
+      "storage_mcm": 39.831988295813865,
+      "storage_pct": 38.59,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     },
+     {
+      "reservoir": "POONDI",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 38.6985675099055,
+      "storage_mcm": 16.56519892397,
+      "storage_pct": 18.11,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     },
+     {
+      "reservoir": "PUZHAL",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 14.0079244132886,
+      "storage_mcm": 68.62051064231443,
+      "storage_pct": 73.43,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     },
+     {
+      "reservoir": "CHOLAVARAM",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 15.4891801280098,
+      "storage_mcm": 4.61560243522583,
+      "storage_pct": 15.08,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     }
+    ],
+    "basis": "ASSUMPTION",
+    "source": "CFM-DSS public dashboard (PUBLISHED_SNAPSHOT; no release data)",
+    "status": "applied",
+    "snapshot_sha256": "a24e9162ee119ed730d338539a0150df24ed8ea0c572fdc000eed4747aa30fe8",
+    "snapshot_source_date": "2026-11-10",
+    "snapshot_received_at": "2026-11-10T12:04:22.308738+00:00"
+   },
+   "forecast_check": {
+    "fetched_at": "2026-11-10T12:04:16Z",
+    "horizon_hours": 72,
+    "forcing_used": "open-meteo:ecmwf_ifs",
+    "excluded_models": []
+   },
+   "summary": {
+    "max_depth_m": 2.07,
+    "flooded_area_km2": 0.01,
+    "buildings_affected": 0,
+    "population_exposed": 1,
+    "roads_blocked_km": 0.1,
+    "wards_affected": 0,
+    "peak_time_utc": "2026-11-10T11:30:00Z"
+   },
+   "summary_sha256": "8afd3a2fa70a8ae243200d2acbe900019c90a7be7bf3f1fa87758bd1e541d067",
+   "detail": {
+    "status": 200,
+    "seconds": 0.008,
+    "bytes": 13812,
+    "sha256": "41e28125046470e8b461731b174d5081983b9ba0ef83051a550c1a8165cb97e8",
+    "schema_errors": [
+     "$.provenance.inputs[1].fetched_at: '2026-11-10T12:04:22.308738+00:00' is not RFC 3339 UTC"
+    ],
+    "content_type": "application/json; charset=utf-8",
+    "retry_after": null
+   },
+   "depth": {
+    "status": 200,
+    "seconds": 0.374,
+    "bytes": 678571,
+    "sha256": "015148b1f92f9790def9711d88a68dc9cbb0bc1dcff092facc8618fb6096c197",
+    "schema_errors": [],
+    "content_type": "application/json; charset=utf-8",
+    "retry_after": null,
+    "frame_index": 72
+   },
+   "flow": {
+    "status": 200,
+    "seconds": 0.726,
+    "bytes": 2112368,
+    "sha256": "6bc788dfdaa94a111bfbdb0b154e18232b7da8f2f05257929b01ba09b613ab4f",
+    "schema_errors": [],
+    "content_type": "application/json; charset=utf-8",
+    "retry_after": null,
+    "frame_index": 72
+   }
+  },
+  "google_key_markers_found": [],
+  "responses_scanned": 101
+ },
+ "catchup": {
+  "observed_at": "2026-11-10T12:11:09Z",
+  "seconds_to_publish": 0.2,
+  "first_status_state": "idle",
+  "refresh_during_cycle": null,
+  "status": {
+   "status": 200,
+   "seconds": 0.033,
+   "bytes": 1759,
+   "sha256": "97a87954bb09bc5af5cbbedb20e17c8ef1b21e4527d2cd64f3e3e3de6b24a4eb",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "enabled": true,
+    "cycle_hours": 3,
+    "state": "idle",
+    "running_run_id": null,
+    "latest": {
+     "run_id": "sim-20261110T120422Z-1a781dbd",
+     "run_kind": "LIVE_FORECAST",
+     "state": "completed",
+     "issued_at": "2026-11-10T12:04:16Z",
+     "completed_at": "2026-11-10T12:08:59Z",
+     "forecast_valid_from": "2026-11-10T11:00:00Z",
+     "forecast_valid_to": "2026-11-13T11:00:00Z",
+     "horizon_hours": 72,
+     "summary": {
+      "max_depth_m": 2.07,
+      "flooded_area_km2": 0.01,
+      "buildings_affected": 0,
+      "population_exposed": 1,
+      "roads_blocked_km": 0.1,
+      "wards_affected": 0,
+      "peak_time_utc": "2026-11-10T11:30:00Z"
+     },
+     "inputs": [
+      {
+       "name": "rainfall",
+       "source": "open-meteo:ecmwf_ifs",
+       "source_mode": "MODEL_FORECAST",
+       "fetched_at": "2026-11-10T12:04:16Z"
+      },
+      {
+       "name": "reservoir_snapshot",
+       "source": "CFM-DSS public dashboard (daily level/storage)",
+       "source_mode": "PUBLISHED_SNAPSHOT",
+       "fetched_at": "2026-11-10T12:04:22Z"
+      },
+      {
+       "name": "reservoir_outlet_inflow",
+       "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
+       "source_mode": "SCENARIO_INPUT",
+       "fetched_at": null
+      }
+     ],
+     "device": "cpu",
+     "disclaimer": "Model forecast — not an official warning"
+    },
+    "last_good_run_id": "sim-20261110T120422Z-1a781dbd",
+    "next_scheduled_at": "2026-11-10T15:04:16Z",
+    "manual_refresh": {
+     "min_interval_s": 600,
+     "next_allowed_at": null
+    },
+    "sources": {
+     "open_meteo": {
+      "state": "ok",
+      "refresh_policy": "every 3 h + manual (min 600 s)",
+      "last_success_at": "2026-11-10T12:04:16Z",
+      "last_attempt_at": "2026-11-10T12:04:16Z",
+      "data_time": "2026-11-10T11:00:00Z",
+      "last_error": null,
+      "calls_today": 297
+     },
+     "cfm_dss": {
+      "state": "ok",
+      "refresh_policy": "at most daily",
+      "last_success_at": "2026-11-10T12:04:16Z",
+      "last_attempt_at": "2026-11-10T12:04:16Z",
+      "data_time": "2026-11-10",
+      "last_error": null,
+      "calls_today": 2
+     }
+    },
+    "last_error": null,
+    "retention": {
+     "keep_last": 16,
+     "stored": 1
+    },
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "latest": {
+   "status": 200,
+   "seconds": 0.014,
+   "bytes": 965,
+   "sha256": "8ef725999221e45d5a05d5061c4e867b2d2dc445bff3c5ab93fdb914f7773b46",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "run_id": "sim-20261110T120422Z-1a781dbd",
+    "run_kind": "LIVE_FORECAST",
+    "state": "completed",
+    "issued_at": "2026-11-10T12:04:16Z",
+    "completed_at": "2026-11-10T12:08:59Z",
+    "forecast_valid_from": "2026-11-10T11:00:00Z",
+    "forecast_valid_to": "2026-11-13T11:00:00Z",
+    "horizon_hours": 72,
+    "summary": {
+     "max_depth_m": 2.07,
+     "flooded_area_km2": 0.01,
+     "buildings_affected": 0,
+     "population_exposed": 1,
+     "roads_blocked_km": 0.1,
+     "wards_affected": 0,
+     "peak_time_utc": "2026-11-10T11:30:00Z"
+    },
+    "inputs": [
+     {
+      "name": "rainfall",
+      "source": "open-meteo:ecmwf_ifs",
+      "source_mode": "MODEL_FORECAST",
+      "fetched_at": "2026-11-10T12:04:16Z"
+     },
+     {
+      "name": "reservoir_snapshot",
+      "source": "CFM-DSS public dashboard (daily level/storage)",
+      "source_mode": "PUBLISHED_SNAPSHOT",
+      "fetched_at": "2026-11-10T12:04:22Z"
+     },
+     {
+      "name": "reservoir_outlet_inflow",
+      "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
+      "source_mode": "SCENARIO_INPUT",
+      "fetched_at": null
+     }
+    ],
+    "device": "cpu",
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "run": {
+   "run_id": "sim-20261110T120422Z-1a781dbd",
+   "run_kind": "LIVE_FORECAST",
+   "mode": "live",
+   "source_mode": "SIMULATED",
+   "engine_version": "twinguard-v3-engine/1.1.0 (A25 services.flood_engine.scenario) (twinguard-flood-engine/2.1.0)",
+   "device": {
+    "used": "cpu",
+    "name": null,
+    "fallback_reason": null
+   },
+   "live": {
+    "cycle": "catch_up",
+    "issued_at": "2026-11-10T12:04:16Z",
+    "forecast_valid_from": "2026-11-10T11:00:00Z",
+    "forecast_valid_to": "2026-11-13T11:00:00Z",
+    "reservoir_snapshot_received_at": "2026-11-10T12:04:22Z",
+    "reservoir_source_date": "2026-11-10",
+    "reservoir_coupling_rule": "A28-RES-STORAGE-v1 (applied)",
+    "disclaimer": "Model forecast — not an official warning"
+   },
+   "frames": 145,
+   "grid": {
+    "crs": "EPSG:32644",
+    "origin_x_m": 390000.0,
+    "origin_y_m": 1471620.0,
+    "cell_size_m": 120,
+    "rows": 440,
+    "cols": 343,
+    "bbox_wgs84": [
+     79.9844002376269,
+     12.832420655392587,
+     80.36561860258577,
+     13.311032826046603
+    ]
+   },
+   "run_wall_seconds": 277.0,
+   "engine_runtime_s": 273.7,
+   "engine_kernel_mode": null,
+   "reservoir_coupling": {
+    "rule_id": "A28-RES-STORAGE-v1",
+    "parameters": {
+     "rule_id": "A28-RES-STORAGE-v1",
+     "threshold_pct": 90.0,
+     "spill_factor": 2.0,
+     "stale_hours": 48,
+     "reservoirs": {
+      "CHEMBARAMBAKKAM": {
+       "capacity_mcm": 103.22,
+       "q_ctrl_m3s": 170.0
+      },
+      "POONDI": {
+       "capacity_mcm": 91.49,
+       "q_ctrl_m3s": 140.0
+      },
+      "PUZHAL": {
+       "capacity_mcm": 93.45,
+       "q_ctrl_m3s": 60.0
+      },
+      "CHOLAVARAM": {
+       "capacity_mcm": 30.61,
+       "q_ctrl_m3s": 30.0
+      }
+     },
+     "basis": "ASSUMPTION: storage-threshold release; CFM-DSS publishes no release data"
+    },
+    "releases_m3s": {
+     "CHEMBARAMBAKKAM": 0.0,
+     "POONDI": 0.0,
+     "PUZHAL": 0.0,
+     "CHOLAVARAM": 0.0
+    },
+    "reservoirs": [
+     {
+      "reservoir": "CHEMBARAMBAKKAM",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 23.0783297775069,
+      "storage_mcm": 39.831988295813865,
+      "storage_pct": 38.59,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     },
+     {
+      "reservoir": "POONDI",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 38.6985675099055,
+      "storage_mcm": 16.56519892397,
+      "storage_pct": 18.11,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     },
+     {
+      "reservoir": "PUZHAL",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 14.0079244132886,
+      "storage_mcm": 68.62051064231443,
+      "storage_pct": 73.43,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     },
+     {
+      "reservoir": "CHOLAVARAM",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 15.4891801280098,
+      "storage_mcm": 4.61560243522583,
+      "storage_pct": 15.08,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     }
+    ],
+    "basis": "ASSUMPTION",
+    "source": "CFM-DSS public dashboard (PUBLISHED_SNAPSHOT; no release data)",
+    "status": "applied",
+    "snapshot_sha256": "a24e9162ee119ed730d338539a0150df24ed8ea0c572fdc000eed4747aa30fe8",
+    "snapshot_source_date": "2026-11-10",
+    "snapshot_received_at": "2026-11-10T12:04:22.308738+00:00"
+   },
+   "forecast_check": {
+    "fetched_at": "2026-11-10T12:04:16Z",
+    "horizon_hours": 72,
+    "forcing_used": "open-meteo:ecmwf_ifs",
+    "excluded_models": []
+   },
+   "summary": {
+    "max_depth_m": 2.07,
+    "flooded_area_km2": 0.01,
+    "buildings_affected": 0,
+    "population_exposed": 1,
+    "roads_blocked_km": 0.1,
+    "wards_affected": 0,
+    "peak_time_utc": "2026-11-10T11:30:00Z"
+   },
+   "summary_sha256": "8afd3a2fa70a8ae243200d2acbe900019c90a7be7bf3f1fa87758bd1e541d067",
+   "detail": {
+    "status": 200,
+    "seconds": 0.006,
+    "bytes": 13793,
+    "sha256": "fef538816cfd3f28cb2cbb2e8c29f8ce43ea9b16bd60daeb51cc4aabb8c4f546",
+    "schema_errors": [],
+    "content_type": "application/json; charset=utf-8",
+    "retry_after": null
+   },
+   "depth": {
+    "status": 200,
+    "seconds": 0.421,
+    "bytes": 678571,
+    "sha256": "015148b1f92f9790def9711d88a68dc9cbb0bc1dcff092facc8618fb6096c197",
+    "schema_errors": [],
+    "content_type": "application/json; charset=utf-8",
+    "retry_after": null,
+    "frame_index": 72
+   },
+   "flow": {
+    "status": 200,
+    "seconds": 0.608,
+    "bytes": 2112368,
+    "sha256": "6bc788dfdaa94a111bfbdb0b154e18232b7da8f2f05257929b01ba09b613ab4f",
+    "schema_errors": [],
+    "content_type": "application/json; charset=utf-8",
+    "retry_after": null,
+    "frame_index": 72
+   }
+  },
+  "google_key_markers_found": [],
+  "responses_scanned": 7
+ },
+ "refresh": {
+  "observed_at": "2026-11-10T12:16:15Z",
+  "first": {
+   "status": 202,
+   "seconds": 0.23,
+   "bytes": 148,
+   "sha256": "4bf2204f4264897ac35c0c19859953f7204dcee7e9855d2de5d106fffd9579ad",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "accepted": true,
+    "state": "started",
+    "run_id": null,
+    "next_allowed_at": "2026-11-10T12:21:20Z",
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "second_within_600s": {
+   "status": 429,
+   "seconds": 0.045,
+   "bytes": 140,
+   "sha256": "6f4bac8b054b5c6036fbe3107dccab8fc8be7569d3c57c1b3b1b1dd4278d2d56",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": "599",
+   "body": {
+    "detail": "Manual refresh is allowed once per 600 s (Model forecast — not an official warning)",
+    "code": "rate_limited",
+    "retry_after_s": 599
+   }
+  },
+  "cycle_seconds": 294.1,
+  "status": {
+   "status": 200,
+   "seconds": 0.028,
+   "bytes": 1777,
+   "sha256": "771e9d60a17562e53c418c82a2749014ad787881e99a714d1d162e14f306eaed",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "enabled": true,
+    "cycle_hours": 3,
+    "state": "idle",
+    "running_run_id": null,
+    "latest": {
+     "run_id": "sim-20261110T121126Z-979f9524",
+     "run_kind": "LIVE_FORECAST",
+     "state": "completed",
+     "issued_at": "2026-11-10T12:11:20Z",
+     "completed_at": "2026-11-10T12:16:12Z",
+     "forecast_valid_from": "2026-11-10T11:00:00Z",
+     "forecast_valid_to": "2026-11-13T11:00:00Z",
+     "horizon_hours": 72,
+     "summary": {
+      "max_depth_m": 2.07,
+      "flooded_area_km2": 0.01,
+      "buildings_affected": 0,
+      "population_exposed": 1,
+      "roads_blocked_km": 0.1,
+      "wards_affected": 0,
+      "peak_time_utc": "2026-11-10T11:30:00Z"
+     },
+     "inputs": [
+      {
+       "name": "rainfall",
+       "source": "open-meteo:ecmwf_ifs",
+       "source_mode": "MODEL_FORECAST",
+       "fetched_at": "2026-11-10T12:11:20Z"
+      },
+      {
+       "name": "reservoir_snapshot",
+       "source": "CFM-DSS public dashboard (daily level/storage)",
+       "source_mode": "PUBLISHED_SNAPSHOT",
+       "fetched_at": "2026-11-10T12:04:22Z"
+      },
+      {
+       "name": "reservoir_outlet_inflow",
+       "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
+       "source_mode": "SCENARIO_INPUT",
+       "fetched_at": null
+      }
+     ],
+     "device": "cpu",
+     "disclaimer": "Model forecast — not an official warning"
+    },
+    "last_good_run_id": "sim-20261110T121126Z-979f9524",
+    "next_scheduled_at": "2026-11-10T15:11:20Z",
+    "manual_refresh": {
+     "min_interval_s": 600,
+     "next_allowed_at": "2026-11-10T12:21:20Z"
+    },
+    "sources": {
+     "open_meteo": {
+      "state": "ok",
+      "refresh_policy": "every 3 h + manual (min 600 s)",
+      "last_success_at": "2026-11-10T12:11:20Z",
+      "last_attempt_at": "2026-11-10T12:11:20Z",
+      "data_time": "2026-11-10T11:00:00Z",
+      "last_error": null,
+      "calls_today": 594
+     },
+     "cfm_dss": {
+      "state": "ok",
+      "refresh_policy": "at most daily",
+      "last_success_at": "2026-11-10T12:04:16Z",
+      "last_attempt_at": "2026-11-10T12:04:16Z",
+      "data_time": "2026-11-10",
+      "last_error": null,
+      "calls_today": 2
+     }
+    },
+    "last_error": null,
+    "retention": {
+     "keep_last": 16,
+     "stored": 2
+    },
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "latest": {
+   "status": 200,
+   "seconds": 0.011,
+   "bytes": 965,
+   "sha256": "f475d3926194cc5c07eb708b8ec4c76ca1ff1b94a135a877c916c6609e93cd85",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "run_id": "sim-20261110T121126Z-979f9524",
+    "run_kind": "LIVE_FORECAST",
+    "state": "completed",
+    "issued_at": "2026-11-10T12:11:20Z",
+    "completed_at": "2026-11-10T12:16:12Z",
+    "forecast_valid_from": "2026-11-10T11:00:00Z",
+    "forecast_valid_to": "2026-11-13T11:00:00Z",
+    "horizon_hours": 72,
+    "summary": {
+     "max_depth_m": 2.07,
+     "flooded_area_km2": 0.01,
+     "buildings_affected": 0,
+     "population_exposed": 1,
+     "roads_blocked_km": 0.1,
+     "wards_affected": 0,
+     "peak_time_utc": "2026-11-10T11:30:00Z"
+    },
+    "inputs": [
+     {
+      "name": "rainfall",
+      "source": "open-meteo:ecmwf_ifs",
+      "source_mode": "MODEL_FORECAST",
+      "fetched_at": "2026-11-10T12:11:20Z"
+     },
+     {
+      "name": "reservoir_snapshot",
+      "source": "CFM-DSS public dashboard (daily level/storage)",
+      "source_mode": "PUBLISHED_SNAPSHOT",
+      "fetched_at": "2026-11-10T12:04:22Z"
+     },
+     {
+      "name": "reservoir_outlet_inflow",
+      "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
+      "source_mode": "SCENARIO_INPUT",
+      "fetched_at": null
+     }
+    ],
+    "device": "cpu",
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "run": {
+   "run_id": "sim-20261110T121126Z-979f9524",
+   "run_kind": "LIVE_FORECAST",
+   "mode": "live",
+   "source_mode": "SIMULATED",
+   "engine_version": "twinguard-v3-engine/1.1.0 (A25 services.flood_engine.scenario) (twinguard-flood-engine/2.1.0)",
+   "device": {
+    "used": "cpu",
+    "name": null,
+    "fallback_reason": null
+   },
+   "live": {
+    "cycle": "manual",
+    "issued_at": "2026-11-10T12:11:20Z",
+    "forecast_valid_from": "2026-11-10T11:00:00Z",
+    "forecast_valid_to": "2026-11-13T11:00:00Z",
+    "reservoir_snapshot_received_at": "2026-11-10T12:04:22Z",
+    "reservoir_source_date": "2026-11-10",
+    "reservoir_coupling_rule": "A28-RES-STORAGE-v1 (applied)",
+    "disclaimer": "Model forecast — not an official warning"
+   },
+   "frames": 145,
+   "grid": {
+    "crs": "EPSG:32644",
+    "origin_x_m": 390000.0,
+    "origin_y_m": 1471620.0,
+    "cell_size_m": 120,
+    "rows": 440,
+    "cols": 343,
+    "bbox_wgs84": [
+     79.9844002376269,
+     12.832420655392587,
+     80.36561860258577,
+     13.311032826046603
+    ]
+   },
+   "run_wall_seconds": 286.0,
+   "engine_runtime_s": 282.5,
+   "engine_kernel_mode": null,
+   "reservoir_coupling": {
+    "rule_id": "A28-RES-STORAGE-v1",
+    "parameters": {
+     "rule_id": "A28-RES-STORAGE-v1",
+     "threshold_pct": 90.0,
+     "spill_factor": 2.0,
+     "stale_hours": 48,
+     "reservoirs": {
+      "CHEMBARAMBAKKAM": {
+       "capacity_mcm": 103.22,
+       "q_ctrl_m3s": 170.0
+      },
+      "POONDI": {
+       "capacity_mcm": 91.49,
+       "q_ctrl_m3s": 140.0
+      },
+      "PUZHAL": {
+       "capacity_mcm": 93.45,
+       "q_ctrl_m3s": 60.0
+      },
+      "CHOLAVARAM": {
+       "capacity_mcm": 30.61,
+       "q_ctrl_m3s": 30.0
+      }
+     },
+     "basis": "ASSUMPTION: storage-threshold release; CFM-DSS publishes no release data"
+    },
+    "releases_m3s": {
+     "CHEMBARAMBAKKAM": 0.0,
+     "POONDI": 0.0,
+     "PUZHAL": 0.0,
+     "CHOLAVARAM": 0.0
+    },
+    "reservoirs": [
+     {
+      "reservoir": "CHEMBARAMBAKKAM",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 23.0783297775069,
+      "storage_mcm": 39.831988295813865,
+      "storage_pct": 38.59,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     },
+     {
+      "reservoir": "POONDI",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 38.6985675099055,
+      "storage_mcm": 16.56519892397,
+      "storage_pct": 18.11,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     },
+     {
+      "reservoir": "PUZHAL",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 14.0079244132886,
+      "storage_mcm": 68.62051064231443,
+      "storage_pct": 73.43,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     },
+     {
+      "reservoir": "CHOLAVARAM",
+      "source_date": "2026-11-10",
+      "time_precision": "date",
+      "water_level_m": 15.4891801280098,
+      "storage_mcm": 4.61560243522583,
+      "storage_pct": 15.08,
+      "release_m3s": 0.0,
+      "release_basis": "ASSUMPTION",
+      "status": "applied"
+     }
+    ],
+    "basis": "ASSUMPTION",
+    "source": "CFM-DSS public dashboard (PUBLISHED_SNAPSHOT; no release data)",
+    "status": "applied",
+    "snapshot_sha256": "a24e9162ee119ed730d338539a0150df24ed8ea0c572fdc000eed4747aa30fe8",
+    "snapshot_source_date": "2026-11-10",
+    "snapshot_received_at": "2026-11-10T12:04:22.308738+00:00"
+   },
+   "forecast_check": {
+    "fetched_at": "2026-11-10T12:11:20Z",
+    "horizon_hours": 72,
+    "forcing_used": "open-meteo:ecmwf_ifs",
+    "excluded_models": []
+   },
+   "summary": {
+    "max_depth_m": 2.07,
+    "flooded_area_km2": 0.01,
+    "buildings_affected": 0,
+    "population_exposed": 1,
+    "roads_blocked_km": 0.1,
+    "wards_affected": 0,
+    "peak_time_utc": "2026-11-10T11:30:00Z"
+   },
+   "summary_sha256": "8afd3a2fa70a8ae243200d2acbe900019c90a7be7bf3f1fa87758bd1e541d067",
+   "detail": {
+    "status": 200,
+    "seconds": 0.01,
+    "bytes": 13791,
+    "sha256": "58e91aea3a0bbf223e0fc6a4244843ab18b0a0494df00b9f6674ecfdba40d402",
+    "schema_errors": [],
+    "content_type": "application/json; charset=utf-8",
+    "retry_after": null
+   },
+   "depth": {
+    "status": 200,
+    "seconds": 0.389,
+    "bytes": 678571,
+    "sha256": "2a1bcd68aa906386f4045a82232c91327c419fa7b61259907599d8d1eb60a86a",
+    "schema_errors": [],
+    "content_type": "application/json; charset=utf-8",
+    "retry_after": null,
+    "frame_index": 72
+   },
+   "flow": {
+    "status": 200,
+    "seconds": 0.664,
+    "bytes": 2112368,
+    "sha256": "2db9069a0d25acd2fbbeb860ecca98730764157d5f0bd0c00cebfe50e38f8922",
+    "schema_errors": [],
+    "content_type": "application/json; charset=utf-8",
+    "retry_after": null,
+    "frame_index": 72
+   }
+  },
+  "google_key_markers_found": [],
+  "responses_scanned": 103
+ },
+ "failure": {
+  "observed_at": "2026-11-10T12:21:37Z",
+  "method": "ai-service recreated with HTTPS_PROXY=http://127.0.0.1:9 (closed port)",
+  "last_good_before": "sim-20261110T121126Z-979f9524",
+  "refresh": {
+   "status": 202,
+   "seconds": 0.239,
+   "bytes": 148,
+   "sha256": "1716c7f8940e05585eef08b0d464f4d52dbd3f41637d672515ce6d253a3ba981",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "accepted": true,
+    "state": "started",
+    "run_id": null,
+    "next_allowed_at": "2026-11-10T12:31:33Z",
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "status": {
+   "status": 200,
+   "seconds": 0.026,
+   "bytes": 1905,
+   "sha256": "cce71a1c0cf9cf42731a5483c2bd146f321496fd10640021f802681b003eaeb1",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "enabled": true,
+    "cycle_hours": 3,
+    "state": "idle",
+    "running_run_id": null,
+    "latest": {
+     "run_id": "sim-20261110T121126Z-979f9524",
+     "run_kind": "LIVE_FORECAST",
+     "state": "completed",
+     "issued_at": "2026-11-10T12:11:20Z",
+     "completed_at": "2026-11-10T12:16:12Z",
+     "forecast_valid_from": "2026-11-10T11:00:00Z",
+     "forecast_valid_to": "2026-11-13T11:00:00Z",
+     "horizon_hours": 72,
+     "summary": {
+      "max_depth_m": 2.07,
+      "flooded_area_km2": 0.01,
+      "buildings_affected": 0,
+      "population_exposed": 1,
+      "roads_blocked_km": 0.1,
+      "wards_affected": 0,
+      "peak_time_utc": "2026-11-10T11:30:00Z"
+     },
+     "inputs": [
+      {
+       "name": "rainfall",
+       "source": "open-meteo:ecmwf_ifs",
+       "source_mode": "MODEL_FORECAST",
+       "fetched_at": "2026-11-10T12:11:20Z"
+      },
+      {
+       "name": "reservoir_snapshot",
+       "source": "CFM-DSS public dashboard (daily level/storage)",
+       "source_mode": "PUBLISHED_SNAPSHOT",
+       "fetched_at": "2026-11-10T12:04:22Z"
+      },
+      {
+       "name": "reservoir_outlet_inflow",
+       "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
+       "source_mode": "SCENARIO_INPUT",
+       "fetched_at": null
+      }
+     ],
+     "device": "cpu",
+     "disclaimer": "Model forecast — not an official warning"
+    },
+    "last_good_run_id": "sim-20261110T121126Z-979f9524",
+    "next_scheduled_at": "2026-11-10T15:21:34Z",
+    "manual_refresh": {
+     "min_interval_s": 600,
+     "next_allowed_at": "2026-11-10T12:31:33Z"
+    },
+    "sources": {
+     "open_meteo": {
+      "state": "error",
+      "refresh_policy": "every 3 h + manual (min 600 s)",
+      "last_success_at": "2026-11-10T12:11:20Z",
+      "last_attempt_at": "2026-11-10T12:21:34Z",
+      "data_time": "2026-11-10T11:00:00Z",
+      "last_error": "ForcingError",
+      "calls_today": 891
+     },
+     "cfm_dss": {
+      "state": "ok",
+      "refresh_policy": "at most daily",
+      "last_success_at": "2026-11-10T12:04:16Z",
+      "last_attempt_at": "2026-11-10T12:04:16Z",
+      "data_time": "2026-11-10",
+      "last_error": null,
+      "calls_today": 2
+     }
+    },
+    "last_error": {
+     "at": "2026-11-10T12:21:34Z",
+     "stage": "fetch_forecast",
+     "message": "Open-Meteo fetch failed (ForcingError)",
+     "run_id": null
+    },
+    "retention": {
+     "keep_last": 16,
+     "stored": 2
+    },
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "latest_after": {
+   "status": 200,
+   "seconds": 0.029,
+   "bytes": 965,
+   "sha256": "f475d3926194cc5c07eb708b8ec4c76ca1ff1b94a135a877c916c6609e93cd85",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "run_id": "sim-20261110T121126Z-979f9524",
+    "run_kind": "LIVE_FORECAST",
+    "state": "completed",
+    "issued_at": "2026-11-10T12:11:20Z",
+    "completed_at": "2026-11-10T12:16:12Z",
+    "forecast_valid_from": "2026-11-10T11:00:00Z",
+    "forecast_valid_to": "2026-11-13T11:00:00Z",
+    "horizon_hours": 72,
+    "summary": {
+     "max_depth_m": 2.07,
+     "flooded_area_km2": 0.01,
+     "buildings_affected": 0,
+     "population_exposed": 1,
+     "roads_blocked_km": 0.1,
+     "wards_affected": 0,
+     "peak_time_utc": "2026-11-10T11:30:00Z"
+    },
+    "inputs": [
+     {
+      "name": "rainfall",
+      "source": "open-meteo:ecmwf_ifs",
+      "source_mode": "MODEL_FORECAST",
+      "fetched_at": "2026-11-10T12:11:20Z"
+     },
+     {
+      "name": "reservoir_snapshot",
+      "source": "CFM-DSS public dashboard (daily level/storage)",
+      "source_mode": "PUBLISHED_SNAPSHOT",
+      "fetched_at": "2026-11-10T12:04:22Z"
+     },
+     {
+      "name": "reservoir_outlet_inflow",
+      "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
+      "source_mode": "SCENARIO_INPUT",
+      "fetched_at": null
+     }
+    ],
+    "device": "cpu",
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "last_good_kept": true,
+  "last_error": {
+   "at": "2026-11-10T12:21:34Z",
+   "stage": "fetch_forecast",
+   "message": "Open-Meteo fetch failed (ForcingError)",
+   "run_id": null
+  },
+  "google_key_markers_found": [],
+  "responses_scanned": 4
+ },
+ "final": {
+  "observed_at": "2026-11-10T12:22:03Z",
+  "disclaimer": {
+   "/v3/live/status": {
+    "content_type": "application/json; charset=utf-8",
+    "em_dash_utf8_bytes": true,
+    "mojibake_bytes": false,
+    "decoded_disclaimer_exact": true,
+    "disclaimer_utf8_hex": "4d6f64656c20666f72656361737420e28094206e6f7420616e206f6666696369616c207761726e696e67"
+   },
+   "/v3/live/latest": {
+    "content_type": "application/json; charset=utf-8",
+    "em_dash_utf8_bytes": true,
+    "mojibake_bytes": false,
+    "decoded_disclaimer_exact": true,
+    "disclaimer_utf8_hex": "4d6f64656c20666f72656361737420e28094206e6f7420616e206f6666696369616c207761726e696e67"
+   }
+  },
+  "status": {
+   "status": 200,
+   "seconds": 0.017,
+   "bytes": 1905,
+   "sha256": "cce71a1c0cf9cf42731a5483c2bd146f321496fd10640021f802681b003eaeb1",
+   "schema_errors": [],
+   "content_type": "application/json; charset=utf-8",
+   "retry_after": null,
+   "body": {
+    "enabled": true,
+    "cycle_hours": 3,
+    "state": "idle",
+    "running_run_id": null,
+    "latest": {
+     "run_id": "sim-20261110T121126Z-979f9524",
+     "run_kind": "LIVE_FORECAST",
+     "state": "completed",
+     "issued_at": "2026-11-10T12:11:20Z",
+     "completed_at": "2026-11-10T12:16:12Z",
+     "forecast_valid_from": "2026-11-10T11:00:00Z",
+     "forecast_valid_to": "2026-11-13T11:00:00Z",
+     "horizon_hours": 72,
+     "summary": {
+      "max_depth_m": 2.07,
+      "flooded_area_km2": 0.01,
+      "buildings_affected": 0,
+      "population_exposed": 1,
+      "roads_blocked_km": 0.1,
+      "wards_affected": 0,
+      "peak_time_utc": "2026-11-10T11:30:00Z"
+     },
+     "inputs": [
+      {
+       "name": "rainfall",
+       "source": "open-meteo:ecmwf_ifs",
+       "source_mode": "MODEL_FORECAST",
+       "fetched_at": "2026-11-10T12:11:20Z"
+      },
+      {
+       "name": "reservoir_snapshot",
+       "source": "CFM-DSS public dashboard (daily level/storage)",
+       "source_mode": "PUBLISHED_SNAPSHOT",
+       "fetched_at": "2026-11-10T12:04:22Z"
+      },
+      {
+       "name": "reservoir_outlet_inflow",
+       "source": "A28-RES-STORAGE-v1 (ASSUMPTION; not an observed release)",
+       "source_mode": "SCENARIO_INPUT",
+       "fetched_at": null
+      }
+     ],
+     "device": "cpu",
+     "disclaimer": "Model forecast — not an official warning"
+    },
+    "last_good_run_id": "sim-20261110T121126Z-979f9524",
+    "next_scheduled_at": "2026-11-10T15:21:34Z",
+    "manual_refresh": {
+     "min_interval_s": 600,
+     "next_allowed_at": "2026-11-10T12:31:33Z"
+    },
+    "sources": {
+     "open_meteo": {
+      "state": "error",
+      "refresh_policy": "every 3 h + manual (min 600 s)",
+      "last_success_at": "2026-11-10T12:11:20Z",
+      "last_attempt_at": "2026-11-10T12:21:34Z",
+      "data_time": "2026-11-10T11:00:00Z",
+      "last_error": "ForcingError",
+      "calls_today": 891
+     },
+     "cfm_dss": {
+      "state": "ok",
+      "refresh_policy": "at most daily",
+      "last_success_at": "2026-11-10T12:04:16Z",
+      "last_attempt_at": "2026-11-10T12:04:16Z",
+      "data_time": "2026-11-10",
+      "last_error": null,
+      "calls_today": 2
+     }
+    },
+    "last_error": {
+     "at": "2026-11-10T12:21:34Z",
+     "stage": "fetch_forecast",
+     "message": "Open-Meteo fetch failed (ForcingError)",
+     "run_id": null
+    },
+    "retention": {
+     "keep_last": 16,
+     "stored": 2
+    },
+    "disclaimer": "Model forecast — not an official warning"
+   }
+  },
+  "retention": {
+   "keep_last": 16,
+   "stored": 2
+  },
+  "google_key_markers_in_api": [],
+  "api_calls_scanned": 1,
+  "google_key_markers_found": [],
+  "responses_scanned": 1
+ }
+}

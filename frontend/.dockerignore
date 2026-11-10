@@ -1,0 +1,7 @@
+# B50: keep the host's node_modules (Windows native binaries) and build output out of the image build;
+# the Dockerfile runs npm ci inside Linux. Generated evidence data (git-ignored) and .env.local
+# (Cesium ion token, read by Vite at build time like the dev server) stay in the context.
+node_modules
+dist
+*.log
+.vite

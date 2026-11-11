@@ -57,7 +57,7 @@ export function BarList({ title, rows, unit, max: forcedMax }: { title: string; 
   );
 }
 
-export function Donut({ title, centre, sub, slices, size = 150 }: { title: string; centre: string; sub?: string; slices: { label: string; value: number; color: string }[]; size?: number }) {
+export function Donut({ title, centre, sub, slices, size = 150, compact = false }: { title: string; centre: string; sub?: string; slices: { label: string; value: number; color: string }[]; size?: number; /** no legend (the caller lists the slices) */ compact?: boolean }) {
   const total = slices.reduce((s, x) => s + Math.max(0, x.value), 0);
   const r = 42;
   const c = 2 * Math.PI * r;
@@ -75,9 +75,9 @@ export function Donut({ title, centre, sub, slices, size = 150 }: { title: strin
         <text x="60" y={sub ? 58 : 64} textAnchor="middle" className="tg-donut__centre">{centre}</text>
         {sub && <text x="60" y="74" textAnchor="middle" className="tg-donut__sub">{sub}</text>}
       </svg>
-      <figcaption>
+      {!compact && <figcaption>
         {slices.map((s) => <span key={s.label}><i style={{ background: s.color }} />{s.label}<b>{total ? `${((s.value / total) * 100).toFixed(1)}%` : '—'}</b></span>)}
-      </figcaption>
+      </figcaption>}
     </figure>
   );
 }

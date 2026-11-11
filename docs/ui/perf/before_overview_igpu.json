@@ -1,0 +1,137 @@
+{
+ "gpu": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "run": "evt-20261108T152128Z-59eba744",
+ "tab": "overview",
+ "mapCanvas": "859x618",
+ "at": "2026-11-11T02:58:30.356Z",
+ "idle": {
+  "label": "idle 5 s",
+  "secs": 5,
+  "fps": 24.2,
+  "p50ms": 33.5,
+  "p95ms": 50.3,
+  "maxms": 65.4,
+  "janky": 31,
+  "sceneRenders": 122,
+  "sceneFps": 24.4,
+  "longTaskMs": 0,
+  "longTasks": 0
+ },
+ "pan": {
+  "label": "pan (3 drags)",
+  "secs": 13.4,
+  "fps": 62.9,
+  "p50ms": 0,
+  "p95ms": 50.2,
+  "maxms": 183.1,
+  "janky": 74,
+  "sceneRenders": 422,
+  "sceneFps": 31.5,
+  "longTaskMs": 1092,
+  "longTasks": 11
+ },
+ "playback": {
+  "label": "playback 12 s",
+  "secs": 13.59,
+  "fps": 4.6,
+  "p50ms": 49.9,
+  "p95ms": 1549.6,
+  "maxms": 1782.8,
+  "janky": 21,
+  "sceneRenders": 63,
+  "sceneFps": 4.6,
+  "longTaskMs": 11095,
+  "longTasks": 8,
+  "framesAdvanced": 5
+ },
+ "frameStep": {
+  "steps": [
+   {
+    "k": 10,
+    "ms": 3624,
+    "fetched": false
+   },
+   {
+    "k": 30,
+    "ms": 3651,
+    "fetched": false
+   },
+   {
+    "k": 50,
+    "ms": 3934,
+    "fetched": false
+   },
+   {
+    "k": 70,
+    "ms": 4309,
+    "fetched": false
+   },
+   {
+    "k": 90,
+    "ms": 3994,
+    "fetched": false
+   },
+   {
+    "k": 51,
+    "ms": 4000,
+    "fetched": false
+   },
+   {
+    "k": 52,
+    "ms": 3825,
+    "fetched": false
+   },
+   {
+    "k": 53,
+    "ms": 4033,
+    "fetched": false
+   }
+  ],
+  "medianMs": 3994
+ },
+ "tabSwitch": {
+  "label": "tab switching (7 tabs, 3 s each)",
+  "secs": 37.02,
+  "fps": 18.4,
+  "p50ms": 16.8,
+  "p95ms": 116.5,
+  "maxms": 2832.2,
+  "janky": 109,
+  "sceneRenders": 681,
+  "sceneFps": 18.4,
+  "longTaskMs": 18489,
+  "longTasks": 47,
+  "switches": [
+   {
+    "tab": "Flood Simulation",
+    "ms": 2303
+   },
+   {
+    "tab": "Emergency Support",
+    "ms": 3024
+   },
+   {
+    "tab": "Road Routing",
+    "ms": 2351
+   },
+   {
+    "tab": "What-if Simulation",
+    "ms": 2129
+   },
+   {
+    "tab": "Reservoir Monitoring",
+    "ms": 235
+   },
+   {
+    "tab": "Digital Twin (3D City)",
+    "ms": 2629
+   },
+   {
+    "tab": "Situation Overview",
+    "ms": 2418
+   }
+  ]
+ },
+ "pendingTilesBadge": null,
+ "consoleErrors": 0
+}

@@ -5,7 +5,7 @@ import { buildIndex, type SearchHit } from './search';
 import type { FocusArea, LonLat, RouteOption } from '../api/v3types';
 import type { CameraInfo, PickInfo, TwinCommand, TwinLayers, ViewMode } from '../twin/Twin3D';
 import { frameArea, useTwinData, type TwinData } from './state';
-import { badgeFor, focusAreaLabel, isFocusRun, istTime, LIVE_DISCLAIMER, runKindOf } from './runs';
+import { badgeFor, focusAreaLabel, isFocusRun, istTime, LIVE_DISCLAIMER, runKindOf, runTitle } from './runs';
 import { EmergencyTab, OverviewTab, ReservoirTab, RoutingTab, SimulationTab, TwinTab, WhatIfTab } from './tabs';
 import './product.css';
 
@@ -39,8 +39,21 @@ export function ProductExperience({ initialSection = 'overview' }: { initialSect
   const data = useTwinData();
   const gate = normalizeGateStatus(import.meta.env.VITE_GATE_G0_STATUS);
   const tabProps = { data, go: setSection };
+  const appRef = useRef<HTMLDivElement>(null);
+  const hostRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const app = appRef.current; const host = hostRef.current;
+    if (!app || !host || typeof ResizeObserver === 'undefined') return;
+    // the first layout row (side columns + map) fills the window below the header, tabs and live bar
+    const set = () => { const top = host.getBoundingClientRect().top + window.scrollY; app.style.setProperty('--tg-fill', `${Math.max(540, Math.round(window.innerHeight - top - 10))}px`); };
+    set();
+    const ro = new ResizeObserver(set);
+    for (const el of app.querySelectorAll('.tg-top, .tg-nav, .tg-chromebar')) ro.observe(el);
+    window.addEventListener('resize', set);
+    return () => { ro.disconnect(); window.removeEventListener('resize', set); };
+  }, []);
   return (
-    <div className="tg-app">
+    <div className="tg-app" ref={appRef}>
       <a className="tg-skip" href="#tg-main">Skip to main content</a>
       <Header data={data} />
       <nav className="tg-nav" aria-label="Product sections">
@@ -52,22 +65,26 @@ export function ProductExperience({ initialSection = 'overview' }: { initialSect
       </nav>
       <main id="tg-main" className="tg-main" tabIndex={-1}>
         <h1 className="tg-visually-hidden">{sections.find((s) => s.id === section)!.label}</h1>
-        <div className="tg-livebar">
-          <p className="tg-disclaimer" role="note"><Icon name="alert" /> {LIVE_DISCLAIMER}. Results are SIMULATED by the flood model; follow official advisories.</p>
-          <LiveStrip data={data} />
+        <div className="tg-chromebar">
+          <div className="tg-livebar">
+            <p className="tg-disclaimer" role="note"><Icon name="alert" /> {LIVE_DISCLAIMER}. Results are SIMULATED by the flood model; follow official advisories.</p>
+            <LiveStrip data={data} />
+          </div>
+          {data.live?.last_error && <p className="tg-toast tg-toast--warn" role="alert">
+            Last live cycle failed at {istTime(data.live.last_error.at)} IST ({data.live.last_error.stage.replace('_', ' ')}): {data.live.last_error.message}
+            {data.live.last_good_run_id ? ` Showing the last good live run ${data.live.last_good_run_id}.` : ' No earlier live run is available.'}
+          </p>}
+          {data.error && data.apiKind !== 'connecting' && <p className="tg-toast" role="status">{data.error}</p>}
         </div>
-        {data.live?.last_error && <p className="tg-toast tg-toast--warn" role="alert">
-          Last live cycle failed at {istTime(data.live.last_error.at)} IST ({data.live.last_error.stage.replace('_', ' ')}): {data.live.last_error.message}
-          {data.live.last_good_run_id ? ` Showing the last good live run ${data.live.last_good_run_id}.` : ' No earlier live run is available.'}
-        </p>}
-        {data.error && data.apiKind !== 'connecting' && <p className="tg-toast" role="status">{data.error}</p>}
-        {section === 'overview' && <OverviewTab {...tabProps} />}
-        {section === 'simulation' && <SimulationTab {...tabProps} />}
-        {section === 'emergency' && <EmergencyTab {...tabProps} />}
-        {section === 'routing' && <RoutingTab {...tabProps} />}
-        {section === 'what-if' && <WhatIfTab {...tabProps} />}
-        {section === 'reservoirs' && <ReservoirTab {...tabProps} />}
-        {section === 'twin' && <TwinTab {...tabProps} />}
+        <div className="tg-tabhost" ref={hostRef}>
+          {section === 'overview' && <OverviewTab {...tabProps} />}
+          {section === 'simulation' && <SimulationTab {...tabProps} />}
+          {section === 'emergency' && <EmergencyTab {...tabProps} />}
+          {section === 'routing' && <RoutingTab {...tabProps} />}
+          {section === 'what-if' && <WhatIfTab {...tabProps} />}
+          {section === 'reservoirs' && <ReservoirTab {...tabProps} />}
+          {section === 'twin' && <TwinTab {...tabProps} />}
+        </div>
       </main>
       <footer className="tg-foot">
         <span>TwinGuard AI · Chennai Digital Twin · final-year project</span>
@@ -169,7 +186,7 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
   route?: RouteOption[] | null;
   onPick?: (p: PickInfo | null) => void;
   onMapClick?: (p: LonLat) => void;
-  height?: 'sm' | 'md' | 'lg';
+  height?: 'sm' | 'md' | 'lg' | 'fill';
   overlay?: ReactNode;
   toolbarExtra?: ReactNode;
   flyKey?: string;
@@ -192,7 +209,7 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
     setHighlight(hit.ward_id);
     setFly({ lon: hit.lon, lat: hit.lat, range: hit.kind === 'ward' ? 5200 : 2600, key: `s-${hit.label}-${Date.now()}` });
     const nearArea = FOCUS_AREAS.map((a) => ({ a, d: haversineM([a.centre.lon, a.centre.lat], [hit.lon, hit.lat]) })).sort((x, y) => x.d - y.d)[0];
-    if (nearArea.d < 5000 && nearArea.a.id !== data.focusArea) { firstArea.current = true; data.setFocusArea(nearArea.a.id); }
+    if (nearArea.d < 5000 && nearArea.a.id !== data.focusArea) { lastArea.current = nearArea.a.id; data.setFocusArea(nearArea.a.id); }
   };
   const area = FOCUS_AREAS.find((a) => a.id === data.focusArea)!;
   const HOME = { lon: 80.2, lat: 13.02, range: 46000 };
@@ -216,9 +233,11 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
     setFly({ lon: (w + e) / 2, lat: (s + n) / 2 - 0.035, range: 11000, key: `box-${focusRun?.run_id}` });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusBox?.bbox.join(',')]);
-  const firstArea = useRef(true);
+  // fly only when the focus area really changes (a ref of the last area survives StrictMode's double effects in dev)
+  const lastArea = useRef<string>(data.focusArea);
   useEffect(() => {
-    if (firstArea.current) { firstArea.current = false; return; }
+    if (lastArea.current === area.id) return;
+    lastArea.current = area.id;
     setFly({ lon: area.centre.lon, lat: area.centre.lat, range: 2800, key: `${area.id}-${Date.now()}` });
   }, [area.id]);
   useEffect(() => { if (center) setFly({ lon: center.lon, lat: center.lat, range: center.range, key: `c-${flyKey ?? ''}-${center.lon},${center.lat}` }); }, [flyKey, center?.lon, center?.lat]);
@@ -237,6 +256,7 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
         <AreaSearch onPick={goTo} />
         <AreasMenu data={data} onPick={goTo} />
         {toolbarExtra}
+        <RunPicker data={data} />
       </div>
       <div className="tg-stage__map">
         <Suspense fallback={<div className="tg-twin tg-twin--loading" role="status">Loading 3D city…</div>}>
@@ -254,7 +274,7 @@ export function MapStage({ data, title, layersInit, layers: controlled, onLayers
         </div>
         <button type="button" className="tg-compass" aria-label="Reset to north" title="Reset to north" onClick={() => send('north')} style={{ transform: `rotate(${-(cam?.headingDeg ?? 0)}deg)` }}><span>N</span></button>
         {cam?.metersPer100px != null && <ScaleBar metersPer100px={cam.metersPer100px} />}
-        <MapLegend flow={data.flow && layers.water ? { speedMax: data.flow.speed_max_mps ?? null } : null} context={focusRun ? data.contextRun?.label ?? null : undefined} />
+        <MapLegend flow={data.flow && layers.water ? { speedMax: data.flow.speed_max_mps ?? null } : null} context={focusRun ? data.contextRun?.label ?? null : undefined} roadsOnly={!layers.water} />
         <NoFloodHint data={data} />
         {overlay}
       </div>
@@ -283,8 +303,26 @@ function NoFloodHint({ data }: { data: TwinData }) {
   );
 }
 
+/** Compact run picker in the map toolbar (citywide / focus groups), like the reference's city dropdown. */
+function RunPicker({ data }: { data: TwinData }) {
+  const list = data.runs.filter((r) => r.state === 'completed');
+  if (!list.length) return null;
+  const city = list.filter((r) => !isFocusRun(r));
+  const focus = list.filter((r) => isFocusRun(r));
+  const opt = (r: (typeof list)[number]) => <option key={r.run_id} value={r.run_id}>{runTitle(r)}</option>;
+  return (
+    <label className="tg-runpick" title="Simulation run shown on the map">
+      <span className="tg-visually-hidden">Run on map</span>
+      <select aria-label="Run on map" value={data.runId} onChange={(e) => data.setRunId(e.target.value)}>
+        {focus.length ? <><optgroup label="Citywide runs">{city.map(opt)}</optgroup><optgroup label="Focus-area runs (30 m)">{focus.map(opt)}</optgroup></> : city.map(opt)}
+        {!list.some((r) => r.run_id === data.runId) && <option value={data.runId}>{data.run ? runTitle(data.run) : 'Loading run…'}</option>}
+      </select>
+    </label>
+  );
+}
+
 let gazCache: { places: GazPlace[]; wards: GazWard[] } | null = null;
-function useGazetteer() {
+export function useGazetteer() {
   const [g, setG] = useState(gazCache);
   useEffect(() => { if (!gazCache) loadGazetteer().then((x) => { gazCache = x ?? { places: [], wards: [] }; setG(gazCache); }); }, []);
   return g;
@@ -342,7 +380,7 @@ function AreasMenu({ data, onPick }: { data: TwinData; onPick: (h: SearchHit) =>
   const f = filter.trim().toLowerCase();
   return (
     <div className="tg-menu">
-      <button type="button" className="tg-btn tg-btn--ghost" aria-expanded={open} onClick={() => setOpen(!open)}><Icon name="pin" />Areas ▾</button>
+      <button type="button" className="tg-btn tg-btn--ghost tg-btn--icon" aria-expanded={open} aria-label="Areas by zone and ward" title="Areas by zone and ward" onClick={() => setOpen(!open)}><Icon name="pin" /><span className="tg-btn__label">Areas ▾</span></button>
       {open && <div className="tg-menu__panel tg-areas" role="dialog" aria-label="Areas by zone and ward">
         <label className="tg-field"><span>Detailed area (roads, shelters)</span>
           <select aria-label="Focus area" value={data.focusArea} onChange={(e) => data.setFocusArea(e.target.value as FocusArea)}>{FOCUS_AREAS.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}</select>
@@ -378,12 +416,18 @@ function ScaleBar({ metersPer100px }: { metersPer100px: number }) {
   return <div className="tg-scale" aria-label={`Scale ${m >= 1000 ? `${m / 1000} km` : `${m} m`}`}><span>0</span><i style={{ width: px }} /><span>{m >= 1000 ? `${m / 1000} km` : `${m} m`}</span></div>;
 }
 
-function MapLegend({ flow, context }: { flow: { speedMax: number | null } | null; /** focus runs: label of the citywide context run (null = none found) */ context?: string | null }) {
+/** Compact legend card (bottom-left): the depth ramp always, the rest on demand so it never covers the map. */
+function MapLegend({ flow, context, roadsOnly = false }: { flow: { speedMax: number | null } | null; /** focus runs: label of the citywide context run (null = none found) */ context?: string | null; roadsOnly?: boolean }) {
+  const [open, setOpen] = useState(false);
   return (
-    <div className="tg-legend" aria-label="Map legend">
-      <strong>Flood Depth (m)</strong>
-      <div className="tg-legend__ramp" aria-hidden="true" />
-      <div className="tg-legend__ticks"><span>0.05</span><span>0.3</span><span>0.8</span><span>1.5+</span></div>
+    <div className={`tg-legend${open ? ' is-open' : ''}`} aria-label="Map legend">
+      <div className="tg-legend__head">
+        <strong>{roadsOnly ? 'Map legend' : 'Flood Depth (m)'}</strong>
+        <button type="button" className="tg-legend__toggle" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? 'Less ▾' : 'More ▸'}</button>
+      </div>
+      {!roadsOnly && <><div className="tg-legend__ramp" aria-hidden="true" />
+        <div className="tg-legend__ticks"><span>0.05</span><span>0.3</span><span>0.8</span><span>1.5+</span></div></>}
+      {open && <>
       <ul><li><i className="is-dry" />No flood (transparent)</li></ul>
       <p className="tg-legend__note" data-flow-source={flow ? 'modelled' : 'estimated'}>
         {context !== undefined && <>{context ? `Faded water outside the focus box: citywide context run (${context})` : 'No matching citywide run for context outside the focus box'}<br /></>}
@@ -404,6 +448,8 @@ function MapLegend({ flow, context }: { flow: { speedMax: number | null } | null
         <li><i style={{ background: '#2f7cff' }} />0.15 – 0.5 m</li>
         <li><i style={{ background: '#5b6b7a' }} />Dry</li>
       </ul>
+      </>}
+      {!open && !roadsOnly && <p className="tg-legend__note tg-legend__note--min" data-flow-source={flow ? 'modelled' : 'estimated'}>{flow ? 'Water motion: modelled velocity' : 'Water motion: estimated from slope'}</p>}
     </div>
   );
 }

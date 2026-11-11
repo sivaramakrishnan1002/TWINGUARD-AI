@@ -1,0 +1,509 @@
+{
+ "base": "http://localhost:5173/",
+ "started": "2026-11-11T03:12:26.418Z",
+ "checks": [
+  {
+   "name": "default view opens on a run with a run-kind badge",
+   "ok": true,
+   "detail": "LIVE FORECAST · 08:14 IST"
+  },
+  {
+   "name": "disclaimer visible",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "live run: badge shows LIVE FORECAST with the /v3 issue time",
+   "ok": true,
+   "detail": "LIVE FORECAST · 08:14 IST vs issued 2026-11-11T02:44:34Z"
+  },
+  {
+   "name": "live run: run picker shows the /v3 latest live run",
+   "ok": true,
+   "detail": "sim-20261111T024501Z-c2a88890"
+  },
+  {
+   "name": "live run: source health shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Google / Cesium attribution on the map",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Dec 2015 replay run listed",
+   "ok": true,
+   "detail": "evt-20261108T152128Z-59eba744"
+  },
+  {
+   "name": "switch to replay shows REPLAY badge",
+   "ok": true,
+   "detail": "REPLAY"
+  },
+  {
+   "name": "back to the latest live forecast",
+   "ok": true,
+   "detail": "LIVE FORECAST · 08:14 IST"
+  },
+  {
+   "name": "scrub timeline to frame 51",
+   "ok": true,
+   "detail": "frame 51"
+  },
+  {
+   "name": "overview Max depth = /v3 depth max_value (frame 51)",
+   "ok": true,
+   "detail": "UI 2.32 m, API 2.32"
+  },
+  {
+   "name": "overview Wards affected = /v3 wards (≥ 0.10 m)",
+   "ok": true,
+   "detail": "UI 199/200, API 199/200"
+  },
+  {
+   "name": "playback advances frames",
+   "ok": true,
+   "detail": "7 frames in 10 s at 42.1 fps"
+  },
+  {
+   "name": "playback ≥ 30 fps",
+   "ok": true,
+   "detail": "42.1 fps, p95 49.8 ms"
+  },
+  {
+   "name": "pan ≥ 30 fps",
+   "ok": true,
+   "detail": "104.4 fps, p95 33.2 ms"
+  },
+  {
+   "name": "view mode 2D Map",
+   "ok": true,
+   "detail": "scene.mode 2"
+  },
+  {
+   "name": "view mode Satellite",
+   "ok": true,
+   "detail": "scene.mode 3"
+  },
+  {
+   "name": "view mode 3D Digital Twin",
+   "ok": true,
+   "detail": "scene.mode 3"
+  },
+  {
+   "name": "view mode 2D Map",
+   "ok": true,
+   "detail": "scene.mode 2"
+  },
+  {
+   "name": "view mode 3D Digital Twin",
+   "ok": true,
+   "detail": "scene.mode 3"
+  },
+  {
+   "name": "area search finds Royapuram",
+   "ok": true,
+   "detail": "Royapuramsuburb · Ward 50 · V Royapuram"
+  },
+  {
+   "name": "camera flies to Royapuram",
+   "ok": true,
+   "detail": "80.284, 13.096, 1128.450"
+  },
+  {
+   "name": "tab switching ≥ 30 fps",
+   "ok": false,
+   "detail": "23.3 fps, p95 116.7 ms, 93 frames > 50 ms"
+  },
+  {
+   "name": "tab overview: 0 console errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "tab overview: map rendered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "simulation Peak extent = /v3 summary.flooded_area_km2",
+   "ok": true,
+   "detail": "UI 368.5km², API 368.54"
+  },
+  {
+   "name": "simulation Roads screened = /v3 summary.roads_blocked_km",
+   "ok": true,
+   "detail": "UI 3282km, API 3282.17"
+  },
+  {
+   "name": "simulation run details show the run_id",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "tab simulation: 0 console errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "tab simulation: map rendered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "emergency: incident queue populated",
+   "ok": true,
+   "detail": "150 rows"
+  },
+  {
+   "name": "tab emergency: 0 console errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "tab emergency: map rendered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "routing: route request answered",
+   "ok": true,
+   "detail": "R1 · avoid blocked 4 min 2.6 km Assessed passable / R2 · avoid blocked and unknown 4 min 2.6 km Assessed passable / R3 · shortest dry 4 min 2.6 km Assessed passable / Dry baseline 2 min 1.3 km no flooding"
+  },
+  {
+   "name": "tab routing: 0 console errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "tab routing: map rendered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "what-if: run completes",
+   "ok": true,
+   "detail": "Completed: What-if on Chennai floods, Dec 2015 (6 s)"
+  },
+  {
+   "name": "what-if: comparison table filled",
+   "ok": true,
+   "detail": "Inundation extent 368.5 km² 423.5 km² ▲ +55 / Max depth 7.85 m 9.73 m ▲ +1.88 / Wards affected 197 197 0"
+  },
+  {
+   "name": "tab what-if: 0 console errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "tab what-if: map rendered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "reservoirs: published snapshot shown",
+   "ok": true,
+   "detail": "Chembarambakkam 23.08 m Storage 39.8 MCM Published 2026-11-10 / Cholavaram 15.49 m Storage 4.6 MCM Published 2026-11-10 / Poondi 38.70 m Storage 16.6 MCM Published 2026-11-10 / Red Hills 14.01 m Storage 68.6 MCM Published 2026-11-10 / Thervoy Kandigai 32.75 m Storage 7.2 MCM Published 2026-11-10"
+  },
+  {
+   "name": "tab reservoirs: 0 console errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "tab reservoirs: map rendered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "tab twin: 0 console errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "tab twin: map rendered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "layout 1366x768 overview: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 1010x560 (54%)"
+  },
+  {
+   "name": "layout 1366x768 simulation: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 734x538 (38%)"
+  },
+  {
+   "name": "layout 1366x768 emergency: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 734x538 (38%)"
+  },
+  {
+   "name": "layout 1366x768 routing: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 734x620 (43%)"
+  },
+  {
+   "name": "layout 1366x768 what-if: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 734x538 (38%)"
+  },
+  {
+   "name": "layout 1366x768 reservoirs: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 734x620 (43%)"
+  },
+  {
+   "name": "layout 1366x768 twin: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 734x620 (43%)"
+  },
+  {
+   "name": "layout 1920x1080 overview: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 1558x620 (47%)"
+  },
+  {
+   "name": "layout 1920x1080 simulation: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 1282x850 (53%)"
+  },
+  {
+   "name": "layout 1920x1080 emergency: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 1282x850 (53%)"
+  },
+  {
+   "name": "layout 1920x1080 routing: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 1282x932 (58%)"
+  },
+  {
+   "name": "layout 1920x1080 what-if: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 1282x850 (53%)"
+  },
+  {
+   "name": "layout 1920x1080 reservoirs: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 1282x932 (58%)"
+  },
+  {
+   "name": "layout 1920x1080 twin: map ≥ 25% of window, no horizontal scroll, 0 errors",
+   "ok": true,
+   "detail": "map 1282x932 (58%)"
+  },
+  {
+   "name": "no Cesium/Google key in any /api/ai request",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "fps": {
+  "playback": {
+   "secs": 10.11,
+   "fps": 42.1,
+   "p50ms": 16.7,
+   "p95ms": 49.8,
+   "maxms": 150,
+   "janky": 18,
+   "sceneRenders": 427,
+   "sceneFps": 42.2,
+   "framesAdvanced": 7
+  },
+  "idle": {
+   "secs": 4.01,
+   "fps": 51.6,
+   "p50ms": 16.7,
+   "p95ms": 33.4,
+   "maxms": 33.8,
+   "janky": 0,
+   "sceneRenders": 208,
+   "sceneFps": 51.9
+  },
+  "pan": {
+   "secs": 10.43,
+   "fps": 104.4,
+   "p50ms": 0,
+   "p95ms": 33.2,
+   "maxms": 84,
+   "janky": 7,
+   "sceneRenders": 545,
+   "sceneFps": 52.2
+  },
+  "tabSwitch": {
+   "secs": 22.72,
+   "fps": 23.3,
+   "p50ms": 33.3,
+   "p95ms": 116.7,
+   "maxms": 533,
+   "janky": 93,
+   "sceneRenders": 975,
+   "sceneFps": 42.9
+  }
+ },
+ "screenshots": [
+  "00_overview_live_run.webp",
+  "01_overview.webp",
+  "02_simulation.webp",
+  "03_emergency.webp",
+  "04_routing.webp",
+  "05_what_if.webp",
+  "06_reservoirs.webp",
+  "07_twin.webp",
+  "layout_1366x768_01_overview.webp",
+  "layout_1366x768_02_simulation.webp",
+  "layout_1366x768_03_emergency.webp",
+  "layout_1366x768_04_routing.webp",
+  "layout_1366x768_05_what_if.webp",
+  "layout_1366x768_06_reservoirs.webp",
+  "layout_1366x768_07_twin.webp",
+  "layout_1920x1080_01_overview.webp",
+  "layout_1920x1080_02_simulation.webp",
+  "layout_1920x1080_03_emergency.webp",
+  "layout_1920x1080_04_routing.webp",
+  "layout_1920x1080_05_what_if.webp",
+  "layout_1920x1080_06_reservoirs.webp",
+  "layout_1920x1080_07_twin.webp"
+ ],
+ "note": "FPS depends on the power state: laptops on battery / power-saving plans throttle the GPU; this run: laptop on battery, Chrome on the Intel Iris Xe iGPU (see docs/ui/perf for RTX 3050 numbers)",
+ "replay": {
+  "run_id": "evt-20261108T152128Z-59eba744",
+  "summary": {
+   "max_depth_m": 7.85,
+   "flooded_area_km2": 368.54,
+   "buildings_affected": 81935,
+   "population_exposed": 1603045,
+   "roads_blocked_km": 3282.17,
+   "wards_affected": 197,
+   "peak_time_utc": "2015-12-02T00:00:00Z"
+  }
+ },
+ "layout": {
+  "1366x768": {
+   "overview": {
+    "map": [
+     1010,
+     560
+    ],
+    "share": 0.54,
+    "overflowX": false
+   },
+   "simulation": {
+    "map": [
+     734,
+     538
+    ],
+    "share": 0.38,
+    "overflowX": false
+   },
+   "emergency": {
+    "map": [
+     734,
+     538
+    ],
+    "share": 0.38,
+    "overflowX": false
+   },
+   "routing": {
+    "map": [
+     734,
+     620
+    ],
+    "share": 0.43,
+    "overflowX": false
+   },
+   "what-if": {
+    "map": [
+     734,
+     538
+    ],
+    "share": 0.38,
+    "overflowX": false
+   },
+   "reservoirs": {
+    "map": [
+     734,
+     620
+    ],
+    "share": 0.43,
+    "overflowX": false
+   },
+   "twin": {
+    "map": [
+     734,
+     620
+    ],
+    "share": 0.43,
+    "overflowX": false
+   }
+  },
+  "1920x1080": {
+   "overview": {
+    "map": [
+     1558,
+     620
+    ],
+    "share": 0.47,
+    "overflowX": false
+   },
+   "simulation": {
+    "map": [
+     1282,
+     850
+    ],
+    "share": 0.53,
+    "overflowX": false
+   },
+   "emergency": {
+    "map": [
+     1282,
+     850
+    ],
+    "share": 0.53,
+    "overflowX": false
+   },
+   "routing": {
+    "map": [
+     1282,
+     932
+    ],
+    "share": 0.58,
+    "overflowX": false
+   },
+   "what-if": {
+    "map": [
+     1282,
+     850
+    ],
+    "share": 0.53,
+    "overflowX": false
+   },
+   "reservoirs": {
+    "map": [
+     1282,
+     932
+    ],
+    "share": 0.58,
+    "overflowX": false
+   },
+   "twin": {
+    "map": [
+     1282,
+     932
+    ],
+    "share": 0.58,
+    "overflowX": false
+   }
+  }
+ },
+ "consoleErrors": [],
+ "tokenInApiRequests": false,
+ "finished": "2026-11-11T03:17:34.696Z",
+ "passed": 59,
+ "failed": 1
+}

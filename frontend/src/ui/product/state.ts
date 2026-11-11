@@ -52,6 +52,8 @@ export interface TwinData {
   refreshLive: () => Promise<string>;
 }
 
+/** Playback: minimum time per saved frame (the water cross-fades over ~1.2 s between frames). */
+const PLAY_STEP_MS = 1300;
 /** Live polling cadence: 60 s normally, 10 s while a cycle runs or right after a manual refresh. */
 export const LIVE_POLL_MS = 60_000;
 const LIVE_FAST_POLL_MS = 10_000;
@@ -244,27 +246,39 @@ export function useTwinData(): TwinData {
     if (run && frameIndex >= run.frames.length) setFrameIndex(Math.max(0, run.frames.length - 1));
   }, [run, frameIndex]);
 
+  /** Depth + flow for one frame, cached; flow failures (503 = run saved without flow output, fixtures) resolve to null. */
+  const frameLoads = useRef(new Map<string, Promise<[T.DepthFrame, T.FlowFrame | null]>>());
+  const loadFrame = useCallback((id: string, i: number): Promise<[T.DepthFrame, T.FlowFrame | null]> => {
+    const key = `${id}|${i}`;
+    const d0 = depthCache.current.get(key);
+    if (d0 && flowCache.current.has(key)) return Promise.resolve([d0, flowCache.current.get(key) ?? null]);
+    const hit = frameLoads.current.get(key);
+    if (hit) return hit;
+    if (!api) return Promise.reject(new Error('Not connected'));
+    const p = Promise.all([
+      d0 ? Promise.resolve(d0) : api.depth(id, i),
+      flowCache.current.has(key) ? Promise.resolve(flowCache.current.get(key) ?? null) : api.flow(id, i, 4).catch(() => null),
+    ]).then(([d, f]) => {
+      depthCache.current.set(key, d); flowCache.current.set(key, f);
+      // keep the caches bounded (a 97-frame citywide run is ~1 MB per frame of JSON)
+      for (const m of [depthCache.current, flowCache.current] as Map<string, unknown>[]) while (m.size > 48) m.delete(m.keys().next().value as string);
+      return [d, f] as [T.DepthFrame, T.FlowFrame | null];
+    }).finally(() => frameLoads.current.delete(key));
+    frameLoads.current.set(key, p);
+    return p;
+  }, [api]);
+
   useEffect(() => {
     if (!api || !runKnown) return;
     let live = true;
-    const key = `${runId}|${frameIndex}`;
-    const cached = depthCache.current.get(key);
-    if (cached) setDepth(cached);
-    else api.depth(runId, frameIndex).then((d) => { depthCache.current.set(key, d); if (live) setDepth(d); }).catch((e) => {
+    // depth and flow land together, so the water texture is built once per frame (not once without and once with flow)
+    loadFrame(runId, frameIndex).then(([d, f]) => { if (!live) return; setDepth(d); setFlow(f); }).catch((e) => {
       if (!live) return;
       setDepth(null);
       // a run that vanished from the store (404): show the newest completed citywide run instead of an empty map
       if (e instanceof ApiRequestError && e.status === 404 && api.kind === 'api') { fallBackToCitywide(); return; }
       setError(e instanceof Error ? e.message : String(e));
     });
-    if (flowCache.current.has(key)) setFlow(flowCache.current.get(key) ?? null);
-    else {
-      setFlow(null);
-      api.flow(runId, frameIndex, 4)
-        .then((f) => { flowCache.current.set(key, f); if (live) setFlow(f); })
-        // 503 = run saved without flow output (pre engine 2.1.0) or fixtures: the water uses the surface-gradient estimate
-        .catch(() => { flowCache.current.set(key, null); if (live) setFlow(null); });
-    }
     api.wards(runId, frameIndex).then((w) => live && setWards(w.wards)).catch(() => live && setWards([]));
     api.incidents(runId, frameIndex, 'watch').then((i) => live && setIncidents(i.incidents)).catch(() => live && setIncidents([]));
     api.shelters(runId, frameIndex, 1).then((s) => live && setShelters(cleanShelters(s))).catch(() => live && setShelters(null));
@@ -298,9 +312,26 @@ export function useTwinData(): TwinData {
   useEffect(() => {
     const reduce = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (!playing || !run || reduce) return;
-    const t = window.setInterval(() => setFrameIndex((i) => (i + 1) % Math.max(1, run.frames.length)), 1800);
-    return () => window.clearInterval(t);
-  }, [playing, run]);
+    // advance at most every PLAY_STEP_MS and only once the next frame's depth + flow are loaded (no stalls or
+    // half-drawn frames); keep the next two frames prefetched
+    const n = Math.max(1, run.frames.length);
+    let stop = false;
+    let last = performance.now();
+    const tick = async () => {
+      if (stop) return;
+      const cur = frameIndexRef.current;
+      const next = (cur + 1) % n;
+      loadFrame(run.run_id, (next + 1) % n).catch(() => undefined);
+      await loadFrame(run.run_id, next).catch(() => undefined);
+      if (stop) return;
+      const wait = Math.max(0, PLAY_STEP_MS - (performance.now() - last));
+      window.setTimeout(() => { if (stop) return; last = performance.now(); setFrameIndex(next); window.setTimeout(tick, 0); }, wait);
+    };
+    tick();
+    return () => { stop = true; };
+  }, [playing, run, loadFrame]);
+  const frameIndexRef = useRef(frameIndex);
+  frameIndexRef.current = frameIndex;
 
   const refreshWeather = useCallback(() => {
     if (!api) return;

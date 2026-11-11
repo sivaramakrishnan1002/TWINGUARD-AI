@@ -73,6 +73,9 @@ function calloutCanvas(text: string): HTMLCanvasElement {
 const BOUNDS = { west: 79.99, south: 12.84, east: 80.36, north: 13.30 };
 const MAX_ZOOM_DISTANCE_M = 80000;
 /** One Cesium viewer (one WebGL context) shared by every tab; it is re-parented into the visible map host. */
+/** Static map layers (city roads, rivers, CMA outline, locality labels, callouts) kept on the shared viewer across
+ *  tab switches: rebuilding them cost ~1 s of main thread per tab. Keyed by layer, valid while `sig` matches. */
+const STATIC_LAYERS = new Map<string, { sig: string; prim: { show: boolean; isDestroyed(): boolean }; extra?: unknown }>();
 let SHARED: { v: Cesium.Viewer; el: HTMLDivElement; dusk: Cesium.PostProcessStage; google: Cesium.Cesium3DTileset | null; osm: Cesium.Cesium3DTileset | null } | null = null;
 /** Streaming settings shared by the citywide 3D tilesets (load fast, refine when the camera settles). */
 const TILESET_OPTIONS = {
@@ -262,88 +265,160 @@ function buildingShader(frame: DepthFrame | null, groundEllipsoidM: number, nigh
 
 /** Max depth encoded in the water texture's red channel (m). */
 const WATER_DEPTH_SCALE = 2.5;
-/**
- * Encode a depth frame as a WGS84 texture for the water shader: R = depth / 2.5 m (bilinear between valid
- * model cells; dry and NoData = 0), G/B = flow direction from the water-surface gradient (terrain + depth),
- * scaled by depth. When a real FlowFrame (u east, v north, m/s) for the same run and frame is given, G/B carry
- * the modelled velocity instead (bilinear, 1 m/s = full scale, sqrt-compressed so slow sheet flow still drifts). Alpha is always 255 so browser premultiplication cannot destroy the data.
- */
-export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null, flow: FlowFrame | null = null, hole: [number, number, number, number] | null = null): { canvas: HTMLCanvasElement; bbox: [number, number, number, number] } | null {
+/** Per-pixel sampling plan for one grid + texture size: model-cell bilinear taps, terrain height and hole mask.
+ *  Built once per grid (the UTM projection per pixel is the expensive part) and reused for every frame of the run. */
+interface FieldSampler {
+  W: number; H: number; bbox: [number, number, number, number];
+  /** top-left model cell index (r0 * cols + c0) per pixel, or -1 when all four taps are off-grid or in the hole */
+  base: Int32Array; dx: Float32Array; dy: Float32Array;
+  /** bit mask of on-grid taps per pixel (1 = r0c0, 2 = r0c1, 4 = r1c0, 8 = r1c1) */
+  taps: Uint8Array;
+  e: Float32Array; n: Float32Array;
+  terrain: Float32Array | null;
+}
+const SAMPLERS = new Map<string, FieldSampler>();
+const FLAT = new WeakMap<object, Float32Array>();
+/** Model values as a flat Float32Array (NaN = outside the model domain), cached per frame array. */
+function flatValues(rows: (number | null)[][], nr: number, nc: number): Float32Array {
+  const hit = FLAT.get(rows);
+  if (hit) return hit;
+  const out = new Float32Array(nr * nc).fill(Number.NaN);
+  for (let r = 0; r < nr; r += 1) { const row = rows[r]; if (!row) continue; for (let c = 0; c < nc; c += 1) { const v = row[c]; if (v != null) out[r * nc + c] = v; } }
+  FLAT.set(rows, out);
+  return out;
+}
+function fieldSampler(frame: DepthFrame, terrain: TerrainGrid | null, hole: [number, number, number, number] | null, withTerrain: boolean): FieldSampler {
   const g = frame.grid;
+  const key = [g.origin_x_m, g.origin_y_m, g.cell_size_m, frame.rows, frame.cols, hole?.join(',') ?? '', withTerrain && terrain ? `t${terrain.west},${terrain.north},${terrain.cols}` : ''].join('|');
+  const hit = SAMPLERS.get(key);
+  if (hit) return hit;
   const [w0, s0] = utmToLonLat(g.origin_x_m, g.origin_y_m - frame.rows * g.cell_size_m);
   const [e0, n0] = utmToLonLat(g.origin_x_m + frame.cols * g.cell_size_m, g.origin_y_m);
   const [w1] = utmToLonLat(g.origin_x_m, g.origin_y_m);
   const [e1] = utmToLonLat(g.origin_x_m + frame.cols * g.cell_size_m, g.origin_y_m - frame.rows * g.cell_size_m);
   const bbox: [number, number, number, number] = [Math.min(w0, w1), s0, Math.max(e0, e1), n0];
-  const W = Math.min(1200, frame.cols * 10);
+  // ~3 texels per model cell is enough: the shader samples the texture bilinearly
+  const W = Math.min(1024, frame.cols * 3);
   const H = Math.round(W * ((bbox[3] - bbox[1]) / (bbox[2] - bbox[0])));
+  const N = W * H;
+  const base = new Int32Array(N); const dxA = new Float32Array(N); const dyA = new Float32Array(N); const taps = new Uint8Array(N);
+  const eA = new Float32Array(N); const nA = new Float32Array(N);
+  const ter = withTerrain && terrain ? new Float32Array(N) : null;
+  const R = frame.rows; const C = frame.cols;
+  for (let y = 0; y < H; y += 1) {
+    const lat = bbox[3] - ((y + 0.5) / H) * (bbox[3] - bbox[1]);
+    for (let x = 0; x < W; x += 1) {
+      const i = y * W + x;
+      const lon = bbox[0] + ((x + 0.5) / W) * (bbox[2] - bbox[0]);
+      const [e, n] = lonLatToUtm(lon, lat);
+      eA[i] = e; nA[i] = n;
+      if (ter) ter[i] = terrainHeight(terrain, lon, lat);
+      if (hole && lon >= hole[0] && lon <= hole[2] && lat >= hole[1] && lat <= hole[3]) { base[i] = -1; continue; }
+      const fc = (e - g.origin_x_m) / g.cell_size_m - 0.5;
+      const fr = (g.origin_y_m - n) / g.cell_size_m - 0.5;
+      const c0 = Math.floor(fc); const r0 = Math.floor(fr);
+      const r0ok = r0 >= 0 && r0 < R; const r1ok = r0 + 1 >= 0 && r0 + 1 < R;
+      const c0ok = c0 >= 0 && c0 < C; const c1ok = c0 + 1 >= 0 && c0 + 1 < C;
+      const m = (r0ok && c0ok ? 1 : 0) | (r0ok && c1ok ? 2 : 0) | (r1ok && c0ok ? 4 : 0) | (r1ok && c1ok ? 8 : 0);
+      base[i] = m ? r0 * C + c0 : -1; taps[i] = m; dxA[i] = fc - c0; dyA[i] = fr - r0;
+    }
+  }
+  const s: FieldSampler = { W, H, bbox, base, dx: dxA, dy: dyA, taps, e: eA, n: nA, terrain: ter };
+  if (SAMPLERS.size >= 4) SAMPLERS.delete(SAMPLERS.keys().next().value as string);
+  SAMPLERS.set(key, s);
+  return s;
+}
+
+/**
+ * Encode a depth frame as a WGS84 texture for the water shader: R = depth / 2.5 m (bilinear between valid
+ * model cells; dry and NoData = 0), G/B = flow direction from the water-surface gradient (terrain + depth),
+ * scaled by depth. When a real FlowFrame (u east, v north, m/s) for the same run and frame is given, G/B carry
+ * the modelled velocity instead (bilinear, 1 m/s = full scale, sqrt-compressed so slow sheet flow still drifts).
+ * Alpha is always 255 so browser premultiplication cannot destroy the data.
+ * The per-pixel projection is cached per grid (fieldSampler), so a new frame only costs the bilinear taps.
+ */
+export function depthFieldCanvas(frame: DepthFrame, terrain: TerrainGrid | null, flow: FlowFrame | null = null, hole: [number, number, number, number] | null = null): { canvas: HTMLCanvasElement; bbox: [number, number, number, number] } | null {
+  const useFlow = !!flow && flow.run_id === frame.run_id && (frame.frame_index == null || flow.frame_index === frame.frame_index);
+  const S = fieldSampler(frame, terrain, hole, !useFlow);
+  const { W, H } = S;
   const cv = document.createElement('canvas');
   cv.width = W; cv.height = H;
   const ctx = cv.getContext('2d');
   if (!ctx) return null;
-  const val = (r: number, c: number) => (r < 0 || c < 0 || r >= frame.rows || c >= frame.cols ? null : frame.values[r][c]);
-  const depth = new Float32Array(W * H);
-  const surf = new Float32Array(W * H);
-  const useFlow = !!flow && flow.run_id === frame.run_id && (frame.frame_index == null || flow.frame_index === frame.frame_index);
-  const fu = new Float32Array(useFlow ? W * H : 0);
-  const fv = new Float32Array(useFlow ? W * H : 0);
-  const fg = flow?.grid;
-  const flowAt = (e: number, n: number): [number, number] => {
-    const fc = (e - fg!.origin_x_m) / fg!.cell_size_m - 0.5;
-    const fr = (fg!.origin_y_m - n) / fg!.cell_size_m - 0.5;
-    const c0 = Math.floor(fc); const r0 = Math.floor(fr); const dx = fc - c0; const dy = fr - r0;
-    let su = 0; let sv = 0; let ws = 0;
-    for (const [rr, cc, ww] of [[r0, c0, (1 - dx) * (1 - dy)], [r0, c0 + 1, dx * (1 - dy)], [r0 + 1, c0, (1 - dx) * dy], [r0 + 1, c0 + 1, dx * dy]] as [number, number, number][]) {
-      if (rr < 0 || cc < 0 || rr >= flow!.rows || cc >= flow!.cols || ww <= 0) continue;
-      const uu = flow!.u[rr]?.[cc]; const vv = flow!.v[rr]?.[cc];
-      if (uu == null || vv == null) continue;
-      su += uu * ww; sv += vv * ww; ws += ww;
-    }
-    return ws > 0 ? [su / ws, sv / ws] : [0, 0];
-  };
-  for (let y = 0; y < H; y += 1) {
-    const lat = bbox[3] - ((y + 0.5) / H) * (bbox[3] - bbox[1]);
-    for (let x = 0; x < W; x += 1) {
-      const lon = bbox[0] + ((x + 0.5) / W) * (bbox[2] - bbox[0]);
-      const [e, n] = lonLatToUtm(lon, lat);
-      const fc = (e - g.origin_x_m) / g.cell_size_m - 0.5;
-      const fr = (g.origin_y_m - n) / g.cell_size_m - 0.5;
+  const C = frame.cols;
+  const vals = flatValues(frame.values, frame.rows, C);
+  const N = W * H;
+  const depth = new Float32Array(N);
+  for (let i = 0; i < N; i += 1) {
+    const b0 = S.base[i];
+    if (b0 < 0) continue;
+    const m = S.taps[i]; const dx = S.dx[i]; const dy = S.dy[i];
+    let sum = 0; let ws = 0; let v = 0; let w = 0;
+    if (m & 1) { v = vals[b0]; w = (1 - dx) * (1 - dy); if (v === v && w > 0) { sum += v * w; ws += w; } }
+    if (m & 2) { v = vals[b0 + 1]; w = dx * (1 - dy); if (v === v && w > 0) { sum += v * w; ws += w; } }
+    if (m & 4) { v = vals[b0 + C]; w = (1 - dx) * dy; if (v === v && w > 0) { sum += v * w; ws += w; } }
+    if (m & 8) { v = vals[b0 + C + 1]; w = dx * dy; if (v === v && w > 0) { sum += v * w; ws += w; } }
+    depth[i] = ws < 0.35 ? 0 : sum / ws;
+  }
+  let fu: Float32Array | null = null; let fv: Float32Array | null = null;
+  if (useFlow && flow) {
+    const fg = flow.grid; const FR = flow.rows; const FC = flow.cols;
+    const U = flatValues(flow.u, FR, FC); const V = flatValues(flow.v, FR, FC);
+    fu = new Float32Array(N); fv = new Float32Array(N);
+    for (let i = 0; i < N; i += 1) {
+      if (depth[i] <= 0.01) continue;
+      const fc = (S.e[i] - fg.origin_x_m) / fg.cell_size_m - 0.5;
+      const fr = (fg.origin_y_m - S.n[i]) / fg.cell_size_m - 0.5;
       const c0 = Math.floor(fc); const r0 = Math.floor(fr); const dx = fc - c0; const dy = fr - r0;
-      let sum = 0; let wsum = 0;
-      for (const [rr, cc, ww] of [[r0, c0, (1 - dx) * (1 - dy)], [r0, c0 + 1, dx * (1 - dy)], [r0 + 1, c0, (1 - dx) * dy], [r0 + 1, c0 + 1, dx * dy]] as [number, number, number][]) {
-        const vv = val(rr, cc);
-        if (vv !== null && ww > 0) { sum += vv * ww; wsum += ww; }
+      let su = 0; let sv = 0; let ws = 0;
+      for (let k = 0; k < 4; k += 1) {
+        const rr = r0 + (k >> 1); const cc = c0 + (k & 1);
+        if (rr < 0 || cc < 0 || rr >= FR || cc >= FC) continue;
+        const ww = (k & 1 ? dx : 1 - dx) * (k >> 1 ? dy : 1 - dy);
+        const uu = U[rr * FC + cc]; const vv = V[rr * FC + cc];
+        if (ww <= 0 || uu !== uu || vv !== vv) continue;
+        su += uu * ww; sv += vv * ww; ws += ww;
       }
-      const inHole = !!hole && lon >= hole[0] && lon <= hole[2] && lat >= hole[1] && lat <= hole[3];
-      const d = wsum < 0.35 || inHole ? 0 : sum / wsum;
-      depth[y * W + x] = d;
-      if (useFlow) { if (d > 0.01) { const [uu, vv] = flowAt(e, n); fu[y * W + x] = uu; fv[y * W + x] = vv; } }
-      else surf[y * W + x] = terrainHeight(terrain, lon, lat) + d;
+      if (ws > 0) { fu[i] = su / ws; fv[i] = sv / ws; }
     }
   }
+  const T = S.terrain;
+  const surf = (j: number) => (T ? T[j] : 0) + depth[j];
   const img = ctx.createImageData(W, H);
+  const data = img.data;
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     const i = y * W + x;
     const d = depth[i];
     let fx = 0; let fy = 0;
-    if (useFlow) {
-      if (d > 0.01) {
+    if (d > 0.01) {
+      if (fu && fv) {
         const sp = Math.hypot(fu[i], fv[i]);
-        if (sp > 1e-4) { const k = Math.min(1, Math.sqrt(sp / 1.0)); fx = (fu[i] / sp) * k; fy = (fv[i] / sp) * k; }
+        if (sp > 1e-4) { const k = Math.min(1, Math.sqrt(sp)); fx = (fu[i] / sp) * k; fy = (fv[i] / sp) * k; }
+      } else {
+        const sx = surf(y * W + Math.min(W - 1, x + 1)) - surf(y * W + Math.max(0, x - 1));
+        const sy = surf(Math.max(0, y - 1) * W + x) - surf(Math.min(H - 1, y + 1) * W + x); // +y = north
+        const len = Math.hypot(sx, sy);
+        if (len > 1e-4) { const k = Math.min(1, d); fx = (-sx / len) * k; fy = (-sy / len) * k; }
       }
-    } else if (d > 0.01) {
-      const sx = surf[y * W + Math.min(W - 1, x + 1)] - surf[y * W + Math.max(0, x - 1)];
-      const sy = surf[Math.max(0, y - 1) * W + x] - surf[Math.min(H - 1, y + 1) * W + x]; // +y = north
-      const len = Math.hypot(sx, sy);
-      if (len > 1e-4) { const k = Math.min(1, d / 1.0); fx = (-sx / len) * k; fy = (-sy / len) * k; }
     }
-    img.data[i * 4] = Math.round(Math.min(1, d / WATER_DEPTH_SCALE) * 255);
-    img.data[i * 4 + 1] = Math.round(128 + 127 * fx);
-    img.data[i * 4 + 2] = Math.round(128 + 127 * fy);
-    img.data[i * 4 + 3] = 255;
+    const o = i * 4;
+    data[o] = Math.round(Math.min(1, d / WATER_DEPTH_SCALE) * 255);
+    data[o + 1] = Math.round(128 + 127 * fx);
+    data[o + 2] = Math.round(128 + 127 * fy);
+    data[o + 3] = 255;
   }
   ctx.putImageData(img, 0, 0);
-  return { canvas: cv, bbox };
+  return { canvas: cv, bbox: S.bbox };
+}
+
+/** The water texture for a frame, reused across tab switches (same frame, flow and terrain objects). */
+const FIELD_CACHE = new WeakMap<DepthFrame, { flow: FlowFrame | null; terrain: TerrainGrid | null; out: ReturnType<typeof depthFieldCanvas> }>();
+function cachedField(frame: DepthFrame, terrain: TerrainGrid | null, flow: FlowFrame | null) {
+  const hit = FIELD_CACHE.get(frame);
+  if (hit && hit.flow === flow && hit.terrain === terrain) return hit.out;
+  const out = depthFieldCanvas(frame, terrain, flow);
+  FIELD_CACHE.set(frame, { flow, terrain, out });
+  return out;
 }
 
 /** Animated flood-water material for the draped surface (ripples, Fresnel dusk sky, glints, flow streaks, shoreline foam). */
@@ -465,19 +540,46 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
   const ground = (lon: number, lat: number) => terrainHeight(terrain, lon, lat) + datum;
 
   const [places, setPlaces] = useState<GazPlace[] | null>(null);
+  const calloutRef = useRef<Cesium.BillboardCollection | null>(null);
+  const labelMeta = useRef<{ i: number; rank: number; far: number; chars: number }[]>([]);
+  const declutterRef = useRef<() => void>(() => undefined);
+  /** Re-show a kept static layer (same signature) instead of rebuilding it; true when reused. */
+  const reuseStatic = (key: string, sig: string, show = true): boolean => {
+    const v = viewer.current;
+    const e = STATIC_LAYERS.get(key);
+    if (!v || !e || e.sig !== sig) return false;
+    if (e.prim.isDestroyed()) { STATIC_LAYERS.delete(key); return false; }
+    const p = e.prim as unknown as Cesium.Primitive;
+    if (!v.scene.primitives.contains(p)) v.scene.primitives.add(p);
+    e.prim.show = show;
+    prims.current[key] = p;
+    v.scene.requestRender();
+    return true;
+  };
+  const keepStatic = (key: string, sig: string, prim: unknown, extra?: unknown) => {
+    // a kept layer with an outdated signature is replaced: drop the hidden old one from the scene
+    const prev = STATIC_LAYERS.get(key);
+    const v = viewer.current;
+    if (prev && prev.prim !== prim && !prev.prim.isDestroyed() && v && v.scene.primitives.contains(prev.prim as unknown as Cesium.Primitive)) v.scene.primitives.remove(prev.prim as unknown as Cesium.Primitive);
+    STATIC_LAYERS.set(key, { sig, prim: prim as { show: boolean; isDestroyed(): boolean }, extra });
+  };
   useEffect(() => { loadCityRoads().then(setCityRoads); loadWaterways().then(setRivers); loadBoundary().then(setBoundary); loadGazetteer().then((g) => setPlaces(g?.places ?? null)); }, []);
 
   /* locality labels from the gazetteer, decluttered by rank: more appear as you zoom in */
   useEffect(() => {
     const v = viewer.current;
     if (!v || !places?.length) return;
+    const sig = `${places.length}|${terrain ? 1 : 0}|${datum}`;
+    if (reuseStatic('labels', sig)) { labelMeta.current = STATIC_LAYERS.get('labels')!.extra as typeof labelMeta.current; declutterRef.current(); return; }
     const old = prims.current.labels;
     if (old) v.scene.primitives.remove(old);
     const curated = new Set(PLACES.map((p) => p.name.toLowerCase()));
     const lc = new Cesium.LabelCollection({ scene: v.scene });
     const far: Record<number, number> = { 1: 70000, 2: 16000, 3: 6000, 4: 3200 };
+    const meta: { i: number; rank: number; far: number; chars: number }[] = [];
     for (const p of places) {
       if (curated.has(p.name.toLowerCase())) continue;
+      meta.push({ i: lc.length, rank: p.rank, far: far[p.rank] ?? 3200, chars: p.name.length });
       lc.add({
         position: Cesium.Cartesian3.fromDegrees(p.lon, p.lat, ground(p.lon, p.lat) + 35), text: p.name,
         font: p.rank <= 2 ? '600 14px Inter, Segoe UI, sans-serif' : '500 12px Inter, Segoe UI, sans-serif',
@@ -489,9 +591,13 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
     }
     v.scene.primitives.add(lc);
     prims.current.labels = lc as unknown as Cesium.Primitive;
+    // most important first: rank, then longer names lose to shorter ones of the same rank
+    labelMeta.current = meta.sort((a, b) => a.rank - b.rank || a.chars - b.chars);
+    keepStatic('labels', sig, lc, labelMeta.current);
     v.scene.requestRender();
+    declutterRef.current();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [places, terrain, datum]);
+  }, [places, terrain, datum, viewerOk]);
 
   /* highlighted ward (search / Areas list) */
   useEffect(() => {
@@ -594,8 +700,12 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
         const p = v.scene.primitives.get(i) as { statistics?: { numberOfPendingRequests: number; numberOfTilesProcessing: number }; show?: boolean };
         if (p?.statistics && p.show !== false) n += p.statistics.numberOfPendingRequests + p.statistics.numberOfTilesProcessing;
       }
-      if (n !== lastPending) { lastPending = n; setPending(n); }
+      if (n !== lastPending) { lastPending = n; changedAt = now; setPending(n); }
     });
+    // the globe can report "not loaded" forever for clipped or failed tiles, and with request-render mode no frame
+    // re-checks it: a count that has not moved for 5 s is not progress, so the chip goes away
+    let changedAt = performance.now();
+    const staleTimer = window.setInterval(() => { if (lastPending > 0 && performance.now() - changedAt > 5000) setPending(0); }, 1000);
     setTimeout(report, 500);
     const handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
     handler.setInputAction((ev: { position: Cesium.Cartesian2 }) => {
@@ -613,9 +723,10 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     return () => {
-      removeCam(); removeMove(); removeProgress(); handler.destroy();
+      removeCam(); removeMove(); removeProgress(); window.clearInterval(staleTimer); handler.destroy();
       for (const [k, p] of Object.entries(prims.current)) {
         if (k === 'google' || k === 'osm' || k === 'dusk' || !p) continue;
+        if (STATIC_LAYERS.get(k)?.prim === (p as unknown)) { (p as { show: boolean }).show = false; continue; }
         if (v.scene.primitives.contains(p as Cesium.Primitive)) v.scene.primitives.remove(p as Cesium.Primitive);
       }
       v.entities.removeAll();
@@ -800,7 +911,9 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
     if (old) v.scene.primitives.remove(old);
     prims.current.buildings = null;
     buildingIds.current = [];
-    if (!focus) return;
+    // with a Cesium ion token the citywide OSM Buildings tileset is used and this fallback is never shown: skip it
+    // (building and recolouring ~10 000 extrusions per tab and per frame was the main cost of tab switches)
+    if (!focus || ION_TOKEN) return;
     const instances: Cesium.GeometryInstance[] = [];
     for (const [osmid, levels, e, n, ring] of focus.buildings) {
       const [lon, lat] = utmToLonLat(e, n);
@@ -846,7 +959,7 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
   /* simulated water: depth field draped on the rendered ground with an animated water material.
      Frame changes cross-fade the depth texture so the water visibly rises and falls between saved frames. */
   const waterRef = useRef<{ material: Cesium.Material; canvas: HTMLCanvasElement; key: string } | null>(null);
-  const field = useMemo(() => (frame && typeof document !== 'undefined' ? depthFieldCanvas(frame, terrain, flow) : null), [frame, terrain, flow]);
+  const field = useMemo(() => (frame && typeof document !== 'undefined' ? cachedField(frame, terrain, flow) : null), [frame, terrain, flow]);
   const classifyOnTiles = googleOn && near;
   useEffect(() => {
     const v = viewer.current;
@@ -978,9 +1091,11 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
   useEffect(() => {
     const v = viewer.current;
     if (!v || !boundary?.features.length) return;
-    v.scene.globe.clippingPolygons = makeClip(boundary);
     const ts = prims.current.google as Cesium.Cesium3DTileset | null | undefined;
-    if (ts && !ts.isDestroyed()) ts.clippingPolygons = makeClip(boundary);
+    if (ts && !ts.isDestroyed() && !ts.clippingPolygons) ts.clippingPolygons = makeClip(boundary);
+    const sig = `${boundary.features.length}|${terrain ? 1 : 0}|${datum}`;
+    if (reuseStatic('boundary', sig) && v.scene.globe.clippingPolygons) return;
+    v.scene.globe.clippingPolygons = makeClip(boundary);
     const old = prims.current.boundary;
     if (old) v.scene.primitives.remove(old);
     const coll = new Cesium.PrimitiveCollection();
@@ -988,6 +1103,7 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
     coll.add(new Cesium.Primitive({ geometryInstances: lines, appearance: new Cesium.PolylineMaterialAppearance({ material: glow('#22d3ff', 0.35) }), asynchronous: true }));
     v.scene.primitives.add(coll);
     prims.current.boundary = coll;
+    keepStatic('boundary', sig, coll);
     v.scene.requestRender();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boundary, googleState, datum]);
@@ -996,6 +1112,8 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
   useEffect(() => {
     const v = viewer.current;
     if (!v || !rivers?.features.length) return;
+    const sig = `${rivers.features.length}`;
+    if (reuseStatic('rivers', sig)) return;
     const old = prims.current.rivers;
     if (old) v.scene.primitives.remove(old);
     const instances = rivers.features.map((f) => new Cesium.GeometryInstance({
@@ -1005,13 +1123,17 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
     const p = new Cesium.GroundPolylinePrimitive({ geometryInstances: instances, appearance: new Cesium.PolylineMaterialAppearance({ material: glow('#36b9ff', 0.3) }), classificationType: Cesium.ClassificationType.BOTH, asynchronous: true });
     v.scene.primitives.add(p);
     prims.current.rivers = p;
+    keepStatic('rivers', sig, p);
     v.scene.requestRender();
-  }, [rivers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rivers, viewerOk]);
 
   /* citywide major roads: neutral context everywhere (not assessed in this run unless the run colours them) */
   useEffect(() => {
     const v = viewer.current;
     if (!v || !cityRoads?.lines.length) return;
+    const sig = `${cityRoads.lines.length}|${cityRoads.classes.join(',')}`;
+    if (reuseStatic('cityRoads', sig, layers.roads)) return;
     const old = prims.current.cityRoads; if (old) v.scene.primitives.remove(old);
     const WIDTH: Record<string, number> = { motorway: 4.2, trunk: 3.8, primary: 3.2, secondary: 2.5, tertiary: 1.8 };
     const coll = new Cesium.PrimitiveCollection();
@@ -1035,9 +1157,10 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
     coll.show = layers.roads;
     v.scene.primitives.add(coll);
     prims.current.cityRoads = coll;
+    keepStatic('cityRoads', sig, coll);
     v.scene.requestRender();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cityRoads]);
+  }, [cityRoads, viewerOk]);
 
   /* roads, three-state, glowing and draped */
   useEffect(() => {
@@ -1097,6 +1220,8 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
   useEffect(() => {
     const v = viewer.current;
     if (!v) return;
+    const sig = `${PLACES.length}|${terrain ? 1 : 0}|${datum}`;
+    if (reuseStatic('places', sig)) { calloutRef.current = STATIC_LAYERS.get('places')!.extra as Cesium.BillboardCollection; declutterRef.current(); return; }
     const old = prims.current.places;
     if (old) v.scene.primitives.remove(old);
     const coll = new Cesium.PrimitiveCollection();
@@ -1111,9 +1236,61 @@ export function Twin3D({ mode, layers, terrain, frame, flow = null, contextFrame
     coll.add(bb);
     v.scene.primitives.add(coll);
     prims.current.places = coll;
+    calloutRef.current = bb;
+    keepStatic('places', sig, coll, bb);
     v.scene.requestRender();
+    declutterRef.current();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [terrain, datum]);
+  }, [terrain, datum, viewerOk]);
+
+  /* label declutter: a locality label is hidden while it would overlap a place callout or a higher-ranked label on
+     screen (re-evaluated as the camera moves), so names never print over each other */
+  useEffect(() => {
+    const v = viewer.current;
+    if (!v) return;
+    let timer = 0;
+    const run = () => {
+      timer = 0;
+      if (v.isDestroyed()) return;
+      const lc = prims.current.labels as unknown as Cesium.LabelCollection | null;
+      const meta = labelMeta.current;
+      if (!lc || lc.isDestroyed() || !meta.length) return;
+      const cam = v.camera.positionWC;
+      const boxes: number[][] = [];
+      const hits = (b: number[]) => boxes.some((o) => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]);
+      const bb = calloutRef.current;
+      if (bb && !bb.isDestroyed()) for (let i = 0; i < bb.length; i += 1) {
+        const b = bb.get(i);
+        const d = Cesium.Cartesian3.distance(cam, b.position);
+        if (d > 60000) continue;
+        const s = Cesium.SceneTransforms.worldToWindowCoordinates(v.scene, b.position);
+        if (!s) continue;
+        const k = 0.5 * (d <= 1500 ? 1 : d >= 40000 ? 0.55 : 1 - (0.45 * (d - 1500)) / 38500);
+        const w = (b.width || 220) * k; const h = (b.height || 64) * k;
+        boxes.push([s.x - w / 2 - 4, s.y - h - 4, s.x + w / 2 + 4, s.y + 4]);
+      }
+      for (const m of meta) {
+        const l = lc.get(m.i);
+        if (!l) continue;
+        const d = Cesium.Cartesian3.distance(cam, l.position);
+        if (d > m.far) { l.show = true; continue; } // hidden by its distance condition anyway
+        const s = Cesium.SceneTransforms.worldToWindowCoordinates(v.scene, l.position);
+        if (!s) { l.show = false; continue; }
+        const w = m.chars * (m.rank <= 2 ? 7.9 : 6.8) + 8; const h = m.rank <= 2 ? 18 : 16;
+        const box = [s.x - w / 2, s.y - h, s.x + w / 2, s.y + 2];
+        const ok = !hits(box);
+        l.show = ok;
+        if (ok) boxes.push(box);
+      }
+      v.scene.requestRender();
+    };
+    const schedule = () => { if (!timer) timer = window.setTimeout(run, 120); };
+    declutterRef.current = schedule;
+    const offA = v.camera.changed.addEventListener(schedule);
+    const offB = v.camera.moveEnd.addEventListener(schedule);
+    schedule();
+    return () => { offA(); offB(); window.clearTimeout(timer); declutterRef.current = () => undefined; };
+  }, [viewerOk]);
 
   /* shelters (near the focus area, only when zoomed in) and generated incidents (warning+) */
   useEffect(() => {

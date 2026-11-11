@@ -8,7 +8,7 @@ import { TRACKB_BACKTEST, TRACKB_REPLAY } from '../evidence/reports';
 import { DEPTH_CLASS_STYLE, EDGE_STYLE, WATER_EXAGGERATION, googleTilesConfigured, imagerySourceLabel, ionConfigured } from '../twin/constants';
 import type { GpuInfo, PickInfo, TwinLayers } from '../twin/Twin3D';
 import { BarList, Columns, Donut, LineChart } from './Charts';
-import { DEFAULT_LAYERS, Icon, LAYER_LABELS, MapStage, Timeline, sampleFrames, type ProductSection } from './ProductExperience';
+import { DEFAULT_LAYERS, Icon, LAYER_LABELS, MapStage, Timeline, sampleFrames, useGazetteer, type ProductSection } from './ProductExperience';
 import { depthHistogram, frameArea, type TwinData } from './state';
 import { isAssumptionInput, isFocusRun, runTitle } from './runs';
 
@@ -49,10 +49,10 @@ function roadShares(roads: T.RoadFeatureCollection | null) {
   }
   return km;
 }
-function RoadDonut({ roads, size = 130 }: { roads: T.RoadFeatureCollection | null; size?: number }) {
+function RoadDonut({ roads, size = 130, compact = false }: { roads: T.RoadFeatureCollection | null; size?: number; compact?: boolean }) {
   const km = roadShares(roads);
   const total = km.ASSESSED_PASSABLE + km.ASSESSED_BLOCKED + km.UNKNOWN;
-  return <Donut title="Road status" size={size} centre={total ? `${Math.round((km.ASSESSED_PASSABLE / total) * 100)}%` : '—'} sub="passable"
+  return <Donut title="Road status" size={size} compact={compact} centre={total ? `${Math.round((km.ASSESSED_PASSABLE / total) * 100)}%` : '—'} sub="passable"
     slices={(Object.keys(km) as T.EdgeState[]).map((k) => ({ label: `${EDGE_STYLE[k].label} (${km[k].toFixed(0)} km)`, value: km[k], color: EDGE_STYLE[k].color }))} />;
 }
 export function focusStats(focus: FocusFile | null, depth: T.DepthFrame | null) {
@@ -111,11 +111,11 @@ function RunSelect({ data, label = 'Simulation run', value, onChange, completedO
     </label>
   );
 }
-function IncidentRow({ i, onClick, active }: { i: T.Incident; onClick?: () => void; active?: boolean }) {
+function IncidentRow({ i, onClick, active, area = '' }: { i: T.Incident; onClick?: () => void; active?: boolean; area?: string }) {
   return (
     <button type="button" className={`tg-alert tg-alert--${sevTone(i.severity)}${active ? ' is-active' : ''}`} onClick={onClick} aria-pressed={active}>
       <span className="tg-alert__sev">{i.severity}</span>
-      <span className="tg-alert__text"><strong>{i.title ?? i.type}</strong><small>{i.type.replace(/_/g, ' ')} · generated · {fmtTime(i.valid_time_utc)}</small></span>
+      <span className="tg-alert__text"><strong>{incidentTitle(i, area)}</strong><small>{i.type.replace(/_/g, ' ')} · generated · {fmtTime(i.valid_time_utc)}</small></span>
     </button>
   );
 }
@@ -130,6 +130,73 @@ function PickCard({ pick }: { pick: PickInfo | null }) {
   );
 }
 
+/* ───────── alerts grouped by type and area ───────── */
+
+const ALERT_KIND: Record<T.Incident['type'], { label: string; icon: string }> = {
+  building_flooding: { label: 'Urban flood risk', icon: 'building' },
+  road_blocked: { label: 'Roads blocked', icon: 'route' },
+  shelter_unreachable: { label: 'Shelters cut off', icon: 'shelter' },
+  population_cut_off: { label: 'Population cut off', icon: 'people' },
+  reservoir_release: { label: 'Reservoir release', icon: 'dam' },
+};
+const SEV_RANK: Record<T.Severity, number> = { critical: 3, warning: 2, watch: 1, info: 0 };
+export interface AlertGroup { type: T.Incident['type']; severity: T.Severity; count: number; bySeverity: Record<T.Severity, number>; areas: string[]; detail: string; first: T.Incident }
+/** Group generated incidents by type; name the worst-hit areas from the nearest gazetteer locality (rank 1–2). */
+/** Nearest named locality (gazetteer rank 1–2) within ~3 km, '' when none. */
+export function localityFinder(places: { name: string; lon: number; lat: number; rank: number }[]) {
+  const anchors = places.filter((p) => p.rank <= 2);
+  const kx = Math.cos((13 * Math.PI) / 180);
+  return (lon: number, lat: number) => {
+    let best = ''; let bd = Infinity;
+    for (const p of anchors) { const dx = (p.lon - lon) * kx; const dy = p.lat - lat; const d = dx * dx + dy * dy; if (d < bd) { bd = d; best = p.name; } }
+    return bd < 0.03 * 0.03 ? best : '';
+  };
+}
+export function groupAlerts(incidents: T.Incident[], places: { name: string; lon: number; lat: number; rank: number }[]): AlertGroup[] {
+  const anchors = places.filter((p) => p.rank <= 2);
+  const near = localityFinder(places);
+  const groups = new Map<T.Incident['type'], { g: AlertGroup; areas: Map<string, number>; depth: number; sum: number }>();
+  for (const i of incidents) {
+    let e = groups.get(i.type);
+    if (!e) { e = { g: { type: i.type, severity: i.severity, count: 0, bySeverity: { critical: 0, warning: 0, watch: 0, info: 0 }, areas: [], detail: '', first: i }, areas: new Map(), depth: 0, sum: 0 }; groups.set(i.type, e); }
+    e.g.count += 1;
+    e.g.bySeverity[i.severity] += 1;
+    if (SEV_RANK[i.severity] > SEV_RANK[e.g.severity]) { e.g.severity = i.severity; e.g.first = i; }
+    const a = anchors.length ? near(i.location.lon, i.location.lat) : '';
+    if (a) e.areas.set(a, (e.areas.get(a) ?? 0) + 1 + 4 * SEV_RANK[i.severity] ** 2);
+    const m = i.metrics ?? {};
+    e.depth = Math.max(e.depth, m.depth_m ?? m.site_depth_m ?? 0);
+    e.sum += (i.type === 'building_flooding' ? m.buildings : i.type === 'road_blocked' ? m.blocked_km : i.type === 'shelter_unreachable' ? m.capacity_people : 0) ?? 0;
+  }
+  const n = (v: number, d = 0) => v.toLocaleString('en-IN', { maximumFractionDigits: d });
+  return [...groups.values()].map(({ g, areas, depth, sum }) => {
+    const worst = g.bySeverity.critical ? `${n(g.bySeverity.critical)} critical · ` : g.bySeverity.warning ? `${n(g.bySeverity.warning)} warning · ` : '';
+    const detail = g.type === 'building_flooding' ? `${worst}${n(sum)} buildings in ${n(g.count)} cells · max ${depth.toFixed(2)} m`
+      : g.type === 'road_blocked' ? `${worst}${n(g.count)} segments · ${n(sum, 1)} km · max ${depth.toFixed(2)} m`
+        : g.type === 'shelter_unreachable' ? `${worst}${n(g.count)} candidate sites · ${n(sum)} places`
+          : `${worst}${n(g.count)} generated`;
+    return { ...g, areas: [...areas.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k]) => k), detail };
+  }).sort((a, b) => SEV_RANK[b.severity] - SEV_RANK[a.severity] || b.count - a.count);
+}
+function AlertGroupRow({ g, onClick }: { g: AlertGroup; onClick?: () => void }) {
+  const k = ALERT_KIND[g.type];
+  return (
+    <button type="button" className={`tg-alert tg-alert--group tg-alert--${sevTone(g.severity)}`} onClick={onClick}>
+      <span className="tg-alert__icon"><Icon name={k.icon} size={20} /></span>
+      <span className="tg-alert__text"><strong>{k.label}{g.areas.length ? ` – ${g.areas.join(', ')}` : ''}</strong><small><span className="tg-alert__sev">{g.severity}</span> {g.detail}</small></span>
+    </button>
+  );
+}
+/** A readable incident title (the API names unnamed shelter sites "nan"). */
+function incidentTitle(i: T.Incident, area = ''): string {
+  const m = i.metrics ?? {};
+  const at = area ? ` · ${area}` : '';
+  if (i.type === 'building_flooding' && m.buildings != null && m.depth_m != null) return `${m.buildings} building${m.buildings === 1 ? '' : 's'} flooded to ${m.depth_m.toFixed(2)} m${at}`;
+  if (i.type === 'road_blocked' && m.blocked_km != null) return `${m.blocked_km.toFixed(1)} km of road blocked${m.depth_m != null ? ` (${m.depth_m.toFixed(2)} m)` : ''}${at}`;
+  if (i.type === 'shelter_unreachable') { const name = i.title?.replace(/^Shelter unreachable:\s*/i, '') ?? ''; return `Shelter cut off: ${name && !/^(nan|null|undefined)$/i.test(name) ? name : 'unnamed site'}${at}`; }
+  return `${i.title ?? i.type.replace(/_/g, ' ')}${at}`;
+}
+
 /* ───────── 1 · Situation overview ───────── */
 
 let reservoirSnapshot: ReservoirSnapshot | null = null;
@@ -140,6 +207,9 @@ export function OverviewTab({ data, go }: TabProps) {
   const area = frameArea(data.depth);
   const affected = data.wards.filter((w) => (w.max_depth_m ?? 0) >= 0.1).length;
   const hourly = (data.weather?.hourly ?? []).slice(0, 24);
+  const rain24 = hourly.length ? hourly.reduce((a, h) => a + (h.precipitation_mm ?? 0), 0) : null;
+  const gaz = useGazetteer();
+  const groups = useMemo(() => groupAlerts(data.incidents, gaz?.places ?? []), [data.incidents, gaz]);
   const [snap, setSnap] = useState<ReservoirSnapshot | null>(reservoirSnapshot);
   const [snapState, setSnapState] = useState<string | null>(null);
   const [resources, setResources] = useState<T.ResourceSet | null>(null);
@@ -148,69 +218,73 @@ export function OverviewTab({ data, go }: TabProps) {
     setSnapState('Fetching…');
     fetchReservoirHistory('daily').then((x) => { reservoirSnapshot = x; setSnap(x); setSnapState(null); }).catch((e) => setSnapState(`Unavailable: ${errText(e)}`));
   };
+  const shelters = data.shelters?.shelters ?? [];
+  const reachable = shelters.filter((x) => x.reachable);
+  const capacity = reachable.reduce((a, x) => a + (x.capacity_people ?? 0), 0);
+  const resCount = (types: T.ResourceType[]) => (resources?.resources ?? []).filter((r) => types.includes(r.type)).reduce((a, r) => a + r.count, 0);
+  const sev = (k: T.Severity) => data.incidents.filter((i) => i.severity === k).length;
+  const km = roadShares(data.roads);
+  const roadTotal = km.ASSESSED_PASSABLE + km.ASSESSED_BLOCKED + km.UNKNOWN;
+  const frame = data.run?.frames[data.frameIndex];
   return (
-    <div className="tg-layout tg-layout--three">
+    <div className="tg-layout tg-layout--map2">
       <div className="tg-col">
         <Panel title="City Risk Snapshot" icon="gauge" sub="(Chennai)">
-          <div className={`tg-risk tg-risk--${RISK_TONE[risk]}`}><Icon name="alert" size={28} /><div><small>Highest ward risk</small><strong>{risk.toUpperCase()}</strong></div><div><small>Current frame</small><strong className="tg-risk__time">{data.run?.frames[data.frameIndex] ? `T+${Math.round((data.run.frames[data.frameIndex].elapsed_minutes ?? 0) / 60)} h` : '—'}</strong></div></div>
+          <div className={`tg-risk tg-risk--${RISK_TONE[risk]}`}><Icon name="alert" size={26} /><div><small>Highest ward risk</small><strong>{risk.toUpperCase()}</strong></div><div><small>Current frame</small><strong className="tg-risk__time">{frame ? `T+${Math.round((frame.elapsed_minutes ?? 0) / 60)} h` : '—'}</strong></div></div>
           <div className="tg-stats tg-stats--2">
-            <Stat icon="waves" label="Max depth (peak)" value={fmtN(s?.max_depth_m, 2)} unit="m" tone="cyan" />
-            <Stat icon="pin" label="Area ≥ 0.10 m (now)" value={fmtN(area, 1)} unit="km²" tone="violet" />
-            <Stat icon="building" label="Wards affected" value={affected} note={`of ${data.wards.length || '—'}`} tone="amber" />
-            <Stat icon="route" label="Roads screened ≥ 0.30 m" value={fmtN(s?.roads_blocked_km, 0)} unit="km" note="peak" tone="red" />
+            <Stat icon="cloud" label="Rain next 24 h" value={fmtN(rain24, 1)} unit="mm" note="Open-Meteo model" tone="cyan" />
+            <Stat icon="waves" label="Max depth" value={fmtN(data.depth?.max_value, 2)} unit="m" note={`peak ${fmtN(s?.max_depth_m, 2)} m`} tone="violet" />
+            <Stat icon="pin" label="Inundation ≥ 0.10 m" value={fmtN(area, 1)} unit="km²" note="this frame" tone="amber" />
+            <Stat icon="building" label="Wards affected" value={<>{affected}<small> / {data.wards.length || '—'}</small></>} note={`roads ≥ 0.30 m: ${fmtN(s?.roads_blocked_km, 0)} km peak`} tone="red" />
           </div>
         </Panel>
-        <Panel title={`Active Alerts (${data.incidents.length})`} icon="alert" actions={<button type="button" className="tg-link" onClick={() => go('emergency')}>View all →</button>}>
-          <div className="tg-alerts">{data.incidents.slice(0, 4).map((i) => <IncidentRow key={i.incident_id} i={i} onClick={() => go('emergency')} />)}{!data.incidents.length && <p className="tg-muted">No generated alerts for this frame.</p>}</div>
-          <p className="tg-source">Alerts are generated from the simulation, not issued warnings.</p>
+        <Panel title={`Active Alerts (${Math.min(3, groups.length)})`} icon="alert" actions={<button type="button" className="tg-link" onClick={() => go('emergency')}>View all →</button>}>
+          <div className="tg-alerts">{groups.slice(0, 3).map((g) => <AlertGroupRow key={g.type} g={g} onClick={() => go('emergency')} />)}{!groups.length && <p className="tg-muted">No generated alerts for this frame.</p>}</div>
+          <p className="tg-source">{data.incidents.length ? `${data.incidents.length.toLocaleString('en-IN')} generated incidents in this frame, grouped by type and nearest locality. ` : ''}Alerts are generated from the simulation, not issued warnings.</p>
         </Panel>
-      </div>
-      <div className="tg-col tg-col--map">
-        <MapStage data={data} title="Chennai flood map" height="lg" />
-        <Timeline data={data} />
-      </div>
-      <div className="tg-col">
-        <Panel title="Forecast & Event Timeline" icon="clock">
-          <RunSelect data={data} />
-          <div className="tg-event-steps">
-            {sampleFrames(data.run?.frames.length ?? 0, 6).map((i) => { const f = data.run!.frames[i]; return <button type="button" key={f.index} className={i === data.frameIndex ? 'is-current' : i < data.frameIndex ? 'is-past' : ''} onClick={() => data.setFrameIndex(i)}><i /><b>T+{Math.round((f.elapsed_minutes ?? 0) / 60)}h</b><small>{f.valid_time_utc.slice(5, 16).replace('T', ' ')}</small></button>; })}
-          </div>
-        </Panel>
-        <Panel title="Flood Extent & Depth" icon="waves" sub="(current frame)">
-          <div className="tg-stats tg-stats--3">
-            <Stat label="Inundation area" value={fmtN(area, 1)} unit="km²" tone="cyan" />
-            <Stat label="Max depth" value={fmtN(data.depth?.max_value, 2)} unit="m" tone="violet" />
-            <Stat label="Affected wards" value={`${affected}/${data.wards.length || '—'}`} tone="amber" />
-          </div>
+        <Panel title="Rainfall & Forecast" icon="cloud" actions={<button type="button" className="tg-link" onClick={data.refreshWeather}>Refresh</button>}>
+          {hourly.length ? <Columns title="Hourly precipitation" unit="mm" labels={hourly.map((h) => `${new Date(h.time_utc).toLocaleTimeString('en-IN', { hour: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' })}h`)} values={hourly.map((h) => h.precipitation_mm ?? null)} height={104} />
+            : <p className="tg-muted">{data.weatherError ?? 'Loading weather…'}</p>}
+          <p className="tg-source">Next 24 h, hourly (mm) · {data.weather?.attribution ?? 'Weather data by Open-Meteo.com (CC BY 4.0)'} · MODEL_FORECAST</p>
         </Panel>
         <Panel title="Confidence & Data Freshness" icon="shield">
-          <ul className="tg-fresh">
-            <li><span>Flood run</span><b>{data.run ? 'SIMULATED' : '—'}</b><small>{data.run?.provenance.engine_version ?? ''}</small></li>
+          <ul className="tg-fresh tg-fresh--tight">
+            <li><span>Flood run</span><b>{data.run ? 'SIMULATED' : '—'}</b><small>{data.run ? runTitle(data.run) : ''}</small></li>
             <li><span>Rainfall forcing</span><b>{data.run?.provenance.inputs[0]?.source_mode ?? '—'}</b><small>{data.run?.provenance.inputs[0]?.source ?? ''}</small></li>
-            {(data.run?.provenance.inputs ?? []).filter((i) => /inflow|release/i.test(i.name)).map((i) => <li key={i.name}><span>Reservoir inflow</span><b className="tg-assume">ASSUMPTION</b><small>{i.source ?? i.name} · modelled from storage, not an observed release</small></li>)}
-            <li><span>Weather</span><b>{data.weather ? 'MODEL_FORECAST' : 'n/a'}</b><small>{data.weather ? `fetched ${fmtTime(data.weather.fetched_at)}` : data.weatherError ?? 'loading'}</small></li>
-            <li><span>Data service</span><b>{data.apiKind === 'api' ? 'C4 v3 API' : 'Saved results'}</b><small>{data.apiKind === 'api' ? 'live engine' : 'B47 API not mounted yet'}</small></li>
+            {(data.run?.provenance.inputs ?? []).filter((i) => /inflow|release/i.test(i.name)).map((i, k) => <li key={`${i.name}-${k}`}><span>Reservoir inflow</span><b className="tg-assume">ASSUMPTION</b><small>{i.source ?? i.name} · modelled from storage, not an observed release</small></li>)}
+            <li><span>Data service</span><b>{data.apiKind === 'api' ? 'C4 v3 API' : 'Saved results'}</b><small>{data.run?.provenance.engine_version ?? ''}</small></li>
           </ul>
         </Panel>
       </div>
-      <div className="tg-row4">
-        <Panel title="Rainfall Forecast" icon="cloud" sub="(Open-Meteo model, next 24 h)" actions={<button type="button" className="tg-link" onClick={data.refreshWeather}>Refresh</button>}>
-          {hourly.length ? <Columns title="Hourly precipitation" unit="mm" labels={hourly.map((h) => `${new Date(h.time_utc).toLocaleTimeString('en-IN', { hour: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' })}h`)} values={hourly.map((h) => h.precipitation_mm ?? null)} />
-            : <p className="tg-muted">{data.weatherError ?? 'Loading weather…'}</p>}
-          <p className="tg-source">{data.weather?.attribution ?? 'Weather data by Open-Meteo.com (CC BY 4.0)'} · min refresh 10 min</p>
-        </Panel>
-        <Panel title="Reservoir Summary" icon="dam" sub="(CFM-DSS published snapshot)" actions={<button type="button" className="tg-link" onClick={() => go('reservoirs')}>Details →</button>}>
-          {snap ? <table className="tg-table"><thead><tr><th>Reservoir</th><th>Level (m)</th><th>Storage (MCM)</th><th>Date</th></tr></thead>
-            <tbody>{snap.series.map((r) => <tr key={r.reservoirId}><th>{r.reservoirName}</th><td>{r.latest.waterLevelM.toFixed(2)}</td><td>{r.latest.averageStorageMcm.toFixed(1)}</td><td>{r.latest.sourceDate}</td></tr>)}</tbody></table>
-            : <div className="tg-empty"><p>{snapState ?? 'Not fetched. Snapshots are read only when you ask.'}</p><button type="button" className="tg-btn" onClick={fetchSnap}>Fetch published snapshot</button></div>}
-        </Panel>
-        <Panel title="Emergency Resources" icon="people" sub="(scenario inputs)" actions={<button type="button" className="tg-link" onClick={() => go('emergency')}>Edit →</button>}>
-          <ul className="tg-resources">{(resources?.resources ?? []).map((r) => <li key={r.resource_id}><Icon name={r.type === 'boat' ? 'boat' : r.type === 'rescue_team' ? 'people' : 'route'} /><span>{r.type.replace('_', ' ')}<small>{r.base.name}</small></span><b>{r.count}</b></li>)}</ul>
-          <p className="tg-source">SCENARIO_INPUT · owner-set counts</p>
-        </Panel>
-        <Panel title="Road Status" icon="route" sub={`(${FOCUS_AREAS.find((a) => a.id === data.focusArea)!.label})`} actions={<button type="button" className="tg-link" onClick={() => go('routing')}>Routing →</button>}>
-          <RoadDonut roads={data.roads} />
-        </Panel>
+      <div className="tg-col tg-col--map">
+        <MapStage data={data} title="Chennai flood map" height="fill" />
+        <Timeline data={data} />
+        <div className="tg-minirow">
+          <Panel title="Reservoir Status" icon="dam" sub="(CFM-DSS)" actions={<button type="button" className="tg-link" onClick={() => go('reservoirs')}>Details →</button>}>
+            {snap ? <table className="tg-table tg-table--mini"><thead><tr><th>Reservoir</th><th>Level (m)</th><th>Storage (MCM)</th></tr></thead>
+              <tbody>{snap.series.map((r) => <tr key={r.reservoirId}><th>{r.reservoirName}</th><td>{r.latest.waterLevelM.toFixed(2)}</td><td>{r.latest.averageStorageMcm.toFixed(1)}</td></tr>)}</tbody></table>
+              : <div className="tg-empty"><p>{snapState ?? 'Not fetched. Snapshots are read only when you ask.'}</p><button type="button" className="tg-btn tg-btn--small" onClick={fetchSnap}>Fetch published snapshot</button></div>}
+            {snap && <p className="tg-source">PUBLISHED_SNAPSHOT · {snap.series[0]?.latest.sourceDate ?? ''}</p>}
+          </Panel>
+          <Panel title="Emergency Support" icon="people" actions={<button type="button" className="tg-link" onClick={() => go('emergency')}>Details →</button>}>
+            <ul className="tg-mini">
+              <li><Icon name="shelter" /><span>Relief shelters reachable<small>{fmtN(capacity, 0)} places (assumed capacity)</small></span><b>{reachable.length}<small>/{shelters.length || '—'}</small></b></li>
+              <li><Icon name="boat" /><span>Boats · rescue teams<small>SCENARIO_INPUT counts</small></span><b>{resCount(['boat'])}<small> · </small>{resCount(['rescue_team'])}</b></li>
+              <li><Icon name="alert" /><span>Critical · warning incidents<small>generated this frame</small></span><b className="is-bad">{sev('critical')}<small> · </small>{sev('warning')}</b></li>
+            </ul>
+          </Panel>
+          <Panel title="Road Routing (Safe Routes)" icon="route" actions={<button type="button" className="tg-link" onClick={() => go('routing')}>Plan route →</button>}>
+            <div className="tg-roadmini">
+              <RoadDonut roads={data.roads} size={92} compact />
+              <ul className="tg-mini tg-mini--plain">
+                <li><i style={{ background: EDGE_STYLE.ASSESSED_PASSABLE.color }} /><span>Passable</span><b>{km.ASSESSED_PASSABLE.toFixed(0)} km</b></li>
+                <li><i style={{ background: EDGE_STYLE.ASSESSED_BLOCKED.color }} /><span>Blocked</span><b>{km.ASSESSED_BLOCKED.toFixed(0)} km</b></li>
+                <li><i style={{ background: EDGE_STYLE.UNKNOWN.color }} /><span>Unknown</span><b>{km.UNKNOWN.toFixed(0)} km</b></li>
+              </ul>
+            </div>
+            <p className="tg-source">{roadTotal ? `Roads in view · ${FOCUS_AREAS.find((a) => a.id === data.focusArea)!.label} by default` : 'Loading road status…'}</p>
+          </Panel>
+        </div>
       </div>
     </div>
   );
@@ -276,7 +350,7 @@ export function SimulationTab({ data }: TabProps) {
         </Panel>
       </div>
       <div className="tg-col tg-col--map">
-        <MapStage data={data} title="Flood simulation map" height="lg" layersInit={{ incidents: false, shelters: false }} />
+        <MapStage data={data} title="Flood simulation map" height="fill" layersInit={{ incidents: false, shelters: false }} />
         <Timeline data={data} />
       </div>
       <div className="tg-col">
@@ -285,10 +359,13 @@ export function SimulationTab({ data }: TabProps) {
             <Stat label="Flood extent" value={fmtN(frameArea(data.depth), 1)} unit="km²" tone="cyan" />
             <Stat label="Max depth" value={fmtN(data.depth?.max_value, 2)} unit="m" tone="violet" />
             <Stat label="Peak extent" value={fmtN(s?.flooded_area_km2, 1)} unit="km²" note={fmtTime(s?.peak_time_utc)} tone="amber" />
-            <Stat label="Wards affected (peak)" value={fmtN(s?.wards_affected, 0)} tone="red" />
-            <Stat label="Buildings affected" value={fmtN(s?.buildings_affected, 0)} note={s?.buildings_affected == null ? 'needs engine (A25)' : undefined} />
-            <Stat label="Roads screened" value={fmtN(s?.roads_blocked_km, 0)} unit="km" />
+            <Stat label="Wards affected (peak)" value={<>{fmtN(s?.wards_affected, 0)}<small> / {data.wards.length || 200}</small></>} tone="red" />
+            <Stat label="Buildings affected" value={fmtN(s?.buildings_affected, 0)} note={s?.buildings_affected == null ? 'needs engine (A25)' : 'peak'} />
+            <Stat label="Roads screened" value={fmtN(s?.roads_blocked_km, 0)} unit="km" note="≥ 0.30 m, peak" />
           </div>
+        </Panel>
+        <Panel title="Inundation Growth" icon="waves">
+          <LineChart title="Inundation area by frame" unit="km²" xLabels={areas.labels} series={[{ name: 'Area', values: areas.areas.map((a) => a ?? 0), color: '#2fa8ff' }]} highlightIndex={nearestIdx(areas.idx, data.frameIndex)} height={150} />
         </Panel>
         <Panel title="Run Details" icon="shield">
           <ul className="tg-fresh">
@@ -301,10 +378,7 @@ export function SimulationTab({ data }: TabProps) {
           </ul>
         </Panel>
       </div>
-      <div className="tg-row4">
-        <Panel title="Inundation Area" icon="waves" sub="(≥ 0.10 m by frame)">
-          <LineChart title="Inundation area by frame" unit="km²" xLabels={areas.labels} series={[{ name: 'Area', values: areas.areas.map((a) => a ?? 0), color: '#2fa8ff' }]} highlightIndex={nearestIdx(areas.idx, data.frameIndex)} height={170} />
-        </Panel>
+      <div className="tg-row4 tg-row4--3">
         <Panel title="Depth Distribution" icon="layers" sub="(model cells)">
           <Donut title="Depth distribution" centre={`${fmtN(frameArea(data.depth, 0.01), 0)}`} sub="km² wet" slices={[
             { label: '< 0.15 m', value: hist.bins[0], color: '#7fe3ff' }, { label: '0.15 – 0.3 m', value: hist.bins[1], color: '#2fa8ff' }, { label: '0.3 – 0.5 m', value: hist.bins[2], color: '#1f5cff' }, { label: '0.5 – 1.0 m', value: hist.bins[3], color: '#9b5cff' }, { label: '> 1.0 m', value: hist.bins[4], color: '#ff3b8a' }]} />
@@ -313,7 +387,7 @@ export function SimulationTab({ data }: TabProps) {
           <BarList title="Ward max depth" unit="m" rows={topWards.map((w) => ({ label: `${w.ward_name}`, value: w.max_depth_m ?? null, color: w.risk_level === 'severe' ? '#ff3b5c' : w.risk_level === 'high' ? '#ff9f43' : '#2fa8ff' }))} />
         </Panel>
         <Panel title="Rainfall Forcing" icon="cloud">
-          <ul className="tg-fresh">{(data.run?.provenance.inputs ?? []).map((i) => <li key={i.name}><span>{i.name.replace(/_/g, ' ')}</span><b>{i.source_mode}{isAssumptionInput(i) && /inflow|release/i.test(i.name) && <em className="tg-assume"> · ASSUMPTION</em>}</b><small>{i.source}</small></li>)}</ul>
+          <ul className="tg-fresh">{(data.run?.provenance.inputs ?? []).map((i, k) => <li key={`${i.name}-${k}`}><span>{i.name.replace(/_/g, ' ')}</span><b>{i.source_mode}{isAssumptionInput(i) && /inflow|release/i.test(i.name) && <em className="tg-assume"> · ASSUMPTION</em>}</b><small>{i.source}</small></li>)}</ul>
         </Panel>
       </div>
     </div>
@@ -322,6 +396,7 @@ export function SimulationTab({ data }: TabProps) {
 
 /* ───────── 3 · Emergency support ───────── */
 
+const QUEUE_LIMIT = 150;
 export function EmergencyTab({ data }: TabProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [plan, setPlan] = useState<T.EmergencyPlan | null>(null);
@@ -331,7 +406,10 @@ export function EmergencyTab({ data }: TabProps) {
   const [pick, setPick] = useState<PickInfo | null>(null);
   useEffect(() => { data.api?.getResources().then((r) => { setResources(r); setDraft(Object.fromEntries(r.resources.map((x) => [x.resource_id, x.count]))); }).catch(() => setResources(null)); }, [data.api]);
   useEffect(() => { data.api?.emergencyPlan(data.runId, data.frameIndex).then(setPlan).catch(() => setPlan(null)); }, [data.api, data.runId, data.frameIndex, resources?.version]);
-  const inc = data.incidents.find((i) => i.incident_id === selected) ?? data.incidents[0] ?? null;
+  const queue = useMemo(() => [...data.incidents].sort((a, b) => SEV_RANK[b.severity] - SEV_RANK[a.severity] || (b.metrics?.depth_m ?? 0) - (a.metrics?.depth_m ?? 0)).slice(0, QUEUE_LIMIT), [data.incidents]);
+  const gaz = useGazetteer();
+  const locality = useMemo(() => localityFinder(gaz?.places ?? []), [gaz]);
+  const inc = data.incidents.find((i) => i.incident_id === selected) ?? queue[0] ?? null;
   const shelters = data.shelters?.shelters ?? [];
   const near = inc ? shelters.filter((s) => s.reachable).map((s) => ({ s, d: haversineM([s.location.lon, s.location.lat], [inc.location.lon, inc.location.lat]) })).sort((a, b) => a.d - b.d).slice(0, 4) : [];
   const save = async () => {
@@ -348,20 +426,21 @@ export function EmergencyTab({ data }: TabProps) {
   return (
     <div className="tg-layout tg-layout--three">
       <div className="tg-col">
-        <Panel title={`Incident Priority Queue (${data.incidents.length})`} icon="alert">
-          <div className="tg-alerts tg-alerts--scroll">{data.incidents.map((i) => <IncidentRow key={i.incident_id} i={i} active={inc?.incident_id === i.incident_id} onClick={() => setSelected(i.incident_id)} />)}{!data.incidents.length && <p className="tg-muted">No generated incidents for this frame.</p>}</div>
+        <Panel title={`Incident Priority Queue (${data.incidents.length.toLocaleString('en-IN')})`} icon="alert">
+          {data.incidents.length > QUEUE_LIMIT && <p className="tg-source">Showing the {QUEUE_LIMIT} most severe of {data.incidents.length.toLocaleString('en-IN')} generated incidents.</p>}
+          <div className="tg-alerts tg-alerts--scroll">{queue.map((i) => <IncidentRow key={i.incident_id} i={i} area={locality(i.location.lon, i.location.lat)} active={inc?.incident_id === i.incident_id} onClick={() => setSelected(i.incident_id)} />)}{!data.incidents.length && <p className="tg-muted">No generated incidents for this frame.</p>}</div>
           <p className="tg-source">Generated from the simulation (generated: true). Not real reports.</p>
         </Panel>
       </div>
       <div className="tg-col tg-col--map">
-        <MapStage data={data} title="Emergency map" height="lg" layersInit={{ wards: true, buildings: true }} onPick={setPick} flyKey={inc?.incident_id}
+        <MapStage data={data} title="Emergency map" height="fill" layersInit={{ wards: true, buildings: true }} onPick={setPick} flyKey={inc?.incident_id}
           center={inc ? { lon: inc.location.lon, lat: inc.location.lat, range: 6000 } : null} />
         <Timeline data={data} compact />
       </div>
       <div className="tg-col">
         <Panel title={inc ? 'Selected Incident' : 'Selected Incident — none'} icon="siren">
           {inc ? <>
-            <div className={`tg-incident tg-incident--${sevTone(inc.severity)}`}><strong>{inc.title}</strong><small>{inc.type.replace(/_/g, ' ')} · {inc.severity.toUpperCase()} · {fmtTime(inc.valid_time_utc)}</small></div>
+            <div className={`tg-incident tg-incident--${sevTone(inc.severity)}`}><strong>{incidentTitle(inc, locality(inc.location.lon, inc.location.lat))}</strong><small>{inc.type.replace(/_/g, ' ')} · {inc.severity.toUpperCase()} · {fmtTime(inc.valid_time_utc)}</small></div>
             <div className="tg-stats tg-stats--3">{Object.entries(inc.metrics ?? {}).slice(0, 3).map(([k, v]) => <Stat key={k} label={k.replace(/_/g, ' ')} value={fmtN(v, 2)} />)}</div>
             <h3 className="tg-h3">Recommended assignment (greedy, nearest scenario resource)</h3>
             <ul className="tg-actions">{(plan?.assignments ?? []).filter((a) => a.incident_id === inc.incident_id).map((a) => <li key={a.resource_id}><b>{a.units} × {resources?.resources.find((r) => r.resource_id === a.resource_id)?.type.replace('_', ' ') ?? a.resource_id}</b> from {resources?.resources.find((r) => r.resource_id === a.resource_id)?.base.name}{a.eta_s != null && <> · ETA ≈ {Math.round(a.eta_s / 60)} min</>}</li>)}
@@ -442,7 +521,7 @@ export function RoutingTab({ data }: TabProps) {
         </Panel>
       </div>
       <div className="tg-col tg-col--map">
-        <MapStage data={data} title="Routing map" height="lg" layersInit={{ incidents: false }} route={routes} onPick={setPick}
+        <MapStage data={data} title="Routing map" height="fill" layersInit={{ incidents: false }} route={routes} onPick={setPick}
           onMapClick={(p) => { if (clickSets === 'origin') { setOrigin(p); setClickSets(null); } else if (clickSets === 'destination') { setCustomDest(p); setClickSets(null); } }}
           overlay={<div className="tg-legend tg-legend--right"><strong>Road status (3-state)</strong><ul>{(Object.keys(EDGE_STYLE) as T.EdgeState[]).map((k) => <li key={k}><i style={{ background: EDGE_STYLE[k].color }} />{EDGE_STYLE[k].label}</li>)}<li><i style={{ background: '#3ddc84', height: 4 }} />Selected route</li><li><i style={{ background: '#b36bff', height: 4 }} />Alternative</li></ul></div>} />
       </div>
@@ -526,7 +605,7 @@ export function WhatIfTab({ data }: TabProps) {
         </Panel>
       </div>
       <div className="tg-col tg-col--map">
-        <MapStage data={data} title="What-if comparison map" height="lg" toolbarExtra={scen && <div className="tg-seg" role="group" aria-label="Compare"><button type="button" aria-pressed={show === 'baseline'} onClick={() => setShow('baseline')}>Baseline</button><button type="button" aria-pressed={show === 'scenario'} onClick={() => setShow('scenario')}>Scenario</button></div>} />
+        <MapStage data={data} title="What-if comparison map" height="fill" toolbarExtra={scen && <div className="tg-seg" role="group" aria-label="Compare"><button type="button" aria-pressed={show === 'baseline'} onClick={() => setShow('baseline')}>Baseline</button><button type="button" aria-pressed={show === 'scenario'} onClick={() => setShow('scenario')}>Scenario</button></div>} />
         <Timeline data={data} compact />
       </div>
       <div className="tg-col">
@@ -584,7 +663,7 @@ export function ReservoirTab({ data }: TabProps) {
         </Panel>
       </div>
       <div className="tg-col tg-col--map">
-        <MapStage data={data} title="Reservoir map" height="lg" layersInit={{ buildings: false, roads: false, incidents: false, shelters: false, water: false, wards: true }} center={{ lon: 80.05, lat: 13.12, range: 52000 }} flyKey="reservoirs"
+        <MapStage data={data} title="Reservoir map" height="fill" layersInit={{ buildings: false, roads: false, incidents: false, shelters: false, water: false, wards: true }} center={{ lon: 80.05, lat: 13.12, range: 52000 }} flyKey="reservoirs"
           overlay={<div className="tg-res-markers">{Object.entries(RESERVOIR_POS).map(([k, p]) => <span key={k}><Icon name="dam" />{RES_NAME[k]}<small>{p.lat.toFixed(3)}, {p.lon.toFixed(3)}</small></span>)}</div>} />
       </div>
       <div className="tg-col">
@@ -656,7 +735,7 @@ export function TwinTab({ data }: TabProps) {
         </Panel>
       </div>
       <div className="tg-col tg-col--map">
-        <MapStage data={data} title="3D city digital twin" height="lg" layers={layers} onLayers={setLayers} onPick={setPick} />
+        <MapStage data={data} title="3D city digital twin" height="fill" layers={layers} onLayers={setLayers} onPick={setPick} />
       </div>
       <div className="tg-col">
         <Panel title="Selected Area Inspector" icon="search">
@@ -670,7 +749,7 @@ export function TwinTab({ data }: TabProps) {
             <li><span>Terrain</span><b>{ionConfigured() ? 'Cesium World' : data.terrain ? 'GLO-30' : 'flat'}</b><small>{ionConfigured() ? 'ion asset 1 (GLO-30 DEM as fallback)' : 'project cleaned DEM'}</small></li>
             <li><span>Flood run</span><b>SIMULATED</b><small>{data.run ? `${runTitle(data.run)} · ${data.run.run_id}` : ''}</small></li>
             <li><span>Rainfall input</span><b>{data.run?.provenance.inputs[0]?.source_mode ?? '—'}</b><small>{data.run?.provenance.inputs[0]?.source ?? ''}</small></li>
-            {(data.run?.provenance.inputs ?? []).filter((i) => /inflow|release/i.test(i.name)).map((i) => <li key={i.name}><span>Reservoir inflow</span><b className="tg-assume">ASSUMPTION</b><small>{i.source ?? i.name} · modelled from storage, not an observed release</small></li>)}
+            {(data.run?.provenance.inputs ?? []).filter((i) => /inflow|release/i.test(i.name)).map((i, k) => <li key={`${i.name}-${k}`}><span>Reservoir inflow</span><b className="tg-assume">ASSUMPTION</b><small>{i.source ?? i.name} · modelled from storage, not an observed release</small></li>)}
             <li><span>Water motion</span><b>{data.flow ? 'MODELLED /flow' : 'ESTIMATED'}</b><small>{data.flow ? `u/v velocity, frame ${data.flow.frame_index}, stride ${data.flow.stride}` : 'no flow output for this run; surface-slope estimate'}</small></li>
             <li><span>Data service</span><b>{data.apiKind === 'api' ? 'C4 v3 API' : 'Saved results'}</b></li>
           </ul>

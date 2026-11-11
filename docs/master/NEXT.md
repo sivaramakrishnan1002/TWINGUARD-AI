@@ -16,7 +16,7 @@
 
 ## Ready tasks by lane B
 
-- **B56 — UI performance + layout rework + e2e test - ui session** (ready)
+- **B57 — Fix 'Shelter unreachable: nan' incident titles for unnamed shelters** (ready)
 
 ## Ready tasks by lane I
 

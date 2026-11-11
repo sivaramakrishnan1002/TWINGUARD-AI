@@ -6928,7 +6928,7 @@
       "lane": "B",
       "title": "UI performance + layout rework + e2e test - ui session",
       "phase": "B",
-      "status": "ready",
+      "status": "done_with_caveats",
       "depends_on": [
         "B54"
       ],
@@ -6953,6 +6953,47 @@
         "End-to-end test: a scripted test of the 7 tabs at tests/e2e/ui_7tabs_e2e.mjs (Playwright or the existing tools/ui runner) against the packaged or local stack: open each tab, load a live and a replay run, play the timeline, run one what-if and one route search, and assert key panels show /v3 values with 0 console errors. Record the run in docs/ui/.",
         "No key or token committed or sent to /api/ai; production build and UI tests pass; do not edit services/, docs/master/ or docs/api/ (request contract changes from the Integrator)."
       ],
+      "evidence": [
+        "docs/ui/B56_PERFORMANCE_LAYOUT_E2E.md",
+        "docs/ui/perf/",
+        "docs/ui/screenshots/e2e_b56/",
+        "tests/e2e/ui_7tabs_e2e.mjs"
+      ],
+      "session": "ui",
+      "claimed_at": "2026-11-10T22:05:46+0530",
+      "finished_at": "2026-11-11T08:49:48+0530",
+      "commit": "019e1ef",
+      "heavy": false,
+      "manual": false,
+      "estimate_days": null,
+      "target_day": null,
+      "notes": [
+        "2026-11-10 Registered by Integrator at the owner's request (21:30 IST, via the coordinator): 'the system is very slow and the simulation map are very lagging, and also the centre map area feels very smaller, i need you to follow the design in the image reference and change it and map everything properly and also check a end to end test also do it'. Post-v1.0 polish: v1.0 stays as tagged; a v1.1 tag decision comes later.",
+        "RTX 3050: playback 22.6->121.7 fps, frame step 3172->340 ms, 7-tab switch 73.5->103.9 fps (long tasks 12.7->2.9 s). e2e 59/60; caveat: tab-switch tour 23.3 fps when the laptop is on battery and Chrome uses the Intel iGPU (37.1 fps isolated on iGPU, 103.9 on RTX).",
+        "2026-11-11 Integrator verification: commit 019e1ef. e2e_results.json shows 60 checks, 59 passed; the one failure is \"tab switching >= 30 fps\" at 23.3 FPS on the battery/iGPU run, while on the RTX 3050 tab switching measured 103.9 FPS (docs/ui/perf/). 0 console errors; no token in /api/ai requests; no AIza in results. Playback on the RTX 3050 went from 22.6 to 121.7 FPS. Evidence string split into separate paths (finish.py now splits comma-separated evidence)."
+      ]
+    },
+    {
+      "id": "B57",
+      "lane": "B",
+      "title": "Fix 'Shelter unreachable: nan' incident titles for unnamed shelters",
+      "phase": "B",
+      "status": "ready",
+      "depends_on": [
+        "B47"
+      ],
+      "prerequisites": [],
+      "inputs": [
+        "docs/ui/B56_PERFORMANCE_LAYOUT_E2E.md"
+      ],
+      "outputs": [
+        "services/ai-service/app/v3/analysis.py",
+        "tests/ai_service/"
+      ],
+      "acceptance": [
+        "services/ai-service/app/v3/analysis.py (incident title near line 419) and the shelter report must not emit 'nan' or 'None' for missing OSM names: use a stable fallback such as 'Unnamed <category> (<shelter_id>)', and keep name null in Shelter objects where the contract allows it.",
+        "Add a test with a NaN/None/empty-name shelter covering the incident title and the shelter report; existing /v3 contract tests still pass."
+      ],
       "evidence": [],
       "session": null,
       "claimed_at": null,
@@ -6963,7 +7004,7 @@
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-10 Registered by Integrator at the owner's request (21:30 IST, via the coordinator): 'the system is very slow and the simulation map are very lagging, and also the centre map area feels very smaller, i need you to follow the design in the image reference and change it and map everything properly and also check a end to end test also do it'. Post-v1.0 polish: v1.0 stays as tagged; a v1.1 tag decision comes later."
+        "2026-11-11 Registered by Integrator from the B56 finding (the UI session saw 'Shelter unreachable: nan'; the UI now shows 'unnamed site'). Small post-v1.0 fix."
       ]
     }
   ],

@@ -799,3 +799,9 @@ Verified A07 is done_with_caveats, A08 has no additional prerequisites, acceptan
 - 2026-11-11 08:49:48 Finished B56: done_with_caveats
 
 - 2026-11-11 08:51:03 B56 verified (019e1ef; 59/60 e2e checks, the iGPU tab-switch FPS caveat); B57 registered (nan shelter names); finish.py now splits comma-separated evidence.
+
+- 2026-11-11 08:51:51 Claimed B57 by Lane B
+
+- 2026-11-11 08:58:39 Finished B57: done
+
+- 2026-11-11 08:59:53 B57 verified (1391f33).

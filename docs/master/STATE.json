@@ -6978,7 +6978,7 @@
       "lane": "B",
       "title": "Fix 'Shelter unreachable: nan' incident titles for unnamed shelters",
       "phase": "B",
-      "status": "ready",
+      "status": "done",
       "depends_on": [
         "B47"
       ],
@@ -6994,17 +6994,22 @@
         "services/ai-service/app/v3/analysis.py (incident title near line 419) and the shelter report must not emit 'nan' or 'None' for missing OSM names: use a stable fallback such as 'Unnamed <category> (<shelter_id>)', and keep name null in Shelter objects where the contract allows it.",
         "Add a test with a NaN/None/empty-name shelter covering the incident title and the shelter report; existing /v3 contract tests still pass."
       ],
-      "evidence": [],
-      "session": null,
-      "claimed_at": null,
-      "finished_at": null,
-      "commit": null,
+      "evidence": [
+        "services/ai-service/app/v3/static.py",
+        "tests/ai_service/test_v3_shelter_names.py"
+      ],
+      "session": "Lane B",
+      "claimed_at": "2026-11-11T08:51:51+0530",
+      "finished_at": "2026-11-11T08:58:39+0530",
+      "commit": "1391f33",
       "heavy": false,
       "manual": false,
       "estimate_days": null,
       "target_day": null,
       "notes": [
-        "2026-11-11 Registered by Integrator from the B56 finding (the UI session saw 'Shelter unreachable: nan'; the UI now shows 'unnamed site'). Small post-v1.0 fix."
+        "2026-11-11 Registered by Integrator from the B56 finding (the UI session saw 'Shelter unreachable: nan'; the UI now shows 'unnamed site'). Small post-v1.0 fix.",
+        "Missing OSM shelter names (237/795 stored as literal 'nan') now display as 'Unnamed <category> (<shelter_id>)' in incident titles, the shelter report and /v3/static/shelters; normalised at bundle load (static.shelter_name), builder fixed for future bundles. Shelter.name stays a required string per C4 v3 (no null). tests/ai_service 171 passed incl. new NaN/None/empty/literal tests; real bundle check: 0 bad names, 237 fallbacks. Running :8000 picks it up on its next restart.",
+        "2026-11-11 Integrator verification: commit 1391f33 touches only services/ai-service/app/v3/{build_static,static}.py and tests/ai_service/test_v3_shelter_names.py; that test and tests/master pass (37). The fallback \"Unnamed <category> (<shelter_id>)\" is used because C4 v3 Shelter.name is a required string, so there is no contract change. The running :8000 service needs a restart to pick it up."
       ]
     }
   ],

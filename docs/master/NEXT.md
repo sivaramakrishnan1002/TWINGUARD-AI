@@ -16,7 +16,7 @@
 
 ## Ready tasks by lane B
 
-- **B57 — Fix 'Shelter unreachable: nan' incident titles for unnamed shelters** (ready)
+- None.
 
 ## Ready tasks by lane I
 

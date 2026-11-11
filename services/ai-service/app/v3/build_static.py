@@ -147,7 +147,8 @@ def build_shelters(tf, cell_of) -> list[dict]:
         point = shapely.centroid(shapely.from_wkb(_wkb(blob)))
         x, y = shapely.get_x(point), shapely.get_y(point)
         lon, lat = tf.transform(x, y)
-        out.append({"shelter_id": str(row.candidate_id), "name": str(row.name or "") or f"Unnamed {row.category}",
+        raw_name = None if row.name is None or (isinstance(row.name, float) and row.name != row.name) else str(row.name).strip()
+        out.append({"shelter_id": str(row.candidate_id), "name": raw_name or None,  # display fallback: static.shelter_name (B57)
                     "category": str(row.category), "lon": round(float(lon), 6), "lat": round(float(lat), 6),
                     "cell": int(cell_of(np.array([x]), np.array([y]))[0]),
                     "capacity_people": int(row.assumed_capacity_people), "capacity_source": "assumed"})

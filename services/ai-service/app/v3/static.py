@@ -137,7 +137,23 @@ class Product:
 
     @cached_property
     def shelters(self) -> list[dict]:
-        return json.loads((self.directory / "shelters.json").read_text(encoding="utf-8"))
+        shelters = json.loads((self.directory / "shelters.json").read_text(encoding="utf-8"))
+        return [{**s, "name": shelter_name(s.get("name"), s.get("category"), s.get("shelter_id"))} for s in shelters]
+
+
+_MISSING_NAMES = {"", "nan", "none", "null", "<na>", "nat"}
+
+
+def shelter_name(name, category, shelter_id) -> str:
+    """Display name for a shelter. OSM names can be missing (NaN/None/empty, or the literal "nan" written by an
+    earlier bundle build); C4 v3 Shelter.name is a required string, so use a stable fallback (B57)."""
+    if isinstance(name, float) and math.isnan(name):
+        name = None
+    text = str(name).strip() if name is not None else ""
+    if text.lower() in _MISSING_NAMES:
+        label = str(category or "shelter").replace("_", " ")
+        return f"Unnamed {label} ({shelter_id})"
+    return text
 
 
 def _cached(key: tuple, factory):
